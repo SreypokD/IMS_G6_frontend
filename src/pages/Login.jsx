@@ -131,7 +131,7 @@ const Login = () => {
               className="w-full bg-[#1e3a5f] text-white hover:bg-[#1e3a5f] py-2.5 rounded-xl transition disabled:opacity-50 mt-2 cursor-pointer"
               disabled={loading}
             >
-              {loading ? "Loading ..." : "Sign In"}
+              {loading ? "Signing In..." : "Sign In"}
               {!loading && <HiOutlineDownload className="inline-block ml-1 text-lg rotate-270" />}
             </button>
             <span className="block text-sm text-[#1e3a5f] hover:underline text-center cursor-pointer">
@@ -141,7 +141,7 @@ const Login = () => {
         </div>
         <br />
         <span className="block text-sm text-[#1e3a5f] text-center mt-6">
-          © 2026 Inventory Management System
+          © 2026 Inventory. All rights reserved.
         </span>
       </div>
     </div>

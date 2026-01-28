@@ -80,7 +80,7 @@ const Header = ({ onBellClick }) => {
             </div>
             <div className="flex flex-col items-start text-left">
               <span className="text-gray-900 text-sm leading-tight">
-                {user?.name || "User"}
+                {user?.first_name + " " + user?.last_name || "User"}
               </span>
             </div>
             <HiChevronDown className="text-gray-400 text-xl ml-1" />
@@ -89,8 +89,8 @@ const Header = ({ onBellClick }) => {
             <div className="absolute right-0 top-14 bg-white rounded-2xl shadow-lg p-2 w-60 z-50 animate-fade-in-up border border-gray-100">
               <div className="px-3 pt-3">
                 <div className="font-bold text-lg leading-tight">
-                  {user?.name}{" "}
-                  <span className="capitalize">({user?.role})</span>
+                  {user?.first_name + " " + user?.last_name}
+                  <span className="ml-2 capitalize">({user?.role})</span>
                 </div>
                 <div className="text-gray-500 text-sm mb-1">{user?.email}</div>
               </div>
