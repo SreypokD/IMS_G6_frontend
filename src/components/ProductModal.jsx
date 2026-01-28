@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   HiXCircle,
   HiOutlineDocumentText,
@@ -7,7 +7,7 @@ import {
 
 const initialProduct = {
   name: "",
-  sku: "",
+  code: "",
   category: "",
   supplier: "",
   price: "",
@@ -16,25 +16,31 @@ const initialProduct = {
   image: "",
 };
 
+import { getCategories, getSuppliers } from "../api";
+
 const ProductModal = ({ open, onClose, onSave, initial }) => {
   const [product, setProduct] = useState(initial || initialProduct);
   const [preview, setPreview] = useState(initial?.image || "");
   const fileInputRef = useRef();
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
 
   // Clear form fields when opening for create
-  React.useEffect(() => {
-    if (open && !initial) {
-      setProduct(initialProduct);
-      setTouched({});
-      setValidateOnSave(false);
-    } else if (open && initial) {
-      setProduct(initial);
-      setTouched({});
-      setValidateOnSave(false);
+  // Only fetch categories and suppliers when modal opens
+  useEffect(() => {
+    if (open) {
+      getCategories().then(res => {
+        console.log('getCategories response:', res);
+        setCategories(res.data.data || []);
+      });
+      getSuppliers().then(res => {
+        console.log('getSuppliers response:', res);
+        setSuppliers(res.data.data || []);
+      });
     }
-  }, [open, initial]);
+  }, [open]);
 
   // Handle file upload
   const handleImageUpload = async (e) => {
@@ -97,20 +103,20 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  SKU{" "}
-                  {!product.sku && !initial ? (
+                  Product Code{" "}
+                  {!product.code && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
                 </label>
                 <input
-                  name="sku"
-                  value={product.sku}
+                  name="code"
+                  value={product.code}
                   onChange={(e) =>
-                    setProduct({ ...product, sku: e.target.value })
+                    setProduct({ ...product, code: e.target.value })
                   }
-                  onBlur={() => setTouched((prev) => ({ ...prev, sku: true }))}
-                  placeholder="SKU"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!product.sku && !initial && (touched.sku || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  onBlur={() => setTouched((prev) => ({ ...prev, code: true }))}
+                  placeholder="Product Code"
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!product.code && !initial && (touched.code || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                 />
               </div>
               <div>
@@ -120,18 +126,18 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                     <sup className="text-red-500">*</sup>
                   ) : null}
                 </label>
-                <input
+                <select
                   name="category"
                   value={product.category}
-                  onChange={(e) =>
-                    setProduct({ ...product, category: e.target.value })
-                  }
-                  onBlur={() =>
-                    setTouched((prev) => ({ ...prev, category: true }))
-                  }
-                  placeholder="Category"
+                  onChange={e => setProduct({ ...product, category: e.target.value })}
+                  onBlur={() => setTouched(prev => ({ ...prev, category: true }))}
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!product.category && !initial && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                />
+                >
+                  <option value="">Select category</option>
+                  {categories.map(cat => (
+                    <option key={cat._id} value={cat._id}>{cat.name}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">
@@ -140,18 +146,18 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                     <sup className="text-red-500">*</sup>
                   ) : null}
                 </label>
-                <input
+                <select
                   name="supplier"
                   value={product.supplier}
-                  onChange={(e) =>
-                    setProduct({ ...product, supplier: e.target.value })
-                  }
-                  onBlur={() =>
-                    setTouched((prev) => ({ ...prev, supplier: true }))
-                  }
-                  placeholder="Supplier"
+                  onChange={e => setProduct({ ...product, supplier: e.target.value })}
+                  onBlur={() => setTouched(prev => ({ ...prev, supplier: true }))}
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!product.supplier && !initial && (touched.supplier || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                />
+                >
+                  <option value="">Select supplier</option>
+                  {suppliers.map(sup => (
+                    <option key={sup._id} value={sup._id}>{sup.company_name}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">

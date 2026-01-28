@@ -58,6 +58,7 @@ api.interceptors.response.use(
 
 const logout = "/auth/logout";
 const profile = "/auth/profile";
+const categories = "/categories";
 const suppliers = "/suppliers";
 const orderRequests = "/orderRequests";
 const products = "/products";
@@ -65,6 +66,12 @@ const permissions = "/permissions";
 const users = "/users";
 const inventorySummary = "/reporting/inventory-summary";
 const orderStats = "/reporting/order-stats";
+
+// Category CRUD
+export const getCategories = (params = {}) => api.get(categories, { params });
+export const createCategory = (data) => api.post(categories, data);
+export const updateCategory = (id, data) => api.patch(`${categories}/${id}`, data);
+export const deleteCategory = (id) => api.delete(`${categories}/${id}`);
 
 // Logout API
 export const logoutApi = () => api.post(logout);

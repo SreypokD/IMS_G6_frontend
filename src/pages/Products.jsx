@@ -47,7 +47,18 @@ const Products = () => {
   }
 
   function handleEdit(product) {
-    setEditProduct(product);
+    // Ensure category and supplier are _id strings for the modal
+    let categoryId = product.category;
+    let supplierId = product.supplier;
+    // If product.category is an object, get its _id
+    if (product.category && typeof product.category === 'object') {
+      categoryId = product.category._id || product.category.id || '';
+    }
+    // If product.supplier is an object, get its _id
+    if (product.supplier && typeof product.supplier === 'object') {
+      supplierId = product.supplier._id || product.supplier.id || '';
+    }
+    setEditProduct({ ...product, category: categoryId, supplier: supplierId });
     setModalOpen(true);
   }
 
@@ -105,6 +116,7 @@ const Products = () => {
   return (
     <div>
       <ProductModal
+        key={modalOpen ? (editProduct ? editProduct._id : 'new') : 'closed'}
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onSave={handleSave}

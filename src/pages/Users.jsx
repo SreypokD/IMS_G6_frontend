@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 import { getUsers, createUser, updateUser, deleteUser } from "../api";
-import UserModal from "../components/UserModel";
+import UserModal from "../components/UserModal";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
