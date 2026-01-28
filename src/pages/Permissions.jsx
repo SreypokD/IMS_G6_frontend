@@ -1,53 +1,58 @@
-import React, { useEffect, useState } from "react";
-import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
-import { getUsers, createUser, updateUser, deleteUser } from "../api";
-import UserModal from "../components/UserModel";
+import React, { useState, useEffect } from "react";
+import PermissionModal from "../components/PermissionModal";
+import { HiOutlinePencil, HiOutlineTrash, HiOutlinePlus } from "react-icons/hi";
+import {
+  getPermissions,
+  createPermission,
+  updatePermission,
+  deletePermission,
+} from "../api";
 
-const Users = () => {
-  const [users, setUsers] = useState([]);
+const Permissions = () => {
+  const [permissions, setPermissions] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const [editUser, setEditUser] = useState(null);
+  const [editPermission, setEditPermission] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchUsers();
+    fetchPermissions();
   }, []);
 
-  // Fetch users from API
-  async function fetchUsers() {
+  // Fetch permissions from API
+  async function fetchPermissions() {
     setLoading(true);
     try {
-      const res = await getUsers();
-      setUsers(res.data.data);
+      const res = await getPermissions();
+      setPermissions(res.data.data);
     } finally {
       setLoading(false);
     }
   }
 
-  // Save user (create or update)
-  async function handleSave(user) {
+  // Save permission (create or update)
+  async function handleSave(permission) {
     setLoading(true);
     try {
-      if (editUser) {
-        await updateUser(editUser._id, user);
+      if (editPermission) {
+        await updatePermission(editPermission._id, permission);
       } else {
-        await createUser(user);
+        await createPermission(permission);
       }
-      fetchUsers();
+      fetchPermissions();
       setModalOpen(false);
-      setEditUser(null);
+      setEditPermission(null);
     } finally {
       setLoading(false);
     }
   }
 
-  // Delete user
+  // Delete permission
   async function handleDelete(id) {
-    if (window.confirm("Delete this user?")) {
+    if (window.confirm("Delete this permission?")) {
       setLoading(true);
       try {
-        await deleteUser(id);
-        fetchUsers();
+        await deletePermission(id);
+        fetchPermissions();
       } finally {
         setLoading(false);
       }
@@ -56,29 +61,28 @@ const Users = () => {
 
   return (
     <div>
-      <UserModal
-        key={modalOpen ? (editUser ? editUser._id : "new") : "closed"}
+      <PermissionModal
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setEditUser(null);
+          setEditPermission(null);
         }}
         onSave={handleSave}
-        initial={editUser}
+        initial={editPermission}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
-          <h1 className="text-2xl font-semibold">Users</h1>
-          <span className="text-gray-500">Manage users</span>
+          <h1 className="text-2xl font-semibold">Permissions</h1>
+          <span className="text-gray-500">Manage permissions</span>
         </div>
         <button
           className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
           onClick={() => {
-            setEditUser(null);
+            setEditPermission(null);
             setModalOpen(true);
           }}
         >
-          <HiOutlinePlus className="text-md" /> Add User
+          <HiOutlinePlus className="text-md" /> Add Permission
         </button>
       </div>
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
@@ -96,30 +100,41 @@ const Users = () => {
           <table className="min-w-full text-sm align-middle">
             <thead>
               <tr className="bg-white text-gray-700">
-                <th className="py-3 px-4 font-semibold text-left">No.</th>
-                <th className="py-3 px-4 font-semibold text-left">Name</th>
-                <th className="py-3 px-4 font-semibold text-left">Email</th>
-                <th className="py-3 px-4 font-semibold text-left">Phone</th>
-                <th className="py-3 px-4 font-semibold text-left">Role</th>
-                <th className="py-3 px-4 font-semibold text-left">Actions</th>
+                <th className="py-3 px-4 font-semibold text-left whitespace-nowrap">
+                  No.
+                </th>
+                <th className="py-3 px-4 font-semibold text-left whitespace-nowrap">
+                  Name
+                </th>
+                <th className="py-3 px-4 font-semibold text-left whitespace-nowrap">
+                  Description
+                </th>
+                <th className="py-3 px-4 font-semibold text-left whitespace-nowrap">
+                  Action
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {users.map((u, index) => (
-                <tr key={u._id}>
-                  <td className="py-3 px-4">{index + 1}</td>
-                  <td className="py-3 px-4">
-                    {u.first_name} {u.last_name}
+              {permissions.map((perm, index) => (
+                <tr
+                  key={perm._id}
+                  className="hover:bg-blue-50 transition group"
+                >
+                  <td className="py-3 px-4 font-semibold text-gray-900 whitespace-nowrap">
+                    {index + 1}
                   </td>
-                  <td className="py-3 px-4">{u.email}</td>
-                  <td className="py-3 px-4">{u.phone}</td>
-                  <td className="py-3 px-4 capitalize">{u.role}</td>
+                  <td className="py-3 px-4 font-semibold text-gray-900 whitespace-nowrap">
+                    {perm.name}
+                  </td>
+                  <td className="py-3 px-4 text-gray-700 whitespace-nowrap">
+                    {perm.description}
+                  </td>
                   <td className="py-3 px-4 whitespace-nowrap flex items-left gap-3 ">
                     <button
                       className="text-[#1e3a5f] font-semibold cursor-pointer"
                       title="Edit"
                       onClick={() => {
-                        setEditUser(u);
+                        setEditPermission(perm);
                         setModalOpen(true);
                       }}
                     >
@@ -128,7 +143,7 @@ const Users = () => {
                     <button
                       className="text-red-600 font-semibold cursor-pointer"
                       title="Delete"
-                      onClick={() => handleDelete(u._id)}
+                      onClick={() => handleDelete(perm._id)}
                     >
                       <HiOutlineTrash className="text-xl" />
                     </button>
@@ -143,4 +158,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Permissions;

@@ -19,7 +19,7 @@ const OrderRequests = () => {
           className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
           onClick={() => navigate("/order-requests/new")}
         >
-          <HiOutlinePlus className="text-md" /> Create
+          <HiOutlinePlus className="text-md" /> Add Request
         </button>
       </div>
       <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">

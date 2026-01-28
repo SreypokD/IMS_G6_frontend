@@ -122,7 +122,7 @@ const Products = () => {
           disabled={loading}
           className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
         >
-          <HiOutlinePlus className="text-md" /> Create
+          <HiOutlinePlus className="text-md" /> Add Product
         </button>
       </div>
       {error && <div className="mb-4 text-red-600 font-semibold">{error}</div>}

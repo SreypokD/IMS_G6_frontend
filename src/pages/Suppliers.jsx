@@ -33,7 +33,7 @@ const Suppliers = () => {
           </span>
         </div>
         <button className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer">
-          <HiOutlinePlus className="text-md" /> Create
+          <HiOutlinePlus className="text-md" /> Add Supplier
         </button>
       </div>
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">

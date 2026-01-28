@@ -25,21 +25,6 @@ const navLinks = (permissions = []) =>
       label: "Dashboard",
       icon: <HiTemplate />,
     },
-    permissions.includes("view_order_request") && {
-      to: "/order-requests",
-      label: "Order Requests",
-      icon: <HiClipboardList />,
-    },
-    permissions.includes("view_order_request") && {
-      to: "/approve-requests",
-      label: "Approve Requests",
-      icon: <HiCheckCircle />,
-    },
-    permissions.includes("view_order_request") && {
-      to: "/confirm-delivery",
-      label: "Confirm Delivery",
-      icon: <HiTruck />,
-    },
     permissions.includes("view_product") && {
       to: "/products",
       label: "Products",
@@ -54,6 +39,21 @@ const navLinks = (permissions = []) =>
       to: "/suppliers",
       label: "Suppliers",
       icon: <HiUserGroup />,
+    },
+    permissions.includes("view_order_request") && {
+      to: "/order-requests",
+      label: "Order Requests",
+      icon: <HiClipboardList />,
+    },
+    permissions.includes("view_approve_request") && {
+      to: "/approve-requests",
+      label: "Approve Requests",
+      icon: <HiCheckCircle />,
+    },
+    permissions.includes("view_confirm_delivery") && {
+      to: "/confirm-delivery",
+      label: "Confirm Delivery",
+      icon: <HiTruck />,
     },
     permissions.includes("view_stock") && {
       to: "/stocks",
@@ -70,13 +70,13 @@ const navLinks = (permissions = []) =>
       icon: <HiOutlineCog />,
       submenus: [
         permissions.includes("view_permission") && {
-          to: "/settings/permissions",
+          to: "/permissions",
           label: "Permissions",
           icon: <HiKey />,
         },
         permissions.includes("view_user") && {
-          to: "/settings/users",
-          label: "User",
+          to: "/users",
+          label: "Users",
           icon: <HiUserGroup />,
         },
       ].filter(Boolean),
@@ -86,7 +86,7 @@ const navLinks = (permissions = []) =>
 const Sidebar = ({ mini }) => {
   const { user } = useAuth();
   const location = useLocation();
-  const links = navLinks(user?.permissions);
+  const links = navLinks(user?.permission?.permissions);
   const [expanded, setExpanded] = useState(null);
 
   return (
@@ -94,13 +94,13 @@ const Sidebar = ({ mini }) => {
       className={`bg-white h-screen flex flex-col border-r border-[#ececec] transition-all duration-300 ${mini ? "w-18" : "w-64"}`}
     >
       <div
-        className={`text-xl font-medium m-4 tracking-tight flex items-center justify-center gap-3 ${mini ? "flex-col" : ""}`}
+        className={`text-xl font-bold m-4 tracking-tight flex items-center justify-center gap-3 ${mini ? "flex-col" : ""}`}
       >
         <img src={logo} alt="Logo" className="object-contain h-10 w-10 mb-2" />
         {!mini && <span>IMS</span>}
       </div>
       <nav className="flex-1 min-h-0">
-        <ul className="space-y-2 overflow-y-auto h-full px-3">
+        <ul className="space-y-2 overflow-y-auto h-[calc(100vh-100px)] px-3">
           {links.map((link, i) => {
             const parentKey = link.label || link.to || i;
             if (link.submenus) {

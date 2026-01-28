@@ -16,7 +16,7 @@ import Breadcrumb from "../components/Breadcrumb.jsx";
 import OrderRequests from "../pages/OrderRequests.jsx";
 import ApproveRequests from "../pages/ApproveRequests.jsx";
 import ConfirmDelivery from "../pages/ConfirmDelivery.jsx";
-import Permissions from "../pages/settings/Permissions.jsx";
+import Permissions from "../pages/Permissions.jsx";
 import Users from "../pages/Users.jsx";
 
 // A wrapper for private routes that checks authentication
@@ -60,25 +60,16 @@ function App() {
                     <Routes>
                       {[
                         { path: "/", element: <Dashboard /> },
-                        { path: "/order-requests", element: <OrderRequests /> },
-                        {
-                          path: "/approve-requests",
-                          element: <ApproveRequests />,
-                        },
-                        {
-                          path: "/confirm-delivery",
-                          element: <ConfirmDelivery />,
-                        },
                         { path: "/products", element: <Products /> },
                         { path: "/categories", element: <Categories /> },
                         { path: "/suppliers", element: <Suppliers /> },
+                        { path: "/order-requests", element: <OrderRequests /> },
+                        { path: "/approve-requests", element: <ApproveRequests /> },
+                        { path: "/confirm-delivery", element: <ConfirmDelivery /> },
                         { path: "/stocks", element: <Stocks /> },
                         { path: "/reports", element: <Reports /> },
-                        {
-                          path: "/settings/permissions",
-                          element: <Permissions />,
-                        },
-                        { path: "/settings/users", element: <Users /> },
+                        { path: "/permissions", element: <Permissions /> },
+                        { path: "/users", element: <Users /> },
                       ].map((route) => (
                         <Route
                           key={route.path}
