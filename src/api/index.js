@@ -74,6 +74,9 @@ export const getProfile = () => api.get(profile);
 
 // Get Supplier
 export const getSuppliers = (params = {}) => api.get(suppliers, { params });
+export const createSupplier = (data) => api.post(suppliers, data);
+export const updateSupplier = (id, data) => api.patch(`${suppliers}/${id}`, data);
+export const deleteSupplier = (id) => api.delete(`${suppliers}/${id}`);
 
 // Create Order Request
 export const createOrderRequest = (data) => api.post(orderRequests, data);

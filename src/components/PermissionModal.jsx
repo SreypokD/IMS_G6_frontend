@@ -170,25 +170,18 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
             <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
               <table className="min-w-full text-center text-sm align-middle">
                 <thead>
-                  <tr className="bg-gray-100">
-                    <th className="px-4 py-2 text-left">Module</th>
-                    <th className="px-4 py-2">View</th>
-                    <th className="px-4 py-2">Create</th>
-                    <th className="px-4 py-2">Update</th>
-                    <th className="px-4 py-2">Delete</th>
+                  <tr className="bg-white">
+                    <th className="py-3 px-4 text-left">Module</th>
+                    <th className="py-3 px-4">View</th>
+                    <th className="py-3 px-4">Create</th>
+                    <th className="py-3 px-4">Update</th>
+                    <th className="py-3 px-4">Delete</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {permissionTable.map((row, idx) => (
-                    <tr
-                      key={row.label}
-                      className={
-                        idx !== permissionTable.length - 1
-                          ? "border-b border-gray-200"
-                          : ""
-                      }
-                    >
-                      <td className="px-4 py-2 font-semibold text-left">
+                  {permissionTable.map((row) => (
+                    <tr key={row.label} className="border-t border-gray-200">
+                      <td className="py-3 px-4 font-semibold text-left">
                         {row.label}
                       </td>
                       {["view", "create", "update", "delete"].map((action) => {
@@ -196,7 +189,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                           a.startsWith(action),
                         );
                         return (
-                          <td className="px-4 py-2 text-center" key={action}>
+                          <td className="py-3 px-4 text-center" key={action}>
                             {actionKey ? (
                               <input
                                 className="w-4.5 h-4.5 cursor-pointer"

@@ -129,16 +129,16 @@ const Products = () => {
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <input
-            className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-gray-700 min-w-0 w-full"
+            className="bg-gray-50 border border-gray-200 rounded-lg py-3 px-4 text-gray-700 min-w-0 w-full"
             placeholder="Search..."
           />
-          <select className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-gray-700 min-w-0 w-full">
+          <select className="bg-gray-50 border border-gray-200 rounded-lg py-3 px-4 text-gray-700 min-w-0 w-full">
             <option>Select category</option>
           </select>
-          <select className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-gray-700 min-w-0 w-full">
+          <select className="bg-gray-50 border border-gray-200 rounded-lg py-3 px-4 text-gray-700 min-w-0 w-full">
             <option>Select supplier</option>
           </select>
-          <select className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-gray-700 min-w-0 w-full">
+          <select className="bg-gray-50 border border-gray-200 rounded-lg py-3 px-4 text-gray-700 min-w-0 w-full">
             <option>All Stock Status</option>
           </select>
         </div>
@@ -147,81 +147,45 @@ const Products = () => {
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
         ) : (
-          <table className="min-w-full text-sm align-middle">
+          <table className="min-w-full text-left text-sm align-middle">
             <thead>
-              <tr className="bg-white text-gray-700">
-                <th className="py-3 px-4 font-semibold text-left w-8">
-                  <input
-                    type="checkbox"
-                    className="accent-blue-600 w-4 h-4"
-                    disabled
-                  />
-                </th>
-                <th className="py-3 px-4 font-semibold text-left whitespace-nowrap">
-                  No.
-                </th>
-                <th className="py-3 px-4 font-semibold text-left whitespace-nowrap">
-                  Product Name
-                </th>
-                <th className="py-3 px-4 font-semibold text-left whitespace-nowrap">
-                  Category
-                </th>
-                <th className="py-3 px-4 font-semibold text-left whitespace-nowrap">
-                  Supplier
-                </th>
-                <th className="py-3 px-4 font-semibold text-right whitespace-nowrap">
-                  Stock
-                </th>
-                <th className="py-3 px-4 font-semibold text-right whitespace-nowrap">
-                  Price
-                </th>
-                <th className="py-3 px-4 font-semibold text-left whitespace-nowrap">
-                  Expiry Date
-                </th>
-                <th className="py-3 px-4 font-semibold text-left whitespace-nowrap">
-                  Actions
-                </th>
+              <tr className="bg-white">
+                <th className="py-3 px-4">No.</th>
+                <th className="py-3 px-4">Product Name</th>
+                <th className="py-3 px-4">Category</th>
+                <th className="py-3 px-4">Supplier</th>
+                <th className="py-3 px-4 text-right">Stock</th>
+                <th className="py-3 px-4 text-right">Price</th>
+                <th className="py-3 px-4">Expiry Date</th>
+                <th className="py-3 px-4">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody>
               {products.map((p, index) => (
-                <tr key={p._id}>
-                  <td className="py-3 px-4 text-center">
-                    <input
-                      type="checkbox"
-                      className="accent-blue-600 w-4 h-4"
-                      disabled
-                    />
-                  </td>
-                  <td className="py-3 px-4 text-gray-800 whitespace-nowrap">
-                    {index + 1}
-                  </td>
-                  <td className="py-3 px-4 text-gray-900 whitespace-nowrap">
-                    {p.name}
-                  </td>
-                  <td className="py-3 px-4 text-blue-900 whitespace-nowrap">
+                <tr key={p._id} className="border-t border-gray-200">
+                  <td className="py-3 px-4">{index + 1}</td>
+                  <td className="py-3 px-4">{p.name}</td>
+                  <td className="py-3 px-4">
                     <span className="text-blue-500/80">
                       {p.category?.name || p.category}
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-blue-900 whitespace-nowrap">
+                  <td className="py-3 px-4">
                     <span className="text-blue-500/80">
                       {p.supplier?.name || p.supplier}
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-right whitespace-nowrap">
+                  <td className="py-3 px-4 text-right">
                     <span
                       className={`text-sm ${p.stock === 0 ? "text-red-600" : p.stock < 10 ? "text-orange-600" : "text-green-600"}`}
                     >
                       {p.stock} units
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-right font-bold text-gray-900 whitespace-nowrap">
+                  <td className="py-3 px-4 text-right">
                     ${Number(p.price).toFixed(2)}
                   </td>
-                  <td className="py-3 px-4 text-center text-blue-700/80 font-medium whitespace-nowrap">
-                    {p.expiry}
-                  </td>
+                  <td className="py-3 px-4 text-center">{p.expiry}</td>
                   <td className="py-3 px-4 whitespace-nowrap flex items-center gap-3 ">
                     <button
                       className="text-[#1e3a5f] font-semibold cursor-pointer"

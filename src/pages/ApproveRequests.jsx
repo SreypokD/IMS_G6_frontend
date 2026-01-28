@@ -11,62 +11,34 @@ const OrderRequestApproval = () => {
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
           <h1 className="text-2xl font-semibold">Order Request Approvals</h1>
-          <span className="text-gray-500">Review and manage order request approvals</span>
+          <span className="text-gray-500">
+            Review and manage order request approvals
+          </span>
         </div>
       </div>
       <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
-        <table className="min-w-full text-sm align-middle">
+        <table className="min-w-full text-left text-sm align-middle">
           <thead>
-            <tr className="bg-white text-gray-700">
-              <th className="py-3 px-4 font-semibold text-left w-8">
-                <input
-                  type="checkbox"
-                  className="accent-blue-600 w-4 h-4"
-                  disabled
-                />
-              </th>
-              <th className="py-3 px-4 font-semibold text-left whitespace-nowrap">
-                No.
-              </th>
-              <th className="py-3 px-4 font-semibold text-left whitespace-nowrap">
-                Requester
-              </th>
-              <th className="py-3 px-4 font-semibold text-left whitespace-nowrap">
-                Status
-              </th>
-              <th className="py-3 px-4 font-semibold text-left whitespace-nowrap">
-                Date
-              </th>
-              <th className="py-3 px-4 font-semibold text-left whitespace-nowrap">
-                Action
-              </th>
+            <tr className="bg-white">
+              <th className="py-3 px-4">No.</th>
+              <th className="py-3 px-4">Requester</th>
+              <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4">Date</th>
+              <th className="py-3 px-4">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody>
             {approvals.map((req, index) => (
-              <tr key={req._id}>
-                <td className="py-3 px-4 text-center">
-                  <input
-                    type="checkbox"
-                    className="accent-blue-600 w-4 h-4"
-                    disabled
-                  />
-                </td>
-                <td className="py-3 px-4 font-semibold text-gray-800 whitespace-nowrap">
-                  {index + 1}
-                </td>
-                <td className="py-3 px-4 text-gray-700 whitespace-nowrap">
-                  {req.requester}
-                </td>
-                <td className="py-3 px-4 whitespace-nowrap">
+              <tr key={req._id} className="border-t border-gray-200">
+                <td className="py-3 px-4">{index + 1}</td>
+                <td className="py-3 px-4">{req.requester}</td>
+                <td className="py-3 px-4">
                   <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">
                     {req.status}
                   </span>
                 </td>
-                <td className="py-3 px-4 text-gray-500 whitespace-nowrap">
-                  {req.date}
-                </td>
-                <td className="py-3 px-4 text-left whitespace-nowrap">
+                <td className="py-3 px-4">{req.date}</td>
+                <td className="py-3 px-4 text-left">
                   <button
                     className="text-green-600 hover:text-green-700 rounded-full cursor-pointer"
                     title="Approve"

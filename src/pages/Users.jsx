@@ -84,7 +84,7 @@ const Users = () => {
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <input
-            className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-gray-700 min-w-0 w-full"
+            className="bg-gray-50 border border-gray-200 rounded-lg py-3 px-4 text-gray-700 min-w-0 w-full"
             placeholder="Search..."
           />
         </div>
@@ -93,20 +93,20 @@ const Users = () => {
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
         ) : (
-          <table className="min-w-full text-sm align-middle">
+          <table className="min-w-full text-left text-sm align-middle">
             <thead>
-              <tr className="bg-white text-gray-700">
-                <th className="py-3 px-4 font-semibold text-left">No.</th>
-                <th className="py-3 px-4 font-semibold text-left">Name</th>
-                <th className="py-3 px-4 font-semibold text-left">Email</th>
-                <th className="py-3 px-4 font-semibold text-left">Phone</th>
-                <th className="py-3 px-4 font-semibold text-left">Role</th>
-                <th className="py-3 px-4 font-semibold text-left">Actions</th>
+              <tr className="bg-white">
+                <th className="py-3 px-4">No.</th>
+                <th className="py-3 px-4">Name</th>
+                <th className="py-3 px-4">Email</th>
+                <th className="py-3 px-4">Phone</th>
+                <th className="py-3 px-4">Role</th>
+                <th className="py-3 px-4">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody>
               {users.map((u, index) => (
-                <tr key={u._id}>
+                <tr key={u._id} className="border-t border-gray-200">
                   <td className="py-3 px-4">{index + 1}</td>
                   <td className="py-3 px-4">
                     {u.first_name} {u.last_name}
