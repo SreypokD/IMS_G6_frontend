@@ -102,13 +102,13 @@ const Suppliers = () => {
                 </td>
                 <td className="py-3 px-4 whitespace-nowrap flex items-center gap-3 ">
                   <button
-                    className="text-blue-600 hover:text-blue-800 font-semibold cursor-pointer"
+                    className="text-[#1e3a5f] font-semibold cursor-pointer"
                     title="Edit"
                   >
                     <HiOutlinePencil className="text-xl" />
                   </button>
                   <button
-                    className="text-red-600 hover:text-red-800 font-semibold cursor-pointer"
+                    className="text-red-600 font-semibold cursor-pointer"
                     title="Delete"
                   >
                     <HiOutlineTrash className="text-xl" />
