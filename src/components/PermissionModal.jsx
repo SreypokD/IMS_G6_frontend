@@ -6,15 +6,8 @@ const permissionTable = [
     label: "Dashboard",
     actions: ["view_dashboard"],
   },
-  {
-    label: "Products",
-    actions: [
-      "view_product",
-      "create_product",
-      "update_product",
-      "delete_product",
-    ],
-  },
+
+  // Master Data
   {
     label: "Categories",
     actions: [
@@ -22,6 +15,15 @@ const permissionTable = [
       "create_category",
       "update_category",
       "delete_category",
+    ],
+  },
+  {
+    label: "Products",
+    actions: [
+      "view_product",
+      "create_product",
+      "update_product",
+      "delete_product",
     ],
   },
   {
@@ -33,6 +35,14 @@ const permissionTable = [
       "delete_supplier",
     ],
   },
+
+  // Inventory
+  {
+    label: "Stocks",
+    actions: ["view_stock", "create_stock", "update_stock", "delete_stock"],
+  },
+
+  // Purchasing / Receiving
   {
     label: "Order Requests",
     actions: [
@@ -51,13 +61,36 @@ const permissionTable = [
     label: "Confirm Delivery",
     actions: ["view_confirm_delivery", "update_confirm_delivery"],
   },
+
+  // Sales
   {
-    label: "Stocks",
-    actions: ["view_stock", "create_stock", "update_stock", "delete_stock"],
+    label: "Sales",
+    actions: [
+      "view_sale",
+      "create_sale",
+      "update_sale",
+      "delete_sale",
+    ],
   },
+  {
+    label: "Order History",
+    actions: ["view_order_history"],
+  },
+
+  // Reports & Logs
   {
     label: "Reports",
     actions: ["view_report"],
+  },
+  {
+    label: "Activity Log",
+    actions: ["view_activity_log"],
+  },
+
+  // System Management
+  {
+    label: "Users",
+    actions: ["view_user", "create_user", "update_user", "delete_user"],
   },
   {
     label: "Permissions",
@@ -67,10 +100,6 @@ const permissionTable = [
       "update_permission",
       "delete_permission",
     ],
-  },
-  {
-    label: "Users",
-    actions: ["view_user", "create_user", "update_user", "delete_user"],
   },
 ];
 
@@ -116,7 +145,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] min-h-[60vh] max-h-[80vh] shadow-xl relative">
+      <div className="bg-white rounded-2xl p-5 w-full max-w-[50%] max-h-[80vh] shadow-xl relative">
         <h2 className="text-2xl font-bold mb-6 text-center">
           {initial ? "Edit Permission" : "Add Permission"}
         </h2>
@@ -172,6 +201,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                 <thead>
                   <tr className="bg-white">
                     <th className="py-3 px-4 text-left">Module</th>
+                    <th className="py-3 px-4">Check All</th>
                     <th className="py-3 px-4">View</th>
                     <th className="py-3 px-4">Create</th>
                     <th className="py-3 px-4">Update</th>
@@ -184,6 +214,26 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                       <td className="py-3 px-4 font-semibold text-left">
                         {row.label}
                       </td>
+                      <td className="py-3 px-4 font-semibold text-center">
+                        <input
+                          className="w-5 h-5 cursor-pointer accent-[#1e3a5f]"
+                          type="checkbox"
+                          checked={row.actions.every((a) =>
+                            permission.permissions?.includes(a),
+                          )}
+                          onChange={(e) => {
+                            setEditPermission((f) => {
+                              const perms = new Set(f.permissions || []);
+                              if (e.target.checked) {
+                                row.actions.forEach((a) => perms.add(a));
+                              } else {
+                                row.actions.forEach((a) => perms.delete(a));
+                              }
+                              return { ...f, permissions: Array.from(perms) };
+                            });
+                          }}
+                        />
+                      </td>
                       {["view", "create", "update", "delete"].map((action) => {
                         const actionKey = row.actions.find((a) =>
                           a.startsWith(action),
@@ -192,7 +242,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                           <td className="py-3 px-4 text-center" key={action}>
                             {actionKey ? (
                               <input
-                                className="w-4.5 h-4.5 cursor-pointer"
+                                className="w-5 h-5 cursor-pointer accent-[#1e3a5f]"
                                 type="checkbox"
                                 value={actionKey}
                                 checked={

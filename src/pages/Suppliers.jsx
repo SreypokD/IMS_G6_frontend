@@ -1,19 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineBuildingOffice2, HiOutlineCube, HiOutlineEye } from "react-icons/hi2";
+import {
+  HiOutlinePlus,
+  HiOutlinePencil,
+  HiOutlineTrash,
+  HiOutlineBuildingOffice2,
+  HiOutlineCube,
+  HiOutlineEye,
+} from "react-icons/hi2";
 import {
   getSuppliers,
   createSupplier,
   updateSupplier,
   deleteSupplier,
 } from "../api";
-
 import SupplierModal from "../components/SupplierModal";
+import { useAuth } from "../context/useAuth";
 
 const Suppliers = () => {
   const [suppliers, setSuppliers] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [editSupplier, setEditSupplier] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchSuppliers();
@@ -78,15 +86,17 @@ const Suppliers = () => {
             Manage vendor relationships and product associations
           </span>
         </div>
-        <button
-          className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
-          onClick={() => {
-            setEditSupplier(null);
-            setModalOpen(true);
-          }}
-        >
-          <HiOutlinePlus className="text-md" /> Add Supplier
-        </button>
+        {user?.permission?.permissions?.includes("create_supplier") && (
+          <button
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+            onClick={() => {
+              setEditSupplier(null);
+              setModalOpen(true);
+            }}
+          >
+            <HiOutlinePlus className="text-md" /> Add Supplier
+          </button>
+        )}
       </div>
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -109,65 +119,70 @@ const Suppliers = () => {
           <table className="min-w-full text-left text-sm align-middle">
             <thead>
               <tr className="bg-white">
+                <th className="py-3 px-4">No.</th>
                 <th className="py-3 px-4">Company Name</th>
                 <th className="py-3 px-4">Contact Person</th>
                 <th className="py-3 px-4">Email</th>
                 <th className="py-3 px-4">Phone</th>
                 <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4">Products</th>
-                <th className="py-3 px-4">Actions</th>
+                {user?.permission?.permissions?.includes("update_supplier") ||
+                user?.permission?.permissions?.includes("delete_supplier") ? (
+                  <th className="py-3 px-4">Actions</th>
+                ) : null}
               </tr>
             </thead>
             <tbody>
-              {suppliers.map((s) => (
-                <tr key={s._id} className="border-t border-gray-200 group hover:bg-gray-50">
-                  {/* Company Name with icon and location */}
+              {suppliers.map((s, index) => (
+                <tr key={s._id} className="border-t border-gray-200">
+                  <td className="py-3 px-4">{index + 1}</td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">
                       <HiOutlineBuildingOffice2 className="text-lg text-blue-700" />
-                      <div>
-                        <div className="font-semibold text-base text-[#1e3a5f]">{s.company_name}</div>
-                        <div className="text-xs text-gray-500">
-                          {(() => {
-                            if (!s.address || typeof s.address !== 'object') return '';
-                            const { city = '', state = '', province = '' } = s.address;
-                            let loc = city;
-                            if (state) loc += (loc ? ', ' : '') + state;
-                            else if (province) loc += (loc ? ', ' : '') + province;
-                            return loc;
-                          })()}
-                        </div>
+                      <div className="font-semibold text-base text-[#1e3a5f]">
+                        {s.company_name}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        ({s.location})
                       </div>
                     </div>
                   </td>
-                  {/* Contact Person with position */}
-                  <td className="py-3 px-4">
-                    <div className="font-medium text-gray-900">{s.contact_person}</div>
-                    <div className="text-xs text-gray-500">{s.contact_position}</div>
+                  <td className="py-3 px-4 flex items-center gap-2">
+                    <div className="font-medium text-gray-900">
+                      {s.contact_person}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      ({s.contact_position})
+                    </div>
                   </td>
-                  {/* Email */}
                   <td className="py-3 px-4">{s.contact_email}</td>
-                  {/* Phone */}
                   <td className="py-3 px-4">{s.contact_phone}</td>
-                  {/* Status with color */}
                   <td className="py-3 px-4">
-                    <span className={
-                      s.status === 'Active'
-                        ? 'text-green-600 font-semibold flex items-center gap-1'
-                        : 'text-gray-400 font-semibold flex items-center gap-1'
-                    }>
-                      <span className="inline-block w-2 h-2 rounded-full mr-1" style={{ background: s.status === 'Active' ? '#22c55e' : '#d1d5db' }}></span>
+                    <span
+                      className={
+                        s.status === "Active"
+                          ? "text-green-600 font-semibold flex items-center gap-1"
+                          : "text-gray-400 font-semibold flex items-center gap-1"
+                      }
+                    >
+                      <span
+                        className="inline-block w-2 h-2 rounded-full mr-1"
+                        style={{
+                          background:
+                            s.status === "Active" ? "#22c55e" : "#d1d5db",
+                        }}
+                      ></span>
                       {s.status}
                     </span>
                   </td>
-                  {/* Products count with icon (placeholder 0 if not available) */}
                   <td className="py-3 px-4">
                     <span className="flex items-center gap-1">
                       <HiOutlineCube className="text-base text-gray-500" />
-                      {typeof s.products_count === 'number' ? s.products_count : 0}
+                      {typeof s.products_count === "number"
+                        ? s.products_count
+                        : 0}
                     </span>
                   </td>
-                  {/* Actions */}
                   <td className="py-3 px-4 whitespace-nowrap flex items-center gap-3 ">
                     <button
                       className="text-gray-500 hover:text-blue-700"
@@ -175,23 +190,31 @@ const Suppliers = () => {
                     >
                       <HiOutlineEye className="text-xl" />
                     </button>
-                    <button
-                      className="text-[#1e3a5f] font-semibold cursor-pointer hover:text-blue-700"
-                      title="Edit"
-                      onClick={() => {
-                        setEditSupplier(s);
-                        setModalOpen(true);
-                      }}
-                    >
-                      <HiOutlinePencil className="text-xl" />
-                    </button>
-                    <button
-                      className="text-red-600 font-semibold cursor-pointer hover:text-red-800"
-                      title="Delete"
-                      onClick={() => handleDelete(s._id)}
-                    >
-                      <HiOutlineTrash className="text-xl" />
-                    </button>
+                    {user?.permission?.permissions?.includes(
+                      "update_supplier",
+                    ) && (
+                      <button
+                        className="text-[#1e3a5f] font-semibold cursor-pointer hover:text-blue-700"
+                        title="Edit"
+                        onClick={() => {
+                          setEditSupplier(s);
+                          setModalOpen(true);
+                        }}
+                      >
+                        <HiOutlinePencil className="text-xl" />
+                      </button>
+                    )}
+                    {user?.permission?.permissions?.includes(
+                      "delete_supplier",
+                    ) && (
+                      <button
+                        className="text-red-600 font-semibold cursor-pointer hover:text-red-800"
+                        title="Delete"
+                        onClick={() => handleDelete(s._id)}
+                      >
+                        <HiOutlineTrash className="text-xl" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

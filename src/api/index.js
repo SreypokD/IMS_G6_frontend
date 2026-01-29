@@ -58,20 +58,18 @@ api.interceptors.response.use(
 
 const logout = "/auth/logout";
 const profile = "/auth/profile";
+const products = "/products";
 const categories = "/categories";
 const suppliers = "/suppliers";
-const orderRequests = "/orderRequests";
-const products = "/products";
+const orderRequests = "/order-requests";
+const approveRequests = "/approve-requests";
+const confirmDeliveries = "/confirm-deliveries";
+const inventorySummary = "/report/inventory-summary";
+const orderStats = "/report/order-stats";
+const sales = "/sales";
+const activityLogs = "/report/activity-logs";
 const permissions = "/permissions";
 const users = "/users";
-const inventorySummary = "/reporting/inventory-summary";
-const orderStats = "/reporting/order-stats";
-
-// Category CRUD
-export const getCategories = (params = {}) => api.get(categories, { params });
-export const createCategory = (data) => api.post(categories, data);
-export const updateCategory = (id, data) => api.patch(`${categories}/${id}`, data);
-export const deleteCategory = (id) => api.delete(`${categories}/${id}`);
 
 // Logout API
 export const logoutApi = () => api.post(logout);
@@ -79,20 +77,49 @@ export const logoutApi = () => api.post(logout);
 // Get current user profile
 export const getProfile = () => api.get(profile);
 
-// Get Supplier
-export const getSuppliers = (params = {}) => api.get(suppliers, { params });
-export const createSupplier = (data) => api.post(suppliers, data);
-export const updateSupplier = (id, data) => api.patch(`${suppliers}/${id}`, data);
-export const deleteSupplier = (id) => api.delete(`${suppliers}/${id}`);
-
-// Create Order Request
-export const createOrderRequest = (data) => api.post(orderRequests, data);
+// Dashboard Report
+export const getInventorySummary = () => api.get(inventorySummary);
+export const getOrderStats = (params) => api.get(orderStats, { params });
 
 // Product CRUD
 export const getProducts = (params = {}) => api.get(products, { params });
 export const createProduct = (data) => api.post(products, data);
 export const updateProduct = (id, data) => api.patch(`${products}/${id}`, data);
 export const deleteProduct = (id) => api.delete(`${products}/${id}`);
+
+// Category CRUD
+export const getCategories = (params = {}) => api.get(categories, { params });
+export const createCategory = (data) => api.post(categories, data);
+export const updateCategory = (id, data) => api.patch(`${categories}/${id}`, data);
+export const deleteCategory = (id) => api.delete(`${categories}/${id}`);
+
+// Get Supplier
+export const getSuppliers = (params = {}) => api.get(suppliers, { params });
+export const createSupplier = (data) => api.post(suppliers, data);
+export const updateSupplier = (id, data) =>
+  api.patch(`${suppliers}/${id}`, data);
+export const deleteSupplier = (id) => api.delete(`${suppliers}/${id}`);
+
+// Order request CRUD for current user
+export const getOrderRequests = (params) => api.get(orderRequests, { params });
+export const createOrderRequest = (data) => api.post(orderRequests, data);
+export const updateOrderRequest = (id, data) => api.patch(`${orderRequests}/${id}`, data);
+export const deleteOrderRequest = (id) => api.delete(`${orderRequests}/${id}`);
+export const cancelOrderRequest = (orderId) => api.patch(`${orderRequests}/${orderId}/status`, { status: "cancelled" });
+
+// Approve order requests
+export const getApproveRequests = (params) => api.get(approveRequests, { params });
+export const updateApproveRequests = (id, data) => api.patch(`${approveRequests}/${id}`, data);
+
+// Confirm delivery
+export const getConfirmDeliveries = (params) => api.get(confirmDeliveries, { params });
+export const updateConfirmDelivery = (id, data) => api.patch(`${confirmDeliveries}/${id}`, data);
+
+// Sales
+export const getSales = (params = {}) => api.get(sales, { params });
+
+// Activity Logs
+export const getActivityLogs = (params = {}) => api.get(activityLogs, { params });
 
 // Permission CRUD
 export const getPermissions = (params = {}) => api.get(permissions, { params });
@@ -105,9 +132,5 @@ export const getUsers = (params = {}) => api.get(users, { params });
 export const createUser = (data) => api.post(users, data);
 export const updateUser = (id, data) => api.patch(`${users}/${id}`, data);
 export const deleteUser = (id) => api.delete(`${users}/${id}`);
-
-// Dashboard Reporting
-export const getInventorySummary = () => api.get(inventorySummary);
-export const getOrderStats = (params) => api.get(orderStats, { params });
 
 export default api;

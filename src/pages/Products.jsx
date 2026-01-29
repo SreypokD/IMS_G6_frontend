@@ -7,6 +7,7 @@ import {
   updateProduct,
   deleteProduct,
 } from "../api";
+import { useAuth } from "../context/useAuth";
 
 const initialProducts = [];
 
@@ -22,6 +23,7 @@ const Products = () => {
   const [editProduct, setEditProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchProducts(1, 10);
@@ -49,16 +51,16 @@ const Products = () => {
   function handleEdit(product) {
     // Ensure category and supplier are _id strings for the modal
     let categoryId = product.category;
-    let supplierId = product.supplier;
+    let supplier_id = product.supplier;
     // If product.category is an object, get its _id
-    if (product.category && typeof product.category === 'object') {
-      categoryId = product.category._id || product.category.id || '';
+    if (product.category && typeof product.category === "object") {
+      categoryId = product.category._id || product.category.id || "";
     }
     // If product.supplier is an object, get its _id
-    if (product.supplier && typeof product.supplier === 'object') {
-      supplierId = product.supplier._id || product.supplier.id || '';
+    if (product.supplier && typeof product.supplier === "object") {
+      supplier_id = product.supplier._id || product.supplier.id || "";
     }
-    setEditProduct({ ...product, category: categoryId, supplier: supplierId });
+    setEditProduct({ ...product, category: categoryId, supplier: supplier_id });
     setModalOpen(true);
   }
 
@@ -116,7 +118,7 @@ const Products = () => {
   return (
     <div>
       <ProductModal
-        key={modalOpen ? (editProduct ? editProduct._id : 'new') : 'closed'}
+        key={modalOpen ? (editProduct ? editProduct._id : "new") : "closed"}
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onSave={handleSave}
@@ -129,13 +131,15 @@ const Products = () => {
             Manage your product catalog and inventory
           </span>
         </div>
-        <button
-          onClick={handleAdd}
-          disabled={loading}
-          className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
-        >
-          <HiOutlinePlus className="text-md" /> Add Product
-        </button>
+        {user?.permission?.permissions?.includes("create_product") && (
+          <button
+            onClick={handleAdd}
+            disabled={loading}
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+          >
+            <HiOutlinePlus className="text-md" /> Add Product
+          </button>
+        )}
       </div>
       {error && <div className="mb-4 text-red-600 font-semibold">{error}</div>}
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
@@ -169,7 +173,10 @@ const Products = () => {
                 <th className="py-3 px-4 text-right">Stock</th>
                 <th className="py-3 px-4 text-right">Price</th>
                 <th className="py-3 px-4">Expiry Date</th>
-                <th className="py-3 px-4">Actions</th>
+                {user?.permission?.permissions?.includes("update_product") ||
+                user?.permission?.permissions?.includes("delete_product") ? (
+                  <th className="py-3 px-4">Actions</th>
+                ) : null}
               </tr>
             </thead>
             <tbody>
@@ -199,20 +206,24 @@ const Products = () => {
                   </td>
                   <td className="py-3 px-4 text-center">{p.expiry}</td>
                   <td className="py-3 px-4 whitespace-nowrap flex items-center gap-3 ">
-                    <button
-                      className="text-[#1e3a5f] font-semibold cursor-pointer"
-                      title="Edit"
-                      onClick={() => handleEdit(p)}
-                    >
-                      <HiOutlinePencil className="text-xl" />
-                    </button>
-                    <button
-                      className="text-red-600 font-semibold cursor-pointer"
-                      title="Delete"
-                      onClick={() => handleDelete(p._id)}
-                    >
-                      <HiOutlineTrash className="text-xl" />
-                    </button>
+                    {user?.permission?.permissions?.includes("update_product") && (
+                      <button
+                        className="text-[#1e3a5f] font-semibold cursor-pointer"
+                        title="Edit"
+                        onClick={() => handleEdit(p)}
+                      >
+                        <HiOutlinePencil className="text-xl" />
+                      </button>
+                    )}
+                    {user?.permission?.permissions?.includes("delete_product") && (
+                      <button
+                        className="text-red-600 font-semibold cursor-pointer"
+                        title="Delete"
+                        onClick={() => handleDelete(p._id)}
+                      >
+                        <HiOutlineTrash className="text-xl" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

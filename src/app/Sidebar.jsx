@@ -15,31 +15,38 @@ import {
   HiOutlineCog,
   HiChevronRight,
   HiKey,
+  HiShoppingCart,
+  HiClock,
 } from "react-icons/hi";
 import logo from "../assets/images/logo.png";
 
 const navLinks = (permissions = []) =>
   [
+    // Dashboard
     permissions.includes("view_dashboard") && {
       to: "/",
       label: "Dashboard",
       icon: <HiTemplate />,
+    },
+
+    // Master Data
+    permissions.includes("view_category") && {
+      to: "/categories",
+      label: "Categories",
+      icon: <HiOutlineCollection />,
     },
     permissions.includes("view_product") && {
       to: "/products",
       label: "Products",
       icon: <HiCube />,
     },
-    permissions.includes("view_category") && {
-      to: "/categories",
-      label: "Categories",
-      icon: <HiOutlineCollection />,
-    },
     permissions.includes("view_supplier") && {
       to: "/suppliers",
       label: "Suppliers",
       icon: <HiUserGroup />,
     },
+
+    // Purchasing / Procurement
     permissions.includes("view_order_request") && {
       to: "/order-requests",
       label: "Order Requests",
@@ -55,29 +62,47 @@ const navLinks = (permissions = []) =>
       label: "Confirm Delivery",
       icon: <HiTruck />,
     },
+
+    // Inventory
     permissions.includes("view_stock") && {
       to: "/stocks",
       label: "Stocks",
       icon: <HiArchive />,
     },
+
+    // Sales
+    permissions.includes("view_sale") && {
+      to: "/sales",
+      label: "Sales",
+      icon: <HiShoppingCart />,
+    },
+
+    // Reports & Logs
     permissions.includes("view_report") && {
       to: "/reports",
       label: "Reports",
       icon: <HiChartBar />,
     },
+    permissions.includes("view_activity_log") && {
+      to: "/activity-log",
+      label: "Activity Log",
+      icon: <HiClock />,
+    },
+
+    // Settings / Security
     permissions.includes("view_permission") && {
       label: "Settings",
       icon: <HiOutlineCog />,
       submenus: [
-        permissions.includes("view_permission") && {
-          to: "/permissions",
-          label: "Permissions",
-          icon: <HiKey />,
-        },
         permissions.includes("view_user") && {
           to: "/users",
           label: "Users",
           icon: <HiUserGroup />,
+        },
+        permissions.includes("view_permission") && {
+          to: "/permissions",
+          label: "Permissions",
+          icon: <HiKey />,
         },
       ].filter(Boolean),
     },

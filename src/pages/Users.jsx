@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 import { getUsers, createUser, updateUser, deleteUser } from "../api";
 import UserModal from "../components/UserModal";
+import { useAuth } from "../context/useAuth";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [editUser, setEditUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchUsers();
@@ -71,15 +73,17 @@ const Users = () => {
           <h1 className="text-2xl font-semibold">Users</h1>
           <span className="text-gray-500">Manage users</span>
         </div>
-        <button
-          className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
-          onClick={() => {
-            setEditUser(null);
-            setModalOpen(true);
-          }}
-        >
-          <HiOutlinePlus className="text-md" /> Add User
-        </button>
+        {user?.permission?.permissions?.includes("create_user") && (
+          <button
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+            onClick={() => {
+              setEditUser(null);
+              setModalOpen(true);
+            }}
+          >
+            <HiOutlinePlus className="text-md" /> Add User
+          </button>
+        )}
       </div>
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -101,7 +105,10 @@ const Users = () => {
                 <th className="py-3 px-4">Email</th>
                 <th className="py-3 px-4">Phone</th>
                 <th className="py-3 px-4">Role</th>
-                <th className="py-3 px-4">Actions</th>
+                {user?.permission?.permissions?.includes("update_user") ||
+                user?.permission?.permissions?.includes("delete_user") ? (
+                  <th className="py-3 px-4">Actions</th>
+                ) : null}
               </tr>
             </thead>
             <tbody>
@@ -115,23 +122,27 @@ const Users = () => {
                   <td className="py-3 px-4">{u.phone}</td>
                   <td className="py-3 px-4 capitalize">{u.role}</td>
                   <td className="py-3 px-4 whitespace-nowrap flex items-left gap-3 ">
-                    <button
-                      className="text-[#1e3a5f] font-semibold cursor-pointer"
-                      title="Edit"
-                      onClick={() => {
-                        setEditUser(u);
-                        setModalOpen(true);
-                      }}
-                    >
-                      <HiOutlinePencil className="text-xl" />
-                    </button>
-                    <button
-                      className="text-red-600 font-semibold cursor-pointer"
-                      title="Delete"
-                      onClick={() => handleDelete(u._id)}
-                    >
-                      <HiOutlineTrash className="text-xl" />
-                    </button>
+                    {user?.permission?.permissions?.includes("update_user") && (
+                      <button
+                        className="text-[#1e3a5f] font-semibold cursor-pointer"
+                        title="Edit"
+                        onClick={() => {
+                          setEditUser(u);
+                          setModalOpen(true);
+                        }}
+                      >
+                        <HiOutlinePencil className="text-xl" />
+                      </button>
+                    )}
+                    {user?.permission?.permissions?.includes("delete_user") && (
+                      <button
+                        className="text-red-600 font-semibold cursor-pointer"
+                        title="Delete"
+                        onClick={() => handleDelete(u._id)}
+                      >
+                        <HiOutlineTrash className="text-xl" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

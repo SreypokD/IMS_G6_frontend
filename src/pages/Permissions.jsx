@@ -7,12 +7,14 @@ import {
   updatePermission,
   deletePermission,
 } from "../api";
+import { useAuth } from "../context/useAuth";
 
 const Permissions = () => {
   const [permissions, setPermissions] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [editPermission, setEditPermission] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchPermissions();
@@ -75,15 +77,17 @@ const Permissions = () => {
           <h1 className="text-2xl font-semibold">Permissions</h1>
           <span className="text-gray-500">Manage permissions</span>
         </div>
-        <button
-          className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
-          onClick={() => {
-            setEditPermission(null);
-            setModalOpen(true);
-          }}
-        >
-          <HiOutlinePlus className="text-md" /> Add Permission
-        </button>
+        {user?.permission?.permissions?.includes("create_permission") && (
+          <button
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+            onClick={() => {
+              setEditPermission(null);
+              setModalOpen(true);
+            }}
+          >
+            <HiOutlinePlus className="text-md" /> Add Permission
+          </button>
+        )}
       </div>
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -103,7 +107,10 @@ const Permissions = () => {
                 <th className="py-3 px-4">No.</th>
                 <th className="py-3 px-4">Name</th>
                 <th className="py-3 px-4">Description</th>
-                <th className="py-3 px-4">Action</th>
+                {user?.permission?.permissions?.includes("update_permission") ||
+                user?.permission?.permissions?.includes("delete_permission") ? (
+                  <th className="py-3 px-4">Actions</th>
+                ) : null}
               </tr>
             </thead>
             <tbody>
@@ -114,24 +121,32 @@ const Permissions = () => {
                   <td className="py-3 px-4 whitespace-nowrap">
                     {perm.description}
                   </td>
-                  <td className="py-3 px-4 whitespace-nowrap flex items-left gap-3 ">
-                    <button
-                      className="text-[#1e3a5f] font-semibold cursor-pointer"
-                      title="Edit"
-                      onClick={() => {
-                        setEditPermission(perm);
-                        setModalOpen(true);
-                      }}
-                    >
-                      <HiOutlinePencil className="text-xl" />
-                    </button>
-                    <button
-                      className="text-red-600 font-semibold cursor-pointer"
-                      title="Delete"
-                      onClick={() => handleDelete(perm._id)}
-                    >
-                      <HiOutlineTrash className="text-xl" />
-                    </button>
+                  <td className="py-3 px-4 whitespace-nowrap flex items-left gap-3">
+                    {user?.permission?.permissions?.includes(
+                      "update_permission",
+                    ) && (
+                      <button
+                        className="text-[#1e3a5f] font-semibold cursor-pointer"
+                        title="Edit"
+                        onClick={() => {
+                          setEditPermission(perm);
+                          setModalOpen(true);
+                        }}
+                      >
+                        <HiOutlinePencil className="text-xl" />
+                      </button>
+                    )}
+                    {user?.permission?.permissions?.includes(
+                      "delete_permission",
+                    ) && (
+                      <button
+                        className="text-red-600 font-semibold cursor-pointer"
+                        title="Delete"
+                        onClick={() => handleDelete(perm._id)}
+                      >
+                        <HiOutlineTrash className="text-xl" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

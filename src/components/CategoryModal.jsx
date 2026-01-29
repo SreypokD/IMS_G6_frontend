@@ -1,11 +1,9 @@
 import React, { useState } from "react";
-import { HiXCircle } from "react-icons/hi";
-
+import { HiXCircle, HiOutlineDocumentText } from "react-icons/hi";
 const initialCategory = {
   name: "",
   description: "",
 };
-
 
 const CategoryModal = ({ open, onClose, onSave, initial }) => {
   const [category, setCategory] = useState(initial || initialCategory);
@@ -41,63 +39,65 @@ const CategoryModal = ({ open, onClose, onSave, initial }) => {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl p-5 w-full max-w-md min-h-[30vh] shadow-xl relative">
-        <button
-          className="absolute top-3 right-3 text-gray-400 hover:text-red-500"
-          onClick={handleClose}
-        >
-          <HiXCircle className="text-2xl" />
-        </button>
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          {initial ? "Edit Category" : "Add Category"}
-        </h2>
-        <form className="space-y-5" onSubmit={handleSubmit}>
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Name <sup className="text-red-500">*</sup>
-            </label>
-            <input
-              name="name"
-              value={category.name}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              placeholder="Category name"
-              className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!category.name && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-              required
-            />
-            {!category.name && (touched.name || validateOnSave) && (
-              <div className="text-red-500 text-xs mt-1">Name is required</div>
-            )}
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Description</label>
-            <textarea
-              name="description"
-              value={category.description}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              placeholder="Description (optional)"
-              className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
-              rows={3}
-            />
-          </div>
+    <div>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
+        <div className="bg-white rounded-2xl p-5 w-full max-w-[30%] max-h-[80vh] shadow-xl relative">
+          <h2 className="text-2xl font-bold mb-6 text-center">
+            {initial ? "Edit Category" : "Add Category"}
+          </h2>
+          <form className="space-y-5 overflow-auto max-h-[60vh] px-1">
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Name <sup className="text-red-500">*</sup>
+              </label>
+              <input
+                name="name"
+                value={category.name}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="Category name"
+                className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!category.name && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                required
+              />
+              {!category.name && (touched.name || validateOnSave) && (
+                <div className="text-red-500 text-xs mt-1">
+                  Name is required
+                </div>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Description
+              </label>
+              <textarea
+                name="description"
+                value={category.description}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="Description (optional)"
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
+                rows={3}
+              />
+            </div>
+          </form>
           <div className="flex justify-end gap-2 mt-6">
             <button
               type="button"
-              className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200"
+              className="px-5 py-2 bg-[#f8f8f8] hover:bg-[#e5e7eb] text-gray-black rounded-xl cursor-pointer  flex items-center gap-2"
               onClick={onClose}
             >
-              Cancel
+              <HiXCircle className="inline-block" /> Cancel
             </button>
             <button
-              type="submit"
-              className="px-4 py-2 rounded-lg bg-[#1e3a5f] text-white hover:bg-[#16375b]"
+              type="button"
+              className="px-5 py-2 bg-[#1e3a5f] hover:bg-[#16375b] text-white rounded-xl cursor-pointer flex items-center gap-2"
+              onClick={handleSubmit}
             >
-              {initial ? "Update" : "Create"}
+              <HiOutlineDocumentText className="inline-block" />{" "}
+              {initial ? "Update Category" : "Create Category"}
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

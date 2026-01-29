@@ -17,10 +17,15 @@ export const AuthProvider = ({ children }) => {
         setUser(res.data.data);
         localStorage.setItem("_u", JSON.stringify(res.data.data));
       }
-    } catch {
-      // If unauthorized, clear user
-      setUser(null);
-      localStorage.removeItem("_u");
+    } catch (err) {
+      // Only logout if error is 401 Unauthorized
+      if (err?.response?.status === 401) {
+        setUser(null);
+        localStorage.removeItem("_u");
+      } else {
+        // Optionally, you can log the error or show a notification
+        console.error("Profile fetch error", err);
+      }
     }
   };
 

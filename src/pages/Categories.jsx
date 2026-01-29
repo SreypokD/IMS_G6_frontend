@@ -7,12 +7,14 @@ import {
   updateCategory,
   deleteCategory,
 } from "../api";
+import { useAuth } from "../context/useAuth";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [editCategory, setEditCategory] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchCategories();
@@ -75,22 +77,23 @@ const Categories = () => {
             Organize and manage product categories
           </span>
         </div>
-        <button
-          className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
-          onClick={() => {
-            setEditCategory(null);
-            setModalOpen(true);
-          }}
-        >
-          <HiOutlinePlus className="text-md" /> Add Category
-        </button>
+        {user?.permission?.permissions?.includes("create_category") && (
+          <button
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+            onClick={() => {
+              setEditCategory(null);
+              setModalOpen(true);
+            }}
+          >
+            <HiOutlinePlus className="text-md" /> Add Category
+          </button>
+        )}
       </div>
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <input
             className="bg-gray-50 border border-gray-200 rounded-lg py-3 px-4 text-gray-700 min-w-0 w-full"
             placeholder="Search..."
-            // TODO: implement search
           />
           <select className="bg-gray-50 border border-gray-200 rounded-lg py-3 px-4 text-gray-700 min-w-0 w-full">
             <option>All Status</option>
@@ -110,7 +113,10 @@ const Categories = () => {
                 <th className="py-3 px-4">No.</th>
                 <th className="py-3 px-4">Name</th>
                 <th className="py-3 px-4">Description</th>
-                <th className="py-3 px-4">Actions</th>
+                {user?.permission?.permissions?.includes("update_category") ||
+                user?.permission?.permissions?.includes("delete_category") ? (
+                  <th className="py-3 px-4">Actions</th>
+                ) : null}
               </tr>
             </thead>
             <tbody>
@@ -120,23 +126,31 @@ const Categories = () => {
                   <td className="py-3 px-4">{cat.name}</td>
                   <td className="py-3 px-4">{cat.description}</td>
                   <td className="py-3 px-4 flex items-center gap-3 ">
-                    <button
-                      className="text-[#1e3a5f] font-semibold cursor-pointer"
-                      title="Edit"
-                      onClick={() => {
-                        setEditCategory(cat);
-                        setModalOpen(true);
-                      }}
-                    >
-                      <HiOutlinePencil className="text-xl" />
-                    </button>
-                    <button
-                      className="text-red-600 font-semibold cursor-pointer"
-                      title="Delete"
-                      onClick={() => handleDelete(cat._id)}
-                    >
-                      <HiOutlineTrash className="text-xl" />
-                    </button>
+                    {user?.permission?.permissions?.includes(
+                      "update_category",
+                    ) && (
+                      <button
+                        className="text-[#1e3a5f] font-semibold cursor-pointer"
+                        title="Edit"
+                        onClick={() => {
+                          setEditCategory(cat);
+                          setModalOpen(true);
+                        }}
+                      >
+                        <HiOutlinePencil className="text-xl" />
+                      </button>
+                    )}
+                    {user?.permission?.permissions?.includes(
+                      "delete_category",
+                    ) && (
+                      <button
+                        className="text-red-600 font-semibold cursor-pointer"
+                        title="Delete"
+                        onClick={() => handleDelete(cat._id)}
+                      >
+                        <HiOutlineTrash className="text-xl" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

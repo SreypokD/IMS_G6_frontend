@@ -57,11 +57,12 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
       setValidateOnSave(false);
     }
   }, [open, initial]);
+
   if (!open) return null;
   return (
     <div>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
-        <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] min-h-[60vh] max-h-[80vh] shadow-xl relative">
+        <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] max-h-[80vh] shadow-xl relative">
           <h2 className="text-2xl font-bold mb-6 text-center">
             {initial ? "Edit Supplier" : "Add Supplier"}
           </h2>

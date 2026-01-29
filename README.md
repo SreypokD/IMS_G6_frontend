@@ -34,7 +34,7 @@ React (Vite) frontend for Inventory Management System (Group 6).
 - User authentication (JWT)
 - Role-based access (admin, staff, supplier)
 - Product, category, supplier, and order request management
-- Inventory and reporting dashboard
+- Inventory and report dashboard
 - Responsive, modern UI
 
 ## User Login Example
