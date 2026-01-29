@@ -179,7 +179,7 @@ const Users = () => {
         )}
       </div>
       {users.length > 0 && (
-        <div className="flex justify-end mt-6">
+        <div className="flex justify-end mt-4">
           <Pagination
             total={pagination.totalItems}
             page={pagination.page}
