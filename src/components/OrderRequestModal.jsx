@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Listbox } from "@headlessui/react";
+import { HiSelector } from "react-icons/hi";
 import { HiXCircle, HiOutlineDocumentText } from "react-icons/hi";
 import { getProducts, createOrderRequest } from "../api";
 
@@ -78,7 +80,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
           <h2 className="text-2xl font-bold mb-6 text-center">
             {initial ? "Edit Order Request" : "Add Order Request"}
           </h2>
-          <form className="space-y-5 overflow-auto max-h-[60vh] px-1">
+          <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
             <div className="col-span-2 mb-2">
               <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
                 <HiOutlineDocumentText className="inline-block text-xl text-black" />
@@ -86,7 +88,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
               </h3>
               <div className="mb-3 grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-base font-medium mb-1">
                     Product <sup className="text-red-500">*</sup>
                   </label>
                   <select
@@ -106,24 +108,39 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-base font-medium mb-1">
                     Quantity <sup className="text-red-500">*</sup>
                   </label>
-                  <input
-                    name="quantity"
-                    type="number"
-                    min={1}
-                    value={order.quantity}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    required
-                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${(!order.quantity || order.quantity < 1) && (touched.quantity || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Requested Date <sup className="text-red-500">*</sup>
-                  </label>
+                  <Listbox
+                    value={products.find((p) => p._id === order.productId) || null}
+                    onChange={(product) => {
+                      setOrder((prev) => ({ ...prev, productId: product ? product._id : "" }));
+                      setTouched((prev) => ({ ...prev, productId: true }));
+                    }}
+                  >
+                    <div className="relative">
+                      <Listbox.Button className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!order.productId && (touched.productId || validateOnSave) ? "border-red-500" : "border-gray-200"}`}>
+                        <span>{products.find((p) => p._id === order.productId)?.name || "Select product"}</span>
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      </Listbox.Button>
+                      <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+                        {products.length === 0 && (
+                          <div className="px-4 py-2 text-gray-400">No products</div>
+                        )}
+                        {products.map((product) => (
+                          <Listbox.Option
+                            key={product._id}
+                            value={product}
+                            className={({ active, selected }) =>
+                              `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                            }
+                          >
+                            {product.name}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </div>
+                  </Listbox>
                   <input
                     name="requestedDate"
                     type="date"
@@ -136,7 +153,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-base font-medium mb-1">
                   Notes / Remarks
                 </label>
                 <textarea
@@ -156,14 +173,14 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
               className="px-5 py-2 bg-[#f8f8f8] hover:bg-[#e5e7eb] text-gray-black rounded-xl cursor-pointer  flex items-center gap-2"
               onClick={handleClose}
             >
-              <HiXCircle className="inline-block" /> Cancel
+              <HiXCircle className="inline-block text-xl" /> Cancel
             </button>
             <button
               type="button"
               className="px-5 py-2 bg-[#1e3a5f] hover:bg-[#16375b] text-white rounded-xl cursor-pointer flex items-center gap-2"
               onClick={handleSubmit}
             >
-              <HiOutlineDocumentText className="inline-block" />{" "}
+              <HiOutlineDocumentText className="inline-block text-xl" />{" "}
               {loading ? "Submitting..." : initial ? "Update" : "Submit"}
             </button>
           </div>

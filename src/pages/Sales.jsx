@@ -1,21 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { getSales } from "../api";
+import Pagination from "../components/Pagination";
+import { useAuth } from "../context/useAuth";
 
 const Sales = () => {
   const [sales, setSales] = useState([]);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    totalItems: 0,
+    totalPages: 1,
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { user } = useAuth();
 
   useEffect(() => {
-    fetchSales();
-  }, []);
+    if (user) {
+      fetchSales(1, 10);
+    }
+  }, [user]);
 
-  async function fetchSales() {
+  async function fetchSales(page = 1, limit = 10) {
     setLoading(true);
     setError("");
     try {
-      const res = await getSales();
+      const res = await getSales({page, limit});
       setSales(res.data.data);
+      setPagination(res.data.pagination);
     } catch {
       setError("Failed to load sales");
     } finally {
@@ -31,13 +43,13 @@ const Sales = () => {
           <span className="text-gray-500">Manage and view sales</span>
         </div>
       </div>
-      {loading ? (
-        <div>Loading...</div>
-      ) : error ? (
-        <div className="text-red-600">{error}</div>
-      ) : (
-        <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
-          <table className="min-w-full text-left text-sm align-middle">
+      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
+        {loading ? (
+          <div className="p-8 text-center text-gray-500">Loading...</div>
+        ) : error ? (
+          <div className="p-8 text-center text-red-500">{error}</div>
+        ) : (
+          <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr>
                 <th className="py-3 px-4">No.</th>
@@ -49,18 +61,35 @@ const Sales = () => {
             <tbody>
               {sales.map((sale, idx) => (
                 <tr key={sale._id} className="border-t border-gray-200">
-                  <td className="py-3 px-4">{idx + 1}</td>
-                  <td className="py-3 px-4">{sale.quantity}</td>
-                  <td className="py-3 px-4">{sale.status}</td>
-                  <td className="py-3 px-4">
+                  <td className="py-1 px-4">{idx + 1}</td>
+                  <td className="py-1 px-4">{sale.quantity}</td>
+                  <td className="py-1 px-4">{sale.status}</td>
+                  <td className="py-1 px-4">
                     {sale.completed_at
                       ? new Date(sale.completed_at).toLocaleString()
                       : "-"}
                   </td>
                 </tr>
               ))}
+              {sales.length === 0 && (
+                <tr className="border-t border-gray-200">
+                  <td colSpan="4" className="py-4 text-center text-gray-500">
+                    No sales found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
+        )}
+      </div>
+      {sales.length > 0 && (
+        <div className="flex justify-end mt-6">
+          <Pagination
+            total={pagination.totalItems}
+            page={pagination.page}
+            limit={pagination.limit}
+            onChange={({ page, limit }) => fetchSales({page, limit})}
+          />
         </div>
       )}
     </div>

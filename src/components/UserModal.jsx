@@ -1,11 +1,14 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { Listbox } from "@headlessui/react";
+import { HiSelector } from "react-icons/hi";
 import { getPermissions } from "../api/index";
 import {
   HiXCircle,
   HiOutlineDocumentText,
   HiOutlineLocationMarker,
-  HiOutlineUserCircle,
   HiOutlineKey,
+  HiOutlineCamera,
+  HiOutlineUpload,
 } from "react-icons/hi";
 
 const initialUser = {
@@ -33,8 +36,8 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
     [initial],
   );
   const [user, setUser] = useState(() => computedInitialUser);
-  const [profilePreview, setProfilePreview] = useState(user.profile || "");
-  const fileInputRef = useRef();
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [preview] = useState(user.profile || "");
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
   const [roles, setRoles] = useState([]);
@@ -54,34 +57,11 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
     }
   }, [open]);
 
-  // Remove problematic effect. State is initialized in useState.
-
-  // Handle file upload
-  const handleProfileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    // Preview
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setProfilePreview(ev.target.result);
-    };
-    reader.readAsDataURL(file);
-    // Upload to server (replace with your API endpoint)
-    const formData = new FormData();
-    formData.append("file", file);
-    try {
-      const res = await fetch("http://localhost:5001/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (data.url) {
-        setUser({ ...user, profile: data.url });
-      }
-    } catch {
-      alert("Upload failed");
+  function handleImageChange(e) {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedImage(e.target.files[0]);
     }
-  };
+  }
 
   if (!open) return null;
   return (
@@ -92,7 +72,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
         </h2>
         <form
           key={initial ? initial._id || initial.id : "new"}
-          className="space-y-5 overflow-auto max-h-[60vh] px-1"
+          className="space-y-5 overflow-auto max-h-[50vh] px-1"
         >
           <div className="col-span-2 mb-2">
             <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
@@ -101,7 +81,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
             </h3>
             <div className="mb-3 grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-base font-medium mb-1">
                   First Name{" "}
                   {!user.first_name && !initial ? (
                     <sup className="text-red-500">*</sup>
@@ -120,7 +100,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-base font-medium mb-1">
                   Last Name{" "}
                   {!user.last_name && !initial ? (
                     <sup className="text-red-500">*</sup>
@@ -139,7 +119,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-base font-medium mb-1">
                   Email{" "}
                   {!user.email && !initial ? (
                     <sup className="text-red-500">*</sup>
@@ -159,7 +139,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
               </div>
               {!initial && (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-base font-medium mb-1">
                     Password{" "}
                     {!user.password && !initial ? (
                       <sup className="text-red-500">*</sup>
@@ -190,29 +170,49 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
             </h3>
             <div className="mb-3 grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-base font-medium mb-1">
                   Role{" "}
                   {!user.role && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
                 </label>
-                <select
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!user.role && !initial && (touched.role || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                  value={user.role}
-                  onChange={(e) => setUser({ ...user, role: e.target.value })}
-                  onBlur={() => setTouched((prev) => ({ ...prev, role: true }))}
-                  required
+                <Listbox
+                  value={roles.find((role) => role.name === user.role) || null}
+                  onChange={(role) =>
+                    setUser({ ...user, role: role ? role.name : "" })
+                  }
                 >
-                  <option value="">Select role</option>
-                  {roles.map((role) => (
-                    <option key={role._id || role.id} value={role.name}>
-                      {role.name}
-                    </option>
-                  ))}
-                </select>
+                  <div className="relative">
+                    <Listbox.Button
+                      className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!user.role && !initial && (touched.role || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                    >
+                      <span>
+                        {roles.find((role) => role.name === user.role)?.name ||
+                          "Select role"}
+                      </span>
+                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                    </Listbox.Button>
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+                      {roles.length === 0 && (
+                        <div className="px-4 py-2 text-gray-400">No roles</div>
+                      )}
+                      {roles.map((role) => (
+                        <Listbox.Option
+                          key={role._id || role.id}
+                          value={role}
+                          className={({ active, selected }) =>
+                            `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                          }
+                        >
+                          {role.name}
+                        </Listbox.Option>
+                      ))}
+                    </Listbox.Options>
+                  </div>
+                </Listbox>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-base font-medium mb-1">
                   Phone{" "}
                   {!initial ? <sup className="text-red-500">*</sup> : null}
                 </label>
@@ -234,7 +234,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
             </h3>
             <div className="mb-3 grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Street</label>
+                <label className="block text-base font-medium mb-1">Street</label>
                 <input
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!user.address.street && !initial && (touched.street || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   value={user.address.street}
@@ -377,43 +377,54 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                 />
               </div>
             </div>
-          </div>
+          </div>{" "}
           <div className="col-span-2 mb-2">
             <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
-              <HiOutlineUserCircle className="inline-block text-xl text-black" />
+              <HiOutlineCamera className="inline-block text-xl text-black" />
               <span>Profile</span>
             </h3>
-            <div className="mb-3 grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Profile Image
-                </label>
+            <div className="mb-4">
+              <label className="block text-gray-700 text-base font-bold mb-2">
+                Profile Image
+              </label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center transition-colors">
                 <input
                   type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800 mb-2 cursor-pointer"
-                  onChange={handleProfileUpload}
+                  accept="image/jpeg,image/png,image/gif"
+                  className="hidden"
+                  id="image-upload"
+                  onChange={handleImageChange}
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Or paste image URL
+                <label
+                  htmlFor="image-upload"
+                  className="flex flex-col items-center cursor-pointer w-full h-full"
+                >
+                  <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
+                  <span className="text-gray-600">
+                    Drag and drop your image here, or{" "}
+                    <span className="text-blue-600 underline">
+                      browse files
+                    </span>
+                  </span>
+                  <span className="text-xs text-gray-400 mt-1">
+                    Supported formats: JPG, PNG, GIF (Max 5MB)
+                  </span>
                 </label>
-                <input
-                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
-                  value={user.profile}
-                  onChange={(e) => {
-                    setUser({ ...user, profile: e.target.value });
-                    setProfilePreview(e.target.value);
-                  }}
-                />
+                {selectedImage && (
+                  <div className="mt-2 flex items-center">
+                    <img
+                      src={URL.createObjectURL(selectedImage)}
+                      alt="Preview"
+                      className="h-40 w-40 object-cover rounded mr-2"
+                    />
+                  </div>
+                )}
               </div>
             </div>
-            {profilePreview && (
+            {preview && (
               <div className="flex justify-center mb-2">
                 <img
-                  src={profilePreview}
+                  src={preview}
                   alt="Profile Preview"
                   className="h-50 w-50 rounded-lg object-cover"
                   onError={(e) => {
@@ -430,7 +441,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
             className="px-5 py-2 bg-[#f8f8f8] hover:bg-[#e5e7eb] text-gray-black rounded-xl cursor-pointer  flex items-center gap-2"
             onClick={onClose}
           >
-            <HiXCircle className="inline-block" /> Cancel
+            <HiXCircle className="inline-block text-xl" /> Cancel
           </button>
           <button
             type="button"
@@ -455,7 +466,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
               onSave(user);
             }}
           >
-            <HiOutlineDocumentText className="inline-block" />
+            <HiOutlineDocumentText className="inline-block text-xl" />
             {initial ? "Update User" : "Add User"}
           </button>
         </div>

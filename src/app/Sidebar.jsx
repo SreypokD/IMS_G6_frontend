@@ -12,7 +12,7 @@ import {
   HiArchive,
   HiChartBar,
   HiTemplate,
-  HiOutlineCog,
+  HiCog,
   HiChevronRight,
   HiKey,
   HiShoppingCart,
@@ -92,7 +92,7 @@ const navLinks = (permissions = []) =>
     // Settings / Security
     permissions.includes("view_permission") && {
       label: "Settings",
-      icon: <HiOutlineCog />,
+      icon: <HiCog />,
       submenus: [
         permissions.includes("view_user") && {
           to: "/users",

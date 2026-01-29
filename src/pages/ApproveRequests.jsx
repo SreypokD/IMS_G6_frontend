@@ -2,9 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/useAuth";
 import { HiOutlineCheckCircle, HiOutlineXCircle } from "react-icons/hi";
 import { getApproveRequests, updateApproveRequests } from "../api";
+import Pagination from "../components/Pagination";
 
 const OrderRequestApproval = () => {
   const [orders, setOrders] = useState([]);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    totalItems: 0,
+    totalPages: 1,
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [remarks, setRemarks] = useState({});
@@ -15,7 +22,7 @@ const OrderRequestApproval = () => {
 
   useEffect(() => {
     if (user) {
-      fetchApproveRequests();
+      fetchApproveRequests(1, 10);
     }
   }, [user]);
 
@@ -23,12 +30,13 @@ const OrderRequestApproval = () => {
     return <div className="text-red-600">Access denied. Admins only.</div>;
   }
 
-  async function fetchApproveRequests() {
+  async function fetchApproveRequests(page = 1, limit = 10) {
     setLoading(true);
     setError("");
     try {
-      const res = await getApproveRequests();
+      const res = await getApproveRequests({ page, limit });
       setOrders(res.data.data.filter((o) => o.status === "pending"));
+      setPagination(res.data.pagination);
     } catch {
       setError("Failed to load approve requests");
     } finally {
@@ -78,13 +86,13 @@ const OrderRequestApproval = () => {
           </span>
         </div>
       </div>
-      {loading ? (
-        <div>Loading...</div>
-      ) : error ? (
-        <div className="text-red-600">{error}</div>
-      ) : (
-        <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
-          <table className="min-w-full text-left text-sm align-middle">
+      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
+        {loading ? (
+          <div className="p-8 text-center text-gray-500">Loading...</div>
+        ) : error ? (
+          <div className="p-8 text-center text-red-500">{error}</div>
+        ) : (
+          <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr className="bg-white">
                 <th className="py-3 px-4">No.</th>
@@ -107,24 +115,24 @@ const OrderRequestApproval = () => {
             <tbody>
               {orders.map((order, idx) => (
                 <tr key={order._id} className="border-t border-gray-200">
-                  <td className="py-3 px-4">{idx + 1}</td>
-                  <td className="py-3 px-4">
+                  <td className="py-1 px-4">{idx + 1}</td>
+                  <td className="py-1 px-4">
                     {order.requester?.name || order.requester_id}
                   </td>
-                  <td className="py-3 px-4">
+                  <td className="py-1 px-4">
                     {order.Product?.name || order.product_id}
                   </td>
-                  <td className="py-3 px-4">{order.quantity}</td>
-                  <td className="py-3 px-4">
+                  <td className="py-1 px-4">{order.quantity}</td>
+                  <td className="py-1 px-4">
                     {order.requested_date
                       ? new Date(order.requested_date).toLocaleDateString()
                       : ""}
                   </td>
-                  <td className="py-3 px-4">{order.notes}</td>
-                  <td className="py-3 px-4">
+                  <td className="py-1 px-4">{order.notes}</td>
+                  <td className="py-1 px-4">
                     <input
                       type="text"
-                      className="border rounded px-2 py-1 text-sm"
+                      className="border rounded px-2 py-1 text-base"
                       placeholder="Admin remarks"
                       value={remarks[order._id] || ""}
                       onChange={(e) =>
@@ -136,7 +144,7 @@ const OrderRequestApproval = () => {
                       disabled={actionId === order._id}
                     />
                   </td>
-                  <td className="py-3 px-4 text-left">
+                  <td className="py-1 px-4 flex items-center gap-1">
                     {user?.permission?.permissions?.includes(
                       "update_approve_request",
                     ) && (
@@ -170,7 +178,7 @@ const OrderRequestApproval = () => {
                       <div className="mt-2">
                         <input
                           type="text"
-                          className="border rounded px-2 py-1 text-sm mb-1"
+                          className="border rounded px-2 py-1 text-base mb-1"
                           placeholder="Rejection reason"
                           value={rejectionReason[order._id] || ""}
                           onChange={(e) =>
@@ -193,8 +201,25 @@ const OrderRequestApproval = () => {
                   </td>
                 </tr>
               ))}
+              {orders.length === 0 && (
+                <tr className="border-t border-gray-200">
+                  <td colSpan="9" className="py-4 text-center text-gray-500">
+                    No approve requests found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
+        )}
+      </div>
+      {orders.length > 0 && (
+        <div className="flex justify-end mt-6">
+          <Pagination
+            total={pagination.totalItems}
+            page={pagination.page}
+            limit={pagination.limit}
+            onChange={({ page, limit }) => fetchApproveRequests({page, limit})}
+          />
         </div>
       )}
     </div>

@@ -79,7 +79,7 @@ const Header = ({ onBellClick }) => {
               )}
             </div>
             <div className="flex flex-col items-start text-left">
-              <span className="text-gray-900 text-sm leading-tight">
+              <span className="text-gray-900 text-base leading-tight">
                 {user?.first_name + " " + user?.last_name || "User"}
               </span>
             </div>
@@ -92,18 +92,18 @@ const Header = ({ onBellClick }) => {
                   {user?.first_name + " " + user?.last_name}
                   <span className="ml-2 capitalize">({user?.role})</span>
                 </div>
-                <div className="text-gray-500 text-sm mb-1">{user?.email}</div>
+                <div className="text-gray-500 text-base mb-1">{user?.email}</div>
               </div>
               <hr className="my-2 border-gray-200" />
-              <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer">
+              <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 rounded-xl cursor-pointer">
                 <HiUser className="text-xl" />
                 <span>Profile Settings</span>
               </button>
-              <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer">
+              <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 rounded-xl cursor-pointer">
                 <HiOutlineCog className="text-xl" />
                 <span>Account Settings</span>
               </button>
-              <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer">
+              <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 rounded-xl cursor-pointer">
                 <HiOutlineQuestionMarkCircle className="text-xl" />
                 <span>Help & Support</span>
               </button>
@@ -114,7 +114,7 @@ const Header = ({ onBellClick }) => {
                   e.preventDefault();
                   handleLogout();
                 }}
-                className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-100 transition text-sm space-x-2 rounded-xl cursor-pointer"
+                className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-100 transition text-base space-x-2 rounded-xl cursor-pointer"
               >
                 <HiOutlineLogout className="text-red-500 text-xl" />
                 <span>Logout</span>

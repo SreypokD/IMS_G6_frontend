@@ -3,23 +3,37 @@ import { HiOutlinePlus } from "react-icons/hi";
 import { useAuth } from "../context/useAuth";
 import OrderRequestModal from "../components/OrderRequestModal.jsx";
 import { getOrderRequests } from "../api";
+import Pagination from "../components/Pagination";
 
 const OrderRequests = () => {
   const [requests, setRequests] = useState([]);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    totalItems: 0,
+    totalPages: 1,
+  });
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const { user } = useAuth();
 
   useEffect(() => {
-    fetchOrderRequests();
-  }, []);
+    if (user) {
+      fetchOrderRequests(1, 10);
+    }
+  }, [user]);
 
   // Fetch order requests from API
-  async function fetchOrderRequests() {
+  async function fetchOrderRequests(page = 1, limit = 10) {
     setLoading(true);
+    setError("");
     try {
-      const res = await getOrderRequests();
+      const res = await getOrderRequests({ page, limit });
       setRequests(res.data.data);
+      setPagination(res.data.pagination);
+    } catch {
+      setError("Failed to load order requests");
     } finally {
       setLoading(false);
     }
@@ -49,8 +63,10 @@ const OrderRequests = () => {
       <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
+        ) : error ? (
+          <div className="p-8 text-center text-red-500">{error}</div>
         ) : (
-          <table className="min-w-full text-left text-sm align-middle">
+          <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr>
                 <th className="py-3 px-4">No.</th>
@@ -62,22 +78,39 @@ const OrderRequests = () => {
             <tbody>
               {requests.map((req, index) => (
                 <tr key={req._id} className="border-t border-gray-200">
-                  <td className="py-3 px-4">{index + 1}</td>
-                  <td className="py-3 px-4">{req.requester}</td>
-                  <td className="py-3 px-4">
+                  <td className="py-1 px-4">{index + 1}</td>
+                  <td className="py-1 px-4">{req.requester}</td>
+                  <td className="py-1 px-4">
                     <span
                       className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${req.status === "Pending" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"}`}
                     >
                       {req.status}
                     </span>
                   </td>
-                  <td className="py-3 px-4  ">{req.date}</td>
+                  <td className="py-1 px-4  ">{req.date}</td>
                 </tr>
               ))}
+              {requests.length === 0 && (
+                <tr className="border-t border-gray-200">
+                  <td colSpan="4" className="py-4 text-center text-gray-500">
+                    No order requests found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         )}
       </div>
+      {requests.length > 0 && (
+        <div className="flex justify-end mt-6">
+          <Pagination
+            total={pagination.totalItems}
+            page={pagination.page}
+            limit={pagination.limit}
+            onChange={({ page, limit }) => fetchOrderRequests({page, limit})}
+          />
+        </div>
+      )}
     </div>
   );
 };

@@ -81,13 +81,13 @@ const Login = () => {
             Sign in to access your inventory management dashboard
           </span>
           {error && (
-            <div className="mb-4 text-red-500 text-center text-sm font-medium">
+            <div className="mb-4 text-red-500 text-center text-base font-medium">
               {error}
             </div>
           )}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-gray-600 mb-1 text-sm font-medium">
+              <label className="block text-gray-600 mb-1 text-base font-medium">
                 Email Address <sup className="text-red-500">*</sup>
               </label>
               <input
@@ -101,7 +101,7 @@ const Login = () => {
               />
             </div>
             <div className="relative">
-              <label className="block text-gray-600 mb-1 text-sm font-medium">
+              <label className="block text-gray-600 mb-1 text-base font-medium">
                 Password <sup className="text-red-500">*</sup>
               </label>
               <input
@@ -132,15 +132,17 @@ const Login = () => {
               disabled={loading}
             >
               {loading ? "Signing In..." : "Sign In"}
-              {!loading && <HiOutlineDownload className="inline-block ml-1 text-lg rotate-270" />}
+              {!loading && (
+                <HiOutlineDownload className="inline-block ml-1 text-lg rotate-270" />
+              )}
             </button>
-            <span className="block text-sm text-[#1e3a5f] hover:underline text-center cursor-pointer">
+            <span className="block text-base text-[#1e3a5f] hover:underline text-center cursor-pointer">
               Forgot password?
             </span>
           </form>
         </div>
         <br />
-        <span className="block text-sm text-[#1e3a5f] text-center mt-6">
+        <span className="block text-base text-[#1e3a5f] text-center mt-6">
           © 2026 Inventory. All rights reserved.
         </span>
       </div>

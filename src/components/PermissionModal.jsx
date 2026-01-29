@@ -157,7 +157,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
             </h3>
             <div className="mb-3 grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-gray-600 mb-1 text-sm font-medium">
+                <label className="block text-gray-600 mb-1 text-base font-medium">
                   Name{" "}
                   {!permission.name && !initial ? (
                     <sup className="text-red-500">*</sup>
@@ -174,7 +174,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                 />
               </div>
               <div>
-                <label className="block text-gray-600 mb-1 text-sm font-medium">
+                <label className="block text-gray-600 mb-1 text-base font-medium">
                   Description
                 </label>
                 <input
@@ -197,7 +197,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
               <span>Permissions</span>
             </h3>
             <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
-              <table className="min-w-full text-center text-sm align-middle">
+              <table className="min-w-full text-center text-base align-middle">
                 <thead>
                   <tr className="bg-white">
                     <th className="py-3 px-4 text-left">Module</th>
@@ -211,10 +211,10 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                 <tbody>
                   {permissionTable.map((row) => (
                     <tr key={row.label} className="border-t border-gray-200">
-                      <td className="py-3 px-4 font-semibold text-left">
+                      <td className="py-1 px-4 font-semibold text-left">
                         {row.label}
                       </td>
-                      <td className="py-3 px-4 font-semibold text-center">
+                      <td className="py-1 px-4 font-semibold text-center">
                         <input
                           className="w-5 h-5 cursor-pointer accent-[#1e3a5f]"
                           type="checkbox"
@@ -239,7 +239,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                           a.startsWith(action),
                         );
                         return (
-                          <td className="py-3 px-4 text-center" key={action}>
+                          <td className="py-1 px-4 text-center" key={action}>
                             {actionKey ? (
                               <input
                                 className="w-5 h-5 cursor-pointer accent-[#1e3a5f]"
@@ -268,7 +268,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
             className="px-5 py-2 bg-[#f8f8f8] hover:bg-[#e5e7eb] text-gray-black rounded-xl cursor-pointer  flex items-center gap-2"
             onClick={onClose}
           >
-            <HiXCircle className="inline-block" /> Cancel
+            <HiXCircle className="inline-block text-xl" /> Cancel
           </button>
           <button
             type="button"
@@ -281,7 +281,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
               onSave(permission);
             }}
           >
-            <HiOutlineDocumentText className="inline-block" />
+            <HiOutlineDocumentText className="inline-block text-xl" />
             {initial ? "Update Permission" : "Add Permission"}
           </button>
         </div>

@@ -7,12 +7,14 @@ import {
   HiUserGroup,
   HiChartBar,
 } from "react-icons/hi";
+import { useAuth } from "../context/useAuth";
 
 const Dashboard = () => {
   const [summary, setSummary] = useState(null);
   const [orderStats, setOrderStats] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const { user } = useAuth();
+  
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
@@ -29,8 +31,10 @@ const Dashboard = () => {
         setLoading(false);
       }
     }
-    fetchData();
-  }, []);
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
 
   if (loading) {
     return (
@@ -55,7 +59,7 @@ const Dashboard = () => {
             <div className="text-2xl font-bold">
               {summary?.totalProducts ?? "-"}
             </div>
-            <div className="text-gray-500 text-sm">Products</div>
+            <div className="text-gray-500 text-base">Products</div>
           </div>
         </div>
         <div className="bg-white rounded-xl p-6 flex items-center gap-4 border border-gray-200">
@@ -64,14 +68,14 @@ const Dashboard = () => {
             <div className="text-2xl font-bold">
               {summary?.totalSuppliers ?? "-"}
             </div>
-            <div className="text-gray-500 text-sm">Suppliers</div>
+            <div className="text-gray-500 text-base">Suppliers</div>
           </div>
         </div>
         <div className="bg-white rounded-xl p-6 flex items-center gap-4 border border-gray-200">
           <HiExclamation className="text-3xl text-orange-600" />
           <div>
             <div className="text-2xl font-bold">{summary?.lowStock ?? "-"}</div>
-            <div className="text-gray-500 text-sm">Low Stock</div>
+            <div className="text-gray-500 text-base">Low Stock</div>
           </div>
         </div>
         <div className="bg-white rounded-xl p-6 flex items-center gap-4 border border-gray-200">
@@ -80,7 +84,7 @@ const Dashboard = () => {
             <div className="text-2xl font-bold">
               {orderStats?.pending ?? "-"}
             </div>
-            <div className="text-gray-500 text-sm">Pending Orders</div>
+            <div className="text-gray-500 text-base">Pending Orders</div>
           </div>
         </div>
       </div>
@@ -95,25 +99,25 @@ const Dashboard = () => {
               <div className="text-xl font-bold">
                 {orderStats.pending ?? "-"}
               </div>
-              <div className="text-gray-500 text-sm">Pending</div>
+              <div className="text-gray-500 text-base">Pending</div>
             </div>
             <div>
               <div className="text-xl font-bold">
                 {orderStats.approved ?? "-"}
               </div>
-              <div className="text-gray-500 text-sm">Approved</div>
+              <div className="text-gray-500 text-base">Approved</div>
             </div>
             <div>
               <div className="text-xl font-bold">
                 {orderStats.delivered ?? "-"}
               </div>
-              <div className="text-gray-500 text-sm">Delivered</div>
+              <div className="text-gray-500 text-base">Delivered</div>
             </div>
             <div>
               <div className="text-xl font-bold">
                 {orderStats.rejected ?? "-"}
               </div>
-              <div className="text-gray-500 text-sm">Rejected</div>
+              <div className="text-gray-500 text-base">Rejected</div>
             </div>
           </div>
         ) : (

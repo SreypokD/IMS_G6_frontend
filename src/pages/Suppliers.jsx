@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { Listbox } from "@headlessui/react";
+import { HiSelector } from "react-icons/hi";
 import {
   HiOutlinePlus,
   HiOutlinePencil,
@@ -15,24 +17,101 @@ import {
 } from "../api";
 import SupplierModal from "../components/SupplierModal";
 import { useAuth } from "../context/useAuth";
+import Pagination from "../components/Pagination";
+
+// Custom dropdowns for Suppliers page
+const statusOptions = ["All Status", "Active", "Inactive"];
+const locationOptions = [
+  "All Locations",
+  "Warehouse 1",
+  "Warehouse 2",
+  "Storefront",
+];
+
+function SupplierStatusDropdown() {
+  const [selected, setSelected] = useState(statusOptions[0]);
+  return (
+    <Listbox value={selected} onChange={setSelected}>
+      <div className="relative">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
+          <span>{selected}</span>
+          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+        </Listbox.Button>
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          {statusOptions.map((option) => (
+            <Listbox.Option
+              key={option}
+              value={option}
+              className={({ active, selected }) =>
+                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              }
+            >
+              {option}
+            </Listbox.Option>
+          ))}
+        </Listbox.Options>
+      </div>
+    </Listbox>
+  );
+}
+
+function SupplierLocationDropdown() {
+  const [selected, setSelected] = useState(locationOptions[0]);
+  return (
+    <Listbox value={selected} onChange={setSelected}>
+      <div className="relative">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
+          <span>{selected}</span>
+          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+        </Listbox.Button>
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          {locationOptions.map((option) => (
+            <Listbox.Option
+              key={option}
+              value={option}
+              className={({ active, selected }) =>
+                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              }
+            >
+              {option}
+            </Listbox.Option>
+          ))}
+        </Listbox.Options>
+      </div>
+    </Listbox>
+  );
+}
 
 const Suppliers = () => {
   const [suppliers, setSuppliers] = useState([]);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    totalItems: 0,
+    totalPages: 1,
+  });
   const [modalOpen, setModalOpen] = useState(false);
   const [editSupplier, setEditSupplier] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const { user } = useAuth();
 
   useEffect(() => {
-    fetchSuppliers();
-  }, []);
+    if (user) {
+      fetchSuppliers(1, 10);
+    }
+  }, [user]);
 
   // Fetch suppliers from API
-  async function fetchSuppliers() {
+  async function fetchSuppliers(page = 1, limit = 10) {
     setLoading(true);
+    setError("");
     try {
-      const res = await getSuppliers();
+      const res = await getSuppliers({ page, limit });
       setSuppliers(res.data.data);
+      setPagination(res.data.pagination);
+    } catch {
+      setError("Failed to load suppliers");
     } finally {
       setLoading(false);
     }
@@ -41,15 +120,18 @@ const Suppliers = () => {
   // Save supplier (create or update)
   async function handleSave(supplier) {
     setLoading(true);
+    setError("");
     try {
       if (editSupplier) {
         await updateSupplier(editSupplier._id, supplier);
       } else {
         await createSupplier(supplier);
       }
-      fetchSuppliers();
+      fetchSuppliers(pagination.page, pagination.limit);
       setModalOpen(false);
       setEditSupplier(null);
+    } catch {
+      setError("Failed to save supplier");
     } finally {
       setLoading(false);
     }
@@ -61,12 +143,15 @@ const Suppliers = () => {
       setLoading(true);
       try {
         await deleteSupplier(id);
-        fetchSuppliers();
+        fetchSuppliers(pagination.page, pagination.limit);
+      } catch {
+        setError("Failed to delete supplier");
       } finally {
         setLoading(false);
       }
     }
   }
+
   return (
     <div>
       <SupplierModal
@@ -101,22 +186,20 @@ const Suppliers = () => {
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <input
-            className="bg-gray-50 border border-gray-200 rounded-lg py-3 px-4 text-gray-700 min-w-0 w-full"
+            className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
             placeholder="Search..."
           />
-          <select className="bg-gray-50 border border-gray-200 rounded-lg py-3 px-4 text-gray-700 min-w-0 w-full">
-            <option>All Status</option>
-          </select>
-          <select className="bg-gray-50 border border-gray-200 rounded-lg py-3 px-4 text-gray-700 min-w-0 w-full">
-            <option>All Locations</option>
-          </select>
+          <SupplierStatusDropdown />
+          <SupplierLocationDropdown />
         </div>
       </div>
       <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
+        ) : error ? (
+          <div className="p-8 text-center text-red-500">{error}</div>
         ) : (
-          <table className="min-w-full text-left text-sm align-middle">
+          <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr className="bg-white">
                 <th className="py-3 px-4">No.</th>
@@ -135,8 +218,8 @@ const Suppliers = () => {
             <tbody>
               {suppliers.map((s, index) => (
                 <tr key={s._id} className="border-t border-gray-200">
-                  <td className="py-3 px-4">{index + 1}</td>
-                  <td className="py-3 px-4">
+                  <td className="py-1 px-4">{index + 1}</td>
+                  <td className="py-1 px-4">
                     <div className="flex items-center gap-2">
                       <HiOutlineBuildingOffice2 className="text-lg text-blue-700" />
                       <div className="font-semibold text-base text-[#1e3a5f]">
@@ -147,7 +230,7 @@ const Suppliers = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="py-3 px-4 flex items-center gap-2">
+                  <td className="py-1 px-4 flex items-center gap-1">
                     <div className="font-medium text-gray-900">
                       {s.contact_person}
                     </div>
@@ -155,9 +238,9 @@ const Suppliers = () => {
                       ({s.contact_position})
                     </div>
                   </td>
-                  <td className="py-3 px-4">{s.contact_email}</td>
-                  <td className="py-3 px-4">{s.contact_phone}</td>
-                  <td className="py-3 px-4">
+                  <td className="py-1 px-4">{s.contact_email}</td>
+                  <td className="py-1 px-4">{s.contact_phone}</td>
+                  <td className="py-1 px-4">
                     <span
                       className={
                         s.status === "Active"
@@ -175,17 +258,19 @@ const Suppliers = () => {
                       {s.status}
                     </span>
                   </td>
-                  <td className="py-3 px-4">
-                    <span className="flex items-center gap-1">
+                  <td className="py-1 px-4">
+                    <span className="flex items-center gap-2">
                       <HiOutlineCube className="text-base text-gray-500" />
-                      {typeof s.products_count === "number"
-                        ? s.products_count
-                        : 0}
+                      <span>
+                        {typeof s.products_count === "number"
+                          ? s.products_count
+                          : 0}
+                      </span>
                     </span>
                   </td>
-                  <td className="py-3 px-4 whitespace-nowrap flex items-center gap-3 ">
+                  <td className="py-1 px-4 flex items-center gap-1">
                     <button
-                      className="text-gray-500 hover:text-blue-700"
+                      className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                       title="View"
                     >
                       <HiOutlineEye className="text-xl" />
@@ -194,7 +279,7 @@ const Suppliers = () => {
                       "update_supplier",
                     ) && (
                       <button
-                        className="text-[#1e3a5f] font-semibold cursor-pointer hover:text-blue-700"
+                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Edit"
                         onClick={() => {
                           setEditSupplier(s);
@@ -208,7 +293,7 @@ const Suppliers = () => {
                       "delete_supplier",
                     ) && (
                       <button
-                        className="text-red-600 font-semibold cursor-pointer hover:text-red-800"
+                        className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Delete"
                         onClick={() => handleDelete(s._id)}
                       >
@@ -217,11 +302,28 @@ const Suppliers = () => {
                     )}
                   </td>
                 </tr>
-              ))}
+              ))}{" "}
+              {suppliers.length === 0 && (
+                <tr className="border-t border-gray-200">
+                  <td colSpan="7" className="py-4 text-center text-gray-500">
+                    No suppliers found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         )}
       </div>
+      {suppliers.length > 0 && (
+        <div className="flex justify-end mt-6">
+          <Pagination
+            total={pagination.totalItems}
+            page={pagination.page}
+            limit={pagination.limit}
+            onChange={({ page, limit }) => fetchSuppliers({page, limit})}
+          />
+        </div>
+      )}
     </div>
   );
 };

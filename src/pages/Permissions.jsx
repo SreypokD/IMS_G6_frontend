@@ -8,24 +8,38 @@ import {
   deletePermission,
 } from "../api";
 import { useAuth } from "../context/useAuth";
+import Pagination from "../components/Pagination";
 
 const Permissions = () => {
   const [permissions, setPermissions] = useState([]);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    totalItems: 0,
+    totalPages: 1,
+  });
   const [modalOpen, setModalOpen] = useState(false);
   const [editPermission, setEditPermission] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const { user } = useAuth();
 
   useEffect(() => {
-    fetchPermissions();
-  }, []);
+    if (user) {
+      fetchPermissions(1, 10);
+    }
+  }, [user]);
 
   // Fetch permissions from API
-  async function fetchPermissions() {
+  async function fetchPermissions(page = 1, limit = 10) {
     setLoading(true);
+    setError("");
     try {
-      const res = await getPermissions();
+      const res = await getPermissions({ page, limit });
       setPermissions(res.data.data);
+      setPagination(res.data.pagination);
+    } catch {
+      setError("Failed to load permissions");
     } finally {
       setLoading(false);
     }
@@ -34,6 +48,7 @@ const Permissions = () => {
   // Save permission (create or update)
   async function handleSave(permission) {
     setLoading(true);
+    setError("");
     try {
       if (editPermission) {
         await updatePermission(editPermission._id, permission);
@@ -43,6 +58,8 @@ const Permissions = () => {
       fetchPermissions();
       setModalOpen(false);
       setEditPermission(null);
+    } catch {
+      setError("Failed to save permission");
     } finally {
       setLoading(false);
     }
@@ -55,6 +72,8 @@ const Permissions = () => {
       try {
         await deletePermission(id);
         fetchPermissions();
+      } catch {
+        setError("Failed to delete permission");
       } finally {
         setLoading(false);
       }
@@ -92,7 +111,7 @@ const Permissions = () => {
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <input
-            className="bg-gray-50 border border-gray-200 rounded-lg py-3 px-4 text-gray-700 min-w-0 w-full"
+            className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
             placeholder="Search..."
           />
         </div>
@@ -100,8 +119,10 @@ const Permissions = () => {
       <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
+        ) : error ? (
+          <div className="p-8 text-center text-red-500">{error}</div>
         ) : (
-          <table className="min-w-full text-left text-sm align-middle">
+          <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr className="bg-white">
                 <th className="py-3 px-4">No.</th>
@@ -116,17 +137,17 @@ const Permissions = () => {
             <tbody>
               {permissions.map((perm, index) => (
                 <tr key={perm._id} className="border-t border-gray-200">
-                  <td className="py-3 px-4">{index + 1}</td>
-                  <td className="py-3 px-4">{perm.name}</td>
-                  <td className="py-3 px-4 whitespace-nowrap">
+                  <td className="py-1 px-4">{index + 1}</td>
+                  <td className="py-1 px-4">{perm.name}</td>
+                  <td className="py-1 px-4 whitespace-nowrap">
                     {perm.description}
                   </td>
-                  <td className="py-3 px-4 whitespace-nowrap flex items-left gap-3">
+                  <td className="py-1 px-4 flex items-center gap-1">
                     {user?.permission?.permissions?.includes(
                       "update_permission",
                     ) && (
                       <button
-                        className="text-[#1e3a5f] font-semibold cursor-pointer"
+                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Edit"
                         onClick={() => {
                           setEditPermission(perm);
@@ -140,7 +161,7 @@ const Permissions = () => {
                       "delete_permission",
                     ) && (
                       <button
-                        className="text-red-600 font-semibold cursor-pointer"
+                        className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Delete"
                         onClick={() => handleDelete(perm._id)}
                       >
@@ -150,10 +171,27 @@ const Permissions = () => {
                   </td>
                 </tr>
               ))}
+              {permissions.length === 0 && (
+                <tr className="border-t border-gray-200">
+                  <td colSpan="4" className="py-4 text-center text-gray-500">
+                    No permissions found.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         )}
       </div>
+      {permissions.length > 0 && (
+        <div className="flex justify-end mt-6">
+          <Pagination
+            total={pagination.totalItems}
+            page={pagination.page}
+            limit={pagination.limit}
+            onChange={({ page, limit }) => fetchPermissions({page, limit})}
+          />
+        </div>
+      )}
     </div>
   );
 };

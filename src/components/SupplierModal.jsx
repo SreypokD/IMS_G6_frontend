@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Listbox } from "@headlessui/react";
+import { HiSelector } from "react-icons/hi";
 import {
   HiXCircle,
   HiOutlineDocumentText,
@@ -9,15 +11,17 @@ import {
 } from "react-icons/hi";
 
 const paymentTerms = [
-  { _id: 1, name: "Net 30" },
-  { _id: 2, name: "Net 60" },
-  { _id: 3, name: "Due on Receipt" },
-  { _id: 4, name: "Prepaid" },
+  { _id: 1, name: "Net 30 Days" },
+  { _id: 2, name: "Net 60 Days" },
+  { _id: 3, name: "Net 90 Days" },
+  { _id: 4, name: "Cash on Delivery" },
+  { _id: 5, name: "Advance Payment" },
 ];
 
 const statuses = [
   { _id: 1, name: "Active" },
   { _id: 2, name: "Inactive" },
+  { _id: 3, name: "Pending" },
 ];
 
 const initialSupplier = {
@@ -66,7 +70,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
           <h2 className="text-2xl font-bold mb-6 text-center">
             {initial ? "Edit Supplier" : "Add Supplier"}
           </h2>
-          <form className="space-y-5 overflow-auto max-h-[60vh] px-1">
+          <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
             <div className="col-span-2 mb-2">
               <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
                 <HiOutlineOfficeBuilding className="inline-block text-xl text-black" />
@@ -74,7 +78,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
               </h3>
               <div className="mb-3 grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-base font-medium mb-1">
                     Company Name{" "}
                     {!supplier.company_name && !initial ? (
                       <sup className="text-red-500">*</sup>
@@ -94,7 +98,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-base font-medium mb-1">
                     Location{" "}
                     {!supplier.location && !initial ? (
                       <sup className="text-red-500">*</sup>
@@ -122,7 +126,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
               </h3>
               <div className="mb-3 grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-base font-medium mb-1">
                     Contact Person{" "}
                     {!supplier.contact_person && !initial ? (
                       <sup className="text-red-500">*</sup>
@@ -148,7 +152,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-base font-medium mb-1">
                     Role/Position{" "}
                     {!supplier.contact_position && !initial ? (
                       <sup className="text-red-500">*</sup>
@@ -174,7 +178,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-base font-medium mb-1">
                     Email Address{" "}
                     {!supplier.contact_email && !initial ? (
                       <sup className="text-red-500">*</sup>
@@ -200,7 +204,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-base font-medium mb-1">
                     Phone Number{" "}
                     {!supplier.contact_phone && !initial ? (
                       <sup className="text-red-500">*</sup>
@@ -234,7 +238,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
               </h3>
               <div className="mb-3 grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-base font-medium mb-1">
                     Street
                   </label>
                   <input
@@ -405,52 +409,98 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
               </h3>
               <div className="mb-3 grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-base font-medium mb-1">
                     Payment Terms{" "}
                     {!initial ? <sup className="text-red-500">*</sup> : null}
                   </label>
-                  <select
-                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!supplier.payment_term && !initial && (touched.payment_term || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                    value={supplier.payment_term}
-                    onChange={(e) =>
-                      setSupplier({ ...supplier, payment_term: e.target.value })
+                  <Listbox
+                    value={
+                      paymentTerms.find(
+                        (pt) => pt.name === supplier.payment_term,
+                      ) || null
                     }
-                    onBlur={() =>
-                      setTouched((prev) => ({ ...prev, payment_term: true }))
+                    onChange={(pt) =>
+                      setSupplier({
+                        ...supplier,
+                        payment_term: pt ? pt.name : "",
+                      })
                     }
-                    required
                   >
-                    <option value="">Select Payment Term</option>
-                    {paymentTerms.map((payment_term) => (
-                      <option key={payment_term._id} value={payment_term.name}>
-                        {payment_term.name}
-                      </option>
-                    ))}
-                  </select>
+                    <div className="relative">
+                      <Listbox.Button
+                        className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!supplier.payment_term && !initial && (touched.payment_term || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                      >
+                        <span>
+                          {paymentTerms.find(
+                            (pt) => pt.name === supplier.payment_term,
+                          )?.name || "Select Payment Term"}
+                        </span>
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      </Listbox.Button>
+                      <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+                        {paymentTerms.length === 0 && (
+                          <div className="px-4 py-2 text-gray-400">
+                            No payment terms
+                          </div>
+                        )}
+                        {paymentTerms.map((pt) => (
+                          <Listbox.Option
+                            key={pt._id}
+                            value={pt}
+                            className={({ active, selected }) =>
+                              `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                            }
+                          >
+                            {pt.name}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </div>
+                  </Listbox>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-base font-medium mb-1">
                     Supplier Status{" "}
                     {!initial ? <sup className="text-red-500">*</sup> : null}
                   </label>
-                  <select
-                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!supplier.status && !initial && (touched.status || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                    value={supplier.status}
-                    onChange={(e) =>
-                      setSupplier({ ...supplier, status: e.target.value })
+                  <Listbox
+                    value={
+                      statuses.find((st) => st.name === supplier.status) || null
                     }
-                    onBlur={() =>
-                      setTouched((prev) => ({ ...prev, status: true }))
+                    onChange={(st) =>
+                      setSupplier({ ...supplier, status: st ? st.name : "" })
                     }
-                    required
                   >
-                    <option value="">Select status</option>
-                    {statuses.map((status) => (
-                      <option key={status._id} value={status.name}>
-                        {status.name}
-                      </option>
-                    ))}
-                  </select>
+                    <div className="relative">
+                      <Listbox.Button
+                        className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!supplier.status && !initial && (touched.status || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                      >
+                        <span>
+                          {statuses.find((st) => st.name === supplier.status)
+                            ?.name || "Select status"}
+                        </span>
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      </Listbox.Button>
+                      <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+                        {statuses.length === 0 && (
+                          <div className="px-4 py-2 text-gray-400">
+                            No statuses
+                          </div>
+                        )}
+                        {statuses.map((st) => (
+                          <Listbox.Option
+                            key={st._id}
+                            value={st}
+                            className={({ active, selected }) =>
+                              `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                            }
+                          >
+                            {st.name}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </div>
+                  </Listbox>
                 </div>
               </div>
             </div>
@@ -461,7 +511,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
               className="px-5 py-2 bg-[#f8f8f8] hover:bg-[#e5e7eb] text-gray-black rounded-xl cursor-pointer  flex items-center gap-2"
               onClick={onClose}
             >
-              <HiXCircle className="inline-block" /> Cancel
+              <HiXCircle className="inline-block text-xl" /> Cancel
             </button>
             <button
               type="button"
@@ -481,7 +531,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                 onSave(supplier);
               }}
             >
-              <HiOutlineDocumentText className="inline-block" />
+              <HiOutlineDocumentText className="inline-block text-xl" />
               {initial ? "Update Supplier" : "Add Supplier"}
             </button>
           </div>

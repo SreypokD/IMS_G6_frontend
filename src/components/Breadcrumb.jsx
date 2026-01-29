@@ -43,7 +43,7 @@ const Breadcrumb = () => {
   const segments = location.pathname.split("/").filter(Boolean);
   return (
     <nav className="mb-4" aria-label="Breadcrumb">
-      <ol className="flex items-center text-sm space-x-1">
+      <ol className="flex items-center text-base space-x-1">
         <li>
           <Link
             to="/"

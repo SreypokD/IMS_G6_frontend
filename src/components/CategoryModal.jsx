@@ -45,9 +45,9 @@ const CategoryModal = ({ open, onClose, onSave, initial }) => {
           <h2 className="text-2xl font-bold mb-6 text-center">
             {initial ? "Edit Category" : "Add Category"}
           </h2>
-          <form className="space-y-5 overflow-auto max-h-[60vh] px-1">
+          <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-base font-medium mb-1">
                 Name <sup className="text-red-500">*</sup>
               </label>
               <input
@@ -66,7 +66,7 @@ const CategoryModal = ({ open, onClose, onSave, initial }) => {
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-base font-medium mb-1">
                 Description
               </label>
               <textarea
@@ -86,15 +86,15 @@ const CategoryModal = ({ open, onClose, onSave, initial }) => {
               className="px-5 py-2 bg-[#f8f8f8] hover:bg-[#e5e7eb] text-gray-black rounded-xl cursor-pointer  flex items-center gap-2"
               onClick={onClose}
             >
-              <HiXCircle className="inline-block" /> Cancel
+              <HiXCircle className="inline-block text-xl" /> Cancel
             </button>
             <button
               type="button"
               className="px-5 py-2 bg-[#1e3a5f] hover:bg-[#16375b] text-white rounded-xl cursor-pointer flex items-center gap-2"
               onClick={handleSubmit}
             >
-              <HiOutlineDocumentText className="inline-block" />{" "}
-              {initial ? "Update Category" : "Create Category"}
+              <HiOutlineDocumentText className="inline-block text-xl" />{" "}
+              {initial ? "Update Category" : "Add Category"}
             </button>
           </div>
         </div>

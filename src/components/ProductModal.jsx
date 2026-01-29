@@ -1,13 +1,14 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   HiXCircle,
   HiOutlineDocumentText,
   HiOutlineCamera,
+  HiOutlineUpload,
 } from "react-icons/hi";
 
 const initialProduct = {
-  name: "",
   code: "",
+  name: "",
   category: "",
   supplier: "",
   price: "",
@@ -17,57 +18,34 @@ const initialProduct = {
 };
 
 import { getCategories, getSuppliers } from "../api";
+import { Listbox } from "@headlessui/react";
+import { HiSelector } from "react-icons/hi";
 
 const ProductModal = ({ open, onClose, onSave, initial }) => {
   const [product, setProduct] = useState(initial || initialProduct);
-  const [preview, setPreview] = useState(initial?.image || "");
-  const fileInputRef = useRef();
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [preview] = useState(initial?.image || "");
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
   const [categories, setCategories] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
 
-  // Clear form fields when opening for create
-  // Only fetch categories and suppliers when modal opens
   useEffect(() => {
     if (open) {
-      getCategories().then(res => {
-        console.log('getCategories response:', res);
+      getCategories().then((res) => {
         setCategories(res.data.data || []);
       });
-      getSuppliers().then(res => {
-        console.log('getSuppliers response:', res);
+      getSuppliers().then((res) => {
         setSuppliers(res.data.data || []);
       });
     }
   }, [open]);
 
-  // Handle file upload
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    // Preview
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setPreview(ev.target.result);
-    };
-    reader.readAsDataURL(file);
-    // Upload to server (replace with your API endpoint)
-    const formData = new FormData();
-    formData.append("file", file);
-    try {
-      const res = await fetch("http://localhost:5001/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (data.url) {
-        setProduct({ ...product, image: data.url });
-      }
-    } catch {
-      alert("Upload failed");
+  function handleImageChange(e) {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedImage(e.target.files[0]);
     }
-  };
+  }
 
   if (!open) return null;
   return (
@@ -76,7 +54,7 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
         <h2 className="text-2xl font-bold mb-6 text-center">
           {initial ? "Edit Product" : "Add Product"}
         </h2>
-        <form className="space-y-5 overflow-auto max-h-[60vh] px-1">
+        <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
           <div className="col-span-2 mb-2">
             <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
               <HiOutlineDocumentText className="inline-block text-xl text-black" />
@@ -84,7 +62,21 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
             </h3>
             <div className="mb-3 grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-base font-medium mb-1">
+                  Product Code
+                </label>
+                <input
+                  name="code"
+                  value={product.code}
+                  onChange={(e) =>
+                    setProduct({ ...product, code: e.target.value })
+                  }
+                  placeholder="Product Code"
+                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200"
+                />
+              </div>
+              <div>
+                <label className="block text-base font-medium mb-1">
                   Name{" "}
                   {!product.name && !initial ? (
                     <sup className="text-red-500">*</sup>
@@ -102,65 +94,101 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Product Code{" "}
-                  {!product.code && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
-                </label>
-                <input
-                  name="code"
-                  value={product.code}
-                  onChange={(e) =>
-                    setProduct({ ...product, code: e.target.value })
-                  }
-                  onBlur={() => setTouched((prev) => ({ ...prev, code: true }))}
-                  placeholder="Product Code"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!product.code && !initial && (touched.code || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-base font-medium mb-1">
                   Category{" "}
                   {!product.category && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
                 </label>
-                <select
-                  name="category"
-                  value={product.category}
-                  onChange={e => setProduct({ ...product, category: e.target.value })}
-                  onBlur={() => setTouched(prev => ({ ...prev, category: true }))}
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!product.category && !initial && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                <Listbox
+                  value={
+                    categories.find((cat) => cat._id === product.category) ||
+                    null
+                  }
+                  onChange={(cat) =>
+                    setProduct({ ...product, category: cat ? cat._id : "" })
+                  }
                 >
-                  <option value="">Select category</option>
-                  {categories.map(cat => (
-                    <option key={cat._id} value={cat._id}>{cat.name}</option>
-                  ))}
-                </select>
+                  <div className="relative">
+                    <Listbox.Button
+                      className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!product.category && !initial && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                    >
+                      <span>
+                        {categories.find((cat) => cat._id === product.category)
+                          ?.name || "Select category"}
+                      </span>
+                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                    </Listbox.Button>
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+                      {categories.length === 0 && (
+                        <div className="px-4 py-2 text-gray-400">
+                          No categories
+                        </div>
+                      )}
+                      {categories.map((cat) => (
+                        <Listbox.Option
+                          key={cat._id}
+                          value={cat}
+                          className={({ active, selected }) =>
+                            `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                          }
+                        >
+                          {cat.name}
+                        </Listbox.Option>
+                      ))}
+                    </Listbox.Options>
+                  </div>
+                </Listbox>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-base font-medium mb-1">
                   Supplier{" "}
                   {!product.supplier && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
                 </label>
-                <select
-                  name="supplier"
-                  value={product.supplier}
-                  onChange={e => setProduct({ ...product, supplier: e.target.value })}
-                  onBlur={() => setTouched(prev => ({ ...prev, supplier: true }))}
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!product.supplier && !initial && (touched.supplier || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                <Listbox
+                  value={
+                    suppliers.find((sup) => sup._id === product.supplier) ||
+                    null
+                  }
+                  onChange={(sup) =>
+                    setProduct({ ...product, supplier: sup ? sup._id : "" })
+                  }
                 >
-                  <option value="">Select supplier</option>
-                  {suppliers.map(sup => (
-                    <option key={sup._id} value={sup._id}>{sup.company_name}</option>
-                  ))}
-                </select>
+                  <div className="relative">
+                    <Listbox.Button
+                      className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!product.supplier && !initial && (touched.supplier || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                    >
+                      <span>
+                        {suppliers.find((sup) => sup._id === product.supplier)
+                          ?.company_name || "Select supplier"}
+                      </span>
+                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                    </Listbox.Button>
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+                      {suppliers.length === 0 && (
+                        <div className="px-4 py-2 text-gray-400">
+                          No suppliers
+                        </div>
+                      )}
+                      {suppliers.map((sup) => (
+                        <Listbox.Option
+                          key={sup._id}
+                          value={sup}
+                          className={({ active, selected }) =>
+                            `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                          }
+                        >
+                          {sup.company_name}
+                        </Listbox.Option>
+                      ))}
+                    </Listbox.Options>
+                  </div>
+                </Listbox>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-base font-medium mb-1">
                   Price{" "}
                   {(!product.price || isNaN(product.price)) && !initial ? (
                     <sup className="text-red-500">*</sup>
@@ -182,7 +210,7 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-base font-medium mb-1">
                   Stock{" "}
                   {(!product.stock || isNaN(product.stock)) && !initial ? (
                     <sup className="text-red-500">*</sup>
@@ -203,7 +231,7 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-base font-medium mb-1">
                   Expiry{" "}
                   {!product.expiry && !initial ? (
                     <sup className="text-red-500">*</sup>
@@ -230,40 +258,42 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
               <HiOutlineCamera className="inline-block text-xl text-black" />
               <span>Image</span>
             </h3>
-            <div className="mb-3 grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Profile Image{" "}
-                  {!product.image && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
-                </label>
+            <div className="mb-4">
+              <label className="block text-gray-700 text-base font-bold mb-2">
+                Product Image
+              </label>
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center transition-colors">
                 <input
                   type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 col-span-2 mb-2 cursor-pointer ${!product.image && !initial && (touched.image || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                  onChange={handleImageUpload}
-                  onBlur={() =>
-                    setTouched((prev) => ({ ...prev, image: true }))
-                  }
+                  accept="image/jpeg,image/png,image/gif"
+                  className="hidden"
+                  id="image-upload"
+                  onChange={handleImageChange}
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Or paste image URL
+                <label
+                  htmlFor="image-upload"
+                  className="flex flex-col items-center cursor-pointer w-full h-full"
+                >
+                  <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
+                  <span className="text-gray-600">
+                    Drag and drop your image here, or{" "}
+                    <span className="text-blue-600 underline">
+                      browse files
+                    </span>
+                  </span>
+                  <span className="text-xs text-gray-400 mt-1">
+                    Supported formats: JPG, PNG, GIF (Max 5MB)
+                  </span>
                 </label>
-                <input
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 col-span-2 ${!product.image && !initial && (touched.image || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                  value={product.image}
-                  onChange={(e) => {
-                    setProduct({ ...product, image: e.target.value });
-                    setPreview(e.target.value);
-                  }}
-                  onBlur={() =>
-                    setTouched((prev) => ({ ...prev, image: true }))
-                  }
-                />
+                {selectedImage && (
+                  <div className="mt-2 flex items-center">
+                    <img
+                      src={URL.createObjectURL(selectedImage)}
+                      alt="Preview"
+                      className="h-40 w-40 object-cover rounded mr-2"
+                    />
+                  </div>
+                )}
               </div>
             </div>
             {preview && (
@@ -286,7 +316,7 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
             className="px-5 py-2 bg-[#f8f8f8] hover:bg-[#e5e7eb] text-gray-black rounded-xl cursor-pointer  flex items-center gap-2"
             onClick={onClose}
           >
-            <HiXCircle className="inline-block" /> Cancel
+            <HiXCircle className="inline-block text-xl" /> Cancel
           </button>
           <button
             type="button"
@@ -294,8 +324,8 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
             onClick={() => {
               setValidateOnSave(true);
               setTouched({
+                code: true,
                 name: true,
-                sku: true,
                 category: true,
                 supplier: true,
                 price: true,
@@ -306,7 +336,7 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
               onSave(product);
             }}
           >
-            <HiOutlineDocumentText className="inline-block" />
+            <HiOutlineDocumentText className="inline-block text-xl" />
             {initial ? "Update Product" : "Add Product"}
           </button>
         </div>

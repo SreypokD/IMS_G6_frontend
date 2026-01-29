@@ -18,10 +18,15 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("_u", JSON.stringify(res.data.data));
       }
     } catch (err) {
-      // Only logout if error is 401 Unauthorized
-      if (err?.response?.status === 401) {
+      // Logout if error is 401 Unauthorized or 403 Forbidden
+      if (err?.response?.status === 401 || err?.response?.status === 403) {
         setUser(null);
         localStorage.removeItem("_u");
+        localStorage.removeItem("_t");
+        localStorage.removeItem("_r");
+        sessionStorage.clear();
+        // Redirect to login page for a clean re-authentication
+        window.location.href = "/login";
       } else {
         // Optionally, you can log the error or show a notification
         console.error("Profile fetch error", err);
