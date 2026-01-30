@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/useAuth";
 import { getOrderRequests, cancelOrderRequest } from "../api";
 import Pagination from "../components/Pagination";
+import NoDataFound from "../components/NoDataFound";
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
@@ -33,14 +34,6 @@ const OrderHistory = () => {
     } finally {
       setLoading(false);
     }
-  }
-
-  if (!user) {
-    return (
-      <div className="text-red-600">
-        Please log in to view your order history.
-      </div>
-    );
   }
 
   async function handleCancel(orderId) {
@@ -91,10 +84,10 @@ const OrderHistory = () => {
             </thead>
             <tbody>
               {orders.map((order, idx) => (
-                <tr key={order._id} className="border-t border-gray-200">
+                <tr key={order._id}>
                   <td className="py-1 px-4">{idx + 1}</td>
                   <td className="py-1 px-4">
-                    {order.Product?.name || order.productId}
+                    {order.Product?.name || order.product_id}
                   </td>
                   <td className="py-1 px-4">{order.quantity}</td>
                   <td className="py-1 px-4">{order.status}</td>
@@ -120,9 +113,9 @@ const OrderHistory = () => {
                 </tr>
               ))}
               {orders.length === 0 && (
-                <tr className="border-t border-gray-200">
-                  <td colSpan="7" className="py-4 text-center text-gray-500">
-                    No orders found.
+                <tr>
+                  <td colSpan="7">
+                    <NoDataFound message="No orders found." />
                   </td>
                 </tr>
               )}
@@ -136,7 +129,7 @@ const OrderHistory = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchOrders({page, limit})}
+            onChange={({ page, limit }) => fetchOrders({ page, limit })}
           />
         </div>
       )}

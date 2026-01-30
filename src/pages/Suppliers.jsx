@@ -18,6 +18,7 @@ import {
 import SupplierModal from "../components/SupplierModal";
 import { useAuth } from "../context/useAuth";
 import Pagination from "../components/Pagination";
+import NoDataFound from "../components/NoDataFound";
 
 // Custom dropdowns for Suppliers page
 const statusOptions = ["All Status", "Active", "Inactive"];
@@ -217,7 +218,7 @@ const Suppliers = () => {
             </thead>
             <tbody>
               {suppliers.map((s, index) => (
-                <tr key={s._id} className="border-t border-gray-200">
+                <tr key={s._id}>
                   <td className="py-1 px-4">{index + 1}</td>
                   <td className="py-1 px-4">
                     <div className="flex items-center gap-2">
@@ -225,7 +226,7 @@ const Suppliers = () => {
                       <div className="font-semibold text-base text-[#1e3a5f]">
                         {s.company_name}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-sm text-gray-500">
                         ({s.location})
                       </div>
                     </div>
@@ -234,7 +235,7 @@ const Suppliers = () => {
                     <div className="font-medium text-gray-900">
                       {s.contact_person}
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-sm text-gray-500">
                       ({s.contact_position})
                     </div>
                   </td>
@@ -302,11 +303,11 @@ const Suppliers = () => {
                     )}
                   </td>
                 </tr>
-              ))}{" "}
+              ))}
               {suppliers.length === 0 && (
-                <tr className="border-t border-gray-200">
-                  <td colSpan="7" className="py-4 text-center text-gray-500">
-                    No suppliers found.
+                <tr>
+                  <td colSpan="7">
+                    <NoDataFound message="No suppliers found." />
                   </td>
                 </tr>
               )}
@@ -320,7 +321,7 @@ const Suppliers = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchSuppliers({page, limit})}
+            onChange={({ page, limit }) => fetchSuppliers({ page, limit })}
           />
         </div>
       )}

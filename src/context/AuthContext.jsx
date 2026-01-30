@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { AuthContext } from "./AuthContextBase";
-import { logout as logoutApi } from "../api/auth";
+import { AuthContextBase } from "./AuthContextBase";
+import { logout as logoutApi } from "../api/auth-services";
 import { getProfile } from "../api";
 
 export const AuthProvider = ({ children }) => {
@@ -67,8 +67,8 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContextBase.Provider value={{ user, login, logout }}>
       {children}
-    </AuthContext.Provider>
+    </AuthContextBase.Provider>
   );
 };

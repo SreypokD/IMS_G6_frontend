@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getSales } from "../api";
 import Pagination from "../components/Pagination";
 import { useAuth } from "../context/useAuth";
+import NoDataFound from "../components/NoDataFound";
 
 const Sales = () => {
   const [sales, setSales] = useState([]);
@@ -25,7 +26,7 @@ const Sales = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await getSales({page, limit});
+      const res = await getSales({ page, limit });
       setSales(res.data.data);
       setPagination(res.data.pagination);
     } catch {
@@ -60,7 +61,7 @@ const Sales = () => {
             </thead>
             <tbody>
               {sales.map((sale, idx) => (
-                <tr key={sale._id} className="border-t border-gray-200">
+                <tr key={sale._id}>
                   <td className="py-1 px-4">{idx + 1}</td>
                   <td className="py-1 px-4">{sale.quantity}</td>
                   <td className="py-1 px-4">{sale.status}</td>
@@ -72,9 +73,9 @@ const Sales = () => {
                 </tr>
               ))}
               {sales.length === 0 && (
-                <tr className="border-t border-gray-200">
-                  <td colSpan="4" className="py-4 text-center text-gray-500">
-                    No sales found.
+                <tr>
+                  <td colSpan="4">
+                    <NoDataFound message="No sales found." />
                   </td>
                 </tr>
               )}
@@ -88,7 +89,7 @@ const Sales = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchSales({page, limit})}
+            onChange={({ page, limit }) => fetchSales({ page, limit })}
           />
         </div>
       )}

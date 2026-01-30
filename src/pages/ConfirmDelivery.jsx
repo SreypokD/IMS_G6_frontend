@@ -3,6 +3,7 @@ import { HiCheck } from "react-icons/hi";
 import { useAuth } from "../context/useAuth";
 import { getConfirmDeliveries, updateConfirmDelivery } from "../api";
 import Pagination from "../components/Pagination";
+import NoDataFound from "../components/NoDataFound";
 
 const DeliveryConfirmation = () => {
   const [confirmDeliveries, setConfirmDeliveries] = useState([]);
@@ -21,10 +22,6 @@ const DeliveryConfirmation = () => {
       fetchConfirmDeliveries(1, 10);
     }
   }, [user]);
-
-  if (!user || user.role !== "admin") {
-    return <div className="text-red-600">Access denied. Admins only.</div>;
-  }
 
   async function fetchConfirmDeliveries(page = 1, limit = 10) {
     setLoading(true);
@@ -80,16 +77,9 @@ const DeliveryConfirmation = () => {
             </thead>
             <tbody>
               {confirmDeliveries.map((d, index) => (
-                <tr key={d._id} className="border-t border-gray-200">
+                <tr key={d._id}>
                   <td className="py-1 px-4">{index + 1}</td>
                   <td className="py-1 px-4">{d.order}</td>
-                  <td className="py-1 px-4">
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${d.status === "Pending" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"}`}
-                    >
-                      {d.status}
-                    </span>
-                  </td>
                   <td className="py-1 px-4">{d.date}</td>
                   <td className="py-1 px-4">
                     {d.status === "Pending" &&
@@ -105,12 +95,19 @@ const DeliveryConfirmation = () => {
                         </button>
                       )}
                   </td>
+                  <td className="py-1 px-4">
+                    <span
+                      className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${d.status === "Pending" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"}`}
+                    >
+                      {d.status}
+                    </span>
+                  </td>
                 </tr>
               ))}
               {confirmDeliveries.length === 0 && (
-                <tr className="border-t border-gray-200">
-                  <td colSpan="5" className="py-4 text-center text-gray-500">
-                    No pending deliveries.
+                <tr>
+                  <td colSpan="5">
+                    <NoDataFound message="No users found." />
                   </td>
                 </tr>
               )}
@@ -124,7 +121,9 @@ const DeliveryConfirmation = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchConfirmDeliveries({page, limit})}
+            onChange={({ page, limit }) =>
+              fetchConfirmDeliveries({ page, limit })
+            }
           />
         </div>
       )}

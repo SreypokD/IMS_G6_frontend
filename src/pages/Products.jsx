@@ -11,6 +11,7 @@ import {
 } from "../api";
 import { useAuth } from "../context/useAuth";
 import Pagination from "../components/Pagination";
+import NoDataFound from "../components/NoDataFound";
 
 const initialProducts = [];
 const categoryOptions = [
@@ -280,7 +281,7 @@ const Products = () => {
             </thead>
             <tbody>
               {products.map((p, index) => (
-                <tr key={p._id} className="border-t border-gray-200">
+                <tr key={p._id}>
                   <td className="py-1 px-4">{index + 1}</td>
                   <td className="py-1 px-4">{p.name}</td>
                   <td className="py-1 px-4">
@@ -290,7 +291,7 @@ const Products = () => {
                   </td>
                   <td className="py-1 px-4">
                     <span className="text-blue-500/80">
-                      {p.supplier?.name || p.supplier}
+                      {typeof p.supplier === 'object' ? (p.supplier?.company_name || p.supplier?.name) : p.supplier}
                     </span>
                   </td>
                   <td className="py-1 px-4 text-right">
@@ -331,9 +332,9 @@ const Products = () => {
                 </tr>
               ))}
               {products.length === 0 && (
-                <tr className="border-t border-gray-200">
-                  <td colSpan="8" className="py-4 text-center text-gray-500">
-                    No products found.
+                <tr>
+                  <td colSpan="8">
+                    <NoDataFound message="No products found." />
                   </td>
                 </tr>
               )}
@@ -347,7 +348,7 @@ const Products = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchProducts({page, limit})}
+            onChange={({ page, limit }) => fetchProducts({ page, limit })}
           />
         </div>
       )}

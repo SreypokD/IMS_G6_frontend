@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getActivityLogs } from "../api";
 import Pagination from "../components/Pagination";
 import { useAuth } from "../context/useAuth";
+import NoDataFound from "../components/NoDataFound";
 
 const ActivityLog = () => {
   const [logs, setLogs] = useState([]);
@@ -53,34 +54,34 @@ const ActivityLog = () => {
             <thead>
               <tr>
                 <th className="py-3 px-4">No.</th>
-                <th className="py-3 px-4">User ID</th>
-                <th className="py-3 px-4">Action</th>
+                <th className="py-3 px-4">User</th>
                 <th className="py-3 px-4">Entity Type</th>
-                <th className="py-3 px-4">Entity ID</th>
                 <th className="py-3 px-4">Details</th>
                 <th className="py-3 px-4">Timestamp</th>
+                <th className="py-3 px-4">Action</th>
               </tr>
             </thead>
             <tbody>
               {logs.map((log, idx) => (
-                <tr key={log._id} className="border-t border-gray-200">
+                <tr key={log._id}>
                   <td className="py-1 px-4">{idx + 1}</td>
-                  <td className="py-1 px-4">{log.user_id}</td>
-                  <td className="py-1 px-4">{log.action}</td>
+                  <td className="py-1 px-4">
+                    {log.user?.first_name + " " + log.user?.last_name || "-"}
+                  </td>
                   <td className="py-1 px-4">{log.entity_type || "-"}</td>
-                  <td className="py-1 px-4">{log.entity_id || "-"}</td>
                   <td className="py-1 px-4">{log.details || "-"}</td>
                   <td className="py-1 px-4">
                     {log.createdAt
                       ? new Date(log.createdAt).toLocaleString()
                       : "-"}
                   </td>
+                  <td className="py-1 px-4">{log.action}</td>
                 </tr>
               ))}
               {logs.length === 0 && (
-                <tr className="border-t border-gray-200">
-                  <td colSpan="7" className="py-4 text-center text-gray-500">
-                    No activity logs found.
+                <tr>
+                  <td colSpan="7">
+                    <NoDataFound message="No activity logs found." />
                   </td>
                 </tr>
               )}
@@ -88,13 +89,13 @@ const ActivityLog = () => {
           </table>
         )}
       </div>
-      {logs.length > 0 && (
+      {logs.length > 0 && pagination && typeof pagination === "object" && (
         <div className="flex justify-end mt-4">
           <Pagination
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchLogs({page, limit})}
+            onChange={({ page, limit }) => fetchLogs({ page, limit })}
           />
         </div>
       )}

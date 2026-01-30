@@ -289,14 +289,18 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                       browse files
                     </span>
                   </span>
-                  <span className="text-xs text-gray-400 mt-1">
+                  <span className="text-sm text-gray-400 mt-1">
                     Supported formats: JPG, PNG, GIF (Max 5MB)
                   </span>
                 </label>
-                {selectedImage && (
+                {(selectedImage || product.image) && (
                   <div className="mt-2 flex items-center">
                     <img
-                      src={URL.createObjectURL(selectedImage)}
+                      src={
+                        selectedImage
+                          ? URL.createObjectURL(selectedImage)
+                          : product.image
+                      }
                       alt="Preview"
                       className="h-40 w-40 object-cover rounded mr-2"
                     />

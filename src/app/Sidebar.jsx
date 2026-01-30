@@ -119,7 +119,7 @@ const Sidebar = ({ mini }) => {
       className={`bg-white h-screen flex flex-col border-r border-[#ececec] transition-all duration-300 ${mini ? "w-18" : "w-64"}`}
     >
       <div
-        className={`text-xl font-bold m-4 tracking-tight flex items-center justify-center gap-3 ${mini ? "flex-col" : ""}`}
+        className={`text-lg font-bold m-3 tracking-tight flex items-center justify-center gap-3 ${mini ? "flex-col" : ""}`}
       >
         <img src={logo} alt="Logo" className="object-contain h-10 w-10 mb-2" />
         {!mini && <span>Stockify IMS</span>}

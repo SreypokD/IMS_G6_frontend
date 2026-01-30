@@ -1,4 +1,3 @@
-
 import axios from "axios";
 
 // NOTE
@@ -65,12 +64,19 @@ const orderRequests = "/order-requests";
 const approveRequests = "/approve-requests";
 const confirmDeliveries = "/confirm-deliveries";
 const sales = "/sales";
+const stocks = "/stocks";
 const inventorySummary = "/reports/inventory-summary";
 const orderStats = "/reports/order-stats";
 const activityLogs = "/reports/activity-logs";
 const permissions = "/permissions";
 const users = "/users";
- 
+
+ // Notifications
+const notifications = "/notifications";
+export const getNotifications = () => api.get(notifications);
+export const markNotificationRead = (id) => api.patch(`${notifications}/${id}/read`);
+export const getUnreadNotificationCount = () => api.get(`${notifications}/unread/count`);
+
 // Get current user profile
 export const getProfile = () => api.get(profile);
 
@@ -113,6 +119,9 @@ export const updateConfirmDelivery = (id, data) => api.patch(`${confirmDeliverie
 
 // Sales
 export const getSales = (params = {}) => api.get(sales, { params });
+
+// Stocks
+export const getStocks = (params = {}) => api.get(stocks, { params });
 
 // Activity Logs
 export const getActivityLogs = (params = {}) => api.get(activityLogs, { params });

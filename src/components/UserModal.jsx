@@ -62,8 +62,8 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
       setSelectedImage(file);
       try {
         const res = await uploadFile(file);
-        if (res.data && res.data.profile) {
-          setUser((prev) => ({ ...prev, profile: res.data.profile }));
+        if (res.data && res.data.url) {
+          setUser((prev) => ({ ...prev, profile: res.data.url }));
         }
       } catch (err) {
         console.error("Image upload failed", err);
@@ -416,14 +416,18 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                       browse files
                     </span>
                   </span>
-                  <span className="text-xs text-gray-400 mt-1">
+                  <span className="text-sm text-gray-400 mt-1">
                     Supported formats: JPG, PNG, GIF (Max 5MB)
                   </span>
                 </label>
-                {selectedImage && (
+                {(selectedImage || user.profile) && (
                   <div className="mt-2 flex items-center">
                     <img
-                      src={URL.createObjectURL(selectedImage)}
+                      src={
+                        selectedImage
+                          ? URL.createObjectURL(selectedImage)
+                          : user.profile
+                      }
                       alt="Preview"
                       className="h-40 w-40 object-cover rounded mr-2"
                     />

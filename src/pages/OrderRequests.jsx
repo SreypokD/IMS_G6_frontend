@@ -4,6 +4,8 @@ import { useAuth } from "../context/useAuth";
 import OrderRequestModal from "../components/OrderRequestModal.jsx";
 import { getOrderRequests } from "../api";
 import Pagination from "../components/Pagination";
+import NoDataFound from "../components/NoDataFound";
+import { formatDate } from "../utils/dateFormat";
 
 const OrderRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -71,64 +73,88 @@ const OrderRequests = () => {
               <tr>
                 <th className="py-3 px-4">No.</th>
                 <th className="py-3 px-4">Requester</th>
-                <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4">Date</th>
+                <th className="py-3 px-4">Customer Remark</th>
+                <th className="py-3 px-4">Delivery Date</th>
+                <th className="py-3 px-4">Status</th>
               </tr>
             </thead>
-            <tbody>{(user?.role === "customer"
-                ? requests.filter(
-                    (req) => String(req.requester_id) === String(user._id),
-                  )
-                : requests
-              ).map((req, index) => (
-                <tr key={req._id} className="border-t border-gray-200">
-                  <td className="py-1 px-4">{index + 1}</td>
-                  <td className="py-1 px-4">
-                    {req.requester?.first_name ||
-                      req.requester?.email ||
-                      req.requester ||
-                      "-"}
-                  </td>
-                  <td className="py-1 px-4">
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${req.status === "pending" ? "bg-yellow-100 text-yellow-700" : req.status === "approved" ? "bg-green-100 text-green-700" : req.status === "rejected" ? "bg-red-100 text-red-700" : req.status === "completed" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"}`}
-                    >
-                      {req.status.charAt(0).toUpperCase() + req.status.slice(1)}
-                    </span>
-                    {user?.role === "customer" &&
-                      req.status === "pending" &&
-                      String(req.requester_id) === String(user._id) && (
-                        <button
-                          className="ml-2 text-xs text-red-600 underline cursor-pointer"
-                          onClick={async () => {
-                            try {
-                              await import("../api").then((api) =>
-                                api.cancelOrderRequest(req._id),
-                              );
-                              fetchOrderRequests(
-                                pagination.page,
-                                pagination.limit,
-                              );
-                            } catch {
-                              //
-                            }
-                          }}
-                        >
-                          Cancel
-                        </button>
-                      )}
-                  </td>
-                  <td className="py-1 px-4">
-                    {req.date || req.requested_date || "-"}
-                  </td>
-                </tr>
-              ))}{requests.length === 0 && (
-                <tr className="border-t border-gray-200">
-                  <td colSpan="4" className="py-4 text-center text-gray-500">
-                    No order requests found.
-                  </td>
-                </tr>
-              )}</tbody>
+            <tbody>
+              {(() => {
+                const filteredRequests =
+                  user?.permission?.name === "Customer" ||
+                  (user?.permission?.permissions &&
+                    user.permission.permissions.includes(
+                      "create_order_request",
+                    ) &&
+                    !user.permission.permissions.includes(
+                      "update_order_request",
+                    ))
+                    ? requests.filter(
+                        (req) => String(req.requester_id) === String(user._id),
+                      )
+                    : requests;
+                if (!filteredRequests || filteredRequests.length === 0) {
+                  return (
+                    <tr>
+                      <td colSpan="6">
+                        <NoDataFound message="No order requests found." />
+                      </td>
+                    </tr>
+                  );
+                }
+                return filteredRequests.map((req, index) => (
+                  <tr key={req._id}>
+                    <td className="py-1 px-4">
+                      {(pagination.page - 1) * pagination.limit + index + 1}
+                    </td>
+                    <td className="py-1 px-4">
+                      {req.requester?.first_name ||
+                        req.requester?.email ||
+                        req.requester ||
+                        "-"}
+                    </td>
+                    <td className="py-1 px-4">
+                      {formatDate(req.date || req.requested_date)}
+                    </td>
+                    <td className="py-1 px-4">{req.customer_remark || "-"}</td>
+                    <td className="py-1 px-4">
+                      {formatDate(req.delivery_date)}
+                    </td>
+                    <td className="py-1 px-4">
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${req.status === "pending" ? "bg-yellow-100 text-yellow-700" : req.status === "approved" ? "bg-green-100 text-green-700" : req.status === "rejected" ? "bg-red-100 text-red-700" : req.status === "completed" ? "bg-blue-100 text-blue-700" : req.status === "on_hold" ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-700"}`}
+                      >
+                        {req.status.charAt(0).toUpperCase() +
+                          req.status.slice(1)}
+                      </span>
+                      {user?.role === "customer" &&
+                        req.status === "pending" &&
+                        String(req.requester_id) === String(user._id) && (
+                          <button
+                            className="ml-2 text-sm text-red-600 underline cursor-pointer"
+                            onClick={async () => {
+                              try {
+                                await import("../api").then((api) =>
+                                  api.cancelOrderRequest(req._id),
+                                );
+                                fetchOrderRequests(
+                                  pagination.page,
+                                  pagination.limit,
+                                );
+                              } catch {
+                                //
+                              }
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        )}
+                    </td>
+                  </tr>
+                ));
+              })()}
+            </tbody>
           </table>
         )}
       </div>

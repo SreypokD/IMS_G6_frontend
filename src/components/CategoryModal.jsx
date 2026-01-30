@@ -60,7 +60,7 @@ const CategoryModal = ({ open, onClose, onSave, initial }) => {
                 required
               />
               {!category.name && (touched.name || validateOnSave) && (
-                <div className="text-red-500 text-xs mt-1">
+                <div className="text-red-500 text-sm mt-1">
                   Name is required
                 </div>
               )}

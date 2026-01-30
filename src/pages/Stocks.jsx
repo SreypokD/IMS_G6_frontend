@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Listbox } from "@headlessui/react";
 import { HiSelector } from "react-icons/hi";
-
+import { getStocks } from "../api";
 import {
   HiDownload,
   HiLogout,
   HiOutlineUpload,
   HiOutlineDownload,
 } from "react-icons/hi";
+import Pagination from "../components/Pagination";
+import { useAuth } from "../context/useAuth";
+import NoDataFound from "../components/NoDataFound";
 
 // Custom dropdowns for Stock page
 const statusOptions = ["All Status", "In Stock", "Out of Stock", "Low Stock"];
@@ -73,6 +76,37 @@ function StockLocationDropdown() {
 }
 
 const Stocks = () => {
+  const [stocks, setStocks] = useState([]);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    totalItems: 0,
+    totalPages: 1,
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      fetchStocks(1, 10);
+    }
+  }, [user]);
+
+  async function fetchStocks(page = 1, limit = 10) {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await getStocks({ page, limit });
+      setStocks(res.data.data);
+      setPagination(res.data.pagination);
+    } catch {
+      setError("Failed to load stocks");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -107,6 +141,55 @@ const Stocks = () => {
           <StockLocationDropdown />
         </div>
       </div>
+      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
+        {loading ? (
+          <div className="p-8 text-center text-gray-500">Loading...</div>
+        ) : error ? (
+          <div className="p-8 text-center text-red-500">{error}</div>
+        ) : (
+          <table className="min-w-full text-left text-base align-middle">
+            <thead>
+              <tr>
+                <th className="py-3 px-4">No.</th>
+                <th className="py-3 px-4">Quantity</th>
+                <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4">Completed At</th>
+              </tr>
+            </thead>
+            <tbody>
+              {stocks.map((stock, idx) => (
+                <tr key={stock._id}>
+                  <td className="py-1 px-4">{idx + 1}</td>
+                  <td className="py-1 px-4">{stock.quantity}</td>
+                  <td className="py-1 px-4">{stock.status}</td>
+                  <td className="py-1 px-4">
+                    {stock.completed_at
+                      ? new Date(stock.completed_at).toLocaleString()
+                      : "-"}
+                  </td>
+                </tr>
+              ))}
+              {stocks.length === 0 && (
+                <tr>
+                  <td colSpan="4">
+                    <NoDataFound message="No stocks found." />
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
+      {stocks.length > 0 && (
+        <div className="flex justify-end mt-4">
+          <Pagination
+            total={pagination.totalItems}
+            page={pagination.page}
+            limit={pagination.limit}
+            onChange={({ page, limit }) => fetchStocks({ page, limit })}
+          />
+        </div>
+      )}
     </div>
   );
 };

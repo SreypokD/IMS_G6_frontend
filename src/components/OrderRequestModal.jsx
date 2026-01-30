@@ -5,7 +5,7 @@ import { HiXCircle, HiOutlineDocumentText } from "react-icons/hi";
 import { getProducts, createOrderRequest } from "../api";
 
 const initialOrderRequest = {
-  productId: "",
+  product_id: "",
   quantity: 1,
   requestedDate: "",
   notes: "",
@@ -45,12 +45,12 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
   async function handleSubmit(e) {
     e.preventDefault();
     setValidateOnSave(true);
-    if (!order.productId || !order.quantity || !order.requestedDate) return;
+    if (!order.product_id || !order.quantity || !order.requestedDate) return;
     setLoading(true);
     setError("");
     try {
       await createOrderRequest({
-        product_id: order.productId,
+        product_id: order.product_id,
         quantity: order.quantity,
         requested_date: order.requestedDate,
         notes: order.notes,
@@ -93,23 +93,23 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                   </label>
                   <Listbox
                     value={
-                      products.find((p) => p._id === order.productId) || null
+                      products.find((p) => p._id === order.product_id) || null
                     }
                     onChange={(product) => {
                       setOrder((prev) => ({
                         ...prev,
-                        productId: product ? product._id : "",
+                        product_id: product ? product._id : "",
                       }));
-                      setTouched((prev) => ({ ...prev, productId: true }));
+                      setTouched((prev) => ({ ...prev, product_id: true }));
                     }}
                   >
                     <div className="relative">
                       <Listbox.Button
-                        className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!order.productId && (touched.productId || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                        className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!order.product_id && (touched.product_id || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                       >
                         <span>
-                          {products.find((p) => p._id === order.productId)?.name
-                            ? `${products.find((p) => p._id === order.productId)?.name} (Stock: ${products.find((p) => p._id === order.productId)?.stock - (products.find((p) => p._id === order.productId)?.reserved_stock || 0)})`
+                          {products.find((p) => p._id === order.product_id)?.name
+                            ? `${products.find((p) => p._id === order.product_id)?.name} (Stock: ${products.find((p) => p._id === order.product_id)?.stock - (products.find((p) => p._id === order.product_id)?.reserved_stock || 0)})`
                             : "Select product"}
                         </span>
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
@@ -140,48 +140,23 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                   <label className="block text-base font-medium mb-1">
                     Quantity <sup className="text-red-500">*</sup>
                   </label>
-                  <Listbox
-                    value={
-                      products.find((p) => p._id === order.productId) || null
-                    }
-                    onChange={(product) => {
+                  <input
+                    name="quantity"
+                    value={order.quantity}
+                    onChange={(e) =>
                       setOrder((prev) => ({
                         ...prev,
-                        productId: product ? product._id : "",
-                      }));
-                      setTouched((prev) => ({ ...prev, productId: true }));
-                    }}
-                  >
-                    <div className="relative">
-                      <Listbox.Button
-                        className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!order.productId && (touched.productId || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                      >
-                        <span>
-                          {products.find((p) => p._id === order.productId)
-                            ?.name || "Select product"}
-                        </span>
-                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-                      </Listbox.Button>
-                      <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-                        {products.length === 0 && (
-                          <div className="px-4 py-2 text-gray-400">
-                            No products
-                          </div>
-                        )}
-                        {products.map((product) => (
-                          <Listbox.Option
-                            key={product._id}
-                            value={product}
-                            className={({ active, selected }) =>
-                              `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
-                            }
-                          >
-                            {product.name}
-                          </Listbox.Option>
-                        ))}
-                      </Listbox.Options>
-                    </div>
-                  </Listbox>
+                        quantity: e.target.value,
+                      }))
+                    }
+                    onBlur={() =>
+                      setTouched((prev) => ({ ...prev, quantity: true }))
+                    }
+                    type="number"
+                    step="0.01"
+                    placeholder="Quantity"
+                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${(!order.quantity || isNaN(order.quantity)) && !initial && (touched.quantity || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  />
                 </div>
                 <div>
                   <label className="block text-base font-medium mb-1">

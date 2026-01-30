@@ -14,7 +14,7 @@ const Dashboard = () => {
   const [orderStats, setOrderStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-  
+
   useEffect(() => {
     async function fetchData() {
       setLoading(true);

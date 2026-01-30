@@ -3,6 +3,7 @@ import { useAuth } from "../context/useAuth";
 import { HiOutlineCheckCircle, HiOutlineXCircle } from "react-icons/hi";
 import { getApproveRequests, updateApproveRequests } from "../api";
 import Pagination from "../components/Pagination";
+import NoDataFound from "../components/NoDataFound";
 
 const OrderRequestApproval = () => {
   const [orders, setOrders] = useState([]);
@@ -25,10 +26,6 @@ const OrderRequestApproval = () => {
       fetchApproveRequests(1, 10);
     }
   }, [user]);
-
-  if (!user || user.role !== "admin") {
-    return <div className="text-red-600">Access denied. Admins only.</div>;
-  }
 
   async function fetchApproveRequests(page = 1, limit = 10) {
     setLoading(true);
@@ -114,7 +111,7 @@ const OrderRequestApproval = () => {
             </thead>
             <tbody>
               {orders.map((order, idx) => (
-                <tr key={order._id} className="border-t border-gray-200">
+                <tr key={order._id}>
                   <td className="py-1 px-4">{idx + 1}</td>
                   <td className="py-1 px-4">
                     {order.requester?.name || order.requester_id}
@@ -132,7 +129,7 @@ const OrderRequestApproval = () => {
                   <td className="py-1 px-4">
                     <input
                       type="text"
-                      className="border rounded px-2 py-1 text-base"
+                      className="border border-gray-200 rounded px-2 py-1 text-base"
                       placeholder="Admin remarks"
                       value={remarks[order._id] || ""}
                       onChange={(e) =>
@@ -178,7 +175,7 @@ const OrderRequestApproval = () => {
                       <div className="mt-2">
                         <input
                           type="text"
-                          className="border rounded px-2 py-1 text-base mb-1"
+                          className="border border-gray-200 rounded px-2 text-base mb-1"
                           placeholder="Rejection reason"
                           value={rejectionReason[order._id] || ""}
                           onChange={(e) =>
@@ -190,7 +187,7 @@ const OrderRequestApproval = () => {
                           disabled={actionId === order._id}
                         />
                         <button
-                          className="ml-2 px-2 py-1 bg-red-500 text-white rounded text-xs"
+                          className="ml-2 px-2 py-1 bg-red-500 text-white rounded text-sm"
                           onClick={() => handleReject(order._id)}
                           disabled={actionId === order._id}
                         >
@@ -202,9 +199,9 @@ const OrderRequestApproval = () => {
                 </tr>
               ))}
               {orders.length === 0 && (
-                <tr className="border-t border-gray-200">
-                  <td colSpan="9" className="py-4 text-center text-gray-500">
-                    No approve requests found.
+                <tr>
+                  <td colSpan="9">
+                    <NoDataFound message="No users found." />
                   </td>
                 </tr>
               )}
@@ -218,7 +215,9 @@ const OrderRequestApproval = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchApproveRequests({page, limit})}
+            onChange={({ page, limit }) =>
+              fetchApproveRequests({ page, limit })
+            }
           />
         </div>
       )}

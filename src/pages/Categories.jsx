@@ -11,6 +11,7 @@ import {
 } from "../api";
 import { useAuth } from "../context/useAuth";
 import Pagination from "../components/Pagination";
+import NoDataFound from "../components/NoDataFound";
 
 // Custom dropdowns for Categories page
 const statusOptions = ["All Status", "Active", "Inactive"];
@@ -237,9 +238,9 @@ const Categories = () => {
                 </tr>
               ))}
               {categories.length === 0 && (
-                <tr className="border-t border-gray-200">
-                  <td colSpan="4" className="py-4 text-center text-gray-500">
-                    No categories found.
+                <tr>
+                  <td colSpan="4">
+                    <NoDataFound message="No categories found." />
                   </td>
                 </tr>
               )}
@@ -253,7 +254,7 @@ const Categories = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchCategories({page, limit})}
+            onChange={({ page, limit }) => fetchCategories({ page, limit })}
           />
         </div>
       )}

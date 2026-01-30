@@ -9,6 +9,7 @@ import {
 } from "../api";
 import { useAuth } from "../context/useAuth";
 import Pagination from "../components/Pagination";
+import NoDataFound from "../components/NoDataFound";
 
 const Permissions = () => {
   const [permissions, setPermissions] = useState([]);
@@ -136,7 +137,7 @@ const Permissions = () => {
             </thead>
             <tbody>
               {permissions.map((perm, index) => (
-                <tr key={perm._id} className="border-t border-gray-200">
+                <tr key={perm._id}>
                   <td className="py-1 px-4">{index + 1}</td>
                   <td className="py-1 px-4">{perm.name}</td>
                   <td className="py-1 px-4 whitespace-nowrap">
@@ -172,9 +173,9 @@ const Permissions = () => {
                 </tr>
               ))}
               {permissions.length === 0 && (
-                <tr className="border-t border-gray-200">
-                  <td colSpan="4" className="py-4 text-center text-gray-500">
-                    No permissions found.
+                <tr>
+                  <td colSpan="4">
+                    <NoDataFound message="No permissions found." />
                   </td>
                 </tr>
               )}
@@ -188,7 +189,7 @@ const Permissions = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchPermissions({page, limit})}
+            onChange={({ page, limit }) => fetchPermissions({ page, limit })}
           />
         </div>
       )}

@@ -4,6 +4,7 @@ import { getUsers, createUser, updateUser, deleteUser } from "../api";
 import UserModal from "../components/UserModal";
 import { useAuth } from "../context/useAuth";
 import Pagination from "../components/Pagination";
+import NoDataFound from "../components/NoDataFound";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -134,7 +135,7 @@ const Users = () => {
             </thead>
             <tbody>
               {users.map((u, index) => (
-                <tr key={u._id} className="border-t border-gray-200">
+                <tr key={u._id}>
                   <td className="py-1 px-4">{index + 1}</td>
                   <td className="py-1 px-4">
                     {u.first_name} {u.last_name}
@@ -166,11 +167,11 @@ const Users = () => {
                     )}
                   </td>
                 </tr>
-              ))}{" "}
+              ))}
               {users.length === 0 && (
-                <tr className="border-t border-gray-200">
-                  <td colSpan="5" className="py-4 text-center text-gray-500">
-                    No users found.
+                <tr>
+                  <td colSpan="6">
+                    <NoDataFound message="No users found." />
                   </td>
                 </tr>
               )}
