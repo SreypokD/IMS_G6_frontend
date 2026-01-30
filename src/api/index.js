@@ -1,3 +1,4 @@
+
 import axios from "axios";
 
 // NOTE
@@ -55,8 +56,7 @@ api.interceptors.response.use(
     return Promise.reject(error);
   },
 );
-
-const logout = "/auth/logout";
+ 
 const profile = "/auth/profile";
 const products = "/products";
 const categories = "/categories";
@@ -64,16 +64,13 @@ const suppliers = "/suppliers";
 const orderRequests = "/order-requests";
 const approveRequests = "/approve-requests";
 const confirmDeliveries = "/confirm-deliveries";
-const inventorySummary = "/report/inventory-summary";
-const orderStats = "/report/order-stats";
 const sales = "/sales";
-const activityLogs = "/report/activity-logs";
+const inventorySummary = "/reports/inventory-summary";
+const orderStats = "/reports/order-stats";
+const activityLogs = "/reports/activity-logs";
 const permissions = "/permissions";
 const users = "/users";
-
-// Logout API
-export const logoutApi = () => api.post(logout);
-
+ 
 // Get current user profile
 export const getProfile = () => api.get(profile);
 
@@ -132,4 +129,12 @@ export const createUser = (data) => api.post(users, data);
 export const updateUser = (id, data) => api.patch(`${users}/${id}`, data);
 export const deleteUser = (id) => api.delete(`${users}/${id}`);
 
+// Upload File
+export const uploadFile = (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  return api.post("/upload", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
 export default api;

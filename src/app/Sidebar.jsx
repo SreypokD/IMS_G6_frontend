@@ -122,7 +122,7 @@ const Sidebar = ({ mini }) => {
         className={`text-xl font-bold m-4 tracking-tight flex items-center justify-center gap-3 ${mini ? "flex-col" : ""}`}
       >
         <img src={logo} alt="Logo" className="object-contain h-10 w-10 mb-2" />
-        {!mini && <span>IMS</span>}
+        {!mini && <span>Stockify IMS</span>}
       </div>
       <nav className="flex-1 min-h-0">
         <ul className="space-y-2 overflow-y-auto h-[calc(100vh-100px)] px-3">

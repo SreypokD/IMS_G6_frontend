@@ -65,12 +65,7 @@ const permissionTable = [
   // Sales
   {
     label: "Sales",
-    actions: [
-      "view_sale",
-      "create_sale",
-      "update_sale",
-      "delete_sale",
-    ],
+    actions: ["view_sale", "create_sale", "update_sale", "delete_sale"],
   },
   {
     label: "Order History",
@@ -211,12 +206,10 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                 <tbody>
                   {permissionTable.map((row) => (
                     <tr key={row.label} className="border-t border-gray-200">
-                      <td className="py-1 px-4 font-semibold text-left">
-                        {row.label}
-                      </td>
-                      <td className="py-1 px-4 font-semibold text-center">
+                      <td className="py-2 px-4 text-left">{row.label}</td>
+                      <td className="py-2 px-4">
                         <input
-                          className="w-5 h-5 cursor-pointer accent-[#1e3a5f]"
+                          className="w-5 h-5 mt-2 cursor-pointer accent-[#1e3a5f]"
                           type="checkbox"
                           checked={row.actions.every((a) =>
                             permission.permissions?.includes(a),
@@ -239,10 +232,10 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                           a.startsWith(action),
                         );
                         return (
-                          <td className="py-1 px-4 text-center" key={action}>
+                          <td className="py-2 px-4 text-center" key={action}>
                             {actionKey ? (
                               <input
-                                className="w-5 h-5 cursor-pointer accent-[#1e3a5f]"
+                                className="w-5 h-5 mt-2 cursor-pointer accent-[#1e3a5f]"
                                 type="checkbox"
                                 value={actionKey}
                                 checked={

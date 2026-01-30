@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContextBase";
-import { logoutApi, getProfile } from "../api/index";
+import { logout as logoutApi } from "../api/auth";
+import { getProfile } from "../api";
 
 export const AuthProvider = ({ children }) => {
   // Initialize user state from localStorage
@@ -25,8 +26,6 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem("_t");
         localStorage.removeItem("_r");
         sessionStorage.clear();
-        // Redirect to login page for a clean re-authentication
-        window.location.href = "/login";
       } else {
         // Optionally, you can log the error or show a notification
         console.error("Profile fetch error", err);

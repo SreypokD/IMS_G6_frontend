@@ -17,14 +17,13 @@ const initialProduct = {
   image: "",
 };
 
-import { getCategories, getSuppliers } from "../api";
+import { getCategories, getSuppliers, uploadFile } from "../api";
 import { Listbox } from "@headlessui/react";
 import { HiSelector } from "react-icons/hi";
 
 const ProductModal = ({ open, onClose, onSave, initial }) => {
   const [product, setProduct] = useState(initial || initialProduct);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [preview] = useState(initial?.image || "");
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -41,9 +40,18 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
     }
   }, [open]);
 
-  function handleImageChange(e) {
+  async function handleImageChange(e) {
     if (e.target.files && e.target.files[0]) {
-      setSelectedImage(e.target.files[0]);
+      const file = e.target.files[0];
+      setSelectedImage(file);
+      try {
+        const res = await uploadFile(file);
+        if (res.data && res.data.url) {
+          setProduct((prev) => ({ ...prev, image: res.data.url }));
+        }
+      } catch (err) {
+        console.error("Image upload failed", err);
+      }
     }
   }
 
@@ -296,18 +304,6 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                 )}
               </div>
             </div>
-            {preview && (
-              <div className="flex justify-center mb-2">
-                <img
-                  src={preview}
-                  alt="Profile Preview"
-                  className="h-50 w-50 rounded-lg object-cover"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
-                />
-              </div>
-            )}
           </div>
         </form>
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">

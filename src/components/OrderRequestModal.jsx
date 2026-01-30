@@ -91,41 +91,82 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                   <label className="block text-base font-medium mb-1">
                     Product <sup className="text-red-500">*</sup>
                   </label>
-                  <select
-                    name="productId"
-                    value={order.productId}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    required
-                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!order.productId && (touched.productId || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  <Listbox
+                    value={
+                      products.find((p) => p._id === order.productId) || null
+                    }
+                    onChange={(product) => {
+                      setOrder((prev) => ({
+                        ...prev,
+                        productId: product ? product._id : "",
+                      }));
+                      setTouched((prev) => ({ ...prev, productId: true }));
+                    }}
                   >
-                    <option value="">Select product</option>
-                    {products.map((p) => (
-                      <option key={p._id} value={p._id}>
-                        {p.name} (Stock: {p.stock - (p.reserved_stock || 0)})
-                      </option>
-                    ))}
-                  </select>
+                    <div className="relative">
+                      <Listbox.Button
+                        className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!order.productId && (touched.productId || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                      >
+                        <span>
+                          {products.find((p) => p._id === order.productId)?.name
+                            ? `${products.find((p) => p._id === order.productId)?.name} (Stock: ${products.find((p) => p._id === order.productId)?.stock - (products.find((p) => p._id === order.productId)?.reserved_stock || 0)})`
+                            : "Select product"}
+                        </span>
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      </Listbox.Button>
+                      <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+                        {products.length === 0 && (
+                          <div className="px-4 py-2 text-gray-400">
+                            No products
+                          </div>
+                        )}
+                        {products.map((product) => (
+                          <Listbox.Option
+                            key={product._id}
+                            value={product}
+                            className={({ active, selected }) =>
+                              `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                            }
+                          >
+                            {product.name} (Stock:{" "}
+                            {product.stock - (product.reserved_stock || 0)})
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </div>
+                  </Listbox>
                 </div>
                 <div>
                   <label className="block text-base font-medium mb-1">
                     Quantity <sup className="text-red-500">*</sup>
                   </label>
                   <Listbox
-                    value={products.find((p) => p._id === order.productId) || null}
+                    value={
+                      products.find((p) => p._id === order.productId) || null
+                    }
                     onChange={(product) => {
-                      setOrder((prev) => ({ ...prev, productId: product ? product._id : "" }));
+                      setOrder((prev) => ({
+                        ...prev,
+                        productId: product ? product._id : "",
+                      }));
                       setTouched((prev) => ({ ...prev, productId: true }));
                     }}
                   >
                     <div className="relative">
-                      <Listbox.Button className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!order.productId && (touched.productId || validateOnSave) ? "border-red-500" : "border-gray-200"}`}>
-                        <span>{products.find((p) => p._id === order.productId)?.name || "Select product"}</span>
+                      <Listbox.Button
+                        className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!order.productId && (touched.productId || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                      >
+                        <span>
+                          {products.find((p) => p._id === order.productId)
+                            ?.name || "Select product"}
+                        </span>
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       </Listbox.Button>
                       <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
                         {products.length === 0 && (
-                          <div className="px-4 py-2 text-gray-400">No products</div>
+                          <div className="px-4 py-2 text-gray-400">
+                            No products
+                          </div>
                         )}
                         {products.map((product) => (
                           <Listbox.Option
@@ -141,6 +182,11 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                       </Listbox.Options>
                     </div>
                   </Listbox>
+                </div>
+                <div>
+                  <label className="block text-base font-medium mb-1">
+                    Requested Date <sup className="text-red-500">*</sup>
+                  </label>
                   <input
                     name="requestedDate"
                     type="date"

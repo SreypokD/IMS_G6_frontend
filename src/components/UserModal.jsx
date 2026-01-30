@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Listbox } from "@headlessui/react";
 import { HiSelector } from "react-icons/hi";
-import { getPermissions } from "../api/index";
+import { getPermissions, uploadFile } from "../api/index";
 import {
   HiXCircle,
   HiOutlineDocumentText,
@@ -37,7 +37,6 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
   );
   const [user, setUser] = useState(() => computedInitialUser);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [preview] = useState(user.profile || "");
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
   const [roles, setRoles] = useState([]);
@@ -57,9 +56,18 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
     }
   }, [open]);
 
-  function handleImageChange(e) {
+  async function handleImageChange(e) {
     if (e.target.files && e.target.files[0]) {
-      setSelectedImage(e.target.files[0]);
+      const file = e.target.files[0];
+      setSelectedImage(file);
+      try {
+        const res = await uploadFile(file);
+        if (res.data && res.data.profile) {
+          setUser((prev) => ({ ...prev, profile: res.data.profile }));
+        }
+      } catch (err) {
+        console.error("Image upload failed", err);
+      }
     }
   }
 
@@ -234,7 +242,9 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
             </h3>
             <div className="mb-3 grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-base font-medium mb-1">Street</label>
+                <label className="block text-base font-medium mb-1">
+                  Street
+                </label>
                 <input
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!user.address.street && !initial && (touched.street || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   value={user.address.street}
@@ -421,18 +431,6 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                 )}
               </div>
             </div>
-            {preview && (
-              <div className="flex justify-center mb-2">
-                <img
-                  src={preview}
-                  alt="Profile Preview"
-                  className="h-50 w-50 rounded-lg object-cover"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
-                />
-              </div>
-            )}
           </div>
         </form>
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">

@@ -75,29 +75,60 @@ const OrderRequests = () => {
                 <th className="py-3 px-4">Date</th>
               </tr>
             </thead>
-            <tbody>
-              {requests.map((req, index) => (
+            <tbody>{(user?.role === "customer"
+                ? requests.filter(
+                    (req) => String(req.requester_id) === String(user._id),
+                  )
+                : requests
+              ).map((req, index) => (
                 <tr key={req._id} className="border-t border-gray-200">
                   <td className="py-1 px-4">{index + 1}</td>
-                  <td className="py-1 px-4">{req.requester}</td>
+                  <td className="py-1 px-4">
+                    {req.requester?.first_name ||
+                      req.requester?.email ||
+                      req.requester ||
+                      "-"}
+                  </td>
                   <td className="py-1 px-4">
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${req.status === "Pending" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"}`}
+                      className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${req.status === "pending" ? "bg-yellow-100 text-yellow-700" : req.status === "approved" ? "bg-green-100 text-green-700" : req.status === "rejected" ? "bg-red-100 text-red-700" : req.status === "completed" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"}`}
                     >
-                      {req.status}
+                      {req.status.charAt(0).toUpperCase() + req.status.slice(1)}
                     </span>
+                    {user?.role === "customer" &&
+                      req.status === "pending" &&
+                      String(req.requester_id) === String(user._id) && (
+                        <button
+                          className="ml-2 text-xs text-red-600 underline cursor-pointer"
+                          onClick={async () => {
+                            try {
+                              await import("../api").then((api) =>
+                                api.cancelOrderRequest(req._id),
+                              );
+                              fetchOrderRequests(
+                                pagination.page,
+                                pagination.limit,
+                              );
+                            } catch {
+                              //
+                            }
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      )}
                   </td>
-                  <td className="py-1 px-4  ">{req.date}</td>
+                  <td className="py-1 px-4">
+                    {req.date || req.requested_date || "-"}
+                  </td>
                 </tr>
-              ))}
-              {requests.length === 0 && (
+              ))}{requests.length === 0 && (
                 <tr className="border-t border-gray-200">
                   <td colSpan="4" className="py-4 text-center text-gray-500">
                     No order requests found.
                   </td>
                 </tr>
-              )}
-            </tbody>
+              )}</tbody>
           </table>
         )}
       </div>
@@ -107,7 +138,7 @@ const OrderRequests = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchOrderRequests({page, limit})}
+            onChange={({ page, limit }) => fetchOrderRequests({ page, limit })}
           />
         </div>
       )}
