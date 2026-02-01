@@ -13,7 +13,6 @@ const initialProduct = {
   supplier: "",
   price: "",
   stock: "",
-  expiry: "",
   image: "",
 };
 
@@ -76,6 +75,7 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                 <input
                   name="code"
                   value={product.code}
+                  disabled={!!initial}
                   onChange={(e) =>
                     setProduct({ ...product, code: e.target.value })
                   }
@@ -238,27 +238,7 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${(!product.stock || isNaN(product.stock)) && !initial && (touched.stock || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                 />
               </div>
-              <div>
-                <label className="block text-base font-medium mb-1">
-                  Expiry{" "}
-                  {!product.expiry && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
-                </label>
-                <input
-                  name="expiry"
-                  value={product.expiry}
-                  onChange={(e) =>
-                    setProduct({ ...product, expiry: e.target.value })
-                  }
-                  onBlur={() =>
-                    setTouched((prev) => ({ ...prev, expiry: true }))
-                  }
-                  type="date"
-                  placeholder="Expiry Date"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 col-span-2 ${!product.expiry && !initial && (touched.expiry || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                />
-              </div>
+             
             </div>
           </div>
           <div className="col-span-2 mb-2">
@@ -330,7 +310,6 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                 supplier: true,
                 price: true,
                 stock: true,
-                expiry: true,
                 image: true,
               });
               onSave(product);

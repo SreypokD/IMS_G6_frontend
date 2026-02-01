@@ -2,17 +2,21 @@ import React, { useState, useEffect } from "react";
 import { Listbox } from "@headlessui/react";
 import { HiSelector } from "react-icons/hi";
 import { HiXCircle, HiOutlineDocumentText } from "react-icons/hi";
-import { getProducts, createOrderRequest } from "../api";
+import { getProducts, getSuppliers, createOrderRequest } from "../api";
+import { useAuth } from "../context/useAuth";
 
 const initialOrderRequest = {
   product_id: "",
+  supplier_id: "",
   quantity: 1,
   requestedDate: "",
   notes: "",
 };
 
 const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
+  const { user } = useAuth();
   const [products, setProducts] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
   const [order, setOrder] = useState(initial || initialOrderRequest);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
@@ -22,6 +26,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
   useEffect(() => {
     if (open) {
       getProducts().then((res) => setProducts(res.data.data || []));
+      getSuppliers().then((res) => setSuppliers(res.data.data || []));
       setOrder(initial || initialOrderRequest);
       setTouched({});
       setValidateOnSave(false);
@@ -45,15 +50,23 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
   async function handleSubmit(e) {
     e.preventDefault();
     setValidateOnSave(true);
-    if (!order.product_id || !order.quantity || !order.requestedDate) return;
+    if (
+      !order.product_id ||
+      !order.supplier_id ||
+      !order.quantity ||
+      !order.requestedDate
+    )
+      return;
     setLoading(true);
     setError("");
     try {
       await createOrderRequest({
-        product_id: order.product_id,
+        product: order.product_id,
+        supplier: order.supplier_id,
         quantity: order.quantity,
         requested_date: order.requestedDate,
         notes: order.notes,
+        requested_by: user?._id,
       });
       if (onSave) onSave();
       handleClose();
@@ -89,6 +102,53 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
               <div className="mb-3 grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-base font-medium mb-1">
+                    Supplier <sup className="text-red-500">*</sup>
+                  </label>
+                  <Listbox
+                    value={
+                      suppliers.find((s) => s._id === order.supplier_id) || null
+                    }
+                    onChange={(supplier) => {
+                      setOrder((prev) => ({
+                        ...prev,
+                        supplier_id: supplier ? supplier._id : "",
+                      }));
+                      setTouched((prev) => ({ ...prev, supplier_id: true }));
+                    }}
+                  >
+                    <div className="relative">
+                      <Listbox.Button
+                        className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!order.supplier_id && (touched.supplier_id || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                      >
+                        <span>
+                          {suppliers.find((s) => s._id === order.supplier_id)
+                            ?.company_name || "Select supplier"}
+                        </span>
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      </Listbox.Button>
+                      <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+                        {suppliers.length === 0 && (
+                          <div className="px-4 py-2 text-gray-400">
+                            No suppliers
+                          </div>
+                        )}
+                        {suppliers.map((supplier) => (
+                          <Listbox.Option
+                            key={supplier._id}
+                            value={supplier}
+                            className={({ active, selected }) =>
+                              `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                            }
+                          >
+                            {supplier.company_name}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </div>
+                  </Listbox>
+                </div>
+                <div>
+                  <label className="block text-base font-medium mb-1">
                     Product <sup className="text-red-500">*</sup>
                   </label>
                   <Listbox
@@ -108,7 +168,8 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                         className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!order.product_id && (touched.product_id || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                       >
                         <span>
-                          {products.find((p) => p._id === order.product_id)?.name
+                          {products.find((p) => p._id === order.product_id)
+                            ?.name
                             ? `${products.find((p) => p._id === order.product_id)?.name} (Stock: ${products.find((p) => p._id === order.product_id)?.stock - (products.find((p) => p._id === order.product_id)?.reserved_stock || 0)})`
                             : "Select product"}
                         </span>

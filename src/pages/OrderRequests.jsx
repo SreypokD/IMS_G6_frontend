@@ -46,7 +46,10 @@ const OrderRequests = () => {
       <OrderRequestModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        onSuccess={() => setModalOpen(false)}
+        onSave={() => {
+          setModalOpen(false);
+          fetchOrderRequests(pagination.page, pagination.limit);
+        }}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
@@ -106,7 +109,7 @@ const OrderRequests = () => {
                 return filteredRequests.map((req, index) => (
                   <tr key={req._id}>
                     <td className="py-1 px-4">
-                      {(pagination.page - 1) * pagination.limit + index + 1}
+                      {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>
                     <td className="py-1 px-4">
                       {req.requester?.first_name ||

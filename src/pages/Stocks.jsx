@@ -159,7 +159,9 @@ const Stocks = () => {
             <tbody>
               {stocks.map((stock, idx) => (
                 <tr key={stock._id}>
-                  <td className="py-1 px-4">{idx + 1}</td>
+                  <td className="py-1 px-4">
+                    {idx + 1 + (pagination.page - 1) * pagination.limit}
+                  </td>
                   <td className="py-1 px-4">{stock.quantity}</td>
                   <td className="py-1 px-4">{stock.status}</td>
                   <td className="py-1 px-4">

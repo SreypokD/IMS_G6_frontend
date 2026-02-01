@@ -85,7 +85,9 @@ const OrderHistory = () => {
             <tbody>
               {orders.map((order, idx) => (
                 <tr key={order._id}>
-                  <td className="py-1 px-4">{idx + 1}</td>
+                  <td className="py-1 px-4">
+                    {idx + 1 + (pagination.page - 1) * pagination.limit}
+                  </td>
                   <td className="py-1 px-4">
                     {order.Product?.name || order.product_id}
                   </td>

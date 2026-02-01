@@ -520,12 +520,10 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                 setValidateOnSave(true);
                 setTouched({
                   name: true,
-                  sku: true,
                   category: true,
                   supplier: true,
                   price: true,
                   stock: true,
-                  expiry: true,
                   image: true,
                 });
                 onSave(supplier);

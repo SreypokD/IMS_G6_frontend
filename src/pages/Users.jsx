@@ -136,7 +136,9 @@ const Users = () => {
             <tbody>
               {users.map((u, index) => (
                 <tr key={u._id}>
-                  <td className="py-1 px-4">{index + 1}</td>
+                  <td className="py-1 px-4">
+                    {index + 1 + (pagination.page - 1) * pagination.limit}
+                  </td>
                   <td className="py-1 px-4">
                     {u.first_name} {u.last_name}
                   </td>

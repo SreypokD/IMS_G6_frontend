@@ -205,7 +205,9 @@ const Categories = () => {
             <tbody>
               {categories.map((cat, index) => (
                 <tr key={cat._id} className=" border-t border-gray-200 ">
-                  <td className="py-1 px-4">{index + 1}</td>
+                  <td className="py-1 px-4">
+                    {index + 1 + (pagination.page - 1) * pagination.limit}
+                  </td>
                   <td className="py-1 px-4">{cat.name}</td>
                   <td className="py-1 px-4">{cat.description}</td>
                   <td className="py-1 px-4 flex items-center gap-1">

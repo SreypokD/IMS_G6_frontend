@@ -66,8 +66,8 @@ const DeliveryConfirmation = () => {
               <tr className="bg-white">
                 <th className="py-3 px-4">No.</th>
                 <th className="py-3 px-4">Order</th>
-                <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4">Date</th>
+                <th className="py-3 px-4">Status</th>
                 {user?.permission?.permissions?.includes(
                   "update_confirm_delivery",
                 ) ? (
@@ -78,9 +78,18 @@ const DeliveryConfirmation = () => {
             <tbody>
               {confirmDeliveries.map((d, index) => (
                 <tr key={d._id}>
-                  <td className="py-1 px-4">{index + 1}</td>
+                  <td className="py-1 px-4">
+                    {index + 1 + (pagination.page - 1) * pagination.limit}
+                  </td>
                   <td className="py-1 px-4">{d.order}</td>
                   <td className="py-1 px-4">{d.date}</td>
+                  <td className="py-1 px-4">
+                    <span
+                      className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${d.status === "Pending" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"}`}
+                    >
+                      {d.status}
+                    </span>
+                  </td>
                   <td className="py-1 px-4">
                     {d.status === "Pending" &&
                       user?.permission?.permissions?.includes(
@@ -94,13 +103,6 @@ const DeliveryConfirmation = () => {
                           <HiCheck className="w-4 h-4" />
                         </button>
                       )}
-                  </td>
-                  <td className="py-1 px-4">
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${d.status === "Pending" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"}`}
-                    >
-                      {d.status}
-                    </span>
                   </td>
                 </tr>
               ))}

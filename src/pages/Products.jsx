@@ -154,18 +154,20 @@ const Products = () => {
   }
 
   function handleEdit(product) {
-    // Ensure category and supplier are _id strings for the modal
-    let categoryId = product.category;
-    let supplier_id = product.supplier;
-    // If product.category is an object, get its _id
+    // Ensure category and supplier are _id strings for the modal, handle nulls
+    let category = "";
+    let supplier = "";
     if (product.category && typeof product.category === "object") {
-      categoryId = product.category._id || product.category.id || "";
+      category = product.category._id || "";
+    } else if (typeof product.category === "string") {
+      category = product.category;
     }
-    // If product.supplier is an object, get its _id
     if (product.supplier && typeof product.supplier === "object") {
-      supplier_id = product.supplier._id || product.supplier.id || "";
+      supplier = product.supplier._id || "";
+    } else if (typeof product.supplier === "string") {
+      supplier = product.supplier;
     }
-    setEditProduct({ ...product, category: categoryId, supplier: supplier_id });
+    setEditProduct({ ...product, category: category, supplier: supplier });
     setModalOpen(true);
   }
 
@@ -267,12 +269,12 @@ const Products = () => {
             <thead>
               <tr className="bg-white">
                 <th className="py-3 px-4">No.</th>
+                <th className="py-3 px-4">Product Code</th>
                 <th className="py-3 px-4">Product Name</th>
                 <th className="py-3 px-4">Category</th>
                 <th className="py-3 px-4">Supplier</th>
                 <th className="py-3 px-4 text-right">Stock</th>
                 <th className="py-3 px-4 text-right">Price</th>
-                <th className="py-3 px-4">Expiry Date</th>
                 {user?.permission?.permissions?.includes("update_product") ||
                 user?.permission?.permissions?.includes("delete_product") ? (
                   <th className="py-3 px-4">Actions</th>
@@ -282,7 +284,10 @@ const Products = () => {
             <tbody>
               {products.map((p, index) => (
                 <tr key={p._id}>
-                  <td className="py-1 px-4">{index + 1}</td>
+                  <td className="py-1 px-4">
+                    {index + 1 + (pagination.page - 1) * pagination.limit}
+                  </td>
+                  <td className="py-1 px-4">{p.code}</td>
                   <td className="py-1 px-4">{p.name}</td>
                   <td className="py-1 px-4">
                     <span className="text-blue-500/80">
@@ -291,7 +296,9 @@ const Products = () => {
                   </td>
                   <td className="py-1 px-4">
                     <span className="text-blue-500/80">
-                      {typeof p.supplier === 'object' ? (p.supplier?.company_name || p.supplier?.name) : p.supplier}
+                      {typeof p.supplier === "object"
+                        ? p.supplier?.company_name || p.supplier?.name
+                        : p.supplier}
                     </span>
                   </td>
                   <td className="py-1 px-4 text-right">
@@ -304,7 +311,6 @@ const Products = () => {
                   <td className="py-1 px-4 text-right">
                     ${Number(p.price).toFixed(2)}
                   </td>
-                  <td className="py-1 px-4 text-center">{p.expiry}</td>
                   <td className="py-1 px-4 flex items-center gap-1">
                     {user?.permission?.permissions?.includes(
                       "update_product",
