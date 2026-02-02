@@ -1,11 +1,47 @@
 import React, { useEffect, useState } from "react";
-import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
+import {
+  HiSelector,
+  HiOutlineFilter,
+  HiOutlinePlus,
+  HiOutlinePencil,
+  HiOutlineTrash,
+} from "react-icons/hi";
 import { getUsers, createUser, updateUser, deleteUser } from "../api";
 import UserModal from "../components/UserModal";
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../contexts/auth/useAuth";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
+import { Listbox } from "@headlessui/react";
+import { useDialog } from "../contexts/dialog/useDialog";
 
+const permissions = ["Select permission"];
+
+function PermissionDropdown() {
+  const [selected, setSelected] = useState(permissions[0]);
+  return (
+    <Listbox value={selected} onChange={setSelected}>
+      <div className="relative">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
+          <span>{selected}</span>
+          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+        </Listbox.Button>
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          {permissions.map((option) => (
+            <Listbox.Option
+              key={option}
+              value={option}
+              className={({ active, selected }) =>
+                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              }
+            >
+              {option}
+            </Listbox.Option>
+          ))}
+        </Listbox.Options>
+      </div>
+    </Listbox>
+  );
+}
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [pagination, setPagination] = useState({
@@ -18,12 +54,14 @@ const Users = () => {
   const [editUser, setEditUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const dialog = useDialog();
   const { user } = useAuth();
 
   useEffect(() => {
     if (user) {
       fetchUsers(1, 10);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   // Fetch users from API
@@ -33,9 +71,15 @@ const Users = () => {
     try {
       const res = await getUsers({ page, limit });
       setUsers(res.data.data);
-      setPagination(res.data.pagination);
+      setPagination((prev) => ({
+        ...prev,
+        ...res.data.pagination,
+        page,
+        limit,
+      }));
     } catch {
       setError("Failed to load users");
+      dialog.error("Failed to load users");
     } finally {
       setLoading(false);
     }
@@ -48,14 +92,17 @@ const Users = () => {
     try {
       if (editUser) {
         await updateUser(editUser._id, user);
+        dialog.success("User updated successfully");
       } else {
         await createUser(user);
+        dialog.success("User created successfully");
       }
       fetchUsers();
       setModalOpen(false);
       setEditUser(null);
     } catch {
       setError("Failed to save user");
+      dialog.error("Failed to save user");
     } finally {
       setLoading(false);
     }
@@ -63,13 +110,22 @@ const Users = () => {
 
   // Delete user
   async function handleDelete(id) {
-    if (window.confirm("Delete this user?")) {
+    const confirmed = await dialog.ask({
+      type: "confirm",
+      title: "Delete User",
+      message: "Are you sure you want to delete this user?",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+    if (confirmed) {
       setLoading(true);
       try {
         await deleteUser(id);
+        dialog.success("User deleted successfully");
         fetchUsers();
       } catch {
         setError("Failed to delete user");
+        dialog.error("Failed to delete user");
       } finally {
         setLoading(false);
       }
@@ -95,7 +151,7 @@ const Users = () => {
         </div>
         {user?.permission?.permissions?.includes("create_user") && (
           <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => {
               setEditUser(null);
               setModalOpen(true);
@@ -106,14 +162,29 @@ const Users = () => {
         )}
       </div>
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
+        <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+          <HiOutlineFilter className="inline-block text-xl text-black" />
+          <span>Filters</span>
+        </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <input
-            className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
-            placeholder="Search..."
-          />
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Search
+            </label>
+            <input
+              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
+              placeholder="Search..."
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Permission
+            </label>
+            <PermissionDropdown />
+          </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
+      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
         ) : error ? (
@@ -122,30 +193,30 @@ const Users = () => {
           <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr className="bg-white">
-                <th className="py-3 px-4">No.</th>
-                <th className="py-3 px-4">Name</th>
-                <th className="py-3 px-4">Email</th>
-                <th className="py-3 px-4">Phone</th>
-                <th className="py-3 px-4">Role</th>
+                <th className="p-3">No.</th>
+                <th className="p-3">Name</th>
+                <th className="p-3">Email</th>
+                <th className="p-3">Phone</th>
+                <th className="p-3">Role</th>
                 {user?.permission?.permissions?.includes("update_user") ||
                 user?.permission?.permissions?.includes("delete_user") ? (
-                  <th className="py-3 px-4">Actions</th>
+                  <th className="p-3">Actions</th>
                 ) : null}
               </tr>
             </thead>
             <tbody>
               {users.map((u, index) => (
                 <tr key={u._id}>
-                  <td className="py-1 px-4">
+                  <td className="p-3">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="py-1 px-4">
+                  <td className="p-3">
                     {u.first_name} {u.last_name}
                   </td>
-                  <td className="py-1 px-4">{u.email}</td>
-                  <td className="py-1 px-4">{u.phone}</td>
-                  <td className="py-1 px-4 capitalize">{u.role}</td>
-                  <td className="py-1 px-4 flex items-center gap-1">
+                  <td className="p-3">{u.email}</td>
+                  <td className="p-3">{u.phone}</td>
+                  <td className="p-3 capitalize">{u.role}</td>
+                  <td className="p-3 flex items-center gap-1">
                     {user?.permission?.permissions?.includes("update_user") && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
@@ -187,7 +258,10 @@ const Users = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchUsers({ page, limit })}
+            onChange={({ page, limit }) => {
+              setPagination((prev) => ({ ...prev, page, limit }));
+              fetchUsers(page, limit);
+            }}
           />
         </div>
       )}

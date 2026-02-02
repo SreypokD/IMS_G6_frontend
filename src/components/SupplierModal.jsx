@@ -44,7 +44,13 @@ const initialSupplier = {
   status: statuses[0].name,
 };
 
-const SupplierModal = ({ open, onClose, onSave, initial }) => {
+const SupplierModal = ({
+  open,
+  onClose,
+  onSave,
+  initial,
+  readOnly = false,
+}) => {
   const [supplier, setSupplier] = useState(initial || initialSupplier);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
@@ -95,6 +101,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                     }
                     placeholder="Supplier Name"
                     className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!supplier.company_name && !initial && (touched.company_name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                    disabled={readOnly}
                   />
                 </div>
                 <div>
@@ -115,6 +122,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                     }
                     placeholder="Supplier Location"
                     className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!supplier.location && !initial && (touched.location || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                    disabled={readOnly}
                   />
                 </div>
               </div>
@@ -149,6 +157,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                     }
                     placeholder="Supplier Contact Person"
                     className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!supplier.contact_person && !initial && (touched.contact_person || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                    disabled={readOnly}
                   />
                 </div>
                 <div>
@@ -175,6 +184,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                     }
                     placeholder="Supplier Contact Position"
                     className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!supplier.contact_position && !initial && (touched.contact_position || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                    disabled={readOnly}
                   />
                 </div>
                 <div>
@@ -201,6 +211,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                     }
                     placeholder="Supplier Contact Email"
                     className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!supplier.contact_email && !initial && (touched.contact_email || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                    disabled={readOnly}
                   />
                 </div>
                 <div>
@@ -227,6 +238,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                     }
                     placeholder="Supplier Contact Phone"
                     className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!supplier.contact_phone && !initial && (touched.contact_phone || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                    disabled={readOnly}
                   />
                 </div>
               </div>
@@ -256,6 +268,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, street: true }))
                     }
+                    disabled={readOnly}
                   />
                 </div>
                 <div>
@@ -273,6 +286,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, house: true }))
                     }
+                    disabled={readOnly}
                   />
                 </div>
                 <div>
@@ -298,6 +312,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, village: true }))
                     }
+                    disabled={readOnly}
                   />
                 </div>
                 <div>
@@ -323,6 +338,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, commune: true }))
                     }
+                    disabled={readOnly}
                   />
                 </div>
                 <div>
@@ -348,6 +364,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, district: true }))
                     }
+                    disabled={readOnly}
                   />
                 </div>
                 <div>
@@ -373,6 +390,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, province: true }))
                     }
+                    disabled={readOnly}
                   />
                 </div>
                 <div>
@@ -398,6 +416,7 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, country: true }))
                     }
+                    disabled={readOnly}
                   />
                 </div>
               </div>
@@ -419,16 +438,21 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                         (pt) => pt.name === supplier.payment_term,
                       ) || null
                     }
-                    onChange={(pt) =>
-                      setSupplier({
-                        ...supplier,
-                        payment_term: pt ? pt.name : "",
-                      })
+                    onChange={
+                      readOnly
+                        ? () => {}
+                        : (pt) =>
+                            setSupplier({
+                              ...supplier,
+                              payment_term: pt ? pt.name : "",
+                            })
                     }
+                    disabled={readOnly}
                   >
                     <div className="relative">
                       <Listbox.Button
-                        className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!supplier.payment_term && !initial && (touched.payment_term || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${readOnly ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer"} ${!supplier.payment_term && !initial && (touched.payment_term || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                        disabled={readOnly}
                       >
                         <span>
                           {paymentTerms.find(
@@ -467,13 +491,21 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
                     value={
                       statuses.find((st) => st.name === supplier.status) || null
                     }
-                    onChange={(st) =>
-                      setSupplier({ ...supplier, status: st ? st.name : "" })
+                    onChange={
+                      readOnly
+                        ? () => {}
+                        : (st) =>
+                            setSupplier({
+                              ...supplier,
+                              status: st ? st.name : "",
+                            })
                     }
+                    disabled={readOnly}
                   >
                     <div className="relative">
                       <Listbox.Button
-                        className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!supplier.status && !initial && (touched.status || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${readOnly ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer"} ${!supplier.status && !initial && (touched.status || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                        disabled={readOnly}
                       >
                         <span>
                           {statuses.find((st) => st.name === supplier.status)
@@ -508,30 +540,32 @@ const SupplierModal = ({ open, onClose, onSave, initial }) => {
           <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
             <button
               type="button"
-              className="px-5 py-2 bg-[#f8f8f8] hover:bg-[#e5e7eb] text-gray-black rounded-xl cursor-pointer  flex items-center gap-2"
+              className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
               onClick={onClose}
             >
-              <HiXCircle className="inline-block text-xl" /> Cancel
+              <HiXCircle className="inline-block text-xl" /> Close
             </button>
-            <button
-              type="button"
-              className="px-5 py-2 bg-[#1e3a5f] hover:bg-[#16375b] text-white rounded-xl cursor-pointer flex items-center gap-2"
-              onClick={() => {
-                setValidateOnSave(true);
-                setTouched({
-                  name: true,
-                  category: true,
-                  supplier: true,
-                  price: true,
-                  stock: true,
-                  image: true,
-                });
-                onSave(supplier);
-              }}
-            >
-              <HiOutlineDocumentText className="inline-block text-xl" />
-              {initial ? "Update Supplier" : "Add Supplier"}
-            </button>
+            {!readOnly && (
+              <button
+                type="button"
+                className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
+                onClick={() => {
+                  setValidateOnSave(true);
+                  setTouched({
+                    name: true,
+                    category: true,
+                    supplier: true,
+                    price: true,
+                    stock: true,
+                    image: true,
+                  });
+                  onSave(supplier);
+                }}
+              >
+                <HiOutlineDocumentText className="inline-block text-xl" />
+                {initial ? "Update Supplier" : "Add Supplier"}
+              </button>
+            )}
           </div>
         </div>
       </div>

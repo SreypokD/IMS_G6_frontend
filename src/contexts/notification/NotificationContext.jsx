@@ -3,8 +3,8 @@ import {
   getNotifications,
   markNotificationRead,
   getUnreadNotificationCount,
-} from "../api";
-import { useAuth } from "./useAuth";
+} from "../../api";
+import { useAuth } from "../auth/useAuth";
 import { NotificationContextBase } from "./NotificationContextBase";
 
 export const NotificationProvider = ({ children }) => {

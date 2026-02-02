@@ -74,12 +74,12 @@ const permissionTable = [
 
   // Reports & Logs
   {
-    label: "Reports",
-    actions: ["view_report"],
-  },
-  {
     label: "Activity Log",
     actions: ["view_activity_log"],
+  },
+  {
+    label: "Reports",
+    actions: ["view_report"],
   },
 
   // System Management
@@ -191,23 +191,23 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
               <HiOutlineKey className="inline-block text-xl text-black" />
               <span>Permissions</span>
             </h3>
-            <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
+            <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
               <table className="min-w-full text-center text-base align-middle">
                 <thead>
                   <tr className="bg-white">
                     <th className="py-3 px-4 text-left">Module</th>
-                    <th className="py-3 px-4">Check All</th>
-                    <th className="py-3 px-4">View</th>
-                    <th className="py-3 px-4">Create</th>
-                    <th className="py-3 px-4">Update</th>
-                    <th className="py-3 px-4">Delete</th>
+                    <th className="p-3">Check All</th>
+                    <th className="p-3">View</th>
+                    <th className="p-3">Create</th>
+                    <th className="p-3">Update</th>
+                    <th className="p-3">Delete</th>
                   </tr>
                 </thead>
                 <tbody>
                   {permissionTable.map((row) => (
                     <tr key={row.label} className="border-t border-gray-200">
-                      <td className="py-2 px-4 text-left">{row.label}</td>
-                      <td className="py-2 px-4">
+                      <td className="p-2 text-left">{row.label}</td>
+                      <td className="p-2">
                         <input
                           className="w-5 h-5 mt-2 cursor-pointer accent-[#1e3a5f]"
                           type="checkbox"
@@ -232,7 +232,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                           a.startsWith(action),
                         );
                         return (
-                          <td className="py-2 px-4 text-center" key={action}>
+                          <td className="p-2 text-center" key={action}>
                             {actionKey ? (
                               <input
                                 className="w-5 h-5 mt-2 cursor-pointer accent-[#1e3a5f]"
@@ -258,14 +258,14 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
             type="button"
-            className="px-5 py-2 bg-[#f8f8f8] hover:bg-[#e5e7eb] text-gray-black rounded-xl cursor-pointer  flex items-center gap-2"
+            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
             onClick={onClose}
           >
             <HiXCircle className="inline-block text-xl" /> Cancel
           </button>
           <button
             type="button"
-            className="px-5 py-2 bg-[#1e3a5f] hover:bg-[#16375b] text-white rounded-xl cursor-pointer flex items-center gap-2"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => {
               setValidateOnSave(true);
               setTouched({

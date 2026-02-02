@@ -7,7 +7,7 @@ import {
   HiUserGroup,
   HiChartBar,
 } from "react-icons/hi";
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../contexts/auth/useAuth";
 
 const Dashboard = () => {
   const [summary, setSummary] = useState(null);
@@ -52,8 +52,8 @@ const Dashboard = () => {
           </span>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-xl p-6 flex items-center gap-4 border border-gray-200">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl p-6 flex items-center gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
           <HiCube className="text-3xl text-blue-700" />
           <div>
             <div className="text-2xl font-bold">
@@ -62,8 +62,8 @@ const Dashboard = () => {
             <div className="text-gray-500 text-base">Products</div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-6 flex items-center gap-4 border border-gray-200">
-          <HiUserGroup className="text-3xl text-green-700" />
+        <div className="bg-white rounded-xl p-6 flex items-center gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+          <HiUserGroup className="text-3xl text-green-600" />
           <div>
             <div className="text-2xl font-bold">
               {summary?.totalSuppliers ?? "-"}
@@ -71,14 +71,14 @@ const Dashboard = () => {
             <div className="text-gray-500 text-base">Suppliers</div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-6 flex items-center gap-4 border border-gray-200">
+        <div className="bg-white rounded-xl p-6 flex items-center gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
           <HiExclamation className="text-3xl text-orange-600" />
           <div>
             <div className="text-2xl font-bold">{summary?.lowStock ?? "-"}</div>
             <div className="text-gray-500 text-base">Low Stock</div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-6 flex items-center gap-4 border border-gray-200">
+        <div className="bg-white rounded-xl p-6 flex items-center gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
           <HiClipboardList className="text-3xl text-purple-700" />
           <div>
             <div className="text-2xl font-bold">
@@ -89,7 +89,7 @@ const Dashboard = () => {
         </div>
       </div>
       {/* Add more dashboard widgets/charts here as needed */}
-      <div className="bg-white rounded-xl p-6 border border-gray-200 mt-8">
+      <div className="bg-white rounded-2xl p-6 border border-gray-200 mt-4">
         <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
           <HiChartBar className="text-blue-700" /> Order Statistics
         </h2>

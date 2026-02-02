@@ -20,7 +20,7 @@ import { getCategories, getSuppliers, uploadFile } from "../api";
 import { Listbox } from "@headlessui/react";
 import { HiSelector } from "react-icons/hi";
 
-const ProductModal = ({ open, onClose, onSave, initial }) => {
+const ProductModal = ({ open, onClose, onSave, initial, readOnly = false }) => {
   const [product, setProduct] = useState(initial || initialProduct);
   const [selectedImage, setSelectedImage] = useState(null);
   const [touched, setTouched] = useState({});
@@ -59,7 +59,7 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] max-h-[80vh] shadow-xl relative">
         <h2 className="text-2xl font-bold mb-6 text-center">
-          {initial ? "Edit Product" : "Add Product"}
+          {readOnly ? "View Product" : initial ? "Edit Product" : "Add Product"}
         </h2>
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
           <div className="col-span-2 mb-2">
@@ -75,7 +75,7 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                 <input
                   name="code"
                   value={product.code}
-                  disabled={!!initial}
+                  disabled={!!initial || readOnly}
                   onChange={(e) =>
                     setProduct({ ...product, code: e.target.value })
                   }
@@ -99,6 +99,7 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                   onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
                   placeholder="Product Name"
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!product.name && !initial && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  disabled={readOnly}
                 />
               </div>
               <div>
@@ -113,13 +114,21 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                     categories.find((cat) => cat._id === product.category) ||
                     null
                   }
-                  onChange={(cat) =>
-                    setProduct({ ...product, category: cat ? cat._id : "" })
+                  onChange={
+                    readOnly
+                      ? () => {}
+                      : (cat) =>
+                          setProduct({
+                            ...product,
+                            category: cat ? cat._id : "",
+                          })
                   }
+                  disabled={readOnly}
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!product.category && !initial && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between cursor-pointer${readOnly ? "bg-gray-100 cursor-default" : ""} ${!product.category && !initial && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                      disabled={readOnly}
                     >
                       <span>
                         {categories.find((cat) => cat._id === product.category)
@@ -160,13 +169,21 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                     suppliers.find((sup) => sup._id === product.supplier) ||
                     null
                   }
-                  onChange={(sup) =>
-                    setProduct({ ...product, supplier: sup ? sup._id : "" })
+                  onChange={
+                    readOnly
+                      ? () => {}
+                      : (sup) =>
+                          setProduct({
+                            ...product,
+                            supplier: sup ? sup._id : "",
+                          })
                   }
+                  disabled={readOnly}
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!product.supplier && !initial && (touched.supplier || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${readOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!product.supplier && !initial && (touched.supplier || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                      disabled={readOnly}
                     >
                       <span>
                         {suppliers.find((sup) => sup._id === product.supplier)
@@ -215,6 +232,7 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                   step="0.01"
                   placeholder="Price"
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${(!product.price || isNaN(product.price)) && !initial && (touched.price || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  disabled={readOnly}
                 />
               </div>
               <div>
@@ -236,9 +254,9 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                   type="number"
                   placeholder="Stock"
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${(!product.stock || isNaN(product.stock)) && !initial && (touched.stock || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  disabled={readOnly}
                 />
               </div>
-             
             </div>
           </div>
           <div className="col-span-2 mb-2">
@@ -257,10 +275,12 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
                   className="hidden"
                   id="image-upload"
                   onChange={handleImageChange}
+                  disabled={readOnly}
                 />
                 <label
                   htmlFor="image-upload"
-                  className="flex flex-col items-center cursor-pointer w-full h-full"
+                  className={`flex flex-col items-center w-full h-full ${readOnly ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
+                  style={readOnly ? { pointerEvents: "none" } : {}}
                 >
                   <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
                   <span className="text-gray-600">
@@ -293,31 +313,34 @@ const ProductModal = ({ open, onClose, onSave, initial }) => {
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
             type="button"
-            className="px-5 py-2 bg-[#f8f8f8] hover:bg-[#e5e7eb] text-gray-black rounded-xl cursor-pointer  flex items-center gap-2"
+            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
             onClick={onClose}
           >
-            <HiXCircle className="inline-block text-xl" /> Cancel
+            <HiXCircle className="inline-block text-xl" />{" "}
+            {readOnly ? "Close" : "Cancel"}
           </button>
-          <button
-            type="button"
-            className="px-5 py-2 bg-[#1e3a5f] hover:bg-[#16375b] text-white rounded-xl cursor-pointer flex items-center gap-2"
-            onClick={() => {
-              setValidateOnSave(true);
-              setTouched({
-                code: true,
-                name: true,
-                category: true,
-                supplier: true,
-                price: true,
-                stock: true,
-                image: true,
-              });
-              onSave(product);
-            }}
-          >
-            <HiOutlineDocumentText className="inline-block text-xl" />
-            {initial ? "Update Product" : "Add Product"}
-          </button>
+          {!readOnly && (
+            <button
+              type="button"
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
+              onClick={() => {
+                setValidateOnSave(true);
+                setTouched({
+                  code: true,
+                  name: true,
+                  category: true,
+                  supplier: true,
+                  price: true,
+                  stock: true,
+                  image: true,
+                });
+                onSave(product);
+              }}
+            >
+              <HiOutlineDocumentText className="inline-block text-xl" />
+              {initial ? "Update Product" : "Add Product"}
+            </button>
+          )}
         </div>
       </div>
     </div>

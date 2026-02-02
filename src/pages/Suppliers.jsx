@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Listbox } from "@headlessui/react";
-import { HiSelector } from "react-icons/hi";
 import {
   HiOutlinePlus,
   HiOutlinePencil,
@@ -9,14 +8,16 @@ import {
   HiOutlineCube,
   HiOutlineEye,
 } from "react-icons/hi2";
+import { HiSelector, HiOutlineFilter } from "react-icons/hi";
 import {
   getSuppliers,
   createSupplier,
   updateSupplier,
   deleteSupplier,
 } from "../api";
+import { useDialog } from "../contexts/dialog/useDialog";
 import SupplierModal from "../components/SupplierModal";
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../contexts/auth/useAuth";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 
@@ -95,24 +96,35 @@ const Suppliers = () => {
   const [editSupplier, setEditSupplier] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const dialog = useDialog();
   const { user } = useAuth();
 
   useEffect(() => {
     if (user) {
-      fetchSuppliers(1, 10);
+      fetchSuppliers(pagination.page, pagination.limit);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   // Fetch suppliers from API
-  async function fetchSuppliers(page = 1, limit = 10) {
+  async function fetchSuppliers(
+    page = pagination.page,
+    limit = pagination.limit,
+  ) {
     setLoading(true);
     setError("");
     try {
       const res = await getSuppliers({ page, limit });
       setSuppliers(res.data.data);
-      setPagination(res.data.pagination);
+      setPagination((prev) => ({
+        ...prev,
+        ...res.data.pagination,
+        page,
+        limit,
+      }));
     } catch {
       setError("Failed to load suppliers");
+      dialog.error("Failed to load suppliers");
     } finally {
       setLoading(false);
     }
@@ -125,14 +137,17 @@ const Suppliers = () => {
     try {
       if (editSupplier) {
         await updateSupplier(editSupplier._id, supplier);
+        dialog.success("Supplier updated successfully");
       } else {
         await createSupplier(supplier);
+        dialog.success("Supplier created successfully");
       }
       fetchSuppliers(pagination.page, pagination.limit);
       setModalOpen(false);
       setEditSupplier(null);
     } catch {
       setError("Failed to save supplier");
+      dialog.error("Failed to save supplier");
     } finally {
       setLoading(false);
     }
@@ -140,13 +155,22 @@ const Suppliers = () => {
 
   // Delete supplier
   async function handleDelete(id) {
-    if (window.confirm("Delete this supplier?")) {
+    const confirmed = await dialog.ask({
+      type: "confirm",
+      title: "Delete Supplier",
+      message: "Are you sure you want to delete this supplier?",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+    if (confirmed) {
       setLoading(true);
       try {
         await deleteSupplier(id);
+        dialog.success("Supplier deleted successfully");
         fetchSuppliers(pagination.page, pagination.limit);
       } catch {
         setError("Failed to delete supplier");
+        dialog.error("Failed to delete supplier");
       } finally {
         setLoading(false);
       }
@@ -174,7 +198,7 @@ const Suppliers = () => {
         </div>
         {user?.permission?.permissions?.includes("create_supplier") && (
           <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => {
               setEditSupplier(null);
               setModalOpen(true);
@@ -185,16 +209,35 @@ const Suppliers = () => {
         )}
       </div>
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
+        <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+          <HiOutlineFilter className="inline-block text-xl text-black" />
+          <span>Filters</span>
+        </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <input
-            className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
-            placeholder="Search..."
-          />
-          <SupplierStatusDropdown />
-          <SupplierLocationDropdown />
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Search
+            </label>
+            <input
+              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
+              placeholder="Search..."
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Supplier
+            </label>
+            <SupplierStatusDropdown />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Location
+            </label>
+            <SupplierLocationDropdown />
+          </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
+      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
         ) : error ? (
@@ -203,50 +246,50 @@ const Suppliers = () => {
           <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr className="bg-white">
-                <th className="py-3 px-4">No.</th>
-                <th className="py-3 px-4">Company Name</th>
-                <th className="py-3 px-4">Contact Person</th>
-                <th className="py-3 px-4">Email</th>
-                <th className="py-3 px-4">Phone</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Products</th>
+                <th className="p-3">No.</th>
+                <th className="p-3">Company Name</th>
+                <th className="p-3">Contact Person</th>
+                <th className="p-3">Email</th>
+                <th className="p-3">Phone</th>
+                <th className="p-3">Status</th>
+                <th className="p-3">Products</th>
                 {user?.permission?.permissions?.includes("update_supplier") ||
                 user?.permission?.permissions?.includes("delete_supplier") ? (
-                  <th className="py-3 px-4">Actions</th>
+                  <th className="p-3">Actions</th>
                 ) : null}
               </tr>
             </thead>
             <tbody>
-              {suppliers.map((s, index) => (
-                <tr key={s._id}>
-                  <td className="py-1 px-4">
+              {suppliers.map((supplier, index) => (
+                <tr key={supplier._id}>
+                  <td className="p-3">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="py-1 px-4">
+                  <td className="p-3">
                     <div className="flex items-center gap-2">
                       <HiOutlineBuildingOffice2 className="text-lg text-blue-700" />
                       <div className="font-semibold text-base text-[#1e3a5f]">
-                        {s.company_name}
+                        {supplier.company_name}
                       </div>
                       <div className="text-sm text-gray-500">
-                        ({s.location})
+                        ({supplier.location})
                       </div>
                     </div>
                   </td>
-                  <td className="py-1 px-4 flex items-center gap-1">
+                  <td className="p-3 flex items-center gap-1">
                     <div className="font-medium text-gray-900">
-                      {s.contact_person}
+                      {supplier.contact_person}
                     </div>
                     <div className="text-sm text-gray-500">
-                      ({s.contact_position})
+                      ({supplier.contact_position})
                     </div>
                   </td>
-                  <td className="py-1 px-4">{s.contact_email}</td>
-                  <td className="py-1 px-4">{s.contact_phone}</td>
-                  <td className="py-1 px-4">
+                  <td className="p-3">{supplier.contact_email}</td>
+                  <td className="p-3">{supplier.contact_phone}</td>
+                  <td className="p-3">
                     <span
                       className={
-                        s.status === "Active"
+                        supplier.status === "Active"
                           ? "text-green-600 font-semibold flex items-center gap-1"
                           : "text-gray-400 font-semibold flex items-center gap-1"
                       }
@@ -255,23 +298,25 @@ const Suppliers = () => {
                         className="inline-block w-2 h-2 rounded-full mr-1"
                         style={{
                           background:
-                            s.status === "Active" ? "#22c55e" : "#d1d5db",
+                            supplier.status === "Active"
+                              ? "#22c55e"
+                              : "#d1d5db",
                         }}
                       ></span>
-                      {s.status}
+                      {supplier.status}
                     </span>
                   </td>
-                  <td className="py-1 px-4">
+                  <td className="p-3">
                     <span className="flex items-center gap-2">
                       <HiOutlineCube className="text-base text-gray-500" />
                       <span>
-                        {typeof s.products_count === "number"
-                          ? s.products_count
+                        {typeof supplier.products_count === "number"
+                          ? supplier.products_count
                           : 0}
                       </span>
                     </span>
                   </td>
-                  <td className="py-1 px-4 flex items-center gap-1">
+                  <td className="p-3 flex items-center gap-1">
                     <button
                       className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                       title="View"
@@ -285,7 +330,7 @@ const Suppliers = () => {
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Edit"
                         onClick={() => {
-                          setEditSupplier(s);
+                          setEditSupplier(supplier);
                           setModalOpen(true);
                         }}
                       >
@@ -298,7 +343,7 @@ const Suppliers = () => {
                       <button
                         className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Delete"
-                        onClick={() => handleDelete(s._id)}
+                        onClick={() => handleDelete(supplier._id)}
                       >
                         <HiOutlineTrash className="text-xl" />
                       </button>
@@ -323,7 +368,10 @@ const Suppliers = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchSuppliers({ page, limit })}
+            onChange={({ page, limit }) => {
+              setPagination((prev) => ({ ...prev, page, limit }));
+              fetchSuppliers(page, limit);
+            }}
           />
         </div>
       )}

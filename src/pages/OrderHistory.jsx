@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../context/useAuth";
-import { getOrderRequests, cancelOrderRequest } from "../api";
+import { useAuth } from "../contexts/auth/useAuth";
+import { getOrderRequests } from "../api";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 
@@ -28,22 +28,14 @@ const OrderHistory = () => {
     try {
       const res = await getOrderRequests({ page, limit });
       setOrders(res.data.data);
-      setPagination(res.data.pagination);
+      setPagination((prev) => ({
+        ...prev,
+        ...res.data.pagination,
+        page,
+        limit,
+      }));
     } catch {
       setError("Failed to load order history");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleCancel(orderId) {
-    if (!window.confirm("Cancel this order request?")) return;
-    setLoading(true);
-    try {
-      await cancelOrderRequest(orderId);
-      fetchOrders();
-    } catch {
-      setError("Failed to cancel order");
     } finally {
       setLoading(false);
     }
@@ -54,10 +46,12 @@ const OrderHistory = () => {
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
           <h1 className="text-2xl font-semibold">Order History</h1>
-          <span className="text-gray-500"></span>
+          <span className="text-gray-500">
+            Review your past order requests and their statuses
+          </span>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
+      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
         ) : error ? (
@@ -66,51 +60,39 @@ const OrderHistory = () => {
           <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr>
-                <th className="py-3 px-4">No.</th>
-                <th className="py-3 px-4">Product</th>
-                <th className="py-3 px-4">Quantity</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Admin Remarks</th>
-                <th className="py-3 px-4">Rejection Reason</th>
-                {user?.permission?.permissions?.includes(
-                  "update_order_request",
-                ) ||
-                user?.permission?.permissions?.includes(
-                  "delete_order_request",
-                ) ? (
-                  <th className="py-3 px-4">Actions</th>
-                ) : null}
+                <th className="p-3">No.</th>
+                <th className="p-3">Product</th>
+                <th className="p-3">Quantity</th>
+                <th className="p-3">Admin Remarks</th>
+                <th className="p-3">Status</th>
+                <th className="p-3">Rejection Reason</th>
               </tr>
             </thead>
             <tbody>
-              {orders.map((order, idx) => (
+              {orders.map((order, index) => (
                 <tr key={order._id}>
-                  <td className="py-1 px-4">
-                    {idx + 1 + (pagination.page - 1) * pagination.limit}
+                  <td className="p-3">
+                    {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="py-1 px-4">
-                    {order.Product?.name || order.product_id}
+                  <td className="p-3">
+                    {order.product?.name || order.product_id}
                   </td>
-                  <td className="py-1 px-4">{order.quantity}</td>
-                  <td className="py-1 px-4">{order.status}</td>
-                  <td className="py-1 px-4">{order.admin_remarks || "-"}</td>
-                  <td className="py-1 px-4">
+                  <td className="p-3">{order.quantity}</td>
+                  <td className="p-3">{order.admin_remarks || "-"}</td>
+                  <td className="p-3">
+                    <span
+                      className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${order.status === "approved" ? "bg-green-100 text-green-700" : order.status === "rejected" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}
+                    >
+                      {order.status
+                        ? order.status.charAt(0).toUpperCase() +
+                          order.status.slice(1)
+                        : "Pending"}
+                    </span>
+                  </td>
+                  <td className="p-3">
                     {order.status === "rejected"
                       ? order.rejection_reason || "-"
                       : "-"}
-                  </td>
-                  <td className="py-1 px-4">
-                    {order.status === "pending" &&
-                      user?.permission?.permissions?.includes(
-                        "update_order_request",
-                      ) && (
-                        <button
-                          className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                          onClick={() => handleCancel(order._id)}
-                        >
-                          Cancel
-                        </button>
-                      )}
                   </td>
                 </tr>
               ))}
@@ -131,7 +113,10 @@ const OrderHistory = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchOrders({ page, limit })}
+            onChange={({ page, limit }) => {
+              setPagination((prev) => ({ ...prev, page, limit }));
+              fetchOrders(page, limit);
+            }}
           />
         </div>
       )}

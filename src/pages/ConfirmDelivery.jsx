@@ -1,9 +1,72 @@
 import React, { useEffect, useState } from "react";
-import { HiCheck } from "react-icons/hi";
-import { useAuth } from "../context/useAuth";
+import {
+  HiOutlineCheckCircle,
+  HiOutlineFilter,
+  HiSelector,
+} from "react-icons/hi";
+import { useAuth } from "../contexts/auth/useAuth";
 import { getConfirmDeliveries, updateConfirmDelivery } from "../api";
+import { formatDate } from "../utils/dateFormat";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
+import { Listbox } from "@headlessui/react";
+
+const approvalStatusOptions = ["All Status", "Approved", "Rejected", "Pending"];
+const deliveryStatusOptions = ["All Status", "Delivered", "Pending"];
+
+function ApprovalStatusDropdown() {
+  const [selected, setSelected] = useState(approvalStatusOptions[0]);
+  return (
+    <Listbox value={selected} onChange={setSelected}>
+      <div className="relative">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
+          <span>{selected}</span>
+          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+        </Listbox.Button>
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          {approvalStatusOptions.map((option) => (
+            <Listbox.Option
+              key={option}
+              value={option}
+              className={({ active, selected }) =>
+                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              }
+            >
+              {option}
+            </Listbox.Option>
+          ))}
+        </Listbox.Options>
+      </div>
+    </Listbox>
+  );
+}
+
+function DeliveryStatusDropdown() {
+  const [selected, setSelected] = useState(deliveryStatusOptions[0]);
+  return (
+    <Listbox value={selected} onChange={setSelected}>
+      <div className="relative">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
+          <span>{selected}</span>
+          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+        </Listbox.Button>
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          {deliveryStatusOptions.map((option) => (
+            <Listbox.Option
+              key={option}
+              value={option}
+              className={({ active, selected }) =>
+                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              }
+            >
+              {option}
+            </Listbox.Option>
+          ))}
+        </Listbox.Options>
+      </div>
+    </Listbox>
+  );
+}
 
 const DeliveryConfirmation = () => {
   const [confirmDeliveries, setConfirmDeliveries] = useState([]);
@@ -28,8 +91,20 @@ const DeliveryConfirmation = () => {
     setError("");
     try {
       const res = await getConfirmDeliveries({ page, limit });
-      setConfirmDeliveries(res.data.data.filter((o) => o.status === "pending"));
-      setPagination(res.data.pagination);
+      // Only show orders that are approved and not yet delivered
+      setConfirmDeliveries(
+        res.data.data.filter(
+          (o) =>
+            o.status === "approved" &&
+            (!o.confirm_delivery || o.confirm_delivery.status !== "delivered"),
+        ),
+      );
+      setPagination((prev) => ({
+        ...prev,
+        ...res.data.pagination,
+        page,
+        limit,
+      }));
     } catch {
       setError("Failed to load confirm deliveries");
     } finally {
@@ -43,8 +118,6 @@ const DeliveryConfirmation = () => {
       fetchConfirmDeliveries();
     } catch {
       setError("Failed to approve order");
-    } finally {
-      //
     }
   }
   return (
@@ -54,8 +127,37 @@ const DeliveryConfirmation = () => {
           <h1 className="text-2xl font-semibold">Delivery Confirmation</h1>
           <span className="text-gray-500">Manage and confirm deliveries</span>
         </div>
+      </div>{" "}
+      <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
+        <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+          <HiOutlineFilter className="inline-block text-xl text-black" />
+          <span>Filters</span>
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Search
+            </label>
+            <input
+              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
+              placeholder="Search..."
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Approval Status
+            </label>
+            <ApprovalStatusDropdown />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Delivery Status
+            </label>
+            <DeliveryStatusDropdown />
+          </div>
+        </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
+      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
         ) : error ? (
@@ -64,52 +166,76 @@ const DeliveryConfirmation = () => {
           <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr className="bg-white">
-                <th className="py-3 px-4">No.</th>
-                <th className="py-3 px-4">Order</th>
-                <th className="py-3 px-4">Date</th>
-                <th className="py-3 px-4">Status</th>
-                {user?.permission?.permissions?.includes(
-                  "update_confirm_delivery",
-                ) ? (
-                  <th className="py-3 px-4">Actions</th>
-                ) : null}
+                <th className="p-3">No.</th>
+                <th className="p-3">Requested By</th>
+                <th className="p-3">Product</th>
+                <th className="p-3">Requested Date</th>
+                <th className="p-3">Approval Status</th>
+                <th className="p-3">Delivery Status</th>
+                <th className="p-3">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {confirmDeliveries.map((d, index) => (
-                <tr key={d._id}>
-                  <td className="py-1 px-4">
-                    {index + 1 + (pagination.page - 1) * pagination.limit}
-                  </td>
-                  <td className="py-1 px-4">{d.order}</td>
-                  <td className="py-1 px-4">{d.date}</td>
-                  <td className="py-1 px-4">
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${d.status === "Pending" ? "bg-yellow-100 text-yellow-700" : "bg-green-100 text-green-700"}`}
-                    >
-                      {d.status}
-                    </span>
-                  </td>
-                  <td className="py-1 px-4">
-                    {d.status === "Pending" &&
-                      user?.permission?.permissions?.includes(
-                        "update_confirm_delivery",
-                      ) && (
-                        <button
-                          className="bg-[#0071e3] hover:bg-blue-700 text-white p-1 rounded-full cursor-pointer"
-                          title="Confirm Delivery"
-                          onClick={() => handleConfirmDelivery(d._id)}
-                        >
-                          <HiCheck className="w-4 h-4" />
-                        </button>
-                      )}
-                  </td>
-                </tr>
-              ))}
+              {confirmDeliveries.map((confirm_delivery, index) => {
+                const approve = confirm_delivery.approve_request;
+                const delivery = confirm_delivery.confirm_delivery;
+                return (
+                  <tr key={confirm_delivery._id}>
+                    <td className="p-3">
+                      {index + 1 + (pagination.page - 1) * pagination.limit}
+                    </td>
+                    <td className="p-3">
+                      {confirm_delivery.requester?.first_name}{" "}
+                      {confirm_delivery.requester?.last_name}
+                    </td>
+                    <td className="p-3">
+                      {confirm_delivery.product?.name || "-"}
+                    </td>
+                    <td className="p-3">
+                      {formatDate(confirm_delivery.requested_date, true)}
+                    </td>
+                    <td className="p-3">
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${approve?.status === "approved" ? "bg-green-100 text-green-700" : approve?.status === "rejected" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}
+                      >
+                        {approve?.status
+                          ? approve.status.charAt(0).toUpperCase() +
+                            approve.status.slice(1)
+                          : "Pending"}
+                      </span>
+                    </td>
+                    <td className="p-3">
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${delivery?.status === "delivered" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}
+                      >
+                        {delivery?.status === "delivered"
+                          ? "Delivered"
+                          : "Pending"}
+                      </span>
+                    </td>
+                    <td className="p-3">
+                      {(!delivery || delivery.status !== "delivered") &&
+                        user?.permission?.permissions?.includes(
+                          "update_confirm_delivery",
+                        ) && (
+                          <button
+                            className="text-green-600 hover:text-green-700 rounded-full cursor-pointer mr-2"
+                            title="Confirm Delivery"
+                            onClick={() =>
+                              handleConfirmDelivery(confirm_delivery._id)
+                            }
+                          >
+                            <HiOutlineCheckCircle className="w-8 h-8" />
+                          </button>
+                        )}
+                    </td>
+                  </tr>
+                );
+              })}
               {confirmDeliveries.length === 0 && (
                 <tr>
-                  <td colSpan="5">
-                    <NoDataFound message="No users found." />
+                  <td colSpan="7">
+                    <NoDataFound message="No deliveries found." />
                   </td>
                 </tr>
               )}
@@ -123,9 +249,10 @@ const DeliveryConfirmation = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) =>
-              fetchConfirmDeliveries({ page, limit })
-            }
+            onChange={({ page, limit }) => {
+              setPagination((prev) => ({ ...prev, page, limit }));
+              fetchConfirmDeliveries(page, limit);
+            }}
           />
         </div>
       )}

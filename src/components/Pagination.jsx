@@ -35,10 +35,7 @@ export default function Pagination({
     onChange && onChange({ page: p, limit });
   };
 
-  const handleLimitChange = (e) => {
-    const newLimit = Number(e.target.value);
-    onChange && onChange({ page: 1, limit: newLimit });
-  };
+  // Remove handleLimitChange, use onChange directly
 
   return (
     <div className="flex items-center justify-center gap-2 pagination">
@@ -103,7 +100,7 @@ export default function Pagination({
       <span className="text-base text-[#64748b]">Rows per page:</span>
       <Listbox
         value={limit}
-        onChange={(val) => handleLimitChange({ target: { value: val } })}
+        onChange={(val) => onChange && onChange({ page: 1, limit: val })}
       >
         <div className="relative w-20">
           <Listbox.Button className="cursor-pointer w-full bg-white border border-gray-300 rounded-lg px-2 py-1 text-left text-gray-800 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-400">

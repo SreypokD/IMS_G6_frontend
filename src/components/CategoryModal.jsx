@@ -83,17 +83,17 @@ const CategoryModal = ({ open, onClose, onSave, initial }) => {
           <div className="flex justify-end gap-2 mt-6">
             <button
               type="button"
-              className="px-5 py-2 bg-[#f8f8f8] hover:bg-[#e5e7eb] text-gray-black rounded-xl cursor-pointer  flex items-center gap-2"
+              className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
               onClick={onClose}
             >
               <HiXCircle className="inline-block text-xl" /> Cancel
             </button>
             <button
               type="button"
-              className="px-5 py-2 bg-[#1e3a5f] hover:bg-[#16375b] text-white rounded-xl cursor-pointer flex items-center gap-2"
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
               onClick={handleSubmit}
             >
-              <HiOutlineDocumentText className="inline-block text-xl" />{" "}
+              <HiOutlineDocumentText className="inline-block text-xl" />
               {initial ? "Update Category" : "Add Category"}
             </button>
           </div>

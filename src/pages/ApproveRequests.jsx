@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../contexts/auth/useAuth";
+import { useDialog } from "../contexts/dialog/useDialog";
 import { HiOutlineCheckCircle, HiOutlineXCircle } from "react-icons/hi";
 import { getApproveRequests, updateApproveRequests } from "../api";
 import Pagination from "../components/Pagination";
@@ -20,6 +21,7 @@ const OrderRequestApproval = () => {
   const [showReject, setShowReject] = useState({});
   const [rejectionReason, setRejectionReason] = useState({});
   const { user } = useAuth();
+  const dialog = useDialog();
 
   useEffect(() => {
     if (user) {
@@ -33,7 +35,12 @@ const OrderRequestApproval = () => {
     try {
       const res = await getApproveRequests({ page, limit });
       setOrders(res.data.data.filter((o) => o.status === "pending"));
-      setPagination(res.data.pagination);
+      setPagination((prev) => ({
+        ...prev,
+        ...res.data.pagination,
+        page,
+        limit,
+      }));
     } catch {
       setError("Failed to load approve requests");
     } finally {
@@ -42,15 +49,27 @@ const OrderRequestApproval = () => {
   }
 
   async function handleApprove(id) {
+    const confirmed = await dialog.ask({
+      type: "confirm",
+      title: "Approve Order Request",
+      message: "Are you sure you want to approve this order request?",
+      confirmText: "Approve",
+      cancelText: "Cancel",
+    });
+    if (!confirmed) return;
     setActionId(id);
     try {
       await updateApproveRequests(id, {
         status: "approved",
         admin_remarks: remarks[id] || "",
       });
+      await dialog.success("Order request approved.");
       fetchApproveRequests();
-    } catch {
-      setError("Failed to approve order");
+    } catch (err) {
+      const msg =
+        err?.response?.data?.error || err?.message || "Failed to approve order";
+      await dialog.error(msg);
+      setError(msg);
     } finally {
       setActionId(null);
     }
@@ -83,7 +102,7 @@ const OrderRequestApproval = () => {
           </span>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
+      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
         ) : error ? (
@@ -92,48 +111,46 @@ const OrderRequestApproval = () => {
           <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr className="bg-white">
-                <th className="py-3 px-4">No.</th>
-                <th className="py-3 px-4">Requester</th>
-                <th className="py-3 px-4">Product</th>
-                <th className="py-3 px-4">Quantity</th>
-                <th className="py-3 px-4">Requested Date</th>
-                <th className="py-3 px-4">Notes</th>
-                <th className="py-3 px-4">Remarks</th>
+                <th className="p-3">No.</th>
+                <th className="p-3">Requested By</th>
+                <th className="p-3">Product</th>
+                <th className="p-3">Quantity</th>
+                <th className="p-3">Requested Date</th>
+                <th className="p-3">Notes</th>
+                <th className="p-3">Remarks</th>
                 {user?.permission?.permissions?.includes(
                   "update_approve_request",
                 ) ||
                 user?.permission?.permissions?.includes(
                   "delete_approve_request",
                 ) ? (
-                  <th className="py-3 px-4">Actions</th>
+                  <th className="p-3">Actions</th>
                 ) : null}
               </tr>
             </thead>
             <tbody>
-              {orders.map((order, idx) => (
+              {orders.map((order, index) => (
                 <tr key={order._id}>
-                  <td className="py-1 px-4">
-                    {idx + 1 + (pagination.page - 1) * pagination.limit}
+                  <td className="p-3">
+                    {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="py-1 px-4">
+                  <td className="p-3">
                     {order.requester?.first_name +
                       " " +
                       order.requester?.last_name || "-"}
                   </td>
-                  <td className="py-1 px-4">
-                    {order.Product?.name || order.product_id}
-                  </td>
-                  <td className="py-1 px-4">{order.quantity}</td>
-                  <td className="py-1 px-4">
+                  <td className="p-3">{order.product?.name || "-"}</td>
+                  <td className="p-3">{order.quantity || "-"}</td>
+                  <td className="p-3">
                     {order.requested_date
                       ? new Date(order.requested_date).toLocaleDateString()
-                      : ""}
+                      : "-"}
                   </td>
-                  <td className="py-1 px-4">{order.notes}</td>
-                  <td className="py-1 px-4">
+                  <td className="p-3">{order.notes || "-"}</td>
+                  <td className="p-3">
                     <input
                       type="text"
-                      className="border border-gray-200 rounded px-2 py-1 text-base"
+                      className="border border-gray-200 rounded-lg px-2 py-1 text-base"
                       placeholder="Admin remarks"
                       value={remarks[order._id] || ""}
                       onChange={(e) =>
@@ -145,7 +162,7 @@ const OrderRequestApproval = () => {
                       disabled={actionId === order._id}
                     />
                   </td>
-                  <td className="py-1 px-4 flex items-center gap-1">
+                  <td className="p-3 flex items-center gap-1">
                     {user?.permission?.permissions?.includes(
                       "update_approve_request",
                     ) && (
@@ -191,24 +208,17 @@ const OrderRequestApproval = () => {
                           disabled={actionId === order._id}
                         />
                         <button
-                          className="ml-2 px-2 py-1 bg-red-500 text-white rounded text-sm"
+                          className="text-red-500 hover:text-red-600 rounded-full cursor-pointer"
                           onClick={() => handleReject(order._id)}
                           disabled={actionId === order._id}
                         >
-                          Confirm Reject
+                          <HiOutlineXCircle className="w-8 h-8" />
                         </button>
                       </div>
                     )}
                   </td>
                 </tr>
               ))}
-              {orders.length === 0 && (
-                <tr>
-                  <td colSpan="9">
-                    <NoDataFound message="No users found." />
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         )}
@@ -219,9 +229,10 @@ const OrderRequestApproval = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) =>
-              fetchApproveRequests({ page, limit })
-            }
+            onChange={({ page, limit }) => {
+              setPagination((prev) => ({ ...prev, page, limit }));
+              fetchApproveRequests(page, limit);
+            }}
           />
         </div>
       )}

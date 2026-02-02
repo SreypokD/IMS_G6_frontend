@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from "react";
 import PermissionModal from "../components/PermissionModal";
-import { HiOutlinePencil, HiOutlineTrash, HiOutlinePlus } from "react-icons/hi";
+import {
+  HiOutlinePencil,
+  HiOutlineTrash,
+  HiOutlinePlus,
+  HiOutlineFilter,
+} from "react-icons/hi";
 import {
   getPermissions,
   createPermission,
   updatePermission,
   deletePermission,
 } from "../api";
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../contexts/auth/useAuth";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 
@@ -38,7 +43,12 @@ const Permissions = () => {
     try {
       const res = await getPermissions({ page, limit });
       setPermissions(res.data.data);
-      setPagination(res.data.pagination);
+      setPagination((prev) => ({
+        ...prev,
+        ...res.data.pagination,
+        page,
+        limit,
+      }));
     } catch {
       setError("Failed to load permissions");
     } finally {
@@ -99,7 +109,7 @@ const Permissions = () => {
         </div>
         {user?.permission?.permissions?.includes("create_permission") && (
           <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => {
               setEditPermission(null);
               setModalOpen(true);
@@ -110,14 +120,23 @@ const Permissions = () => {
         )}
       </div>
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
+        <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+          <HiOutlineFilter className="inline-block text-xl text-black" />
+          <span>Filters</span>
+        </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <input
-            className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
-            placeholder="Search..."
-          />
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Search
+            </label>
+            <input
+              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
+              placeholder="Search..."
+            />
+          </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
+      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
         ) : error ? (
@@ -126,26 +145,26 @@ const Permissions = () => {
           <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr className="bg-white">
-                <th className="py-3 px-4">No.</th>
-                <th className="py-3 px-4">Name</th>
-                <th className="py-3 px-4">Description</th>
+                <th className="p-3">No.</th>
+                <th className="p-3">Name</th>
+                <th className="p-3">Description</th>
                 {user?.permission?.permissions?.includes("update_permission") ||
                 user?.permission?.permissions?.includes("delete_permission") ? (
-                  <th className="py-3 px-4">Actions</th>
+                  <th className="p-3">Actions</th>
                 ) : null}
               </tr>
             </thead>
             <tbody>
-              {permissions.map((perm, index) => (
-                <tr key={perm._id}>
-                  <td className="py-1 px-4">
+              {permissions.map((permission, index) => (
+                <tr key={permission._id}>
+                  <td className="p-3">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="py-1 px-4">{perm.name}</td>
-                  <td className="py-1 px-4 whitespace-nowrap">
-                    {perm.description}
+                  <td className="p-3">{permission.name}</td>
+                  <td className="p-3 whitespace-nowrap">
+                    {permission.description}
                   </td>
-                  <td className="py-1 px-4 flex items-center gap-1">
+                  <td className="p-3 flex items-center gap-1">
                     {user?.permission?.permissions?.includes(
                       "update_permission",
                     ) && (
@@ -153,7 +172,7 @@ const Permissions = () => {
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Edit"
                         onClick={() => {
-                          setEditPermission(perm);
+                          setEditPermission(permission);
                           setModalOpen(true);
                         }}
                       >
@@ -166,7 +185,7 @@ const Permissions = () => {
                       <button
                         className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Delete"
-                        onClick={() => handleDelete(perm._id)}
+                        onClick={() => handleDelete(permission._id)}
                       >
                         <HiOutlineTrash className="text-xl" />
                       </button>
@@ -191,7 +210,10 @@ const Permissions = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchPermissions({ page, limit })}
+            onChange={({ page, limit }) => {
+              setPagination((prev) => ({ ...prev, page, limit }));
+              fetchPermissions(page, limit);
+            }}
           />
         </div>
       )}

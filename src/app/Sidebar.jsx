@@ -1,108 +1,184 @@
 import React, { useState } from "react";
 
 import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../context/useAuth.js";
+import { useAuth } from "../contexts/auth/useAuth.js";
 import {
   HiClipboardList,
-  HiOutlineCollection,
+  HiCollection,
   HiCheckCircle,
   HiTruck,
   HiCube,
   HiUserGroup,
   HiArchive,
   HiChartBar,
-  HiTemplate,
+  HiViewGrid,
   HiCog,
   HiChevronRight,
   HiKey,
   HiShoppingCart,
   HiClock,
+  HiOutlineDocumentText,
+  HiOutlineAnnotation,
 } from "react-icons/hi";
 import logo from "../assets/images/logo.png";
 
-const navLinks = (permissions = []) =>
+const navLinks = (permissions = [], activePath = "") =>
   [
-    // Dashboard
     permissions.includes("view_dashboard") && {
       to: "/",
       label: "Dashboard",
-      icon: <HiTemplate />,
+      icon: (
+        <HiViewGrid
+          className={activePath === "/" ? "text-white" : "text-blue-700"}
+        />
+      ),
     },
-
-    // Master Data
     permissions.includes("view_category") && {
       to: "/categories",
       label: "Categories",
-      icon: <HiOutlineCollection />,
+      icon: (
+        <HiCollection
+          className={
+            activePath === "/categories" ? "text-white" : "text-emerald-600"
+          }
+        />
+      ),
     },
     permissions.includes("view_product") && {
       to: "/products",
       label: "Products",
-      icon: <HiCube />,
+      icon: (
+        <HiCube
+          className={
+            activePath === "/products" ? "text-white" : "text-purple-600"
+          }
+        />
+      ),
     },
     permissions.includes("view_supplier") && {
       to: "/suppliers",
       label: "Suppliers",
-      icon: <HiUserGroup />,
+      icon: (
+        <HiUserGroup
+          className={
+            activePath === "/suppliers" ? "text-white" : "text-pink-600"
+          }
+        />
+      ),
     },
-
-    // Purchasing / Procurement
     permissions.includes("view_order_request") && {
       to: "/order-requests",
       label: "Order Requests",
-      icon: <HiClipboardList />,
+      icon: (
+        <HiClipboardList
+          className={
+            activePath === "/order-requests" ? "text-white" : "text-orange-600"
+          }
+        />
+      ),
     },
     permissions.includes("view_approve_request") && {
       to: "/approve-requests",
       label: "Approve Requests",
-      icon: <HiCheckCircle />,
+      icon: (
+        <HiCheckCircle
+          className={
+            activePath === "/approve-requests" ? "text-white" : "text-green-600"
+          }
+        />
+      ),
     },
     permissions.includes("view_confirm_delivery") && {
       to: "/confirm-delivery",
       label: "Confirm Delivery",
-      icon: <HiTruck />,
+      icon: (
+        <HiTruck
+          className={
+            activePath === "/confirm-delivery"
+              ? "text-white"
+              : "text-yellow-600"
+          }
+        />
+      ),
     },
-
-    // Inventory
     permissions.includes("view_stock") && {
       to: "/stocks",
       label: "Stocks",
-      icon: <HiArchive />,
+      icon: (
+        <HiArchive
+          className={activePath === "/stocks" ? "text-white" : "text-cyan-600"}
+        />
+      ),
     },
-
-    // Sales
     permissions.includes("view_sale") && {
       to: "/sales",
       label: "Sales",
-      icon: <HiShoppingCart />,
+      icon: (
+        <HiShoppingCart
+          className={
+            activePath === "/sales" ? "text-white" : "text-fuchsia-600"
+          }
+        />
+      ),
     },
-
-    // Reports & Logs
-    permissions.includes("view_report") && {
-      to: "/reports",
-      label: "Reports",
-      icon: <HiChartBar />,
+    permissions.includes("view_order_history") && {
+      to: "/order-history",
+      label: "Order History",
+      icon: (
+        <HiOutlineDocumentText
+          className={
+            activePath === "/order-history" ? "text-white" : "text-blue-500"
+          }
+        />
+      ),
     },
     permissions.includes("view_activity_log") && {
       to: "/activity-log",
       label: "Activity Log",
-      icon: <HiClock />,
+      icon: (
+        <HiOutlineAnnotation
+          className={
+            activePath === "/activity-log" ? "text-white" : "text-amber-500"
+          }
+        />
+      ),
     },
-
-    // Settings / Security
+    permissions.includes("view_report") && {
+      to: "/reports",
+      label: "Reports",
+      icon: (
+        <HiChartBar
+          className={
+            activePath === "/reports" ? "text-white" : "text-indigo-600"
+          }
+        />
+      ),
+    },
     permissions.includes("view_permission") && {
       label: "Settings",
-      icon: <HiCog />,
+      icon: <HiCog className="text-slate-700" />,
       submenus: [
         permissions.includes("view_user") && {
           to: "/users",
           label: "Users",
-          icon: <HiUserGroup />,
+          icon: (
+            <HiUserGroup
+              className={
+                activePath === "/users" ? "text-white" : "text-blue-700"
+              }
+            />
+          ),
         },
         permissions.includes("view_permission") && {
           to: "/permissions",
           label: "Permissions",
-          icon: <HiKey />,
+          icon: (
+            <HiKey
+              className={
+                activePath === "/permissions" ? "text-white" : "text-yellow-700"
+              }
+            />
+          ),
         },
       ].filter(Boolean),
     },
@@ -111,7 +187,7 @@ const navLinks = (permissions = []) =>
 const Sidebar = ({ mini }) => {
   const { user } = useAuth();
   const location = useLocation();
-  const links = navLinks(user?.permission?.permissions);
+  const links = navLinks(user?.permission?.permissions, location.pathname);
   const [expanded, setExpanded] = useState(null);
 
   return (

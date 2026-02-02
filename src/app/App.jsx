@@ -9,7 +9,8 @@ import Reports from "../pages/Reports.jsx";
 import Products from "../pages/Products.jsx";
 import Suppliers from "../pages/Suppliers.jsx";
 import Dashboard from "../pages/Dashboard.jsx";
-import { useAuth } from "../context/useAuth.js";
+import { useAuth } from "../contexts/auth/useAuth.js";
+import { DialogProvider } from "../contexts/dialog/DialogContext.jsx";
 import Categories from "../pages/Categories.jsx";
 import Stocks from "../pages/Stocks.jsx";
 import Breadcrumb from "../components/Breadcrumb.jsx";
@@ -47,70 +48,75 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="*"
-          element={
-            <PrivateRoute>
-              <div className="h-screen flex overflow-hidden bg-[#fafbfc]">
-                <Sidebar mini={sidebarHidden} />
-                <div className="flex-1 flex flex-col min-w-0">
-                  <Navbar onBellClick={() => setSidebarHidden((v) => !v)} />
-                  <main className="flex-1 p-3 overflow-y-auto min-h-0">
-                    <Breadcrumb />
-                    <Routes>
-                      {[
-                        // Dashboard
-                        { path: "/", element: <Dashboard /> },
+    <DialogProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="*"
+            element={
+              <PrivateRoute>
+                <div className="h-screen flex overflow-hidden bg-[#fafbfc]">
+                  <Sidebar mini={sidebarHidden} />
+                  <div className="flex-1 flex flex-col min-w-0">
+                    <Navbar onBellClick={() => setSidebarHidden((v) => !v)} />
+                    <main className="flex-1 p-3 overflow-y-auto min-h-0">
+                      <Breadcrumb />
+                      <Routes>
+                        {[
+                          // Dashboard
+                          { path: "/", element: <Dashboard /> },
 
-                        // Master Data
-                        { path: "/categories", element: <Categories /> },
-                        { path: "/products", element: <Products /> },
-                        { path: "/suppliers", element: <Suppliers /> },
+                          // Master Data
+                          { path: "/categories", element: <Categories /> },
+                          { path: "/products", element: <Products /> },
+                          { path: "/suppliers", element: <Suppliers /> },
 
-                        // Purchasing / Procurement
-                        { path: "/order-requests", element: <OrderRequests /> },
-                        {
-                          path: "/approve-requests",
-                          element: <ApproveRequests />,
-                        },
-                        {
-                          path: "/confirm-delivery",
-                          element: <ConfirmDelivery />,
-                        },
-                        { path: "/order-history", element: <OrderHistory /> },
+                          // Purchasing / Procurement
+                          {
+                            path: "/order-requests",
+                            element: <OrderRequests />,
+                          },
+                          {
+                            path: "/approve-requests",
+                            element: <ApproveRequests />,
+                          },
+                          {
+                            path: "/confirm-delivery",
+                            element: <ConfirmDelivery />,
+                          },
+                          { path: "/order-history", element: <OrderHistory /> },
 
-                        // Inventory / Stock
-                        { path: "/stocks", element: <Stocks /> },
+                          // Inventory / Stock
+                          { path: "/stocks", element: <Stocks /> },
 
-                        // Sales
-                        { path: "/sales", element: <Sales /> },
+                          // Sales
+                          { path: "/sales", element: <Sales /> },
 
-                        // Reports & Logs
-                        { path: "/reports", element: <Reports /> },
-                        { path: "/activity-log", element: <ActivityLog /> },
+                          // Reports & Logs
+                          { path: "/reports", element: <Reports /> },
+                          { path: "/activity-log", element: <ActivityLog /> },
 
-                        // System / Security
-                        { path: "/users", element: <Users /> },
-                        { path: "/permissions", element: <Permissions /> },
-                      ].map((route) => (
-                        <Route
-                          key={route.path}
-                          path={route.path}
-                          element={route.element}
-                        />
-                      ))}
-                    </Routes>
-                  </main>
+                          // System / Security
+                          { path: "/users", element: <Users /> },
+                          { path: "/permissions", element: <Permissions /> },
+                        ].map((route) => (
+                          <Route
+                            key={route.path}
+                            path={route.path}
+                            element={route.element}
+                          />
+                        ))}
+                      </Routes>
+                    </main>
+                  </div>
                 </div>
-              </div>
-            </PrivateRoute>
-          }
-        />
-      </Routes>
-    </Router>
+              </PrivateRoute>
+            }
+          />
+        </Routes>
+      </Router>
+    </DialogProvider>
   );
 }
 

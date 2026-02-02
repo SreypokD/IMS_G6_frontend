@@ -55,7 +55,7 @@ api.interceptors.response.use(
     return Promise.reject(error);
   },
 );
- 
+
 const profile = "/auth/profile";
 const products = "/products";
 const categories = "/categories";
@@ -71,11 +71,13 @@ const activityLogs = "/reports/activity-logs";
 const permissions = "/permissions";
 const users = "/users";
 
- // Notifications
+// Notifications
 const notifications = "/notifications";
 export const getNotifications = () => api.get(notifications);
-export const markNotificationRead = (id) => api.patch(`${notifications}/${id}/read`);
-export const getUnreadNotificationCount = () => api.get(`${notifications}/unread/count`);
+export const markNotificationRead = (id) =>
+  api.patch(`${notifications}/${id}/read`);
+export const getUnreadNotificationCount = () =>
+  api.get(`${notifications}/unread/count`);
 
 // Get current user profile
 export const getProfile = () => api.get(profile);
@@ -93,47 +95,59 @@ export const deleteProduct = (id) => api.delete(`${products}/${id}`);
 // Category CRUD
 export const getCategories = (params = {}) => api.get(categories, { params });
 export const createCategory = (data) => api.post(categories, data);
-export const updateCategory = (id, data) => api.patch(`${categories}/${id}`, data);
+export const updateCategory = (id, data) =>
+  api.patch(`${categories}/${id}`, data);
 export const deleteCategory = (id) => api.delete(`${categories}/${id}`);
 
 // Get Supplier
 export const getSuppliers = (params = {}) => api.get(suppliers, { params });
 export const createSupplier = (data) => api.post(suppliers, data);
-export const updateSupplier = (id, data) => api.patch(`${suppliers}/${id}`, data);
+export const updateSupplier = (id, data) =>
+  api.patch(`${suppliers}/${id}`, data);
 export const deleteSupplier = (id) => api.delete(`${suppliers}/${id}`);
 
 // Order request CRUD for current user
 export const getOrderRequests = (params) => api.get(orderRequests, { params });
 export const createOrderRequest = (data) => api.post(orderRequests, data);
-export const updateOrderRequest = (id, data) => api.patch(`${orderRequests}/${id}`, data);
+export const updateOrderRequest = (id, data) =>
+  api.patch(`${orderRequests}/${id}`, data);
 export const deleteOrderRequest = (id) => api.delete(`${orderRequests}/${id}`);
-export const cancelOrderRequest = (orderId) => api.patch(`${orderRequests}/${orderId}/status`, { status: "cancelled" });
+export const cancelOrderRequest = (orderId) =>
+  api.patch(`${orderRequests}/${orderId}/status`, { status: "cancelled" });
 
 // Approve order requests
-export const getApproveRequests = (params) => api.get(approveRequests, { params });
-export const updateApproveRequests = (id, data) => api.patch(`${approveRequests}/${id}`, data);
+export const getApproveRequests = (params) =>
+  api.get(approveRequests, { params });
+export const updateApproveRequests = (id, data) =>
+  api.patch(`${approveRequests}/${id}`, data);
 
 // Confirm delivery
-export const getConfirmDeliveries = (params) => api.get(confirmDeliveries, { params });
-export const updateConfirmDelivery = (id, data) => api.patch(`${confirmDeliveries}/${id}`, data);
+export const getConfirmDeliveries = (params) =>
+  api.get(confirmDeliveries, { params });
+export const updateConfirmDelivery = (id, data) =>
+  api.patch(`${confirmDeliveries}/${id}`, data);
 
 // Sales
 export const getSales = (params = {}) => api.get(sales, { params });
+export const createSale = (data) => api.post(sales, data);
 
 // Stocks
 export const getStocks = (params = {}) => api.get(stocks, { params });
 
 // Activity Logs
-export const getActivityLogs = (params = {}) => api.get(activityLogs, { params });
+export const getActivityLogs = (params = {}) =>
+  api.get(activityLogs, { params });
 
 // Permission CRUD
 export const getPermissions = (params = {}) => api.get(permissions, { params });
 export const createPermission = (data) => api.post(permissions, data);
-export const updatePermission = (id, data) => api.patch(`${permissions}/${id}`, data);
+export const updatePermission = (id, data) =>
+  api.patch(`${permissions}/${id}`, data);
 export const deletePermission = (id) => api.delete(`${permissions}/${id}`);
 
 // User CRUD
 export const getUsers = (params = {}) => api.get(users, { params });
+export const getUser = (id) => api.get(`${users}/${id}`);
 export const createUser = (data) => api.post(users, data);
 export const updateUser = (id, data) => api.patch(`${users}/${id}`, data);
 export const deleteUser = (id) => api.delete(`${users}/${id}`);

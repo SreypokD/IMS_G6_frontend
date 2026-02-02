@@ -221,7 +221,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
               </div>
               <div>
                 <label className="block text-base font-medium mb-1">
-                  Phone{" "}
+                  Phone
                   {!initial ? <sup className="text-red-500">*</sup> : null}
                 </label>
                 <input
@@ -440,14 +440,14 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
             type="button"
-            className="px-5 py-2 bg-[#f8f8f8] hover:bg-[#e5e7eb] text-gray-black rounded-xl cursor-pointer  flex items-center gap-2"
+            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
             onClick={onClose}
           >
             <HiXCircle className="inline-block text-xl" /> Cancel
           </button>
           <button
             type="button"
-            className="px-5 py-2 bg-[#1e3a5f] hover:bg-[#16375b] text-white rounded-xl cursor-pointer flex items-center gap-2"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => {
               setValidateOnSave(true);
               setTouched({

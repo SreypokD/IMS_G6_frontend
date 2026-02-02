@@ -1,11 +1,75 @@
 import React, { useState, useEffect } from "react";
-import { HiOutlinePlus } from "react-icons/hi";
-import { useAuth } from "../context/useAuth";
+import {
+  HiSelector,
+  HiOutlinePlus,
+  HiOutlinePencil,
+  HiOutlineXCircle,
+  HiOutlineFilter,
+} from "react-icons/hi";
+import { useAuth } from "../contexts/auth/useAuth.js";
+import { useDialog } from "../contexts/dialog/useDialog.js";
 import OrderRequestModal from "../components/OrderRequestModal.jsx";
 import { getOrderRequests } from "../api";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 import { formatDate } from "../utils/dateFormat";
+import { Listbox } from "@headlessui/react";
+
+const statusOptions = ["All Status", "Approved", "Rejected", "Pending"];
+
+function StatusDropdown() {
+  const [selected, setSelected] = useState(statusOptions[0]);
+  return (
+    <Listbox value={selected} onChange={setSelected}>
+      <div className="relative">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
+          <span>{selected}</span>
+          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+        </Listbox.Button>
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          {statusOptions.map((option) => (
+            <Listbox.Option
+              key={option}
+              value={option}
+              className={({ active, selected }) =>
+                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              }
+            >
+              {option}
+            </Listbox.Option>
+          ))}
+        </Listbox.Options>
+      </div>
+    </Listbox>
+  );
+}
+
+function DeliveryStatusDropdown() {
+  const [selected, setSelected] = useState(statusOptions[0]);
+  return (
+    <Listbox value={selected} onChange={setSelected}>
+      <div className="relative">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
+          <span>{selected}</span>
+          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+        </Listbox.Button>
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          {statusOptions.map((option) => (
+            <Listbox.Option
+              key={option}
+              value={option}
+              className={({ active, selected }) =>
+                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              }
+            >
+              {option}
+            </Listbox.Option>
+          ))}
+        </Listbox.Options>
+      </div>
+    </Listbox>
+  );
+}
 
 const OrderRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -16,26 +80,38 @@ const OrderRequests = () => {
     totalPages: 1,
   });
   const [modalOpen, setModalOpen] = useState(false);
+  const [editOrderRequest, setEditOrderRequest] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { user } = useAuth();
+  const dialog = useDialog();
 
   useEffect(() => {
     if (user) {
-      fetchOrderRequests(1, 10);
+      fetchOrderRequests(pagination.page, pagination.limit);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   // Fetch order requests from API
-  async function fetchOrderRequests(page = 1, limit = 10) {
+  async function fetchOrderRequests(
+    page = pagination.page,
+    limit = pagination.limit,
+  ) {
     setLoading(true);
     setError("");
     try {
       const res = await getOrderRequests({ page, limit });
       setRequests(res.data.data);
-      setPagination(res.data.pagination);
+      setPagination((prev) => ({
+        ...prev,
+        ...res.data.pagination,
+        page,
+        limit,
+      }));
     } catch {
       setError("Failed to load order requests");
+      dialog.error("Failed to load order requests");
     } finally {
       setLoading(false);
     }
@@ -45,9 +121,14 @@ const OrderRequests = () => {
     <div>
       <OrderRequestModal
         open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        initial={editOrderRequest}
+        onClose={() => {
+          setModalOpen(false);
+          setEditOrderRequest(null);
+        }}
         onSave={() => {
           setModalOpen(false);
+          setEditOrderRequest(null);
           fetchOrderRequests(pagination.page, pagination.limit);
         }}
       />
@@ -58,14 +139,37 @@ const OrderRequests = () => {
         </div>
         {user?.permission?.permissions?.includes("create_order_request") && (
           <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => setModalOpen(true)}
           >
             <HiOutlinePlus className="text-md" /> Add Request
           </button>
         )}
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
+      <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
+        <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+          <HiOutlineFilter className="inline-block text-xl text-black" />
+          <span>Filters</span>
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Search
+            </label>
+            <input
+              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
+              placeholder="Search..."
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Status
+            </label>
+            <StatusDropdown />
+          </div>
+        </div>
+      </div>
+      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
         ) : error ? (
@@ -74,29 +178,30 @@ const OrderRequests = () => {
           <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr>
-                <th className="py-3 px-4">No.</th>
-                <th className="py-3 px-4">Requester</th>
-                <th className="py-3 px-4">Date</th>
-                <th className="py-3 px-4">Customer Remark</th>
-                <th className="py-3 px-4">Delivery Date</th>
-                <th className="py-3 px-4">Status</th>
+                <th className="p-3">No.</th>
+                <th className="p-3">Requested By</th>
+                <th className="p-3">Product</th>
+                <th className="p-3">Date</th>
+                <th className="p-3">Notes</th>
+                <th className="p-3">Delivery Date</th>
+                <th className="p-3">Status</th>
+                {requests.some(
+                  (req) =>
+                    req.status === "pending" &&
+                    String(req.requester_id) === String(user?._id),
+                ) && <th className="p-3">Actions</th>}
               </tr>
             </thead>
             <tbody>
               {(() => {
-                const filteredRequests =
-                  user?.permission?.name === "Customer" ||
-                  (user?.permission?.permissions &&
-                    user.permission.permissions.includes(
-                      "create_order_request",
-                    ) &&
-                    !user.permission.permissions.includes(
-                      "update_order_request",
-                    ))
-                    ? requests.filter(
-                        (req) => String(req.requester_id) === String(user._id),
-                      )
-                    : requests;
+                // Admins and staff see all requests, customers see only their own
+                const isAdminOrStaff =
+                  user?.role === "admin" || user?.role === "staff";
+                const filteredRequests = isAdminOrStaff
+                  ? requests
+                  : requests.filter(
+                      (req) => String(req.requester_id) === String(user._id),
+                    );
                 if (!filteredRequests || filteredRequests.length === 0) {
                   return (
                     <tr>
@@ -106,52 +211,79 @@ const OrderRequests = () => {
                     </tr>
                   );
                 }
-                return filteredRequests.map((req, index) => (
-                  <tr key={req._id}>
-                    <td className="py-1 px-4">
+                return filteredRequests.map((request, index) => (
+                  <tr key={request._id}>
+                    <td className="p-3">
                       {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>
-                    <td className="py-1 px-4">
-                      {req.requester?.first_name ||
-                        req.requester?.email ||
-                        req.requester ||
+                    <td className="p-3">
+                      {request.requester?.first_name ||
+                        request.requester?.email ||
+                        request.requester ||
                         "-"}
                     </td>
-                    <td className="py-1 px-4">
-                      {formatDate(req.date || req.requested_date)}
+                    <td className="p-3">{request.product?.name || "-"}</td>
+                    <td className="p-3">
+                      {formatDate(request.date || request.requested_date)}
                     </td>
-                    <td className="py-1 px-4">{req.customer_remark || "-"}</td>
-                    <td className="py-1 px-4">
-                      {formatDate(req.delivery_date)}
-                    </td>
-                    <td className="py-1 px-4">
+                    <td className="p-3">{request.notes || "-"}</td>
+                    <td className="p-3">{formatDate(request.delivery_date)}</td>
+                    <td className="p-3">
                       <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${req.status === "pending" ? "bg-yellow-100 text-yellow-700" : req.status === "approved" ? "bg-green-100 text-green-700" : req.status === "rejected" ? "bg-red-100 text-red-700" : req.status === "completed" ? "bg-blue-100 text-blue-700" : req.status === "on_hold" ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-700"}`}
+                        className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${request.status === "pending" ? "bg-yellow-100 text-yellow-700" : request.status === "approved" ? "bg-green-100 text-green-700" : request.status === "rejected" ? "bg-red-100 text-red-700" : request.status === "completed" ? "bg-blue-100 text-blue-700" : request.status === "on_hold" ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-700"}`}
                       >
-                        {req.status.charAt(0).toUpperCase() +
-                          req.status.slice(1)}
+                        {request.status.charAt(0).toUpperCase() +
+                          request.status.slice(1)}
                       </span>
-                      {user?.role === "customer" &&
-                        req.status === "pending" &&
-                        String(req.requester_id) === String(user._id) && (
-                          <button
-                            className="ml-2 text-sm text-red-600 underline cursor-pointer"
-                            onClick={async () => {
-                              try {
-                                await import("../api").then((api) =>
-                                  api.cancelOrderRequest(req._id),
-                                );
-                                fetchOrderRequests(
-                                  pagination.page,
-                                  pagination.limit,
-                                );
-                              } catch {
-                                //
-                              }
-                            }}
-                          >
-                            Cancel
-                          </button>
+                    </td>
+                    <td className="p-3">
+                      {request?.status === "pending" &&
+                        String(request.requester_id) === String(user?._id) && (
+                          <div className="flex gap-2">
+                            <button
+                              className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                              title="Edit"
+                              onClick={() => {
+                                setEditOrderRequest(request);
+                                setModalOpen(true);
+                              }}
+                            >
+                              <HiOutlinePencil className="text-xl" />
+                            </button>
+                            <button
+                              className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                              title="Cancel"
+                              onClick={async () => {
+                                const confirmed = await dialog.ask({
+                                  type: "confirm",
+                                  title: "Cancel Order Request",
+                                  message:
+                                    "Are you sure you want to cancel this order request?",
+                                  confirmText: "Yes",
+                                  cancelText: "No",
+                                });
+                                if (!confirmed) return;
+                                try {
+                                  await import("../api").then((api) =>
+                                    api.cancelOrderRequest(request._id),
+                                  );
+                                  await dialog.success(
+                                    "Order request cancelled successfully.",
+                                  );
+                                  fetchOrderRequests(
+                                    pagination.page,
+                                    pagination.limit,
+                                  );
+                                } catch {
+                                  await dialog.error(
+                                    "Failed to cancel order request.",
+                                  );
+                                }
+                              }}
+                            >
+                              <HiOutlineXCircle className="text-2xl" />
+                            </button>
+                          </div>
                         )}
                     </td>
                   </tr>
@@ -167,7 +299,10 @@ const OrderRequests = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchOrderRequests({ page, limit })}
+            onChange={({ page, limit }) => {
+              setPagination((prev) => ({ ...prev, page, limit }));
+              fetchOrderRequests(page, limit);
+            }}
           />
         </div>
       )}

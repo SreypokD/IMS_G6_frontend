@@ -1,5 +1,5 @@
-import { useAuth } from "../context/useAuth.js";
-import { useNotification } from "../context/useNotification.js";
+import { useAuth } from "../contexts/auth/useAuth.js";
+import { useNotification } from "../contexts/notification/useNotification.js";
 import {
   HiBell,
   HiOutlineLogout,
@@ -66,7 +66,7 @@ const Header = ({ onBellClick }) => {
           >
             <HiBell className="text-gray-500 hover:text-[#1e3a5f] text-2xl" />
             {unreadCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-sm rounded-full w-5 h-5 flex items-center justify-center font-bold border-2 border-white">
+              <span className="absolute -top-3 -right-3 bg-red-500 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center font-bold border-2 border-white">
                 {unreadCount}
               </span>
             )}

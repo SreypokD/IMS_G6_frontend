@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Listbox } from "@headlessui/react";
-import { HiSelector } from "react-icons/hi";
-import { HiOutlinePencil, HiOutlineTrash, HiOutlinePlus } from "react-icons/hi";
+import {
+  HiSelector,
+  HiOutlinePencil,
+  HiOutlineTrash,
+  HiOutlinePlus,
+  HiOutlineEye,
+  HiOutlineFilter,
+} from "react-icons/hi";
 import ProductModal from "../components/ProductModal.jsx";
 import {
   getProducts,
@@ -9,7 +15,8 @@ import {
   updateProduct,
   deleteProduct,
 } from "../api";
-import { useAuth } from "../context/useAuth";
+import { useDialog } from "../contexts/dialog/useDialog";
+import { useAuth } from "../contexts/auth/useAuth.js";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 
@@ -116,6 +123,8 @@ function ProductStockStatusDropdown() {
 
 const Products = () => {
   const [products, setProducts] = useState(initialProducts);
+  const [viewProduct, setViewProduct] = useState(null);
+
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -126,12 +135,14 @@ const Products = () => {
   const [editProduct, setEditProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const dialog = useDialog();
   const { user } = useAuth();
 
   useEffect(() => {
     if (user) {
       fetchProducts(1, 10);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   async function fetchProducts(page = 1, limit = 10) {
@@ -140,9 +151,15 @@ const Products = () => {
     try {
       const res = await getProducts({ page, limit });
       setProducts(res.data.data);
-      setPagination(res.data.pagination);
+      setPagination((prev) => ({
+        ...prev,
+        ...res.data.pagination,
+        page,
+        limit,
+      }));
     } catch {
       setError("Failed to load products");
+      dialog.error("Failed to load products");
     } finally {
       setLoading(false);
     }
@@ -193,29 +210,56 @@ const Products = () => {
       if (res.data && res.data.success === false) {
         if (res.data.errors) {
           setError(res.data.errors.map((e) => e.msg).join(", "));
+          dialog.error(
+            res.data.errors.map((e) => e.msg).join(", ") ||
+              "Failed to save product",
+          );
         } else {
           setError(res.data.error || "Failed to save product");
+          dialog.error(res.data.error || "Failed to save product");
         }
         return;
       }
+      dialog.success(
+        editProduct
+          ? "Product updated successfully"
+          : "Product created successfully",
+      );
       fetchProducts(pagination.page, pagination.limit);
       setModalOpen(false);
     } catch {
       setError("Failed to save product");
+      dialog.error("Failed to save product");
     } finally {
       setLoading(false);
     }
   }
 
+  function handleView(product) {
+    // Always open in view mode (readOnly) for view action
+    setEditProduct(null);
+    setViewProduct(product);
+    setModalOpen(true);
+  }
+
   async function handleDelete(id) {
-    if (window.confirm("Delete this product?")) {
+    const confirmed = await dialog.ask({
+      type: "confirm",
+      title: "Delete Product",
+      message: "Are you sure you want to delete this product?",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+    if (confirmed) {
       setLoading(true);
       setError("");
       try {
         await deleteProduct(id);
+        dialog.success("Product deleted successfully");
         fetchProducts(pagination.page, pagination.limit);
       } catch {
         setError("Failed to delete product");
+        dialog.error("Failed to delete product");
       } finally {
         setLoading(false);
       }
@@ -225,11 +269,24 @@ const Products = () => {
   return (
     <div>
       <ProductModal
-        key={modalOpen ? (editProduct ? editProduct._id : "new") : "closed"}
+        key={
+          modalOpen
+            ? editProduct
+              ? editProduct._id
+              : viewProduct
+                ? viewProduct._id
+                : "new"
+            : "closed"
+        }
         open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={() => {
+          setModalOpen(false);
+          setEditProduct(null);
+          setViewProduct(null);
+        }}
         onSave={handleSave}
-        initial={editProduct}
+        initial={editProduct || viewProduct}
+        readOnly={!!viewProduct}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
@@ -242,24 +299,49 @@ const Products = () => {
           <button
             onClick={handleAdd}
             disabled={loading}
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
           >
             <HiOutlinePlus className="text-md" /> Add Product
           </button>
         )}
       </div>
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
+        {" "}
+        <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+          <HiOutlineFilter className="inline-block text-xl text-black" />
+          <span>Filters</span>
+        </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          <input
-            className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
-            placeholder="Search..."
-          />
-          <ProductCategoryDropdown />
-          <ProductSupplierDropdown />
-          <ProductStockStatusDropdown />
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Search
+            </label>
+            <input
+              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
+              placeholder="Search..."
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Category
+            </label>
+            <ProductCategoryDropdown />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Supplier
+            </label>
+            <ProductSupplierDropdown />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Stock Status
+            </label>
+            <ProductStockStatusDropdown />
+          </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200">
+      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
         ) : error ? (
@@ -268,57 +350,69 @@ const Products = () => {
           <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr className="bg-white">
-                <th className="py-3 px-4">No.</th>
-                <th className="py-3 px-4">Product Code</th>
-                <th className="py-3 px-4">Product Name</th>
-                <th className="py-3 px-4">Category</th>
-                <th className="py-3 px-4">Supplier</th>
-                <th className="py-3 px-4 text-right">Stock</th>
-                <th className="py-3 px-4 text-right">Price</th>
+                <th className="p-3">No.</th>
+                <th className="p-3">Product Code</th>
+                <th className="p-3">Product Name</th>
+                <th className="p-3">Category</th>
+                <th className="p-3">Supplier</th>
+                <th className="p-3 text-right">Stock</th>
+                <th className="p-3 text-right">Price</th>
                 {user?.permission?.permissions?.includes("update_product") ||
                 user?.permission?.permissions?.includes("delete_product") ? (
-                  <th className="py-3 px-4">Actions</th>
+                  <th className="p-3">Actions</th>
                 ) : null}
               </tr>
             </thead>
             <tbody>
-              {products.map((p, index) => (
-                <tr key={p._id}>
-                  <td className="py-1 px-4">
+              {products.map((product, index) => (
+                <tr key={product._id}>
+                  <td className="p-3">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="py-1 px-4">{p.code}</td>
-                  <td className="py-1 px-4">{p.name}</td>
-                  <td className="py-1 px-4">
+                  <td className="p-3">{product.code}</td>
+                  <td className="p-3">{product.name}</td>
+                  <td className="p-3">
                     <span className="text-blue-500/80">
-                      {p.category?.name || p.category}
+                      {product.category?.name || product.category}
                     </span>
                   </td>
-                  <td className="py-1 px-4">
+                  <td className="p-3">
                     <span className="text-blue-500/80">
-                      {typeof p.supplier === "object"
-                        ? p.supplier?.company_name || p.supplier?.name
-                        : p.supplier}
+                      {typeof product.supplier === "object"
+                        ? product.supplier?.company_name ||
+                          product.supplier?.name
+                        : product.supplier}
                     </span>
                   </td>
-                  <td className="py-1 px-4 text-right">
+                  <td className="p-3 text-right">
                     <span
-                      className={`text-base ${p.stock === 0 ? "text-red-600" : p.stock < 10 ? "text-orange-600" : "text-green-600"}`}
+                      className={`text-base ${product.stock === 0 ? "text-red-600" : product.stock < 10 ? "text-orange-600" : "text-green-600"}`}
                     >
-                      {p.stock} units
+                      {product.stock} units
                     </span>
                   </td>
-                  <td className="py-1 px-4 text-right">
-                    ${Number(p.price).toFixed(2)}
+                  <td className="p-3 text-right">
+                    ${Number(product.price).toFixed(2)}
                   </td>
-                  <td className="py-1 px-4 flex items-center gap-1">
+                  <td className="p-3 flex items-center gap-1">
+                    {user?.permission?.permissions?.includes(
+                      "view_product",
+                    ) && (
+                      <button
+                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                        title="View"
+                        onClick={() => handleView(product)}
+                      >
+                        <HiOutlineEye className="text-xl" />
+                      </button>
+                    )}
                     {user?.permission?.permissions?.includes(
                       "update_product",
                     ) && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Edit"
-                        onClick={() => handleEdit(p)}
+                        onClick={() => handleEdit(product)}
                       >
                         <HiOutlinePencil className="text-xl" />
                       </button>
@@ -329,7 +423,7 @@ const Products = () => {
                       <button
                         className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Delete"
-                        onClick={() => handleDelete(p._id)}
+                        onClick={() => handleDelete(product._id)}
                       >
                         <HiOutlineTrash className="text-xl" />
                       </button>
