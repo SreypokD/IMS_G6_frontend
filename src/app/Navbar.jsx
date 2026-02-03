@@ -52,6 +52,15 @@ const Header = ({ onBellClick }) => {
     }
   };
 
+  // Notification click handler with navigation
+  const handleNotificationClick = async (n) => {
+    await markAsRead(n._id);
+    if (n.entity_type === "OrderRequest" && n.entity_id) {
+      navigate(`/order-requests?open=${n.entity_id}`);
+    }
+    // Add more entity_type navigation as needed
+  };
+
   return (
     <header className="bg-white border-b border-[#ececec] flex items-center justify-between px-3 py-2">
       <HiOutlineMenuAlt2
@@ -90,7 +99,7 @@ const Header = ({ onBellClick }) => {
                     <li
                       key={n._id}
                       className="w-full flex items-center justify-between px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 cursor-pointer"
-                      onClick={() => markAsRead(n._id)}
+                      onClick={() => handleNotificationClick(n)}
                     >
                       <div className="flex flex-col text-sm text-gray-900">
                         <span>{n.message}</span>
