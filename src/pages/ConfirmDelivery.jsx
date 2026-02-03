@@ -10,6 +10,7 @@ import { formatDate } from "../utils/dateFormat";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 import { Listbox } from "@headlessui/react";
+import { useDialog } from "../contexts/dialog/useDialog";
 
 const approvalStatusOptions = ["All Status", "Approved", "Rejected", "Pending"];
 const deliveryStatusOptions = ["All Status", "Delivered", "Pending"];
@@ -79,6 +80,7 @@ const DeliveryConfirmation = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { user } = useAuth();
+  const dialog = useDialog();
 
   useEffect(() => {
     if (user) {
@@ -113,13 +115,28 @@ const DeliveryConfirmation = () => {
   }
 
   async function handleConfirmDelivery(id) {
+    const confirmed = await dialog.ask({
+      type: "confirm",
+      title: "Confirm Delivery",
+      message: "Are you sure you want to confirm this delivery?",
+      confirmText: "Confirm",
+      cancelText: "Cancel",
+    });
+    if (!confirmed) return;
     try {
       await updateConfirmDelivery(id, {});
+      await dialog.success("Delivery confirmed.");
       fetchConfirmDeliveries();
-    } catch {
-      setError("Failed to approve order");
+    } catch (err) {
+      const msg =
+        err?.response?.data?.error ||
+        err?.message ||
+        "Failed to confirm delivery";
+      await dialog.error(msg);
+      setError(msg);
     }
   }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -127,7 +144,7 @@ const DeliveryConfirmation = () => {
           <h1 className="text-2xl font-semibold">Delivery Confirmation</h1>
           <span className="text-gray-500">Manage and confirm deliveries</span>
         </div>
-      </div>{" "}
+      </div>
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
         <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
           <HiOutlineFilter className="inline-block text-xl text-black" />
@@ -168,8 +185,10 @@ const DeliveryConfirmation = () => {
               <tr className="bg-white">
                 <th className="p-3">No.</th>
                 <th className="p-3">Requested By</th>
-                <th className="p-3">Product</th>
+                <th className="p-3">Product(s)</th>
+                <th className="p-3">Quantity(ies)</th>
                 <th className="p-3">Requested Date</th>
+                <th className="p-3">Delivery Date</th>
                 <th className="p-3">Approval Status</th>
                 <th className="p-3">Delivery Status</th>
                 <th className="p-3">Actions</th>
@@ -185,14 +204,30 @@ const DeliveryConfirmation = () => {
                       {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>
                     <td className="p-3">
-                      {confirm_delivery.requester?.first_name}{" "}
+                      {confirm_delivery.requester?.first_name}
                       {confirm_delivery.requester?.last_name}
                     </td>
                     <td className="p-3">
-                      {confirm_delivery.product?.name || "-"}
+                      {Array.isArray(confirm_delivery?.items) &&
+                      confirm_delivery?.items.length > 0
+                        ? confirm_delivery?.items
+                            .map((item) => item.product?.name)
+                            .join(", ")
+                        : "-"}
                     </td>
                     <td className="p-3">
-                      {formatDate(confirm_delivery.requested_date, true)}
+                      {Array.isArray(confirm_delivery?.items) &&
+                      confirm_delivery?.items.length > 0
+                        ? confirm_delivery?.items
+                            .map((item) => item.quantity)
+                            .join(", ")
+                        : "-"}
+                    </td>
+                    <td className="p-3">
+                      {formatDate(confirm_delivery.createdAt) || "-"}
+                    </td>
+                    <td className="p-3">
+                      {formatDate(confirm_delivery.delivery_date) || "-"}
                     </td>
                     <td className="p-3">
                       <span

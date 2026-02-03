@@ -64,7 +64,12 @@ const OrderRequestApproval = () => {
         admin_remarks: remarks[id] || "",
       });
       await dialog.success("Order request approved.");
-      fetchApproveRequests();
+      // Reset all relevant state after approve
+      setRemarks({});
+      setRejectionReason({});
+      setShowReject({});
+      setPagination((prev) => ({ ...prev, page: 1 }));
+      fetchApproveRequests(1, pagination.limit);
     } catch (err) {
       const msg =
         err?.response?.data?.error || err?.message || "Failed to approve order";
@@ -83,12 +88,19 @@ const OrderRequestApproval = () => {
         admin_remarks: remarks[id] || "",
         rejection_reason: rejectionReason[id] || "",
       });
-      fetchApproveRequests();
-    } catch {
-      setError("Failed to reject order");
+      // Reset all relevant state after reject
+      setRemarks({});
+      setRejectionReason({});
+      setShowReject({});
+      setPagination((prev) => ({ ...prev, page: 1 }));
+      fetchApproveRequests(1, pagination.limit);
+    } catch (err) {
+      const msg =
+        err?.response?.data?.error || err?.message || "Failed to reject order";
+      await dialog.error(msg);
+      setError(msg);
     } finally {
       setActionId(null);
-      setShowReject((prev) => ({ ...prev, [id]: false }));
     }
   }
 
@@ -113,9 +125,10 @@ const OrderRequestApproval = () => {
               <tr className="bg-white">
                 <th className="p-3">No.</th>
                 <th className="p-3">Requested By</th>
-                <th className="p-3">Product</th>
-                <th className="p-3">Quantity</th>
+                <th className="p-3">Product(s)</th>
+                <th className="p-3">Quantity(ies)</th>
                 <th className="p-3">Requested Date</th>
+                <th className="p-3">Delivery Date</th>
                 <th className="p-3">Notes</th>
                 <th className="p-3">Remarks</th>
                 {user?.permission?.permissions?.includes(
@@ -139,11 +152,26 @@ const OrderRequestApproval = () => {
                       " " +
                       order.requester?.last_name || "-"}
                   </td>
-                  <td className="p-3">{order.product?.name || "-"}</td>
-                  <td className="p-3">{order.quantity || "-"}</td>
                   <td className="p-3">
-                    {order.requested_date
-                      ? new Date(order.requested_date).toLocaleDateString()
+                    {Array.isArray(order.items) && order.items.length > 0
+                      ? order.items
+                          .map((item) => item.product?.name || item.product_id)
+                          .join(", ")
+                      : "-"}
+                  </td>
+                  <td className="p-3">
+                    {Array.isArray(order.items) && order.items.length > 0
+                      ? order.items.map((item) => item.quantity).join(", ")
+                      : "-"}
+                  </td>
+                  <td className="p-3">
+                    {order.createdAt
+                      ? new Date(order.createdAt).toLocaleDateString()
+                      : "-"}
+                  </td>
+                  <td className="p-3">
+                    {order.delivery_date
+                      ? new Date(order.delivery_date).toLocaleDateString()
                       : "-"}
                   </td>
                   <td className="p-3">{order.notes || "-"}</td>
@@ -219,6 +247,13 @@ const OrderRequestApproval = () => {
                   </td>
                 </tr>
               ))}
+              {orders.length === 0 && (
+                <tr>
+                  <td colSpan="8">
+                    <NoDataFound message="No orders found." />
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         )}

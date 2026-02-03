@@ -85,7 +85,7 @@ const ProductModal = ({ open, onClose, onSave, initial, readOnly = false }) => {
               </div>
               <div>
                 <label className="block text-base font-medium mb-1">
-                  Name{" "}
+                  Name
                   {!product.name && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
@@ -104,7 +104,7 @@ const ProductModal = ({ open, onClose, onSave, initial, readOnly = false }) => {
               </div>
               <div>
                 <label className="block text-base font-medium mb-1">
-                  Category{" "}
+                  Category
                   {!product.category && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
@@ -159,7 +159,7 @@ const ProductModal = ({ open, onClose, onSave, initial, readOnly = false }) => {
               </div>
               <div>
                 <label className="block text-base font-medium mb-1">
-                  Supplier{" "}
+                  Supplier
                   {!product.supplier && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
@@ -214,7 +214,7 @@ const ProductModal = ({ open, onClose, onSave, initial, readOnly = false }) => {
               </div>
               <div>
                 <label className="block text-base font-medium mb-1">
-                  Price{" "}
+                  Price
                   {(!product.price || isNaN(product.price)) && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
@@ -237,7 +237,7 @@ const ProductModal = ({ open, onClose, onSave, initial, readOnly = false }) => {
               </div>
               <div>
                 <label className="block text-base font-medium mb-1">
-                  Stock{" "}
+                  Stock
                   {(!product.stock || isNaN(product.stock)) && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
@@ -284,7 +284,7 @@ const ProductModal = ({ open, onClose, onSave, initial, readOnly = false }) => {
                 >
                   <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
                   <span className="text-gray-600">
-                    Drag and drop your image here, or{" "}
+                    Drag and drop your image here, or
                     <span className="text-blue-600 underline">
                       browse files
                     </span>
@@ -316,7 +316,7 @@ const ProductModal = ({ open, onClose, onSave, initial, readOnly = false }) => {
             className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
             onClick={onClose}
           >
-            <HiXCircle className="inline-block text-xl" />{" "}
+            <HiXCircle className="inline-block text-xl" />
             {readOnly ? "Close" : "Cancel"}
           </button>
           {!readOnly && (

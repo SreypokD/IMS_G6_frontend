@@ -306,7 +306,6 @@ const Products = () => {
         )}
       </div>
       <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
-        {" "}
         <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
           <HiOutlineFilter className="inline-block text-xl text-black" />
           <span>Filters</span>
@@ -357,10 +356,7 @@ const Products = () => {
                 <th className="p-3">Supplier</th>
                 <th className="p-3 text-right">Stock</th>
                 <th className="p-3 text-right">Price</th>
-                {user?.permission?.permissions?.includes("update_product") ||
-                user?.permission?.permissions?.includes("delete_product") ? (
-                  <th className="p-3">Actions</th>
-                ) : null}
+                <th className="p-3">Actions</th>
               </tr>
             </thead>
             <tbody>

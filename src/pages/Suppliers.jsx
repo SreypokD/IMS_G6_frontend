@@ -253,10 +253,7 @@ const Suppliers = () => {
                 <th className="p-3">Phone</th>
                 <th className="p-3">Status</th>
                 <th className="p-3">Products</th>
-                {user?.permission?.permissions?.includes("update_supplier") ||
-                user?.permission?.permissions?.includes("delete_supplier") ? (
-                  <th className="p-3">Actions</th>
-                ) : null}
+                <th className="p-3">Actions</th>
               </tr>
             </thead>
             <tbody>

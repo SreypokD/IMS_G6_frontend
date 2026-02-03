@@ -85,7 +85,7 @@ const SupplierModal = ({
               <div className="mb-3 grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-base font-medium mb-1">
-                    Company Name{" "}
+                    Company Name
                     {!supplier.company_name && !initial ? (
                       <sup className="text-red-500">*</sup>
                     ) : null}
@@ -106,7 +106,7 @@ const SupplierModal = ({
                 </div>
                 <div>
                   <label className="block text-base font-medium mb-1">
-                    Location{" "}
+                    Location
                     {!supplier.location && !initial ? (
                       <sup className="text-red-500">*</sup>
                     ) : null}
@@ -135,7 +135,7 @@ const SupplierModal = ({
               <div className="mb-3 grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-base font-medium mb-1">
-                    Contact Person{" "}
+                    Contact Person
                     {!supplier.contact_person && !initial ? (
                       <sup className="text-red-500">*</sup>
                     ) : null}
@@ -162,7 +162,7 @@ const SupplierModal = ({
                 </div>
                 <div>
                   <label className="block text-base font-medium mb-1">
-                    Role/Position{" "}
+                    Role/Position
                     {!supplier.contact_position && !initial ? (
                       <sup className="text-red-500">*</sup>
                     ) : null}
@@ -189,7 +189,7 @@ const SupplierModal = ({
                 </div>
                 <div>
                   <label className="block text-base font-medium mb-1">
-                    Email Address{" "}
+                    Email Address
                     {!supplier.contact_email && !initial ? (
                       <sup className="text-red-500">*</sup>
                     ) : null}
@@ -216,7 +216,7 @@ const SupplierModal = ({
                 </div>
                 <div>
                   <label className="block text-base font-medium mb-1">
-                    Phone Number{" "}
+                    Phone Number
                     {!supplier.contact_phone && !initial ? (
                       <sup className="text-red-500">*</sup>
                     ) : null}
@@ -291,7 +291,7 @@ const SupplierModal = ({
                 </div>
                 <div>
                   <label className="block mb-1">
-                    Village{" "}
+                    Village
                     {!supplier.address.village && !initial ? (
                       <sup className="text-red-500">*</sup>
                     ) : null}
@@ -317,7 +317,7 @@ const SupplierModal = ({
                 </div>
                 <div>
                   <label className="block mb-1">
-                    Commune{" "}
+                    Commune
                     {!supplier.address.commune && !initial ? (
                       <sup className="text-red-500">*</sup>
                     ) : null}
@@ -343,7 +343,7 @@ const SupplierModal = ({
                 </div>
                 <div>
                   <label className="block mb-1">
-                    District{" "}
+                    District
                     {!supplier.address.district && !initial ? (
                       <sup className="text-red-500">*</sup>
                     ) : null}
@@ -369,7 +369,7 @@ const SupplierModal = ({
                 </div>
                 <div>
                   <label className="block mb-1">
-                    City/Province{" "}
+                    City/Province
                     {!supplier.address.province && !initial ? (
                       <sup className="text-red-500">*</sup>
                     ) : null}
@@ -395,7 +395,7 @@ const SupplierModal = ({
                 </div>
                 <div>
                   <label className="block mb-1">
-                    Country{" "}
+                    Country
                     {!supplier.address.country && !initial ? (
                       <sup className="text-red-500">*</sup>
                     ) : null}
@@ -429,7 +429,7 @@ const SupplierModal = ({
               <div className="mb-3 grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-base font-medium mb-1">
-                    Payment Terms{" "}
+                    Payment Terms
                     {!initial ? <sup className="text-red-500">*</sup> : null}
                   </label>
                   <Listbox
@@ -484,7 +484,7 @@ const SupplierModal = ({
                 </div>
                 <div>
                   <label className="block text-base font-medium mb-1">
-                    Supplier Status{" "}
+                    Supplier Status
                     {!initial ? <sup className="text-red-500">*</sup> : null}
                   </label>
                   <Listbox

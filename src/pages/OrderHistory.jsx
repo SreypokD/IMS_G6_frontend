@@ -3,6 +3,7 @@ import { useAuth } from "../contexts/auth/useAuth";
 import { getOrderRequests } from "../api";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
+import { formatDate } from "../utils/dateFormat";
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
@@ -61,27 +62,48 @@ const OrderHistory = () => {
             <thead>
               <tr>
                 <th className="p-3">No.</th>
-                <th className="p-3">Product</th>
-                <th className="p-3">Quantity</th>
-                <th className="p-3">Admin Remarks</th>
+                <th className="p-3">Product(s)</th>
+                <th className="p-3">Quantity(ies)</th>{" "}
+                <th className="p-3">Notes</th>
+                <th className="p-3">Admin Remarks</th>{" "}
+                <th className="p-3">Requested Date</th>
+                <th className="p-3">Delivery Date</th>
                 <th className="p-3">Status</th>
                 <th className="p-3">Rejection Reason</th>
               </tr>
             </thead>
             <tbody>
-              {orders.map((order, index) => (
+              {(user?.role === "admin" || user?.role === "staff"
+                ? orders
+                : orders.filter(
+                    (order) => String(order.requester_id) === String(user?._id),
+                  )
+              ).map((order, index) => (
                 <tr key={order._id}>
                   <td className="p-3">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
                   <td className="p-3">
-                    {order.product?.name || order.product_id}
+                    {Array.isArray(order.items) && order.items.length > 0
+                      ? order.items
+                          .map((item) => item.product?.name || item.product_id)
+                          .join(", ")
+                      : "-"}
                   </td>
-                  <td className="p-3">{order.quantity}</td>
+                  <td className="p-3">
+                    {Array.isArray(order.items) && order.items.length > 0
+                      ? order.items.map((item) => item.quantity).join(", ")
+                      : "-"}
+                  </td>
+                  <td className="p-3">{order.notes || "-"}</td>
                   <td className="p-3">{order.admin_remarks || "-"}</td>
+                  <td className="p-3">{formatDate(order.createdAt) || "-"}</td>
+                  <td className="p-3">
+                    {formatDate(order.delivery_date) || "-"}
+                  </td>
                   <td className="p-3">
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${order.status === "approved" ? "bg-green-100 text-green-700" : order.status === "rejected" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}
+                      className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${order.status === "approved" ? "bg-green-100 text-green-700" : order.status === "rejected" ? "bg-red-100 text-red-700" : order.status === "completed" ? "bg-blue-100 text-blue-700" : "bg-yellow-100 text-yellow-700"}`}
                     >
                       {order.status
                         ? order.status.charAt(0).toUpperCase() +
@@ -96,7 +118,12 @@ const OrderHistory = () => {
                   </td>
                 </tr>
               ))}
-              {orders.length === 0 && (
+              {(user?.role === "admin" || user?.role === "staff"
+                ? orders
+                : orders.filter(
+                    (order) => String(order.requester_id) === String(user?._id),
+                  )
+              ).length === 0 && (
                 <tr>
                   <td colSpan="7">
                     <NoDataFound message="No orders found." />

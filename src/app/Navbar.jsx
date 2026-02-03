@@ -10,6 +10,7 @@ import {
   HiOutlineQuestionMarkCircle,
 } from "react-icons/hi";
 import { useState, useRef, useEffect } from "react";
+import { formatDate } from "../utils/dateFormat";
 import { useNavigate } from "react-router-dom";
 
 const Header = ({ onBellClick }) => {
@@ -91,11 +92,16 @@ const Header = ({ onBellClick }) => {
                       className="w-full flex items-center justify-between px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 cursor-pointer"
                       onClick={() => markAsRead(n._id)}
                     >
-                      <div className="text-sm text-gray-900">{n.message}</div>
-                      <div className="text-sm text-gray-400">
-                        {n.createdAt
-                          ? new Date(n.createdAt).toLocaleString()
-                          : ""}
+                      <div className="flex flex-col text-sm text-gray-900">
+                        <span>{n.message}</span>
+                        {n.entity_type && n.entity_id && (
+                          <span className="text-xs text-gray-400">
+                            {n.entity_type} ID: {n.entity_id}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-sm text-gray-400 text-right min-w-10">
+                        {formatDate(n.createdAt, true)}
                       </div>
                     </li>
                   ))}

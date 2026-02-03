@@ -153,7 +153,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
             <div className="mb-3 grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-gray-600 mb-1 text-base font-medium">
-                  Name{" "}
+                  Name
                   {!permission.name && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}

@@ -374,7 +374,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
               disabled={loading}
               onClick={handleSubmit}
             >
-              <HiOutlineDocumentText className="inline-block text-xl" />{" "}
+              <HiOutlineDocumentText className="inline-block text-xl" />
               {loading ? "Saving..." : "Complete Sale"}
             </button>
           </div>

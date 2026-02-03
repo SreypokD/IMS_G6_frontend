@@ -5,6 +5,7 @@ import {
   HiOutlinePencil,
   HiOutlineXCircle,
   HiOutlineFilter,
+  HiOutlineEye,
 } from "react-icons/hi";
 import { useAuth } from "../contexts/auth/useAuth.js";
 import { useDialog } from "../contexts/dialog/useDialog.js";
@@ -180,16 +181,13 @@ const OrderRequests = () => {
               <tr>
                 <th className="p-3">No.</th>
                 <th className="p-3">Requested By</th>
-                <th className="p-3">Product</th>
-                <th className="p-3">Date</th>
+                <th className="p-3">Product(s)</th>
+                <th className="p-3">Quantity(ies)</th>
                 <th className="p-3">Notes</th>
+                <th className="p-3">Requested Date</th>
                 <th className="p-3">Delivery Date</th>
                 <th className="p-3">Status</th>
-                {requests.some(
-                  (req) =>
-                    req.status === "pending" &&
-                    String(req.requester_id) === String(user?._id),
-                ) && <th className="p-3">Actions</th>}
+                <th className="p-3">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -205,7 +203,7 @@ const OrderRequests = () => {
                 if (!filteredRequests || filteredRequests.length === 0) {
                   return (
                     <tr>
-                      <td colSpan="6">
+                      <td colSpan="7">
                         <NoDataFound message="No order requests found." />
                       </td>
                     </tr>
@@ -217,17 +215,29 @@ const OrderRequests = () => {
                       {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>
                     <td className="p-3">
-                      {request.requester?.first_name ||
-                        request.requester?.email ||
-                        request.requester ||
-                        "-"}
+                      {request.requester?.first_name +
+                        " " +
+                        request.requester?.last_name || "-"}
                     </td>
-                    <td className="p-3">{request.product?.name || "-"}</td>
                     <td className="p-3">
-                      {formatDate(request.date || request.requested_date)}
+                      {Array.isArray(request.items) && request.items.length > 0
+                        ? request.items
+                            .map((item) => item.product?.name)
+                            .join(", ")
+                        : "-"}
+                    </td>
+                    <td className="p-3">
+                      {Array.isArray(request.items) && request.items.length > 0
+                        ? request.items.map((item) => item.quantity).join(", ")
+                        : "-"}
                     </td>
                     <td className="p-3">{request.notes || "-"}</td>
-                    <td className="p-3">{formatDate(request.delivery_date)}</td>
+                    <td className="p-3">
+                      {formatDate(request.createdAt) || "-"}
+                    </td>
+                    <td className="p-3">
+                      {formatDate(request.delivery_date) || "-"}
+                    </td>
                     <td className="p-3">
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${request.status === "pending" ? "bg-yellow-100 text-yellow-700" : request.status === "approved" ? "bg-green-100 text-green-700" : request.status === "rejected" ? "bg-red-100 text-red-700" : request.status === "completed" ? "bg-blue-100 text-blue-700" : request.status === "on_hold" ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-700"}`}
@@ -236,55 +246,85 @@ const OrderRequests = () => {
                           request.status.slice(1)}
                       </span>
                     </td>
-                    <td className="p-3">
-                      {request?.status === "pending" &&
-                        String(request.requester_id) === String(user?._id) && (
-                          <div className="flex gap-2">
+                    <td className="p-3 flex items-center gap-1">
+                      {(user?.role === "admin" ||
+                        user?.role === "staff" ||
+                        String(request.requester_id) === String(user?._id)) && (
+                        <div className="flex items-center gap-1">
+                          {user?.permission?.permissions?.includes(
+                            "view_order_request",
+                          ) && (
                             <button
                               className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                              title="Edit"
+                              title="View"
                               onClick={() => {
-                                setEditOrderRequest(request);
+                                setEditOrderRequest({
+                                  ...request,
+                                  viewOnly: true,
+                                });
                                 setModalOpen(true);
                               }}
                             >
-                              <HiOutlinePencil className="text-xl" />
+                              <HiOutlineEye className="text-xl" />
                             </button>
-                            <button
-                              className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                              title="Cancel"
-                              onClick={async () => {
-                                const confirmed = await dialog.ask({
-                                  type: "confirm",
-                                  title: "Cancel Order Request",
-                                  message:
-                                    "Are you sure you want to cancel this order request?",
-                                  confirmText: "Yes",
-                                  cancelText: "No",
-                                });
-                                if (!confirmed) return;
-                                try {
-                                  await import("../api").then((api) =>
-                                    api.cancelOrderRequest(request._id),
-                                  );
-                                  await dialog.success(
-                                    "Order request cancelled successfully.",
-                                  );
-                                  fetchOrderRequests(
-                                    pagination.page,
-                                    pagination.limit,
-                                  );
-                                } catch {
-                                  await dialog.error(
-                                    "Failed to cancel order request.",
-                                  );
-                                }
-                              }}
-                            >
-                              <HiOutlineXCircle className="text-2xl" />
-                            </button>
-                          </div>
-                        )}
+                          )}
+                          {request?.status === "pending" &&
+                            (user?.role === "admin" ||
+                              user?.role === "staff" ||
+                              String(request.requester_id) ===
+                                String(user?._id)) && (
+                              <button
+                                className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                                title="Edit"
+                                onClick={() => {
+                                  setEditOrderRequest(request);
+                                  setModalOpen(true);
+                                }}
+                              >
+                                <HiOutlinePencil className="text-xl" />
+                              </button>
+                            )}
+                          {request?.status === "pending" &&
+                            (user?.role === "admin" ||
+                              user?.role === "staff" ||
+                              String(request.requester_id) ===
+                                String(user?._id)) && (
+                              <button
+                                className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                                title="Cancel"
+                                onClick={async () => {
+                                  const confirmed = await dialog.ask({
+                                    type: "confirm",
+                                    title: "Cancel Order Request",
+                                    message:
+                                      "Are you sure you want to cancel this order request?",
+                                    confirmText: "Yes",
+                                    cancelText: "No",
+                                  });
+                                  if (!confirmed) return;
+                                  try {
+                                    await import("../api").then((api) =>
+                                      api.cancelOrderRequest(request._id),
+                                    );
+                                    await dialog.success(
+                                      "Order request cancelled successfully.",
+                                    );
+                                    fetchOrderRequests(
+                                      pagination.page,
+                                      pagination.limit,
+                                    );
+                                  } catch {
+                                    await dialog.error(
+                                      "Failed to cancel order request.",
+                                    );
+                                  }
+                                }}
+                              >
+                                <HiOutlineXCircle className="text-2xl" />
+                              </button>
+                            )}
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ));

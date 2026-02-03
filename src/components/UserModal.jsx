@@ -90,7 +90,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
             <div className="mb-3 grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-base font-medium mb-1">
-                  First Name{" "}
+                  First Name
                   {!user.first_name && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
@@ -109,7 +109,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
               </div>
               <div>
                 <label className="block text-base font-medium mb-1">
-                  Last Name{" "}
+                  Last Name
                   {!user.last_name && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
@@ -128,7 +128,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
               </div>
               <div>
                 <label className="block text-base font-medium mb-1">
-                  Email{" "}
+                  Email
                   {!user.email && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
@@ -148,7 +148,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
               {!initial && (
                 <div>
                   <label className="block text-base font-medium mb-1">
-                    Password{" "}
+                    Password
                     {!user.password && !initial ? (
                       <sup className="text-red-500">*</sup>
                     ) : null}
@@ -179,7 +179,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
             <div className="mb-3 grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-base font-medium mb-1">
-                  Role{" "}
+                  Role
                   {!user.role && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
@@ -278,7 +278,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
               </div>
               <div>
                 <label className="block mb-1">
-                  Village{" "}
+                  Village
                   {!user.address.village && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
@@ -300,7 +300,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
               </div>
               <div>
                 <label className="block mb-1">
-                  Commune{" "}
+                  Commune
                   {!user.address.commune && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
@@ -322,7 +322,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
               </div>
               <div>
                 <label className="block mb-1">
-                  District{" "}
+                  District
                   {!user.address.district && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
@@ -344,7 +344,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
               </div>
               <div>
                 <label className="block mb-1">
-                  City/Province{" "}
+                  City/Province
                   {!user.address.province && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
@@ -366,7 +366,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
               </div>
               <div>
                 <label className="block mb-1">
-                  Country{" "}
+                  Country
                   {!user.address.country && !initial ? (
                     <sup className="text-red-500">*</sup>
                   ) : null}
@@ -387,7 +387,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                 />
               </div>
             </div>
-          </div>{" "}
+          </div>
           <div className="col-span-2 mb-2">
             <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
               <HiOutlineCamera className="inline-block text-xl text-black" />
@@ -411,7 +411,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                 >
                   <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
                   <span className="text-gray-600">
-                    Drag and drop your image here, or{" "}
+                    Drag and drop your image here, or
                     <span className="text-blue-600 underline">
                       browse files
                     </span>
