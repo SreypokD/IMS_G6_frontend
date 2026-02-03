@@ -17,6 +17,7 @@ import {
 import Pagination from "../components/Pagination";
 import { useAuth } from "../contexts/auth/useAuth";
 import NoDataFound from "../components/NoDataFound";
+import { formatDate } from "../utils/dateFormat";
 
 // Custom dropdowns for Stock page
 const transactionOptions = ["All Transactions"];
@@ -288,14 +289,33 @@ const Stocks = () => {
                   <td className="p-3">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                  <td className="p-3">{formatDate(stock.createdAt) || "-"}</td>
+                  <td className="p-3">
+                    {stock.product?.name || stock.product_id || "-"}
+                  </td>
+                  <td className="p-3">
+                    {stock.type === "in" ? (
+                      <span className="text-green-600 flex items-center gap-1">
+                        <HiDownload className="inline-block" /> Stock In
+                      </span>
+                    ) : stock.type === "out" ? (
+                      <span className="text-red-500 flex items-center gap-1">
+                        <HiLogout className="inline-block rotate-270" /> Stock
+                        Out
+                      </span>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td className="p-3">{stock.quantity}</td>
+                  <td className="p-3">{stock.balance}</td>
+                  <td className="p-3">
+                    {stock.user?.first_name
+                      ? `${stock.user.first_name} ${stock.user.last_name}`
+                      : stock.user_id || "-"}
+                  </td>
+                  <td className="p-3">{stock.location || "-"}</td>
+                  <td className="p-3">{stock.note || "-"}</td>
                 </tr>
               ))}
               {stocks.length === 0 && (

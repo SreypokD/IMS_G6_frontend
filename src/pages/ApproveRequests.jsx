@@ -249,7 +249,7 @@ const OrderRequestApproval = () => {
               ))}
               {orders.length === 0 && (
                 <tr>
-                  <td colSpan="8">
+                  <td colSpan="9">
                     <NoDataFound message="No orders found." />
                   </td>
                 </tr>

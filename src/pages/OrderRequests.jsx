@@ -329,6 +329,13 @@ const OrderRequests = () => {
                   </tr>
                 ));
               })()}
+              {requests.length === 0 && (
+                <tr>
+                  <td colSpan="9">
+                    <NoDataFound message="No order requests found." />
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         )}

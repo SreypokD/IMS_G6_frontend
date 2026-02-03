@@ -23,8 +23,10 @@ const Dashboard = () => {
           getInventorySummary(),
           getOrderStats(),
         ]);
-        setSummary(summaryRes.data.data);
-        setOrderStats(orderStatsRes.data.data);
+        console.log(summaryRes.data);
+
+        setSummary(summaryRes.data);
+        setOrderStats(orderStatsRes.data);
       } catch {
         // handle error
       } finally {
@@ -94,7 +96,7 @@ const Dashboard = () => {
           <HiChartBar className="text-blue-700" /> Order Statistics
         </h2>
         {orderStats ? (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
             <div>
               <div className="text-xl font-bold">
                 {orderStats.pending ?? "-"}
@@ -106,12 +108,6 @@ const Dashboard = () => {
                 {orderStats.approved ?? "-"}
               </div>
               <div className="text-gray-500 text-base">Approved</div>
-            </div>
-            <div>
-              <div className="text-xl font-bold">
-                {orderStats.delivered ?? "-"}
-              </div>
-              <div className="text-gray-500 text-base">Delivered</div>
             </div>
             <div>
               <div className="text-xl font-bold">
