@@ -6,10 +6,17 @@ body {
 }
 
 @layer base {
-
   input:focus,
   textarea:focus,
   select:focus {
     @apply border-[#1e3a5f] ring-1 ring-[#1e3a5f] outline-none;
   }
+}
+
+table tr th {
+  color: black;
+}
+
+table tr td {
+  color: #6a7282;
 }

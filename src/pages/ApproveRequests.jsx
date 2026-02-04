@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../contexts/auth/useAuth";
 import { useDialog } from "../contexts/dialog/useDialog";
-import { HiOutlineCheckCircle, HiOutlineXCircle } from "react-icons/hi";
+import {
+  HiOutlineCheckCircle,
+  HiOutlineXCircle,
+  HiOutlineFilter,
+} from "react-icons/hi";
 import { getApproveRequests, updateApproveRequests } from "../api";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
@@ -22,18 +26,22 @@ const OrderRequestApproval = () => {
   const [rejectionReason, setRejectionReason] = useState({});
   const { user } = useAuth();
   const dialog = useDialog();
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    if (user) {
-      fetchApproveRequests(1, 10);
-    }
-  }, [user]);
+    const delayDebounceFn = setTimeout(() => {
+      fetchApproveRequests(1, pagination.limit, search);
+      setPagination((prev) => ({ ...prev, page: 1 }));
+    }, 500);
+    return () => clearTimeout(delayDebounceFn);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, search]);
 
-  async function fetchApproveRequests(page = 1, limit = 10) {
+  async function fetchApproveRequests(page = 1, limit = 10, search) {
     setLoading(true);
     setError("");
     try {
-      const res = await getApproveRequests({ page, limit });
+      const res = await getApproveRequests({ page, limit, search });
       setOrders(res.data.data.filter((o) => o.status === "pending"));
       setPagination((prev) => ({
         ...prev,
@@ -69,7 +77,7 @@ const OrderRequestApproval = () => {
       setRejectionReason({});
       setShowReject({});
       setPagination((prev) => ({ ...prev, page: 1 }));
-      fetchApproveRequests(1, pagination.limit);
+      fetchApproveRequests(1, pagination.limit, search);
     } catch (err) {
       const msg =
         err?.response?.data?.error || err?.message || "Failed to approve order";
@@ -102,7 +110,7 @@ const OrderRequestApproval = () => {
       setRejectionReason({});
       setShowReject({});
       setPagination((prev) => ({ ...prev, page: 1 }));
-      fetchApproveRequests(1, pagination.limit);
+      fetchApproveRequests(1, pagination.limit, search);
     } catch (err) {
       const msg =
         err?.response?.data?.error || err?.message || "Failed to approve order";
@@ -121,6 +129,25 @@ const OrderRequestApproval = () => {
           <span className="text-gray-500">
             Review and manage order request approvals
           </span>
+        </div>
+      </div>
+      <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
+        <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+          <HiOutlineFilter className="inline-block text-xl text-black" />
+          <span>Filters</span>
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Search
+            </label>
+            <input
+              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
         </div>
       </div>
       <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">

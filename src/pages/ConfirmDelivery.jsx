@@ -12,28 +12,40 @@ import NoDataFound from "../components/NoDataFound";
 import { Listbox } from "@headlessui/react";
 import { useDialog } from "../contexts/dialog/useDialog";
 
-const approvalStatusOptions = ["All Status", "Approved", "Rejected", "Pending"];
-const deliveryStatusOptions = ["All Status", "Delivered", "Pending"];
+const deliveryStatusOptions = [
+  { value: "pending", label: "Pending" },
+  { value: "approved", label: "Approved" },
+  { value: "rejected", label: "Rejected" },
+];
+const approvalStatusOptions = [
+  { value: "delivered", label: "Delivered" },
+  { value: "pending", label: "Pending" },
+];
 
-function ApprovalStatusDropdown() {
-  const [selected, setSelected] = useState(approvalStatusOptions[0]);
+function ApprovalStatusDropdown({ value, onChange }) {
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox value={value} onChange={onChange}>
       <div className="relative">
         <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
-          <span>{selected}</span>
+          <span>{value || "All Statuses"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-          {approvalStatusOptions.map((option) => (
+          <Listbox.Option
+            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            value=""
+          >
+            <span>All Statuses</span>
+          </Listbox.Option>
+          {deliveryStatusOptions.map((option) => (
             <Listbox.Option
-              key={option}
-              value={option}
-              className={({ active, selected }) =>
-                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              key={option.value}
+              value={option.value}
+              className={({ selected }) =>
+                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
-              {option}
+              {option.label}
             </Listbox.Option>
           ))}
         </Listbox.Options>
@@ -42,25 +54,30 @@ function ApprovalStatusDropdown() {
   );
 }
 
-function DeliveryStatusDropdown() {
-  const [selected, setSelected] = useState(deliveryStatusOptions[0]);
+function DeliveryStatusDropdown({ value, onChange }) {
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox value={value} onChange={onChange}>
       <div className="relative">
         <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
-          <span>{selected}</span>
+          <span>{value || "All Statuses"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-          {deliveryStatusOptions.map((option) => (
+          <Listbox.Option
+            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            value=""
+          >
+            <span>All Statuses</span>
+          </Listbox.Option>
+          {approvalStatusOptions.map((option) => (
             <Listbox.Option
-              key={option}
-              value={option}
-              className={({ active, selected }) =>
-                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              key={option.value}
+              value={option.value}
+              className={({ selected }) =>
+                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
-              {option}
+              {option.label}
             </Listbox.Option>
           ))}
         </Listbox.Options>
@@ -81,18 +98,47 @@ const DeliveryConfirmation = () => {
   const [error, setError] = useState("");
   const { user } = useAuth();
   const dialog = useDialog();
+  const [search, setSearch] = useState("");
+  const [approve_status, setApproveStatus] = useState("");
+  const [delivery_status, setDeliveryStatus] = useState("");
 
   useEffect(() => {
     if (user) {
-      fetchConfirmDeliveries(1, 10);
+      fetchConfirmDeliveries(
+        pagination.page,
+        pagination.limit,
+        search,
+        approve_status,
+        delivery_status,
+      );
     }
-  }, [user]);
+  }, [
+    user,
+    pagination.page,
+    pagination.limit,
+    search,
+    approve_status,
+    delivery_status,
+  ]);
 
-  async function fetchConfirmDeliveries(page = 1, limit = 10) {
+  async function fetchConfirmDeliveries(
+    page = 1,
+    limit = 10,
+    search,
+    approve_status,
+    delivery_status,
+  ) {
     setLoading(true);
     setError("");
     try {
-      const res = await getConfirmDeliveries({ page, limit });
+      // Map frontend filter names to backend query params
+      const params = { page, limit };
+      if (search) params.search = search;
+      // approve_status maps to approve_request.status
+      if (approve_status) params["approve_request.status"] = approve_status;
+      // deliveryStatus maps to confirm_delivery.status
+      if (delivery_status) params["confirm_delivery.status"] = delivery_status;
+      const res = await getConfirmDeliveries(params);
       // Only show orders that are approved and not yet delivered
       setConfirmDeliveries(
         res.data.data.filter(
@@ -126,7 +172,13 @@ const DeliveryConfirmation = () => {
     try {
       await updateConfirmDelivery(id, {});
       await dialog.success("Delivery confirmed.");
-      fetchConfirmDeliveries();
+      fetchConfirmDeliveries(
+        pagination.page,
+        pagination.limit,
+        search,
+        approve_status,
+        delivery_status,
+      );
     } catch (err) {
       const msg =
         err?.response?.data?.error ||
@@ -158,19 +210,47 @@ const DeliveryConfirmation = () => {
             <input
               className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
               placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div>
             <label className="block text-gray-700 text-base font-bold mb-2">
               Approval Status
             </label>
-            <ApprovalStatusDropdown />
+            <ApprovalStatusDropdown
+              value={approve_status}
+              onChange={(status) => {
+                setApproveStatus(status);
+                fetchConfirmDeliveries(
+                  1,
+                  pagination.limit,
+                  search,
+                  status,
+                  delivery_status,
+                );
+                setPagination((prev) => ({ ...prev, page: 1 }));
+              }}
+            />
           </div>
           <div>
             <label className="block text-gray-700 text-base font-bold mb-2">
               Delivery Status
             </label>
-            <DeliveryStatusDropdown />
+            <DeliveryStatusDropdown
+              value={delivery_status}
+              onChange={(status) => {
+                setDeliveryStatus(status);
+                fetchConfirmDeliveries(
+                  1,
+                  pagination.limit,
+                  search,
+                  approve_status,
+                  delivery_status,
+                );
+                setPagination((prev) => ({ ...prev, page: 1 }));
+              }}
+            />
           </div>
         </div>
       </div>

@@ -143,8 +143,8 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                           <Listbox.Option
                             key={u._id}
                             value={u._id}
-                            className={({ active, selected }) =>
-                              `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                            className={({ selected }) =>
+                              `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                             }
                           >
                             {u.first_name} {u.last_name} ({u.email})
@@ -199,8 +199,8 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                                 <Listbox.Option
                                   key={p._id}
                                   value={p._id}
-                                  className={({ active, selected }) =>
-                                    `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                                  className={({ selected }) =>
+                                    `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                                   }
                                 >
                                   {p.name}
@@ -319,8 +319,8 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                           <Listbox.Option
                             key={method}
                             value={method}
-                            className={({ active, selected }) =>
-                              `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                            className={({ selected }) =>
+                              `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                             }
                           >
                             {method}

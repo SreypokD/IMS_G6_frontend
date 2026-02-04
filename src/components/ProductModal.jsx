@@ -146,8 +146,8 @@ const ProductModal = ({ open, onClose, onSave, initial, readOnly = false }) => {
                         <Listbox.Option
                           key={cat._id}
                           value={cat}
-                          className={({ active, selected }) =>
-                            `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                          className={({ selected }) =>
+                            `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                           }
                         >
                           {cat.name}
@@ -201,8 +201,8 @@ const ProductModal = ({ open, onClose, onSave, initial, readOnly = false }) => {
                         <Listbox.Option
                           key={sup._id}
                           value={sup}
-                          className={({ active, selected }) =>
-                            `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                          className={({ selected }) =>
+                            `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                           }
                         >
                           {sup.company_name}

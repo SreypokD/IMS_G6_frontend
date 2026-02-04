@@ -14,6 +14,8 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  getCategories,
+  getSuppliers,
 } from "../api";
 import { useDialog } from "../contexts/dialog/useDialog";
 import { useAuth } from "../contexts/auth/useAuth.js";
@@ -21,44 +23,44 @@ import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 
 const initialProducts = [];
-const categoryOptions = [
-  "Select category",
-  "Category 1",
-  "Category 2",
-  "Category 3",
-];
-const supplierOptions = [
-  "Select supplier",
-  "Supplier 1",
-  "Supplier 2",
-  "Supplier 3",
-];
-const stockStatusOptions = [
-  "All Stock Status",
-  "In Stock",
-  "Out of Stock",
-  "Low Stock",
+const statusOptions = [
+  { value: "", label: "All Statuses" },
+  { value: "in_stock", label: "In Stock" },
+  { value: "out_of_stock", label: "Out of Stock" },
+  { value: "low_stock", label: "Low Stock" },
 ];
 
-function ProductCategoryDropdown() {
-  const [selected, setSelected] = useState(categoryOptions[0]);
+function CategoryDropdown({
+  selected,
+  setSelected,
+  categoryOptions: categories,
+}) {
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
         <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
-          <span>{selected}</span>
+          <span>
+            {categories.find((p) => p._id === selected)?.name ||
+              "All Categories"}
+          </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-          {categoryOptions.map((option) => (
+          <Listbox.Option
+            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            value=""
+          >
+            <span>All Categories</span>
+          </Listbox.Option>
+          {categories.map((option) => (
             <Listbox.Option
-              key={option}
-              value={option}
-              className={({ active, selected }) =>
-                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              key={option._id}
+              value={option._id}
+              className={({ selected }) =>
+                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
-              {option}
+              {option.name}
             </Listbox.Option>
           ))}
         </Listbox.Options>
@@ -67,25 +69,37 @@ function ProductCategoryDropdown() {
   );
 }
 
-function ProductSupplierDropdown() {
-  const [selected, setSelected] = useState(supplierOptions[0]);
+function SupplierDropdown({
+  selected,
+  setSelected,
+  supplierOptions: suppliers,
+}) {
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
         <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
-          <span>{selected}</span>
+          <span>
+            {suppliers.find((p) => p._id === selected)?.company_name ||
+              "All Suppliers"}
+          </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-          {supplierOptions.map((option) => (
+          <Listbox.Option
+            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            value=""
+          >
+            <span>All Suppliers</span>
+          </Listbox.Option>
+          {suppliers.map((option) => (
             <Listbox.Option
-              key={option}
-              value={option}
-              className={({ active, selected }) =>
-                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              key={option._id}
+              value={option._id}
+              className={({ selected }) =>
+                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
-              {option}
+              {option.company_name}
             </Listbox.Option>
           ))}
         </Listbox.Options>
@@ -94,25 +108,27 @@ function ProductSupplierDropdown() {
   );
 }
 
-function ProductStockStatusDropdown() {
-  const [selected, setSelected] = useState(stockStatusOptions[0]);
+function StatusDropdown({ selected, setSelected, statusOptions }) {
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
         <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
-          <span>{selected}</span>
+          <span>
+            {statusOptions.find((p) => p.value === selected)?.label ||
+              "All Statuses"}
+          </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-          {stockStatusOptions.map((option) => (
+          {statusOptions.map((option) => (
             <Listbox.Option
-              key={option}
-              value={option}
-              className={({ active, selected }) =>
-                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              key={option.value}
+              value={option.value}
+              className={({ selected }) =>
+                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
-              {option}
+              {option.label}
             </Listbox.Option>
           ))}
         </Listbox.Options>
@@ -124,6 +140,12 @@ function ProductStockStatusDropdown() {
 const Products = () => {
   const [products, setProducts] = useState(initialProducts);
   const [viewProduct, setViewProduct] = useState(null);
+  const [search, setSearch] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState("");
+  const [suppliers, setSuppliers] = useState([]);
+  const [supplier, setSupplier] = useState("");
+  const [status, setStatus] = useState("");
 
   const [pagination, setPagination] = useState({
     page: 1,
@@ -139,17 +161,38 @@ const Products = () => {
   const { user } = useAuth();
 
   useEffect(() => {
+    getCategories().then((res) => setCategories(res.data.data || []));
+    getSuppliers().then((res) => setSuppliers(res.data.data || []));
+  }, []);
+
+  useEffect(() => {
     if (user) {
-      fetchProducts(1, 10);
+      const delayDebounceFn = setTimeout(() => {
+        fetchProducts(1, pagination.limit, search, category, supplier, status);
+        setPagination((prev) => ({ ...prev, page: 1 }));
+      }, 500);
+      return () => clearTimeout(delayDebounceFn);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, search, category, supplier, status]);
 
-  async function fetchProducts(page = 1, limit = 10) {
+  async function fetchProducts(
+    page = 1,
+    limit = 10,
+    search = "",
+    category = "",
+    supplier = "",
+    status = "",
+  ) {
     setLoading(true);
     setError("");
     try {
-      const res = await getProducts({ page, limit });
+      const params = { page, limit };
+      if (search) params.search = search;
+      if (category) params.category = category;
+      if (supplier) params.supplier = supplier;
+      if (status) params.status = status;
+      const res = await getProducts(params);
       setProducts(res.data.data);
       setPagination((prev) => ({
         ...prev,
@@ -317,25 +360,39 @@ const Products = () => {
             <input
               className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
               placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div>
             <label className="block text-gray-700 text-base font-bold mb-2">
               Category
             </label>
-            <ProductCategoryDropdown />
+            <CategoryDropdown
+              selected={category}
+              setSelected={setCategory}
+              categoryOptions={categories}
+            />
           </div>
           <div>
             <label className="block text-gray-700 text-base font-bold mb-2">
               Supplier
             </label>
-            <ProductSupplierDropdown />
+            <SupplierDropdown
+              selected={supplier}
+              setSelected={setSupplier}
+              supplierOptions={suppliers}
+            />
           </div>
           <div>
             <label className="block text-gray-700 text-base font-bold mb-2">
               Stock Status
             </label>
-            <ProductStockStatusDropdown />
+            <StatusDropdown
+              selected={status}
+              setSelected={setStatus}
+              statusOptions={statusOptions}
+            />
           </div>
         </div>
       </div>

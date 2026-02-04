@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Listbox } from "@headlessui/react";
 import { getStocks } from "../api";
-import { useDialog } from "../contexts/dialog/useDialog";
+// import { useDialog } from "../contexts/dialog/useDialog";
 import {
   HiSelector,
   HiOutlineFilter,
@@ -29,8 +29,7 @@ const locationOptions = [
   "Storefront",
 ];
 
-function UserDropdown() {
-  const [selected, setSelected] = useState(users[0]);
+function UserDropdown({ selected, setSelected }) {
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
@@ -43,8 +42,8 @@ function UserDropdown() {
             <Listbox.Option
               key={option}
               value={option}
-              className={({ active, selected }) =>
-                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              className={({ selected }) =>
+                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option}
@@ -56,8 +55,7 @@ function UserDropdown() {
   );
 }
 
-function TransactionDropdown() {
-  const [selected, setSelected] = useState(transactionOptions[0]);
+function TransactionDropdown({ selected, setSelected }) {
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
@@ -70,8 +68,8 @@ function TransactionDropdown() {
             <Listbox.Option
               key={option}
               value={option}
-              className={({ active, selected }) =>
-                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              className={({ selected }) =>
+                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option}
@@ -83,8 +81,7 @@ function TransactionDropdown() {
   );
 }
 
-function StockLocationDropdown() {
-  const [selected, setSelected] = useState(locationOptions[0]);
+function LocationDropdown({ selected, setSelected }) {
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
@@ -97,8 +94,8 @@ function StockLocationDropdown() {
             <Listbox.Option
               key={option}
               value={option}
-              className={({ active, selected }) =>
-                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              className={({ selected }) =>
+                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option}
@@ -120,14 +117,12 @@ const Stocks = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const dialog = useDialog();
   const { user } = useAuth();
 
   useEffect(() => {
     if (user) {
       fetchStocks(1, 10);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   async function fetchStocks(page = 1, limit = 10) {
@@ -258,7 +253,7 @@ const Stocks = () => {
             <label className="block text-gray-700 text-base font-bold mb-2">
               Location
             </label>
-            <StockLocationDropdown />
+            <LocationDropdown />
           </div>
         </div>
       </div>

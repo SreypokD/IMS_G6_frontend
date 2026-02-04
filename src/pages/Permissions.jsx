@@ -31,19 +31,25 @@ const Permissions = () => {
   const [error, setError] = useState("");
   const { user } = useAuth();
   const dialog = useDialog();
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (user) {
-      fetchPermissions(1, 10);
+      const delayDebounceFn = setTimeout(() => {
+        fetchPermissions(1, pagination.limit, search);
+        setPagination((prev) => ({ ...prev, page: 1 }));
+      }, 500);
+      return () => clearTimeout(delayDebounceFn);
     }
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, search]);
 
   // Fetch permissions from API
-  async function fetchPermissions(page = 1, limit = 10) {
+  async function fetchPermissions(page = 1, limit = 10, search) {
     setLoading(true);
     setError("");
     try {
-      const res = await getPermissions({ page, limit });
+      const res = await getPermissions({ page, limit, search });
       setPermissions(res.data.data);
       setPagination((prev) => ({
         ...prev,
@@ -70,7 +76,7 @@ const Permissions = () => {
         await createPermission(permission);
         dialog.success("Permission created successfully");
       }
-      fetchPermissions();
+      fetchPermissions(1, pagination.limit, search);
       setModalOpen(false);
       setEditPermission(null);
     } catch {
@@ -95,7 +101,7 @@ const Permissions = () => {
       try {
         await deletePermission(id);
         dialog.success("Permission deleted successfully");
-        fetchPermissions(pagination.page, pagination.limit);
+        fetchPermissions(pagination.page, pagination.limit, search);
       } catch {
         setError("Failed to delete permission");
         dialog.error("Failed to delete permission");
@@ -146,6 +152,8 @@ const Permissions = () => {
             <input
               className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
               placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
         </div>

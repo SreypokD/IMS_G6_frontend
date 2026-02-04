@@ -17,60 +17,37 @@ import { formatDate } from "../utils/dateFormat";
 import { Listbox } from "@headlessui/react";
 
 const statusOptions = [
-  "All Status",
-  "Pending",
-  "Approved",
-  "Rejected",
-  "Completed",
-  "On Hold",
+  { value: "pending", label: "Pending" },
+  { value: "approved", label: "Approved" },
+  { value: "rejected", label: "Rejected" },
+  { value: "completed", label: "Completed" },
+  { value: "on_hold", label: "On Hold" },
 ];
 
-function StatusDropdown() {
-  const [selected, setSelected] = useState(statusOptions[0]);
+function StatusDropdown({ value, onChange }) {
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox value={value} onChange={onChange}>
       <div className="relative">
         <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
-          <span>{selected}</span>
+          <span>{value || "All Statuses"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          <Listbox.Option
+            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            value=""
+          >
+            <span>All Statuses</span>
+          </Listbox.Option>
           {statusOptions.map((option) => (
             <Listbox.Option
-              key={option}
-              value={option}
-              className={({ active, selected }) =>
-                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              key={option.value}
+              value={option.value}
+              className={({ selected }) =>
+                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
-              {option}
-            </Listbox.Option>
-          ))}
-        </Listbox.Options>
-      </div>
-    </Listbox>
-  );
-}
-
-function DeliveryStatusDropdown() {
-  const [selected, setSelected] = useState(statusOptions[0]);
-  return (
-    <Listbox value={selected} onChange={setSelected}>
-      <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
-          <span>{selected}</span>
-          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-          {statusOptions.map((option) => (
-            <Listbox.Option
-              key={option}
-              value={option}
-              className={({ active, selected }) =>
-                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
-              }
-            >
-              {option}
+              {option.label}
             </Listbox.Option>
           ))}
         </Listbox.Options>
@@ -93,23 +70,27 @@ const OrderRequests = () => {
   const [error, setError] = useState("");
   const { user } = useAuth();
   const dialog = useDialog();
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
     if (user) {
-      fetchOrderRequests(pagination.page, pagination.limit);
+      fetchOrderRequests(pagination.page, pagination.limit, search, status);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, search, status]);
 
   // Fetch order requests from API
   async function fetchOrderRequests(
     page = pagination.page,
     limit = pagination.limit,
+    search,
+    status,
   ) {
     setLoading(true);
     setError("");
     try {
-      const res = await getOrderRequests({ page, limit });
+      const res = await getOrderRequests({ page, limit, search, status });
       setRequests(res.data.data);
       setPagination((prev) => ({
         ...prev,
@@ -137,7 +118,7 @@ const OrderRequests = () => {
     try {
       await cancelOrderRequest(id);
       await dialog.success("Order request cancelled successfully.");
-      fetchOrderRequests(pagination.page, pagination.limit);
+      fetchOrderRequests(pagination.page, pagination.limit, search, status);
     } catch {
       setError("Failed to cancel order request");
       dialog.error("Failed to cancel order request");
@@ -158,7 +139,7 @@ const OrderRequests = () => {
         onSave={() => {
           setModalOpen(false);
           setEditOrderRequest(null);
-          fetchOrderRequests(pagination.page, pagination.limit);
+          fetchOrderRequests(pagination.page, pagination.limit, search, status);
         }}
       />
       <div className="flex items-center justify-between mb-8">
@@ -188,13 +169,22 @@ const OrderRequests = () => {
             <input
               className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
               placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div>
             <label className="block text-gray-700 text-base font-bold mb-2">
               Status
             </label>
-            <StatusDropdown />
+            <StatusDropdown
+              value={status}
+              onChange={(status) => {
+                setStatus(status);
+                fetchOrderRequests(1, pagination.limit, search, status);
+                setPagination((prev) => ({ ...prev, page: 1 }));
+              }}
+            />
           </div>
         </div>
       </div>

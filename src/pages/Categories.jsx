@@ -31,22 +31,24 @@ const Categories = () => {
   const [error, setError] = useState("");
   const { user } = useAuth();
   const dialog = useDialog();
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (user) {
-      fetchCategories(pagination.page, pagination.limit);
+      const delayDebounceFn = setTimeout(() => {
+        fetchCategories(1, pagination.limit, search);
+        setPagination((prev) => ({ ...prev, page: 1 }));
+      }, 500);
+      return () => clearTimeout(delayDebounceFn);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, search]);
 
-  async function fetchCategories(
-    page = pagination.page,
-    limit = pagination.limit,
-  ) {
+  async function fetchCategories(page = 1, limit = 10, search) {
     setLoading(true);
     setError("");
     try {
-      const res = await getCategories({ page, limit });
+      const res = await getCategories({ page, limit, search });
       setCategories(res.data.data);
       setPagination((prev) => ({
         ...prev,
@@ -147,6 +149,8 @@ const Categories = () => {
             <input
               className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
               placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
         </div>

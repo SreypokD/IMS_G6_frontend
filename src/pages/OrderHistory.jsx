@@ -4,6 +4,48 @@ import { getOrderRequests } from "../api";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 import { formatDate } from "../utils/dateFormat";
+import { HiSelector, HiOutlineFilter } from "react-icons/hi";
+import { Listbox } from "@headlessui/react";
+
+const statusOptions = [
+  { value: "pending", label: "Pending" },
+  { value: "approved", label: "Approved" },
+  { value: "rejected", label: "Rejected" },
+  { value: "completed", label: "Completed" },
+  { value: "on_hold", label: "On Hold" },
+];
+
+function StatusDropdown({ value, onChange }) {
+  return (
+    <Listbox value={value} onChange={onChange}>
+      <div className="relative">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
+          <span>{value || "All Statuses"}</span>
+          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+        </Listbox.Button>
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          <Listbox.Option
+            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            value=""
+          >
+            <span>All Statuses</span>
+          </Listbox.Option>
+          {statusOptions.map((option) => (
+            <Listbox.Option
+              key={option.value}
+              value={option.value}
+              className={({ selected }) =>
+                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+              }
+            >
+              {option.label}
+            </Listbox.Option>
+          ))}
+        </Listbox.Options>
+      </div>
+    </Listbox>
+  );
+}
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
@@ -16,18 +58,26 @@ const OrderHistory = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { user } = useAuth();
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
     if (user) {
-      fetchOrders(1, 10);
+      fetchOrders(pagination.page, pagination.limit, search, status);
     }
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, search, status]);
 
-  async function fetchOrders(page = 1, limit = 10) {
+  async function fetchOrders(
+    page = pagination.page,
+    limit = pagination.limit,
+    search,
+    status,
+  ) {
     setLoading(true);
     setError("");
     try {
-      const res = await getOrderRequests({ page, limit });
+      const res = await getOrderRequests({ page, limit, search, status });
       setOrders(res.data.data);
       setPagination((prev) => ({
         ...prev,
@@ -50,6 +100,38 @@ const OrderHistory = () => {
           <span className="text-gray-500">
             Review your past order requests and their statuses
           </span>
+        </div>
+      </div>
+      <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
+        <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+          <HiOutlineFilter className="inline-block text-xl text-black" />
+          <span>Filters</span>
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Search
+            </label>
+            <input
+              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Status
+            </label>
+            <StatusDropdown
+              value={status}
+              onChange={(status) => {
+                setStatus(status);
+                fetchOrders(1, pagination.limit, search, status);
+                setPagination((prev) => ({ ...prev, page: 1 }));
+              }}
+            />
+          </div>
         </div>
       </div>
       <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">

@@ -30,7 +30,6 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const dialog = useDialog();
   const viewOnly = initial && initial.viewOnly;
 
@@ -75,7 +74,6 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
       }
       setTouched({});
       setValidateOnSave(false);
-      setError("");
     }
   }, [open, initial]);
 
@@ -156,11 +154,9 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
           item.unit_price < 0,
       )
     ) {
-      setError("Please fill all required fields for all products.");
       return;
     }
     setLoading(true);
-    setError("");
     try {
       const payload = {
         supplier_id: order.supplier_id,
@@ -190,11 +186,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
         handleClose();
       }
     } catch {
-      setError(
-        isEdit
-          ? "Failed to update order request"
-          : "Failed to submit order request",
-      );
+      //
     } finally {
       setLoading(false);
     }
@@ -204,7 +196,6 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
     setOrder(initialOrderRequest);
     setTouched({});
     setValidateOnSave(false);
-    setError("");
     onClose();
   }
 
@@ -264,8 +255,8 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                           <Listbox.Option
                             key={supplier._id}
                             value={supplier}
-                            className={({ active, selected }) =>
-                              `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                            className={({ selected }) =>
+                              `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                             }
                           >
                             {supplier.company_name}
@@ -349,8 +340,8 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                               <Listbox.Option
                                 key={product._id}
                                 value={product}
-                                className={({ active, selected }) =>
-                                  `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                                className={({ selected }) =>
+                                  `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                                 }
                               >
                                 {product.name} (Stock:

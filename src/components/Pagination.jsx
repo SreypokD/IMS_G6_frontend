@@ -112,8 +112,8 @@ export default function Pagination({
               <Listbox.Option
                 key={opt}
                 value={opt}
-                className={({ active, selected }) =>
-                  `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                className={({ selected }) =>
+                  `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                 }
               >
                 {opt}

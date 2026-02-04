@@ -475,8 +475,8 @@ const SupplierModal = ({
                           <Listbox.Option
                             key={pt._id}
                             value={pt}
-                            className={({ active, selected }) =>
-                              `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                            className={({ selected }) =>
+                              `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                             }
                           >
                             {pt.name}
@@ -527,8 +527,8 @@ const SupplierModal = ({
                           <Listbox.Option
                             key={st._id}
                             value={st}
-                            className={({ active, selected }) =>
-                              `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                            className={({ selected }) =>
+                              `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                             }
                           >
                             {st.name}

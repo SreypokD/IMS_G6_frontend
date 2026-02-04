@@ -22,30 +22,31 @@ import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 
 // Custom dropdowns for Suppliers page
-const statusOptions = ["All Status", "Active", "Inactive"];
-const locationOptions = [
-  "All Locations",
-  "Warehouse 1",
-  "Warehouse 2",
-  "Storefront",
-];
+const statusOptions = ["Active", "Inactive"];
+const locationOptions = ["Warehouse 1", "Warehouse 2", "Storefront"];
 
-function SupplierStatusDropdown() {
-  const [selected, setSelected] = useState(statusOptions[0]);
+// Dropdowns now accept value and onChange from parent
+function StatusDropdown({ value, onChange }) {
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox value={value} onChange={onChange}>
       <div className="relative">
         <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
-          <span>{selected}</span>
+          <span>{value || "All Statuses"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          <Listbox.Option
+            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            value=""
+          >
+            <span>All Statuses</span>
+          </Listbox.Option>
           {statusOptions.map((option) => (
             <Listbox.Option
               key={option}
               value={option}
-              className={({ active, selected }) =>
-                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              className={({ selected }) =>
+                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option}
@@ -57,22 +58,27 @@ function SupplierStatusDropdown() {
   );
 }
 
-function SupplierLocationDropdown() {
-  const [selected, setSelected] = useState(locationOptions[0]);
+function LocationDropdown({ value, onChange }) {
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox value={value} onChange={onChange}>
       <div className="relative">
         <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
-          <span>{selected}</span>
+          <span>{value || "All Locations"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          <Listbox.Option
+            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            value=""
+          >
+            <span>All Locations</span>
+          </Listbox.Option>
           {locationOptions.map((option) => (
             <Listbox.Option
               key={option}
               value={option}
-              className={({ active, selected }) =>
-                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              className={({ selected }) =>
+                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option}
@@ -97,25 +103,41 @@ const Suppliers = () => {
   const [editSupplier, setEditSupplier] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
+  const [location, setLocation] = useState("");
   const dialog = useDialog();
   const { user } = useAuth();
 
   useEffect(() => {
     if (user) {
-      fetchSuppliers(pagination.page, pagination.limit);
+      fetchSuppliers(
+        pagination.page,
+        pagination.limit,
+        search,
+        status,
+        location,
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, pagination.page, pagination.limit, search, status, location]);
 
   // Fetch suppliers from API
   async function fetchSuppliers(
     page = pagination.page,
     limit = pagination.limit,
+    searchVal = search,
+    statusVal = status,
+    locationVal = location,
   ) {
     setLoading(true);
     setError("");
     try {
-      const res = await getSuppliers({ page, limit });
+      const params = { page, limit };
+      if (searchVal) params.search = searchVal;
+      if (statusVal) params.status = statusVal;
+      if (locationVal) params.location = locationVal;
+      const res = await getSuppliers(params);
       setSuppliers(res.data.data);
       setPagination((prev) => ({
         ...prev,
@@ -238,19 +260,45 @@ const Suppliers = () => {
             <input
               className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
               placeholder="Search..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                fetchSuppliers(
+                  1,
+                  pagination.limit,
+                  e.target.value,
+                  status,
+                  location,
+                );
+                setPagination((prev) => ({ ...prev, page: 1 }));
+              }}
             />
-          </div>
-          <div>
-            <label className="block text-gray-700 text-base font-bold mb-2">
-              Supplier
-            </label>
-            <SupplierStatusDropdown />
           </div>
           <div>
             <label className="block text-gray-700 text-base font-bold mb-2">
               Location
             </label>
-            <SupplierLocationDropdown />
+            <LocationDropdown
+              value={location}
+              onChange={(val) => {
+                setLocation(val);
+                fetchSuppliers(1, pagination.limit, search, status, val);
+                setPagination((prev) => ({ ...prev, page: 1 }));
+              }}
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-base font-bold mb-2">
+              Status
+            </label>
+            <StatusDropdown
+              value={status}
+              onChange={(val) => {
+                setStatus(val);
+                fetchSuppliers(1, pagination.limit, search, val, location);
+                setPagination((prev) => ({ ...prev, page: 1 }));
+              }}
+            />
           </div>
         </div>
       </div>
@@ -282,27 +330,23 @@ const Suppliers = () => {
                   <td className="px-3 py-1">
                     <div className="flex items-center gap-2">
                       <HiOutlineBuildingOffice2 className="text-lg text-blue-700" />
-                      <div className="font-semibold text-base text-[#1e3a5f]">
+                      <div className="font-semibold text-base">
                         {supplier.company_name}
                       </div>
-                      <div className="text-sm text-gray-500">
-                        ({supplier.location})
-                      </div>
+                      <div className="text-sm">({supplier.location})</div>
                     </div>
                   </td>
                   <td className="px-3 py-1 flex items-center gap-1">
-                    <div className="font-medium text-gray-900">
+                    <div className="font-medium  ">
                       {supplier.contact_person}
                     </div>
-                    <div className="text-sm text-gray-500">
-                      ({supplier.contact_position})
-                    </div>
+                    <div className="text-sm">({supplier.contact_position})</div>
                   </td>
                   <td className="px-3 py-1">{supplier.contact_email}</td>
                   <td className="px-3 py-1">{supplier.contact_phone}</td>
                   <td className="px-3 py-1">
                     <span className="flex items-center gap-2">
-                      <HiOutlineCube className="text-base text-gray-500" />
+                      <HiOutlineCube className="text-base" />
                       <span>
                         {typeof supplier.products_count === "number"
                           ? supplier.products_count
@@ -372,7 +416,7 @@ const Suppliers = () => {
             limit={pagination.limit}
             onChange={({ page, limit }) => {
               setPagination((prev) => ({ ...prev, page, limit }));
-              fetchSuppliers(page, limit);
+              fetchSuppliers(page, limit, search, status, location);
             }}
           />
         </div>

@@ -6,7 +6,13 @@ import {
   HiOutlinePencil,
   HiOutlineTrash,
 } from "react-icons/hi";
-import { getUsers, createUser, updateUser, deleteUser } from "../api";
+import {
+  getUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  getPermissions,
+} from "../api";
 import UserModal from "../components/UserModal";
 import { useAuth } from "../contexts/auth/useAuth";
 import Pagination from "../components/Pagination";
@@ -14,27 +20,37 @@ import NoDataFound from "../components/NoDataFound";
 import { Listbox } from "@headlessui/react";
 import { useDialog } from "../contexts/dialog/useDialog";
 
-const permissions = ["Select permission"];
-
-function PermissionDropdown() {
-  const [selected, setSelected] = useState(permissions[0]);
+function PermissionDropdown({
+  selected,
+  setSelected,
+  permissionOptions: permissions,
+}) {
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
         <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
-          <span>{selected}</span>
+          <span>
+            {permissions.find((p) => p._id === selected)?.name ||
+              "All Permissions"}
+          </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          <Listbox.Option
+            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            value=""
+          >
+            <span>All Permissions</span>
+          </Listbox.Option>
           {permissions.map((option) => (
             <Listbox.Option
-              key={option}
-              value={option}
-              className={({ active, selected }) =>
-                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+              key={option._id}
+              value={option._id}
+              className={({ selected }) =>
+                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
-              {option}
+              {option.name}
             </Listbox.Option>
           ))}
         </Listbox.Options>
@@ -56,20 +72,41 @@ const Users = () => {
   const [error, setError] = useState("");
   const dialog = useDialog();
   const { user } = useAuth();
+  const [search, setSearch] = useState("");
+  const [permission, setPermission] = useState("");
+  const [permissions, setPermissions] = useState([]);
+
+  useEffect(() => {
+    getPermissions().then((res) => {
+      if (Array.isArray(res.data)) {
+        setPermissions(res.data);
+      } else if (Array.isArray(res.data?.data)) {
+        setPermissions(res.data.data);
+      } else {
+        setPermissions([]);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (user) {
-      fetchUsers(1, 10);
+      const delayDebounceFn = setTimeout(() => {
+        fetchUsers(1, pagination.limit, search, permission);
+        setPagination((prev) => ({ ...prev, page: 1 }));
+      }, 500);
+      return () => clearTimeout(delayDebounceFn);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, search, permission]);
 
   // Fetch users from API
-  async function fetchUsers(page = 1, limit = 10) {
+  async function fetchUsers(page = 1, limit = 10, search, permission_id) {
     setLoading(true);
     setError("");
     try {
-      const res = await getUsers({ page, limit });
+      const params = { page, limit, search };
+      if (permission_id) params.permission_id = permission_id;
+      const res = await getUsers(params);
       setUsers(res.data.data);
       setPagination((prev) => ({
         ...prev,
@@ -174,13 +211,19 @@ const Users = () => {
             <input
               className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
               placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div>
             <label className="block text-gray-700 text-base font-bold mb-2">
               Permission
             </label>
-            <PermissionDropdown />
+            <PermissionDropdown
+              selected={permission}
+              setSelected={setPermission}
+              permissionOptions={permissions}
+            />
           </div>
         </div>
       </div>
