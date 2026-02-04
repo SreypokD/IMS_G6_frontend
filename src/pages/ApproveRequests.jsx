@@ -9,6 +9,7 @@ import {
 import { getApproveRequests, updateApproveRequests } from "../api";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
+import Dialog from "../components/Dialog";
 
 const OrderRequestApproval = () => {
   const [orders, setOrders] = useState([]);
@@ -22,8 +23,8 @@ const OrderRequestApproval = () => {
   const [error, setError] = useState("");
   const [remarks, setRemarks] = useState({});
   const [actionId, setActionId] = useState(null);
-  const [showReject, setShowReject] = useState({});
-  const [rejectionReason, setRejectionReason] = useState({});
+  const [rejectDialog, setRejectDialog] = useState({ open: false, id: null });
+  const [rejectionReason, setRejectionReason] = useState("");
   const { user } = useAuth();
   const dialog = useDialog();
   const [search, setSearch] = useState("");
@@ -75,7 +76,7 @@ const OrderRequestApproval = () => {
       // Reset all relevant state after approve
       setRemarks({});
       setRejectionReason({});
-      setShowReject({});
+      // setShowReject({});
       setPagination((prev) => ({ ...prev, page: 1 }));
       fetchApproveRequests(1, pagination.limit, search);
     } catch (err) {
@@ -88,27 +89,18 @@ const OrderRequestApproval = () => {
     }
   }
 
-  async function handleReject(id) {
-    const confirmed = await dialog.ask({
-      type: "confirm",
-      title: "Reject Order Request",
-      message: "Are you sure you want to reject this order request?",
-      confirmText: "Reject",
-      cancelText: "Cancel",
-    });
-    if (!confirmed) return;
+  async function handleReject(id, reason) {
     setActionId(id);
     try {
       await updateApproveRequests(id, {
         status: "rejected",
         admin_remarks: remarks[id] || "",
-        rejection_reason: rejectionReason[id] || "",
+        rejection_reason: reason || "",
       });
       await dialog.success("Order request rejected.");
-      // Reset all relevant state after reject
       setRemarks({});
-      setRejectionReason({});
-      setShowReject({});
+      setRejectionReason("");
+      setRejectDialog({ open: false, id: null });
       setPagination((prev) => ({ ...prev, page: 1 }));
       fetchApproveRequests(1, pagination.limit, search);
     } catch (err) {
@@ -166,7 +158,6 @@ const OrderRequestApproval = () => {
                 <th className="p-3">Requested Date</th>
                 <th className="p-3">Delivery Date</th>
                 <th className="p-3">Notes</th>
-                <th className="p-3">Remarks</th>
                 {user?.permission?.permissions?.includes(
                   "update_approve_request",
                 ) ||
@@ -211,21 +202,6 @@ const OrderRequestApproval = () => {
                       : "-"}
                   </td>
                   <td className="px-3 py-1">{order.notes || "-"}</td>
-                  <td className="px-3 py-1">
-                    <input
-                      type="text"
-                      className="border border-gray-200 rounded-lg px-2 py-1 text-base"
-                      placeholder="Admin remarks"
-                      value={remarks[order._id] || ""}
-                      onChange={(e) =>
-                        setRemarks((r) => ({
-                          ...r,
-                          [order._id]: e.target.value,
-                        }))
-                      }
-                      disabled={actionId === order._id}
-                    />
-                  </td>
                   <td className="px-3 py-1 flex items-center gap-1">
                     {user?.permission?.permissions?.includes(
                       "update_approve_request",
@@ -246,46 +222,49 @@ const OrderRequestApproval = () => {
                         className="text-red-500 hover:text-red-600 rounded-full cursor-pointer"
                         title="Reject"
                         disabled={actionId === order._id}
-                        onClick={() =>
-                          setShowReject((s) => ({
-                            ...s,
-                            [order._id]: !s[order._id],
-                          }))
-                        }
+                        onClick={() => {
+                          setRejectDialog({ open: true, id: order._id });
+                          setRejectionReason("");
+                        }}
                       >
                         <HiOutlineXCircle className="w-8 h-8" />
                       </button>
                     )}
-                    {showReject[order._id] && (
-                      <div className="mt-2">
-                        <input
+                    <Dialog
+                      open={rejectDialog.open}
+                      title="Reject Order Request"
+                      cancelText="Cancel"
+                      confirmText="Reject"
+                      showActions
+                      onClose={() => setRejectDialog({ open: false, id: null })}
+                      onConfirm={() =>
+                        handleReject(rejectDialog.id, rejectionReason)
+                      }
+                      confirmDisabled={
+                        actionId === rejectDialog.id || !rejectionReason.trim()
+                      }
+                    >
+                      <div className="mb-4 w-full">
+                        <label className="block text-gray-500 text-base mb-2">
+                          Please provide a reason for rejection:
+                        </label>
+                        <textarea
                           type="text"
-                          className="border border-gray-200 rounded px-2 text-base mb-1"
+                          className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200"
                           placeholder="Rejection reason"
-                          value={rejectionReason[order._id] || ""}
-                          onChange={(e) =>
-                            setRejectionReason((r) => ({
-                              ...r,
-                              [order._id]: e.target.value,
-                            }))
-                          }
-                          disabled={actionId === order._id}
+                          value={rejectionReason}
+                          onChange={(e) => setRejectionReason(e.target.value)}
+                          disabled={actionId === rejectDialog.id}
+                          autoFocus
                         />
-                        <button
-                          className="text-red-500 hover:text-red-600 rounded-full cursor-pointer"
-                          onClick={() => handleReject(order._id)}
-                          disabled={actionId === order._id}
-                        >
-                          <HiOutlineXCircle className="w-8 h-8" />
-                        </button>
                       </div>
-                    )}
+                    </Dialog>
                   </td>
                 </tr>
               ))}
               {orders.length === 0 && (
                 <tr>
-                  <td colSpan="9">
+                  <td colSpan="8">
                     <NoDataFound message="No approve requests found." />
                   </td>
                 </tr>

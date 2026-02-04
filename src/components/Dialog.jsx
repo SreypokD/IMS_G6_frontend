@@ -16,6 +16,7 @@ const Dialog = ({
   confirmText = "Yes",
   cancelText = "No",
   showActions = false,
+  children,
 }) => {
   if (!open) return null;
 
@@ -68,8 +69,15 @@ const Dialog = ({
             <span className={`${iconColor}`}>{icon}</span>
           </div>
         </div>
-        <h2 className="text-xl mb-2 text-center">{title || defaultTitle}</h2>
-        <p className="mb-8 text-center text-base">{message}</p>
+        <h2 className="text-xl mb-2 text-center text-black">
+          {title || defaultTitle}
+        </h2>
+        <p
+          className={`${children ? "mb-4" : "mb-8"} text-center text-base text-gray-500`}
+        >
+          {message}
+        </p>
+        {children}
         {showActions ? (
           <div className="flex gap-4">
             <button

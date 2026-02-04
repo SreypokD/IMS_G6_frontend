@@ -208,13 +208,12 @@ const Sidebar = ({ mini }) => {
               return (
                 <li key={parentKey}>
                   <div
-                    className={`group flex items-center justify-between p-3 rounded-xl transition font-base text-base space-x-3 mb-2 text-[#64748b] hover:bg-[#f1f5f9] hover:text-black`}
+                    className={`group flex items-center justify-between cursor-pointer p-3 rounded-xl transition font-base text-base space-x-3 mb-2 text-[#64748b] hover:bg-[#f1f5f9] hover:text-black`}
                     onClick={() => setExpanded(isExpanded ? null : parentKey)}
-                    style={{ cursor: "pointer" }}
                   >
                     <div className="flex items-center space-x-3">
                       <span className="text-xl">{link.icon}</span>
-                      {!mini && <span className="text-base">{link.label}</span>}
+                      {!mini && <span className="text-base mt-1">{link.label}</span>}
                     </div>
                     <HiChevronRight
                       className={`transition-transform ${isExpanded ? "rotate-90" : ""}`}
@@ -245,7 +244,7 @@ const Sidebar = ({ mini }) => {
                             >
                               <span className="text-xl">{submenu.icon}</span>
                               {!mini && (
-                                <span className="text-base">
+                                <span className="text-base mt-1">
                                   {submenu.label}
                                 </span>
                               )}
@@ -271,7 +270,9 @@ const Sidebar = ({ mini }) => {
                   `}
                   >
                     <span className="text-xl">{link.icon}</span>
-                    {!mini && <span className="text-base">{link.label}</span>}
+                    {!mini && (
+                      <span className="text-base mt-1">{link.label}</span>
+                    )}
                   </Link>
                 </li>
               );

@@ -195,7 +195,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
               <table className="min-w-full text-center text-base align-middle">
                 <thead>
                   <tr className="bg-white">
-                    <th className="py-3 px-4 text-left">Module</th>
+                    <th className="p-2 text-left">Module</th>
                     <th className="p-3">Check All</th>
                     <th className="p-3">View</th>
                     <th className="p-3">Create</th>

@@ -116,7 +116,6 @@ const Users = () => {
       }));
     } catch {
       setError("Failed to load users");
-      dialog.error("Failed to load users");
     } finally {
       setLoading(false);
     }
