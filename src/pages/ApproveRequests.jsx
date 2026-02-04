@@ -150,59 +150,59 @@ const OrderRequestApproval = () => {
         ) : (
           <table className="min-w-full text-left text-base align-middle">
             <thead>
-              <tr className="bg-white">
-                <th className="p-3">No.</th>
-                <th className="p-3">Requested By</th>
-                <th className="p-3">Product(s)</th>
-                <th className="p-3">Quantity(ies)</th>
-                <th className="p-3">Requested Date</th>
-                <th className="p-3">Delivery Date</th>
-                <th className="p-3">Notes</th>
+              <tr>
+                <th>No.</th>
+                <th>Requested By</th>
+                <th>Product(s)</th>
+                <th>Quantity(ies)</th>
+                <th>Requested Date</th>
+                <th>Delivery Date</th>
+                <th>Notes</th>
                 {user?.permission?.permissions?.includes(
                   "update_approve_request",
                 ) ||
                 user?.permission?.permissions?.includes(
                   "delete_approve_request",
                 ) ? (
-                  <th className="p-3">Actions</th>
+                  <th>Actions</th>
                 ) : null}
               </tr>
             </thead>
             <tbody>
               {orders.map((order, index) => (
                 <tr key={order._id}>
-                  <td className="px-3 py-1">
+                  <td>
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="px-3 py-1">
+                  <td>
                     {order.requester?.first_name +
                       " " +
                       order.requester?.last_name || "-"}
                   </td>
-                  <td className="px-3 py-1">
+                  <td>
                     {Array.isArray(order.items) && order.items.length > 0
                       ? order.items
                           .map((item) => item.product?.name || item.product_id)
                           .join(", ")
                       : "-"}
                   </td>
-                  <td className="px-3 py-1">
+                  <td>
                     {Array.isArray(order.items) && order.items.length > 0
                       ? order.items.map((item) => item.quantity).join(", ")
                       : "-"}
                   </td>
-                  <td className="px-3 py-1">
+                  <td>
                     {order.createdAt
                       ? new Date(order.createdAt).toLocaleDateString()
                       : "-"}
                   </td>
-                  <td className="px-3 py-1">
+                  <td>
                     {order.delivery_date
                       ? new Date(order.delivery_date).toLocaleDateString()
                       : "-"}
                   </td>
-                  <td className="px-3 py-1">{order.notes || "-"}</td>
-                  <td className="px-3 py-1 flex items-center gap-1">
+                  <td>{order.notes || "-"}</td>
+                  <td className="flex items-center gap-1">
                     {user?.permission?.permissions?.includes(
                       "update_approve_request",
                     ) && (

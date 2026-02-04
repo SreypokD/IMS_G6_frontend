@@ -262,16 +262,16 @@ const DeliveryConfirmation = () => {
         ) : (
           <table className="min-w-full text-left text-base align-middle">
             <thead>
-              <tr className="bg-white">
-                <th className="p-3">No.</th>
-                <th className="p-3">Requested By</th>
-                <th className="p-3">Product(s)</th>
-                <th className="p-3">Quantity(ies)</th>
-                <th className="p-3">Requested Date</th>
-                <th className="p-3">Delivery Date</th>
-                <th className="p-3">Approval Status</th>
-                <th className="p-3">Delivery Status</th>
-                <th className="p-3">Actions</th>
+              <tr>
+                <th>No.</th>
+                <th>Requested By</th>
+                <th>Product(s)</th>
+                <th>Quantity(ies)</th>
+                <th>Requested Date</th>
+                <th>Delivery Date</th>
+                <th>Approval Status</th>
+                <th>Delivery Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -280,14 +280,14 @@ const DeliveryConfirmation = () => {
                 const delivery = confirm_delivery.confirm_delivery;
                 return (
                   <tr key={confirm_delivery._id}>
-                    <td className="px-3 py-1">
+                    <td>
                       {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>
-                    <td className="px-3 py-1">
+                    <td>
                       {confirm_delivery.requester?.first_name}
                       {confirm_delivery.requester?.last_name}
                     </td>
-                    <td className="px-3 py-1">
+                    <td>
                       {Array.isArray(confirm_delivery?.items) &&
                       confirm_delivery?.items.length > 0
                         ? confirm_delivery?.items
@@ -295,7 +295,7 @@ const DeliveryConfirmation = () => {
                             .join(", ")
                         : "-"}
                     </td>
-                    <td className="px-3 py-1">
+                    <td>
                       {Array.isArray(confirm_delivery?.items) &&
                       confirm_delivery?.items.length > 0
                         ? confirm_delivery?.items
@@ -303,13 +303,9 @@ const DeliveryConfirmation = () => {
                             .join(", ")
                         : "-"}
                     </td>
-                    <td className="px-3 py-1">
-                      {formatDate(confirm_delivery.createdAt) || "-"}
-                    </td>
-                    <td className="px-3 py-1">
-                      {formatDate(confirm_delivery.delivery_date) || "-"}
-                    </td>
-                    <td className="px-3 py-1">
+                    <td>{formatDate(confirm_delivery.createdAt) || "-"}</td>
+                    <td>{formatDate(confirm_delivery.delivery_date) || "-"}</td>
+                    <td>
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${approve?.status === "approved" ? "bg-green-100 text-green-700" : approve?.status === "rejected" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}
                       >
@@ -319,7 +315,7 @@ const DeliveryConfirmation = () => {
                           : "Pending"}
                       </span>
                     </td>
-                    <td className="px-3 py-1">
+                    <td>
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${delivery?.status === "delivered" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}
                       >
@@ -328,7 +324,7 @@ const DeliveryConfirmation = () => {
                           : "Pending"}
                       </span>
                     </td>
-                    <td className="px-3 py-1">
+                    <td>
                       {(!delivery || delivery.status !== "delivered") &&
                         user?.permission?.permissions?.includes(
                           "update_confirm_delivery",

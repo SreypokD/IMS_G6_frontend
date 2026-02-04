@@ -6,6 +6,7 @@ body {
 }
 
 @layer base {
+
   input:focus,
   textarea:focus,
   select:focus {
@@ -14,9 +15,11 @@ body {
 }
 
 table tr th {
+  height: 40px !important;
   color: black;
 }
 
 table tr td {
+  height: 40px !important;
   color: #6a7282;
 }

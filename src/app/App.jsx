@@ -5,6 +5,7 @@ import Navbar from "./Navbar.jsx";
 import { useState, useEffect } from "react";
 
 import Login from "../pages/Login.jsx";
+import Register from "../pages/Register.jsx";
 import Reports from "../pages/Reports.jsx";
 import Products from "../pages/Products.jsx";
 import Suppliers from "../pages/Suppliers.jsx";
@@ -52,6 +53,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route
             path="*"
             element={

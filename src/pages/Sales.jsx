@@ -135,21 +135,21 @@ const Sales = () => {
           <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr>
-                <th className="p-3">No.</th>
-                <th className="p-3">Transaction ID</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Completed At</th>
+                <th>No.</th>
+                <th>Transaction ID</th>
+                <th>Status</th>
+                <th>Completed At</th>
               </tr>
             </thead>
             <tbody>
               {sales.map((sale, index) => (
                 <tr key={sale._id}>
-                  <td className="px-3 py-1">
+                  <td>
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="px-3 py-1">{sale.quantity}</td>
-                  <td className="px-3 py-1">{sale.status}</td>
-                  <td className="px-3 py-1">
+                  <td>{sale.quantity}</td>
+                  <td>{sale.status}</td>
+                  <td>
                     {sale.completed_at
                       ? new Date(sale.completed_at).toLocaleString()
                       : "-"}

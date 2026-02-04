@@ -59,31 +59,31 @@ const ActivityLog = () => {
           <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr>
-                <th className="p-3">No.</th>
-                <th className="p-3">User</th>
-                <th className="p-3">Entity Type</th>
-                <th className="p-3">Details</th>
-                <th className="p-3">Timestamp</th>
-                <th className="p-3">Action</th>
+                <th>No.</th>
+                <th>User</th>
+                <th>Entity Type</th>
+                <th>Details</th>
+                <th>Timestamp</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {logs.map((log, index) => (
                 <tr key={log._id}>
-                  <td className="px-3 py-2.5">
+                  <td>
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="px-3 py-2.5">
+                  <td>
                     {log.user?.first_name + " " + log.user?.last_name || "-"}
                   </td>
-                  <td className="px-3 py-2.5">{log.entity_type || "-"}</td>
-                  <td className="px-3 py-2.5">{log.details || "-"}</td>
-                  <td className="px-3 py-2.5">
+                  <td>{log.entity_type || "-"}</td>
+                  <td>{log.details || "-"}</td>
+                  <td>
                     {log.createdAt
                       ? new Date(log.createdAt).toLocaleString()
                       : "-"}
                   </td>
-                  <td className="px-3 py-2.5">{log.action}</td>
+                  <td>{log.action}</td>
                 </tr>
               ))}
               {logs.length === 0 && (

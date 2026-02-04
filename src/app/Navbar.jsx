@@ -151,7 +151,7 @@ const Header = ({ onBellClick }) => {
             <HiChevronDown className="text-gray-400 text-xl ml-1" />
           </button>
           {menuOpen && (
-            <div className="absolute right-0 top-11 bg-white rounded-2xl shadow-lg p-2 w-60 z-50 animate-fade-in-up border border-gray-100">
+            <div className="absolute right-0 top-11 bg-white rounded-2xl shadow-lg p-2 w-68 z-50 animate-fade-in-up border border-gray-100">
               <div className="px-3 pt-3">
                 <div className="font-bold text-lg leading-tight">
                   {user?.first_name + " " + user?.last_name}
@@ -164,15 +164,15 @@ const Header = ({ onBellClick }) => {
               <hr className="my-2 border-gray-200" />
               <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 rounded-xl cursor-pointer">
                 <HiUser className="text-xl" />
-                <span>Profile Settings</span>
+                <span className="mt-1.5">Profile Settings</span>
               </button>
               <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 rounded-xl cursor-pointer">
                 <HiOutlineCog className="text-xl" />
-                <span>Account Settings</span>
+                <span className="mt-1.5">Account Settings</span>
               </button>
               <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 rounded-xl cursor-pointer">
                 <HiOutlineQuestionMarkCircle className="text-xl" />
-                <span>Help & Support</span>
+                <span className="mt-1.5">Help & Support</span>
               </button>
               <hr className="my-2 border-gray-200" />
               <button
@@ -184,7 +184,7 @@ const Header = ({ onBellClick }) => {
                 className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-100 transition text-base space-x-2 rounded-xl cursor-pointer"
               >
                 <HiOutlineLogout className="text-red-500 text-xl" />
-                <span>Logout</span>
+                <span className="mt-1">Logout</span>
               </button>
             </div>
           )}

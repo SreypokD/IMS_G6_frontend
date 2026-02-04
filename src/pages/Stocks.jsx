@@ -266,30 +266,26 @@ const Stocks = () => {
           <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr>
-                <th className="p-3">No.</th>
-                <th className="p-3">Date & Times</th>
-                <th className="p-3">Product</th>
-                <th className="p-3">Type</th>
-                <th className="p-3">Quantity</th>
-                <th className="p-3">Balance</th>
-                <th className="p-3">User</th>
-                <th className="p-3">Location</th>
-                <th className="p-3">Actions</th>
+                <th>No.</th>
+                <th>Date & Times</th>
+                <th>Product</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Balance</th>
+                <th>User</th>
+                <th>Location</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {stocks.map((stock, index) => (
                 <tr key={stock._id}>
-                  <td className="px-3 py-1">
+                  <td>
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="px-3 py-1">
-                    {formatDate(stock.createdAt) || "-"}
-                  </td>
-                  <td className="px-3 py-1">
-                    {stock.product?.name || stock.product_id || "-"}
-                  </td>
-                  <td className="px-3 py-1">
+                  <td>{formatDate(stock.createdAt) || "-"}</td>
+                  <td>{stock.product?.name || stock.product_id || "-"}</td>
+                  <td>
                     {stock.type === "in" ? (
                       <span className="text-green-600 flex items-center gap-1">
                         <HiDownload className="inline-block" /> Stock In
@@ -303,15 +299,15 @@ const Stocks = () => {
                       "-"
                     )}
                   </td>
-                  <td className="px-3 py-1">{stock.quantity}</td>
-                  <td className="px-3 py-1">{stock.balance}</td>
-                  <td className="px-3 py-1">
+                  <td>{stock.quantity}</td>
+                  <td>{stock.balance}</td>
+                  <td>
                     {stock.user?.first_name
                       ? `${stock.user.first_name} ${stock.user.last_name}`
                       : stock.user_id || "-"}
                   </td>
-                  <td className="px-3 py-1">{stock.location || "-"}</td>
-                  <td className="px-3 py-1">{stock.note || "-"}</td>
+                  <td>{stock.location || "-"}</td>
+                  <td>{stock.note || "-"}</td>
                 </tr>
               ))}
               {stocks.length === 0 && (

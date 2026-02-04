@@ -163,25 +163,25 @@ const Categories = () => {
         ) : (
           <table className="min-w-full text-left text-base align-middle">
             <thead>
-              <tr className="bg-white">
-                <th className="p-3">No.</th>
-                <th className="p-3">Name</th>
-                <th className="p-3">Description</th>
+              <tr>
+                <th>No.</th>
+                <th>Name</th>
+                <th>Description</th>
                 {user?.permission?.permissions?.includes("update_category") ||
                 user?.permission?.permissions?.includes("delete_category") ? (
-                  <th className="p-3">Actions</th>
+                  <th>Actions</th>
                 ) : null}
               </tr>
             </thead>
             <tbody>
               {categories.map((category, index) => (
                 <tr key={category._id}>
-                  <td className="px-3 py-1">
+                  <td>
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="px-3 py-1">{category.name}</td>
-                  <td className="px-3 py-1">{category.description}</td>
-                  <td className="px-3 py-1 flex items-center gap-1">
+                  <td>{category.name}</td>
+                  <td>{category.description}</td>
+                  <td className="flex items-center gap-1">
                     {user?.permission?.permissions?.includes(
                       "update_category",
                     ) && (

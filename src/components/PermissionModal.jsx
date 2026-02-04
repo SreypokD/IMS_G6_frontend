@@ -194,20 +194,20 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
             <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
               <table className="min-w-full text-center text-base align-middle">
                 <thead>
-                  <tr className="bg-white">
-                    <th className="p-2 text-left">Module</th>
-                    <th className="p-3">Check All</th>
-                    <th className="p-3">View</th>
-                    <th className="p-3">Create</th>
-                    <th className="p-3">Update</th>
-                    <th className="p-3">Delete</th>
+                  <tr>
+                    <th className="text-left">Module</th>
+                    <th>Check All</th>
+                    <th>View</th>
+                    <th>Create</th>
+                    <th>Update</th>
+                    <th>Delete</th>
                   </tr>
                 </thead>
                 <tbody>
                   {permissionTable.map((row) => (
                     <tr key={row.label} className="border-t border-gray-200">
-                      <td className="p-2 text-left">{row.label}</td>
-                      <td className="p-2">
+                      <td className="text-left">{row.label}</td>
+                      <td>
                         <input
                           className="w-5 h-5 mt-2 cursor-pointer accent-[#1e3a5f]"
                           type="checkbox"
@@ -232,7 +232,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                           a.startsWith(action),
                         );
                         return (
-                          <td className="p-2 text-center" key={action}>
+                          <td className="text-center" key={action}>
                             {actionKey ? (
                               <input
                                 className="w-5 h-5 mt-2 cursor-pointer accent-[#1e3a5f]"

@@ -310,24 +310,24 @@ const Suppliers = () => {
         ) : (
           <table className="min-w-full text-left text-base align-middle">
             <thead>
-              <tr className="bg-white">
-                <th className="p-3">No.</th>
-                <th className="p-3">Company Name</th>
-                <th className="p-3">Contact Person</th>
-                <th className="p-3">Email</th>
-                <th className="p-3">Phone</th>
-                <th className="p-3">Products</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Actions</th>
+              <tr>
+                <th>No.</th>
+                <th>Company Name</th>
+                <th>Contact Person</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Products</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {suppliers.map((supplier, index) => (
                 <tr key={supplier._id}>
-                  <td className="px-3 py-1">
+                  <td>
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="px-3 py-1">
+                  <td>
                     <div className="flex items-center gap-2">
                       <HiOutlineBuildingOffice2 className="text-lg text-blue-700" />
                       <div className="font-semibold text-base">
@@ -336,15 +336,15 @@ const Suppliers = () => {
                       <div className="text-sm">({supplier.location})</div>
                     </div>
                   </td>
-                  <td className="px-3 py-1 flex items-center gap-1">
+                  <td className="flex items-center gap-1">
                     <div className="font-medium  ">
                       {supplier.contact_person}
                     </div>
                     <div className="text-sm">({supplier.contact_position})</div>
                   </td>
-                  <td className="px-3 py-1">{supplier.contact_email}</td>
-                  <td className="px-3 py-1">{supplier.contact_phone}</td>
-                  <td className="px-3 py-1">
+                  <td>{supplier.contact_email}</td>
+                  <td>{supplier.contact_phone}</td>
+                  <td>
                     <span className="flex items-center gap-2">
                       <HiOutlineCube className="text-base" />
                       <span>
@@ -354,14 +354,14 @@ const Suppliers = () => {
                       </span>
                     </span>
                   </td>
-                  <td className="px-3 py-1">
+                  <td>
                     <span
                       className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${supplier.status === "Active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}
                     >
                       {supplier.status}
                     </span>
                   </td>
-                  <td className="px-3 py-1 flex items-center gap-1">
+                  <td className="flex items-center gap-1">
                     <button
                       className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                       title="View"

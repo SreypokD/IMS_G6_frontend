@@ -404,31 +404,31 @@ const Products = () => {
         ) : (
           <table className="min-w-full text-left text-base align-middle">
             <thead>
-              <tr className="bg-white">
-                <th className="p-3">No.</th>
-                <th className="p-3">Product Code</th>
-                <th className="p-3">Product Name</th>
-                <th className="p-3">Category</th>
-                <th className="p-3">Supplier</th>
-                <th className="p-3 text-right">Stock</th>
-                <th className="p-3 text-right">Price</th>
-                <th className="p-3">Actions</th>
+              <tr>
+                <th>No.</th>
+                <th>Product Code</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Supplier</th>
+                <th className="text-right">Stock</th>
+                <th className="text-right">Price</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {products.map((product, index) => (
                 <tr key={product._id}>
-                  <td className="px-3 py-1">
+                  <td>
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="px-3 py-1">#{product.code}</td>
-                  <td className="px-3 py-1">{product.name}</td>
-                  <td className="px-3 py-1">
+                  <td>#{product.code}</td>
+                  <td>{product.name}</td>
+                  <td>
                     <span className="text-blue-500/80">
                       {product.category?.name || product.category}
                     </span>
                   </td>
-                  <td className="px-3 py-1">
+                  <td>
                     <span className="text-blue-500/80">
                       {typeof product.supplier === "object"
                         ? product.supplier?.company_name ||
@@ -436,17 +436,17 @@ const Products = () => {
                         : product.supplier}
                     </span>
                   </td>
-                  <td className="px-3 py-1 text-right">
+                  <td className="text-right">
                     <span
                       className={`text-base ${product.stock === 0 ? "text-red-600" : product.stock < 10 ? "text-orange-600" : "text-green-600"}`}
                     >
                       {product.stock} units
                     </span>
                   </td>
-                  <td className="px-3 py-1 text-right">
+                  <td className="text-right">
                     ${Number(product.price).toFixed(2)}
                   </td>
-                  <td className="px-3 py-1 flex items-center gap-1">
+                  <td className="flex items-center gap-1">
                     {user?.permission?.permissions?.includes(
                       "view_product",
                     ) && (

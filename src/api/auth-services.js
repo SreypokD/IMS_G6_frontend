@@ -11,8 +11,14 @@ export const login = (email, password) =>
 export const logout = () => axios.post(`${API_BASE}/${auth}/logout`);
 
 // Register API
-export const register = (email, password, role) =>
-  axios.post(`${API_BASE}/${auth}/register`, { email, password, role });
+export const register = ({ first_name, last_name, email, phone, password }) =>
+  axios.post(`${API_BASE}/${auth}/register`, {
+    first_name,
+    last_name,
+    email,
+    phone,
+    password,
+  });
 
 // Refresh token API
 export const refreshToken = (refresh_token) =>

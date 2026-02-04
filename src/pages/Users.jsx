@@ -234,31 +234,31 @@ const Users = () => {
         ) : (
           <table className="min-w-full text-left text-base align-middle">
             <thead>
-              <tr className="bg-white">
-                <th className="p-3">No.</th>
-                <th className="p-3">Name</th>
-                <th className="p-3">Email</th>
-                <th className="p-3">Phone</th>
-                <th className="p-3">Role</th>
+              <tr>
+                <th>No.</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Role</th>
                 {user?.permission?.permissions?.includes("update_user") ||
                 user?.permission?.permissions?.includes("delete_user") ? (
-                  <th className="p-3">Actions</th>
+                  <th>Actions</th>
                 ) : null}
               </tr>
             </thead>
             <tbody>
               {users.map((u, index) => (
                 <tr key={u._id}>
-                  <td className="px-3 py-1">
+                  <td>
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="px-3 py-1">
+                  <td>
                     {u.first_name} {u.last_name}
                   </td>
-                  <td className="px-3 py-1">{u.email}</td>
-                  <td className="px-3 py-1">{u.phone}</td>
-                  <td className="px-3 py-1 capitalize">{u.role}</td>
-                  <td className="px-3 py-1 flex items-center gap-1">
+                  <td>{u.email}</td>
+                  <td>{u.phone}</td>
+                  <td className="capitalize">{u.role}</td>
+                  <td className="flex items-center gap-1">
                     {user?.permission?.permissions?.includes("update_user") && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"

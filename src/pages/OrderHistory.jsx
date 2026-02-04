@@ -143,15 +143,15 @@ const OrderHistory = () => {
           <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr>
-                <th className="p-3">No.</th>
-                <th className="p-3">Product(s)</th>
-                <th className="p-3">Quantity(ies)</th>
-                <th className="p-3">Notes</th>
-                <th className="p-3">Admin Remarks</th>
-                <th className="p-3">Requested Date</th>
-                <th className="p-3">Delivery Date</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Rejection Reason</th>
+                <th>No.</th>
+                <th>Product(s)</th>
+                <th>Quantity(ies)</th>
+                <th>Notes</th>
+                <th>Admin Remarks</th>
+                <th>Requested Date</th>
+                <th>Delivery Date</th>
+                <th>Status</th>
+                <th>Rejection Reason</th>
               </tr>
             </thead>
             <tbody>
@@ -162,30 +162,26 @@ const OrderHistory = () => {
                   )
               ).map((order, index) => (
                 <tr key={order._id}>
-                  <td className="px-3 py-1.5">
+                  <td>
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="px-3 py-1.5">
+                  <td>
                     {Array.isArray(order.items) && order.items.length > 0
                       ? order.items
                           .map((item) => item.product?.name || item.product_id)
                           .join(", ")
                       : "-"}
                   </td>
-                  <td className="px-3 py-1.5">
+                  <td>
                     {Array.isArray(order.items) && order.items.length > 0
                       ? order.items.map((item) => item.quantity).join(", ")
                       : "-"}
                   </td>
-                  <td className="px-3 py-1.5">{order.notes || "-"}</td>
-                  <td className="px-3 py-1.5">{order.admin_remarks || "-"}</td>
-                  <td className="px-3 py-1.5">
-                    {formatDate(order.createdAt) || "-"}
-                  </td>
-                  <td className="px-3 py-1.5">
-                    {formatDate(order.delivery_date) || "-"}
-                  </td>
-                  <td className="px-3 py-1.5">
+                  <td>{order.notes || "-"}</td>
+                  <td>{order.admin_remarks || "-"}</td>
+                  <td>{formatDate(order.createdAt) || "-"}</td>
+                  <td>{formatDate(order.delivery_date) || "-"}</td>
+                  <td>
                     <span
                       className={`inline-block px-3 py-1.5 rounded-full text-sm font-semibold ${order.status === "approved" ? "bg-green-100 text-green-700" : order.status === "rejected" ? "bg-red-100 text-red-700" : order.status === "completed" ? "bg-blue-100 text-blue-700" : "bg-yellow-100 text-yellow-700"}`}
                     >
@@ -195,7 +191,7 @@ const OrderHistory = () => {
                         : "Pending"}
                     </span>
                   </td>
-                  <td className="px-3 py-1.5">
+                  <td>
                     {order.status === "rejected"
                       ? order.rejection_reason || "-"
                       : "-"}
@@ -209,7 +205,7 @@ const OrderHistory = () => {
                   )
               ).length === 0 && (
                 <tr>
-                  <td colSpan="7">
+                  <td colSpan="9">
                     <NoDataFound message="No orders found." />
                   </td>
                 </tr>

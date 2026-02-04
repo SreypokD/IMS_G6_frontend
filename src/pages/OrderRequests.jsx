@@ -197,15 +197,15 @@ const OrderRequests = () => {
           <table className="min-w-full text-left text-base align-middle">
             <thead>
               <tr>
-                <th className="p-3">No.</th>
-                <th className="p-3">Requested By</th>
-                <th className="p-3">Product(s)</th>
-                <th className="p-3">Quantity(ies)</th>
-                <th className="p-3">Notes</th>
-                <th className="p-3">Requested Date</th>
-                <th className="p-3">Delivery Date</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Actions</th>
+                <th>No.</th>
+                <th>Requested By</th>
+                <th>Product(s)</th>
+                <th>Quantity(ies)</th>
+                <th>Notes</th>
+                <th>Requested Date</th>
+                <th>Delivery Date</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -218,45 +218,32 @@ const OrderRequests = () => {
                   : requests.filter(
                       (req) => String(req.requester_id) === String(user._id),
                     );
-                if (!filteredRequests || filteredRequests.length === 0) {
-                  return (
-                    <tr>
-                      <td colSpan="7">
-                        <NoDataFound message="No order requests found." />
-                      </td>
-                    </tr>
-                  );
-                }
                 return filteredRequests.map((request, index) => (
                   <tr key={request._id}>
-                    <td className="px-3 py-1">
+                    <td>
                       {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>
-                    <td className="px-3 py-1">
+                    <td>
                       {request.requester?.first_name +
                         " " +
                         request.requester?.last_name || "-"}
                     </td>
-                    <td className="px-3 py-1">
+                    <td>
                       {Array.isArray(request.items) && request.items.length > 0
                         ? request.items
                             .map((item) => item.product?.name)
                             .join(", ")
                         : "-"}
                     </td>
-                    <td className="px-3 py-1">
+                    <td>
                       {Array.isArray(request.items) && request.items.length > 0
                         ? request.items.map((item) => item.quantity).join(", ")
                         : "-"}
                     </td>
-                    <td className="px-3 py-1">{request.notes || "-"}</td>
-                    <td className="px-3 py-1">
-                      {formatDate(request.createdAt) || "-"}
-                    </td>
-                    <td className="px-3 py-1">
-                      {formatDate(request.delivery_date) || "-"}
-                    </td>
-                    <td className="px-3 py-1">
+                    <td>{request.notes || "-"}</td>
+                    <td>{formatDate(request.createdAt) || "-"}</td>
+                    <td>{formatDate(request.delivery_date) || "-"}</td>
+                    <td>
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${request.status === "pending" ? "bg-yellow-100 text-yellow-700" : request.status === "approved" ? "bg-green-100 text-green-700" : request.status === "rejected" ? "bg-red-100 text-red-700" : request.status === "completed" ? "bg-blue-100 text-blue-700" : request.status === "on_hold" ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-700"}`}
                       >
@@ -264,7 +251,7 @@ const OrderRequests = () => {
                           request.status.slice(1)}
                       </span>
                     </td>
-                    <td className="px-3 py-1 flex items-center gap-1">
+                    <td className="lex items-center gap-1">
                       {(user?.role === "admin" ||
                         user?.role === "staff" ||
                         String(request.requester_id) === String(user?._id)) && (

@@ -166,27 +166,27 @@ const Permissions = () => {
         ) : (
           <table className="min-w-full text-left text-base align-middle">
             <thead>
-              <tr className="bg-white">
-                <th className="p-3">No.</th>
-                <th className="p-3">Name</th>
-                <th className="p-3">Description</th>
+              <tr>
+                <th>No.</th>
+                <th>Name</th>
+                <th>Description</th>
                 {user?.permission?.permissions?.includes("update_permission") ||
                 user?.permission?.permissions?.includes("delete_permission") ? (
-                  <th className="p-3">Actions</th>
+                  <th>Actions</th>
                 ) : null}
               </tr>
             </thead>
             <tbody>
               {permissions.map((permission, index) => (
                 <tr key={permission._id}>
-                  <td className="px-3 py-1">
+                  <td>
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="px-3 py-1">{permission.name}</td>
-                  <td className="px-3 py-1 whitespace-nowrap">
+                  <td>{permission.name}</td>
+                  <td className="whitespace-nowrap">
                     {permission.description}
                   </td>
-                  <td className="px-3 py-1 flex items-center gap-1">
+                  <td className="flex items-center gap-1">
                     {user?.permission?.permissions?.includes(
                       "update_permission",
                     ) && (
