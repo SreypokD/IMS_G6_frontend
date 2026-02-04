@@ -15,6 +15,7 @@ import {
 import { useAuth } from "../contexts/auth/useAuth";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
+import { useDialog } from "../contexts/dialog/useDialog";
 
 const Permissions = () => {
   const [permissions, setPermissions] = useState([]);
@@ -29,6 +30,7 @@ const Permissions = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { user } = useAuth();
+  const dialog = useDialog();
 
   useEffect(() => {
     if (user) {
@@ -63,14 +65,17 @@ const Permissions = () => {
     try {
       if (editPermission) {
         await updatePermission(editPermission._id, permission);
+        dialog.success("Permission updated successfully");
       } else {
         await createPermission(permission);
+        dialog.success("Permission created successfully");
       }
       fetchPermissions();
       setModalOpen(false);
       setEditPermission(null);
     } catch {
       setError("Failed to save permission");
+      dialog.error("Failed to save permission");
     } finally {
       setLoading(false);
     }
@@ -78,13 +83,22 @@ const Permissions = () => {
 
   // Delete permission
   async function handleDelete(id) {
-    if (window.confirm("Delete this permission?")) {
+    const confirmed = await dialog.ask({
+      type: "confirm",
+      title: "Delete Permission",
+      message: "Are you sure you want to delete this permission?",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+    if (confirmed) {
       setLoading(true);
       try {
         await deletePermission(id);
-        fetchPermissions();
+        dialog.success("Permission deleted successfully");
+        fetchPermissions(pagination.page, pagination.limit);
       } catch {
         setError("Failed to delete permission");
+        dialog.error("Failed to delete permission");
       } finally {
         setLoading(false);
       }
@@ -109,7 +123,7 @@ const Permissions = () => {
         </div>
         {user?.permission?.permissions?.includes("create_permission") && (
           <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => {
               setEditPermission(null);
               setModalOpen(true);
@@ -157,14 +171,14 @@ const Permissions = () => {
             <tbody>
               {permissions.map((permission, index) => (
                 <tr key={permission._id}>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="p-3">{permission.name}</td>
-                  <td className="p-3 whitespace-nowrap">
+                  <td className="px-3 py-1">{permission.name}</td>
+                  <td className="px-3 py-1 whitespace-nowrap">
                     {permission.description}
                   </td>
-                  <td className="p-3 flex items-center gap-1">
+                  <td className="px-3 py-1 flex items-center gap-1">
                     {user?.permission?.permissions?.includes(
                       "update_permission",
                     ) && (

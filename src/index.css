@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+body {
+  font-family: "Outfit", sans-serif;
+  background-color: #f8fafc;
+}
+
+@layer base {
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    @apply border-[#1e3a5f] ring-1 ring-[#1e3a5f] outline-none;
+  }
+}

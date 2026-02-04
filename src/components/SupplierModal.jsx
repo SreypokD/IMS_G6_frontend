@@ -74,7 +74,11 @@ const SupplierModal = ({
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
         <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] max-h-[80vh] shadow-xl relative">
           <h2 className="text-2xl font-bold mb-6 text-center">
-            {initial ? "Edit Supplier" : "Add Supplier"}
+            {readOnly
+              ? "View Supplier"
+              : initial
+                ? "Edit Supplier"
+                : "Add Supplier"}
           </h2>
           <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
             <div className="col-span-2 mb-2">
@@ -82,7 +86,7 @@ const SupplierModal = ({
                 <HiOutlineOfficeBuilding className="inline-block text-xl text-black" />
                 <span>Company Info</span>
               </h3>
-              <div className="mb-3 grid grid-cols-2 gap-4">
+              <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
                 <div>
                   <label className="block text-base font-medium mb-1">
                     Company Name
@@ -132,7 +136,7 @@ const SupplierModal = ({
                 <HiOutlineUser className="inline-block text-xl text-black" />
                 <span>Primary Contact Details</span>
               </h3>
-              <div className="mb-3 grid grid-cols-2 gap-4">
+              <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
                 <div>
                   <label className="block text-base font-medium mb-1">
                     Contact Person
@@ -248,7 +252,7 @@ const SupplierModal = ({
                 <HiOutlineLocationMarker className="inline-block text-xl text-black" />
                 <span>Address</span>
               </h3>
-              <div className="mb-3 grid grid-cols-2 gap-4">
+              <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
                 <div>
                   <label className="block text-base font-medium mb-1">
                     Street
@@ -426,7 +430,7 @@ const SupplierModal = ({
                 <HiOutlineNewspaper className="inline-block text-xl text-black" />
                 <span>Business Terms</span>
               </h3>
-              <div className="mb-3 grid grid-cols-2 gap-4">
+              <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
                 <div>
                   <label className="block text-base font-medium mb-1">
                     Payment Terms
@@ -451,7 +455,7 @@ const SupplierModal = ({
                   >
                     <div className="relative">
                       <Listbox.Button
-                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${readOnly ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer"} ${!supplier.payment_term && !initial && (touched.payment_term || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${readOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!supplier.payment_term && !initial && (touched.payment_term || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                         disabled={readOnly}
                       >
                         <span>
@@ -504,7 +508,7 @@ const SupplierModal = ({
                   >
                     <div className="relative">
                       <Listbox.Button
-                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${readOnly ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer"} ${!supplier.status && !initial && (touched.status || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${readOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!supplier.status && !initial && (touched.status || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                         disabled={readOnly}
                       >
                         <span>
@@ -540,7 +544,7 @@ const SupplierModal = ({
           <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
             <button
               type="button"
-              className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
+              className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
               onClick={onClose}
             >
               <HiXCircle className="inline-block text-xl" /> Close
@@ -548,7 +552,7 @@ const SupplierModal = ({
             {!readOnly && (
               <button
                 type="button"
-                className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
+                className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
                 onClick={() => {
                   setValidateOnSave(true);
                   setTouched({

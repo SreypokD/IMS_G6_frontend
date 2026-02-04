@@ -66,7 +66,7 @@ const Sales = () => {
           </span>
         </div>
         <button
-          className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
+          className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
           onClick={() => setModalOpen(true)}
         >
           <HiOutlinePlus className="text-md" /> Record Sale
@@ -144,12 +144,12 @@ const Sales = () => {
             <tbody>
               {sales.map((sale, index) => (
                 <tr key={sale._id}>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="p-3">{sale.quantity}</td>
-                  <td className="p-3">{sale.status}</td>
-                  <td className="p-3">
+                  <td className="px-3 py-1">{sale.quantity}</td>
+                  <td className="px-3 py-1">{sale.status}</td>
+                  <td className="px-3 py-1">
                     {sale.completed_at
                       ? new Date(sale.completed_at).toLocaleString()
                       : "-"}

@@ -81,6 +81,14 @@ const OrderRequestApproval = () => {
   }
 
   async function handleReject(id) {
+    const confirmed = await dialog.ask({
+      type: "confirm",
+      title: "Reject Order Request",
+      message: "Are you sure you want to reject this order request?",
+      confirmText: "Reject",
+      cancelText: "Cancel",
+    });
+    if (!confirmed) return;
     setActionId(id);
     try {
       await updateApproveRequests(id, {
@@ -88,6 +96,7 @@ const OrderRequestApproval = () => {
         admin_remarks: remarks[id] || "",
         rejection_reason: rejectionReason[id] || "",
       });
+      await dialog.success("Order request rejected.");
       // Reset all relevant state after reject
       setRemarks({});
       setRejectionReason({});
@@ -96,7 +105,7 @@ const OrderRequestApproval = () => {
       fetchApproveRequests(1, pagination.limit);
     } catch (err) {
       const msg =
-        err?.response?.data?.error || err?.message || "Failed to reject order";
+        err?.response?.data?.error || err?.message || "Failed to approve order";
       await dialog.error(msg);
       setError(msg);
     } finally {
@@ -144,38 +153,38 @@ const OrderRequestApproval = () => {
             <tbody>
               {orders.map((order, index) => (
                 <tr key={order._id}>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     {order.requester?.first_name +
                       " " +
                       order.requester?.last_name || "-"}
                   </td>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     {Array.isArray(order.items) && order.items.length > 0
                       ? order.items
                           .map((item) => item.product?.name || item.product_id)
                           .join(", ")
                       : "-"}
                   </td>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     {Array.isArray(order.items) && order.items.length > 0
                       ? order.items.map((item) => item.quantity).join(", ")
                       : "-"}
                   </td>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     {order.createdAt
                       ? new Date(order.createdAt).toLocaleDateString()
                       : "-"}
                   </td>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     {order.delivery_date
                       ? new Date(order.delivery_date).toLocaleDateString()
                       : "-"}
                   </td>
-                  <td className="p-3">{order.notes || "-"}</td>
-                  <td className="p-3">
+                  <td className="px-3 py-1">{order.notes || "-"}</td>
+                  <td className="px-3 py-1">
                     <input
                       type="text"
                       className="border border-gray-200 rounded-lg px-2 py-1 text-base"
@@ -190,7 +199,7 @@ const OrderRequestApproval = () => {
                       disabled={actionId === order._id}
                     />
                   </td>
-                  <td className="p-3 flex items-center gap-1">
+                  <td className="px-3 py-1 flex items-center gap-1">
                     {user?.permission?.permissions?.includes(
                       "update_approve_request",
                     ) && (
@@ -250,7 +259,7 @@ const OrderRequestApproval = () => {
               {orders.length === 0 && (
                 <tr>
                   <td colSpan="9">
-                    <NoDataFound message="No orders found." />
+                    <NoDataFound message="No approve requests found." />
                   </td>
                 </tr>
               )}

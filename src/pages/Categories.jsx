@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Listbox } from "@headlessui/react";
 import {
-  HiSelector,
   HiOutlinePlus,
   HiOutlinePencil,
   HiOutlineTrash,
@@ -18,69 +16,6 @@ import { useAuth } from "../contexts/auth/useAuth";
 import { useDialog } from "../contexts/dialog/useDialog.js";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
-
-// Custom dropdowns for Categories page
-const statusOptions = ["All Status", "Active", "Inactive"];
-const locationOptions = [
-  "All Locations",
-  "Warehouse 1",
-  "Warehouse 2",
-  "Storefront",
-];
-
-function CategoryStatusDropdown() {
-  const [selected, setSelected] = useState(statusOptions[0]);
-  return (
-    <Listbox value={selected} onChange={setSelected}>
-      <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
-          <span>{selected}</span>
-          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-          {statusOptions.map((option) => (
-            <Listbox.Option
-              key={option}
-              value={option}
-              className={({ active, selected }) =>
-                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
-              }
-            >
-              {option}
-            </Listbox.Option>
-          ))}
-        </Listbox.Options>
-      </div>
-    </Listbox>
-  );
-}
-
-function CategoryLocationDropdown() {
-  const [selected, setSelected] = useState(locationOptions[0]);
-  return (
-    <Listbox value={selected} onChange={setSelected}>
-      <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
-          <span>{selected}</span>
-          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-          {locationOptions.map((option) => (
-            <Listbox.Option
-              key={option}
-              value={option}
-              className={({ active, selected }) =>
-                `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
-              }
-            >
-              {option}
-            </Listbox.Option>
-          ))}
-        </Listbox.Options>
-      </div>
-    </Listbox>
-  );
-}
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -189,7 +124,7 @@ const Categories = () => {
         </div>
         {user?.permission?.permissions?.includes("create_category") && (
           <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => {
               setEditCategory(null);
               setModalOpen(true);
@@ -214,18 +149,6 @@ const Categories = () => {
               placeholder="Search..."
             />
           </div>
-          <div>
-            <label className="block text-gray-700 text-base font-bold mb-2">
-              Status
-            </label>
-            <CategoryStatusDropdown />
-          </div>
-          <div>
-            <label className="block text-gray-700 text-base font-bold mb-2">
-              Location
-            </label>
-            <CategoryLocationDropdown />
-          </div>
         </div>
       </div>
       <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
@@ -249,12 +172,12 @@ const Categories = () => {
             <tbody>
               {categories.map((category, index) => (
                 <tr key={category._id}>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="p-3">{category.name}</td>
-                  <td className="p-3">{category.description}</td>
-                  <td className="p-3 flex items-center gap-1">
+                  <td className="px-3 py-1">{category.name}</td>
+                  <td className="px-3 py-1">{category.description}</td>
+                  <td className="px-3 py-1 flex items-center gap-1">
                     {user?.permission?.permissions?.includes(
                       "update_category",
                     ) && (

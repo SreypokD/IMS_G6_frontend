@@ -159,7 +159,6 @@ const Products = () => {
       }));
     } catch {
       setError("Failed to load products");
-      dialog.error("Failed to load products");
     } finally {
       setLoading(false);
     }
@@ -299,7 +298,7 @@ const Products = () => {
           <button
             onClick={handleAdd}
             disabled={loading}
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
           >
             <HiOutlinePlus className="text-md" /> Add Product
           </button>
@@ -362,17 +361,17 @@ const Products = () => {
             <tbody>
               {products.map((product, index) => (
                 <tr key={product._id}>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="p-3">{product.code}</td>
-                  <td className="p-3">{product.name}</td>
-                  <td className="p-3">
+                  <td className="px-3 py-1">#{product.code}</td>
+                  <td className="px-3 py-1">{product.name}</td>
+                  <td className="px-3 py-1">
                     <span className="text-blue-500/80">
                       {product.category?.name || product.category}
                     </span>
                   </td>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     <span className="text-blue-500/80">
                       {typeof product.supplier === "object"
                         ? product.supplier?.company_name ||
@@ -380,17 +379,17 @@ const Products = () => {
                         : product.supplier}
                     </span>
                   </td>
-                  <td className="p-3 text-right">
+                  <td className="px-3 py-1 text-right">
                     <span
                       className={`text-base ${product.stock === 0 ? "text-red-600" : product.stock < 10 ? "text-orange-600" : "text-green-600"}`}
                     >
                       {product.stock} units
                     </span>
                   </td>
-                  <td className="p-3 text-right">
+                  <td className="px-3 py-1 text-right">
                     ${Number(product.price).toFixed(2)}
                   </td>
-                  <td className="p-3 flex items-center gap-1">
+                  <td className="px-3 py-1 flex items-center gap-1">
                     {user?.permission?.permissions?.includes(
                       "view_product",
                     ) && (

@@ -99,7 +99,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
     <div>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
         <div className="bg-white rounded-2xl p-6 w-full max-w-[65vw] max-h-[90vh] shadow-xl relative">
-          <h2 className="text-xl font-bold mb-6 text-gray-900">
+          <h2 className="text-2xl font-bold mb-6 text-center">
             Record New Sale
           </h2>
           <form className="space-y-8 overflow-auto max-h-[70vh] px-1">
@@ -257,7 +257,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                       </div>
                       <div>
                         <label className="block text-base font-medium mb-1">
-                          Line Total:
+                          Line Total
                         </label>
                         <input
                           className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200"
@@ -269,7 +269,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                     <div className="max-w-10">
                       <button
                         type="button"
-                        className={`text-xl px-2 mt-6 cursor-pointer max-w-10 ${sale.items.length === 1 ? "text-red-400 cursor-not-allowed" : "text-red-500"}`}
+                        className={`text-xl px-2 mt-6 max-w-10 ${sale.items.length === 1 ? "opacity-50 cursor-default" : "text-red-500 cursor-pointer"}`}
                         onClick={() => removeItem(idx)}
                         title="Remove"
                         disabled={sale.items.length === 1}
@@ -295,7 +295,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                 <HiOutlineDocumentText className="inline-block text-xl text-black" />
                 <span>Payment Details</span>
               </h3>
-              <div className="mb-3 grid grid-cols-2 gap-4">
+              <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Payment Method <span className="text-red-500">*</span>
@@ -350,7 +350,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
               </label>
               <textarea
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-800"
-                rows={2}
+                rows={3}
                 value={sale.notes}
                 onChange={(e) =>
                   setSale((prev) => ({ ...prev, notes: e.target.value }))
@@ -362,7 +362,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
           <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
             <button
               type="button"
-              className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
+              className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
               onClick={onClose}
               disabled={loading}
             >
@@ -370,7 +370,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
             </button>
             <button
               type="submit"
-              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
               disabled={loading}
               onClick={handleSubmit}
             >

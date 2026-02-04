@@ -148,9 +148,9 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
           <div className="col-span-2 mb-2">
             <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
               <HiOutlineDocumentText className="inline-block text-xl text-black" />
-              <span>Basic Info</span>
+              <span>Basic Information</span>
             </h3>
-            <div className="mb-3 grid grid-cols-2 gap-4">
+            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
               <div>
                 <label className="block text-gray-600 mb-1 text-base font-medium">
                   Name
@@ -258,14 +258,14 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
             type="button"
-            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
+            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
             onClick={onClose}
           >
             <HiXCircle className="inline-block text-xl" /> Cancel
           </button>
           <button
             type="button"
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => {
               setValidateOnSave(true);
               setTouched({

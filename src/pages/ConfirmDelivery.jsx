@@ -200,14 +200,14 @@ const DeliveryConfirmation = () => {
                 const delivery = confirm_delivery.confirm_delivery;
                 return (
                   <tr key={confirm_delivery._id}>
-                    <td className="p-3">
+                    <td className="px-3 py-1">
                       {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>
-                    <td className="p-3">
+                    <td className="px-3 py-1">
                       {confirm_delivery.requester?.first_name}
                       {confirm_delivery.requester?.last_name}
                     </td>
-                    <td className="p-3">
+                    <td className="px-3 py-1">
                       {Array.isArray(confirm_delivery?.items) &&
                       confirm_delivery?.items.length > 0
                         ? confirm_delivery?.items
@@ -215,7 +215,7 @@ const DeliveryConfirmation = () => {
                             .join(", ")
                         : "-"}
                     </td>
-                    <td className="p-3">
+                    <td className="px-3 py-1">
                       {Array.isArray(confirm_delivery?.items) &&
                       confirm_delivery?.items.length > 0
                         ? confirm_delivery?.items
@@ -223,13 +223,13 @@ const DeliveryConfirmation = () => {
                             .join(", ")
                         : "-"}
                     </td>
-                    <td className="p-3">
+                    <td className="px-3 py-1">
                       {formatDate(confirm_delivery.createdAt) || "-"}
                     </td>
-                    <td className="p-3">
+                    <td className="px-3 py-1">
                       {formatDate(confirm_delivery.delivery_date) || "-"}
                     </td>
-                    <td className="p-3">
+                    <td className="px-3 py-1">
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${approve?.status === "approved" ? "bg-green-100 text-green-700" : approve?.status === "rejected" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}
                       >
@@ -239,7 +239,7 @@ const DeliveryConfirmation = () => {
                           : "Pending"}
                       </span>
                     </td>
-                    <td className="p-3">
+                    <td className="px-3 py-1">
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${delivery?.status === "delivered" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}
                       >
@@ -248,7 +248,7 @@ const DeliveryConfirmation = () => {
                           : "Pending"}
                       </span>
                     </td>
-                    <td className="p-3">
+                    <td className="px-3 py-1">
                       {(!delivery || delivery.status !== "delivered") &&
                         user?.permission?.permissions?.includes(
                           "update_confirm_delivery",

@@ -1,7 +1,7 @@
 import { useAuth } from "../contexts/auth/useAuth.js";
 import { useNotification } from "../contexts/notification/useNotification.js";
 import {
-  HiBell,
+  HiOutlineBell,
   HiOutlineLogout,
   HiChevronDown,
   HiOutlineMenuAlt2,
@@ -67,14 +67,14 @@ const Header = ({ onBellClick }) => {
         onClick={onBellClick}
         className="text-gray-500 hover:text-[#1e3a5f] text-xl cursor-pointer transition"
       />
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-3">
         <div className="relative" ref={notificationRef}>
           <button
             tabIndex={0}
             className="relative mt-2 focus:outline-none hover:text-blue-700 transition hover:cursor-pointer"
             onClick={() => setNotificationOpen((v) => !v)}
           >
-            <HiBell className="text-gray-500 hover:text-[#1e3a5f] text-2xl" />
+            <HiOutlineBell className="text-gray-500 hover:text-[#1e3a5f] text-2xl" />
             {unreadCount > 0 && (
               <span className="absolute -top-3 -right-3 bg-red-500 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center font-bold border-2 border-white">
                 {unreadCount}
@@ -90,7 +90,7 @@ const Header = ({ onBellClick }) => {
               </div>
               <hr className="my-2 border-gray-200" />
               {notifications.length === 0 ? (
-                <div className="w-full px-2 py-3 text-[#64748b] text-center text-base space-x-2 rounded-xl cursor-pointer">
+                <div className="w-full p-2 text-[#64748b] text-center text-base space-x-2 rounded-xl cursor-pointer">
                   No notifications
                 </div>
               ) : (
@@ -98,7 +98,7 @@ const Header = ({ onBellClick }) => {
                   {notifications.map((n) => (
                     <li
                       key={n._id}
-                      className="w-full flex items-center justify-between px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 cursor-pointer"
+                      className="w-full flex items-center justify-between p-2 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 cursor-pointer"
                       onClick={() => handleNotificationClick(n)}
                     >
                       <div className="flex flex-col text-sm text-gray-900">

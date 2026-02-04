@@ -92,7 +92,7 @@ const Login = () => {
               </label>
               <input
                 type="email"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 text-gray-800 placeholder-gray-400"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] bg-gray-50 text-gray-800 placeholder-gray-400"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -106,7 +106,7 @@ const Login = () => {
               </label>
               <input
                 type={showPassword ? "text" : "password"}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 text-gray-800 placeholder-gray-400 pr-10"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] bg-gray-50 text-gray-800 placeholder-gray-400 pr-10"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required

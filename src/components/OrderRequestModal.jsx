@@ -220,9 +220,9 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
             <div className="col-span-2 mb-2">
               <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
                 <HiOutlineDocumentText className="inline-block text-xl text-black" />
-                <span>Basic Info</span>
+                <span>Basic Information</span>
               </h3>
-              <div className="mb-3 grid grid-cols-2 gap-4">
+              <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
                 <div>
                   <label className="block text-base font-medium mb-1">
                     Supplier
@@ -294,193 +294,191 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                   />
                 </div>
               </div>
-              <div className="col-span-1 mb-2">
-                <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
-                  <HiCube className="inline-block text-xl text-black" />
-                  <span>Products</span>
-                </h3>
-                {order.orderItems.map((item, idx) => (
-                  <div key={idx} className="w-full flex items-center">
-                    <div
-                      className={`${viewOnly ? "w-full" : "w-[98%] "} mb-3 grid grid-cols-4 gap-4`}
-                    >
-                      <div>
-                        <label className="block text-base font-medium mb-1">
-                          Product
-                          {!viewOnly && !item.product_id ? (
-                            <sup className="text-red-500">*</sup>
-                          ) : null}
-                        </label>
-                        <Listbox
-                          value={
-                            products.find((p) => p._id === item.product_id) ||
-                            null
-                          }
-                          onChange={(product) => {
-                            if (viewOnly) return;
-                            handleOrderItemChange(
-                              idx,
-                              "product_id",
-                              product ? product._id : "",
-                            );
-                          }}
-                          disabled={viewOnly}
-                        >
-                          <div className="relative">
-                            <Listbox.Button
-                              className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!item.product_id && validateOnSave ? "border-red-500" : "border-gray-200"}`}
-                            >
-                              <span>
-                                {products.find((p) => p._id === item.product_id)
-                                  ?.name
-                                  ? `${products.find((p) => p._id === item.product_id)?.name} (Stock: ${products.find((p) => p._id === item.product_id)?.stock - (products.find((p) => p._id === item.product_id)?.reserved_stock || 0)})`
-                                  : "Select product"}
-                              </span>
-                              <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-                            </Listbox.Button>
-                            <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-                              {products.length === 0 && (
-                                <div className="px-4 py-2 text-gray-400">
-                                  No products
-                                </div>
-                              )}
-                              {products.map((product) => (
-                                <Listbox.Option
-                                  key={product._id}
-                                  value={product}
-                                  className={({ active, selected }) =>
-                                    `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
-                                  }
-                                >
-                                  {product.name} (Stock:
-                                  {product.stock -
-                                    (product.reserved_stock || 0)}
-                                  )
-                                </Listbox.Option>
-                              ))}
-                            </Listbox.Options>
-                          </div>
-                        </Listbox>
-                      </div>
-                      <div>
-                        <label className="block text-base font-medium mb-1">
-                          Quantity
-                          {!viewOnly && !item.quantity ? (
-                            <sup className="text-red-500">*</sup>
-                          ) : null}
-                        </label>
-                        <input
-                          type="number"
-                          min={1}
-                          className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
-                          placeholder="Qty"
-                          value={item.quantity}
-                          onChange={(e) => {
-                            if (viewOnly) return;
-                            handleOrderItemChange(
-                              idx,
-                              "quantity",
-                              e.target.value,
-                            );
-                          }}
-                          disabled={viewOnly}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-base font-medium mb-1">
-                          Unit Price
-                          {!viewOnly && !item.unit_price ? (
-                            <sup className="text-red-500">*</sup>
-                          ) : null}
-                        </label>
-                        <input
-                          type="number"
-                          min={0}
-                          className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
-                          placeholder="Unit Price"
-                          value={item.unit_price}
-                          onChange={(e) => {
-                            if (viewOnly) return;
-                            handleOrderItemChange(
-                              idx,
-                              "unit_price",
-                              e.target.value,
-                            );
-                          }}
-                          disabled={viewOnly}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-base font-medium mb-1">
-                          Line Total:
-                        </label>
-                        <input
-                          className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
-                          value={
-                            item.unit_price && item.quantity
-                              ? (item.unit_price * item.quantity).toFixed(2)
-                              : "-"
-                          }
-                          disabled
-                        />
-                      </div>
-                    </div>
-                    {!viewOnly && (
-                      <div className="max-w-10">
-                        <button
-                          type="button"
-                          className={`text-xl px-2 mt-6 max-w-10 ${order.orderItems.length === 1 ? "text-gray-400 cursor-default" : "text-red-500 cursor-pointer"}`}
-                          onClick={() => {
-                            if (viewOnly) return;
-                            removeOrderItem(idx);
-                          }}
-                          title="Remove"
-                          disabled={order.orderItems.length === 1 || viewOnly}
-                        >
-                          <HiOutlineTrash />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
-                {!viewOnly && (
-                  <div className="w-full flex items-center justify-center mt-4">
-                    <button
-                      type="button"
-                      className=" text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-[#1e3a5f] flex items-center gap-2 cursor-pointer"
-                      onClick={() => {
-                        if (viewOnly) return;
-                        addOrderItem();
-                      }}
-                    >
-                      <HiOutlinePlus className="text-md" /> Add Item
-                    </button>
-                  </div>
-                )}
-              </div>
-              <div>
-                <label className="block text-base font-medium mb-1">
-                  Notes / Remarks
-                </label>
-                <textarea
-                  name="notes"
-                  value={order.notes}
-                  onChange={(e) => {
-                    if (viewOnly) return;
-                    handleChange(e);
-                  }}
-                  onBlur={handleBlur}
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200"
-                  disabled={viewOnly}
-                />
-              </div>
             </div>
-            {error && <div className="text-red-600">{error}</div>}
+            <div className="col-span-2 mb-2">
+              <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+                <HiCube className="inline-block text-xl text-black" />
+                <span>Products</span>
+              </h3>
+              {order.orderItems.map((item, idx) => (
+                <div key={idx} className="w-full flex items-center">
+                  <div
+                    className={`${viewOnly ? "w-full" : "w-[98%] "} mb-3 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4`}
+                  >
+                    <div>
+                      <label className="block text-base font-medium mb-1">
+                        Product
+                        {!viewOnly && !item.product_id ? (
+                          <sup className="text-red-500">*</sup>
+                        ) : null}
+                      </label>
+                      <Listbox
+                        value={
+                          products.find((p) => p._id === item.product_id) ||
+                          null
+                        }
+                        onChange={(product) => {
+                          if (viewOnly) return;
+                          handleOrderItemChange(
+                            idx,
+                            "product_id",
+                            product ? product._id : "",
+                          );
+                        }}
+                        disabled={viewOnly}
+                      >
+                        <div className="relative">
+                          <Listbox.Button
+                            className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!item.product_id && validateOnSave ? "border-red-500" : "border-gray-200"}`}
+                          >
+                            <span>
+                              {products.find((p) => p._id === item.product_id)
+                                ?.name
+                                ? `${products.find((p) => p._id === item.product_id)?.name} (Stock: ${products.find((p) => p._id === item.product_id)?.stock - (products.find((p) => p._id === item.product_id)?.reserved_stock || 0)})`
+                                : "Select product"}
+                            </span>
+                            <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                          </Listbox.Button>
+                          <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+                            {products.length === 0 && (
+                              <div className="px-4 py-2 text-gray-400">
+                                No products
+                              </div>
+                            )}
+                            {products.map((product) => (
+                              <Listbox.Option
+                                key={product._id}
+                                value={product}
+                                className={({ active, selected }) =>
+                                  `px-4 py-2 cursor-pointer ${active ? "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black" : "text-gray-900"} ${selected ? "font-semibold bg-blue-50" : ""}`
+                                }
+                              >
+                                {product.name} (Stock:
+                                {product.stock - (product.reserved_stock || 0)})
+                              </Listbox.Option>
+                            ))}
+                          </Listbox.Options>
+                        </div>
+                      </Listbox>
+                    </div>
+                    <div>
+                      <label className="block text-base font-medium mb-1">
+                        Quantity
+                        {!viewOnly && !item.quantity ? (
+                          <sup className="text-red-500">*</sup>
+                        ) : null}
+                      </label>
+                      <input
+                        type="number"
+                        min={1}
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
+                        placeholder="Qty"
+                        value={item.quantity}
+                        onChange={(e) => {
+                          if (viewOnly) return;
+                          handleOrderItemChange(
+                            idx,
+                            "quantity",
+                            e.target.value,
+                          );
+                        }}
+                        disabled={viewOnly}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-base font-medium mb-1">
+                        Unit Price
+                        {!viewOnly && !item.unit_price ? (
+                          <sup className="text-red-500">*</sup>
+                        ) : null}
+                      </label>
+                      <input
+                        type="number"
+                        min={0}
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
+                        placeholder="Unit Price"
+                        value={item.unit_price}
+                        onChange={(e) => {
+                          if (viewOnly) return;
+                          handleOrderItemChange(
+                            idx,
+                            "unit_price",
+                            e.target.value,
+                          );
+                        }}
+                        disabled={viewOnly}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-base font-medium mb-1">
+                        Line Total
+                      </label>
+                      <input
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
+                        value={
+                          item.unit_price && item.quantity
+                            ? (item.unit_price * item.quantity).toFixed(2)
+                            : 0
+                        }
+                        disabled
+                      />
+                    </div>
+                  </div>
+                  {!viewOnly && (
+                    <div className="max-w-10">
+                      <button
+                        type="button"
+                        className={`text-xl px-2 mt-6 max-w-10 ${order.orderItems.length === 1 ? "text-gray-400 cursor-default" : "text-red-500 cursor-pointer"}`}
+                        onClick={() => {
+                          if (viewOnly) return;
+                          removeOrderItem(idx);
+                        }}
+                        title="Remove"
+                        disabled={order.orderItems.length === 1 || viewOnly}
+                      >
+                        <HiOutlineTrash />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+              {!viewOnly && (
+                <div className="w-full flex items-center justify-center mt-4">
+                  <button
+                    type="button"
+                    className=" text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-[#1e3a5f] flex items-center gap-2 cursor-pointer"
+                    onClick={() => {
+                      if (viewOnly) return;
+                      addOrderItem();
+                    }}
+                  >
+                    <HiOutlinePlus className="text-md" /> Add Item
+                  </button>
+                </div>
+              )}
+            </div>
+            <div>
+              <label className="block text-base font-medium mb-1">
+                Notes / Remarks
+              </label>
+              <textarea
+                name="notes"
+                value={order.notes}
+                onChange={(e) => {
+                  if (viewOnly) return;
+                  handleChange(e);
+                }}
+                onBlur={handleBlur}
+                className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200"
+                disabled={viewOnly}
+                rows={3}
+              />
+            </div>
           </form>
-          <div className="flex justify-end gap-2 mt-6">
+          <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
             <button
               type="button"
-              className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
+              className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
               onClick={handleClose}
             >
               <HiXCircle className="inline-block text-xl" />
@@ -489,7 +487,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
             {!viewOnly && (
               <button
                 type="button"
-                className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
+                className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
                 onClick={handleSubmit}
               >
                 <HiOutlineDocumentText className="inline-block text-xl" />

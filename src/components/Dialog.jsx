@@ -68,20 +68,18 @@ const Dialog = ({
             <span className={`${iconColor}`}>{icon}</span>
           </div>
         </div>
-        <h2 className="text-xl font-semibold mb-2 text-center">
-          {title || defaultTitle}
-        </h2>
+        <h2 className="text-xl mb-2 text-center">{title || defaultTitle}</h2>
         <p className="mb-8 text-center text-base">{message}</p>
         {showActions ? (
           <div className="flex gap-4">
             <button
-              className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-full font-semibold focus:outline-none border border-gray-200 cursor-pointer"
+              className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-gray-200 cursor-pointer"
               onClick={onClose}
             >
               {cancelText}
             </button>
             <button
-              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full font-semibold focus:outline-none cursor-pointer"
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none cursor-pointer"
               onClick={onConfirm}
             >
               {confirmText}
@@ -89,7 +87,7 @@ const Dialog = ({
           </div>
         ) : (
           <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full font-semibold focus:outline-none cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none cursor-pointer"
             onClick={onClose}
           >
             OK

@@ -86,6 +86,7 @@ function SupplierLocationDropdown() {
 
 const Suppliers = () => {
   const [suppliers, setSuppliers] = useState([]);
+  const [viewSupplier, setViewSupplier] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -124,10 +125,16 @@ const Suppliers = () => {
       }));
     } catch {
       setError("Failed to load suppliers");
-      dialog.error("Failed to load suppliers");
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleView(supplier) {
+    // Always open in view mode (readOnly) for view action
+    setEditSupplier(null);
+    setViewSupplier(supplier);
+    setModalOpen(true);
   }
 
   // Save supplier (create or update)
@@ -180,14 +187,24 @@ const Suppliers = () => {
   return (
     <div>
       <SupplierModal
-        key={modalOpen ? (editSupplier ? editSupplier._id : "new") : "closed"}
+        key={
+          modalOpen
+            ? editSupplier
+              ? editSupplier._id
+              : viewSupplier
+                ? viewSupplier._id
+                : "new"
+            : "closed"
+        }
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
           setEditSupplier(null);
+          setViewSupplier(null);
         }}
         onSave={handleSave}
-        initial={editSupplier}
+        initial={editSupplier || viewSupplier}
+        readOnly={!!viewSupplier}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
@@ -198,7 +215,7 @@ const Suppliers = () => {
         </div>
         {user?.permission?.permissions?.includes("create_supplier") && (
           <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => {
               setEditSupplier(null);
               setModalOpen(true);
@@ -251,18 +268,18 @@ const Suppliers = () => {
                 <th className="p-3">Contact Person</th>
                 <th className="p-3">Email</th>
                 <th className="p-3">Phone</th>
-                <th className="p-3">Status</th>
                 <th className="p-3">Products</th>
+                <th className="p-3">Status</th>
                 <th className="p-3">Actions</th>
               </tr>
             </thead>
             <tbody>
               {suppliers.map((supplier, index) => (
                 <tr key={supplier._id}>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     <div className="flex items-center gap-2">
                       <HiOutlineBuildingOffice2 className="text-lg text-blue-700" />
                       <div className="font-semibold text-base text-[#1e3a5f]">
@@ -273,7 +290,7 @@ const Suppliers = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="p-3 flex items-center gap-1">
+                  <td className="px-3 py-1 flex items-center gap-1">
                     <div className="font-medium text-gray-900">
                       {supplier.contact_person}
                     </div>
@@ -281,29 +298,9 @@ const Suppliers = () => {
                       ({supplier.contact_position})
                     </div>
                   </td>
-                  <td className="p-3">{supplier.contact_email}</td>
-                  <td className="p-3">{supplier.contact_phone}</td>
-                  <td className="p-3">
-                    <span
-                      className={
-                        supplier.status === "Active"
-                          ? "text-green-600 font-semibold flex items-center gap-1"
-                          : "text-gray-400 font-semibold flex items-center gap-1"
-                      }
-                    >
-                      <span
-                        className="inline-block w-2 h-2 rounded-full mr-1"
-                        style={{
-                          background:
-                            supplier.status === "Active"
-                              ? "#22c55e"
-                              : "#d1d5db",
-                        }}
-                      ></span>
-                      {supplier.status}
-                    </span>
-                  </td>
-                  <td className="p-3">
+                  <td className="px-3 py-1">{supplier.contact_email}</td>
+                  <td className="px-3 py-1">{supplier.contact_phone}</td>
+                  <td className="px-3 py-1">
                     <span className="flex items-center gap-2">
                       <HiOutlineCube className="text-base text-gray-500" />
                       <span>
@@ -313,10 +310,18 @@ const Suppliers = () => {
                       </span>
                     </span>
                   </td>
-                  <td className="p-3 flex items-center gap-1">
+                  <td className="px-3 py-1">
+                    <span
+                      className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${supplier.status === "Active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}
+                    >
+                      {supplier.status}
+                    </span>
+                  </td>
+                  <td className="px-3 py-1 flex items-center gap-1">
                     <button
                       className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                       title="View"
+                      onClick={() => handleView(supplier)}
                     >
                       <HiOutlineEye className="text-xl" />
                     </button>

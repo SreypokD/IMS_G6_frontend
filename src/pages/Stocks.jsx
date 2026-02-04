@@ -144,7 +144,6 @@ const Stocks = () => {
       }));
     } catch {
       setError("Failed to load stocks");
-      dialog.error("Failed to load stocks");
     } finally {
       setLoading(false);
     }
@@ -286,14 +285,16 @@ const Stocks = () => {
             <tbody>
               {stocks.map((stock, index) => (
                 <tr key={stock._id}>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="p-3">{formatDate(stock.createdAt) || "-"}</td>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
+                    {formatDate(stock.createdAt) || "-"}
+                  </td>
+                  <td className="px-3 py-1">
                     {stock.product?.name || stock.product_id || "-"}
                   </td>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     {stock.type === "in" ? (
                       <span className="text-green-600 flex items-center gap-1">
                         <HiDownload className="inline-block" /> Stock In
@@ -307,15 +308,15 @@ const Stocks = () => {
                       "-"
                     )}
                   </td>
-                  <td className="p-3">{stock.quantity}</td>
-                  <td className="p-3">{stock.balance}</td>
-                  <td className="p-3">
+                  <td className="px-3 py-1">{stock.quantity}</td>
+                  <td className="px-3 py-1">{stock.balance}</td>
+                  <td className="px-3 py-1">
                     {stock.user?.first_name
                       ? `${stock.user.first_name} ${stock.user.last_name}`
                       : stock.user_id || "-"}
                   </td>
-                  <td className="p-3">{stock.location || "-"}</td>
-                  <td className="p-3">{stock.note || "-"}</td>
+                  <td className="px-3 py-1">{stock.location || "-"}</td>
+                  <td className="px-3 py-1">{stock.note || "-"}</td>
                 </tr>
               ))}
               {stocks.length === 0 && (

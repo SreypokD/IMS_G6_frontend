@@ -10,13 +10,20 @@ import {
 import { useAuth } from "../contexts/auth/useAuth.js";
 import { useDialog } from "../contexts/dialog/useDialog.js";
 import OrderRequestModal from "../components/OrderRequestModal.jsx";
-import { getOrderRequests } from "../api";
+import { getOrderRequests, cancelOrderRequest } from "../api";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 import { formatDate } from "../utils/dateFormat";
 import { Listbox } from "@headlessui/react";
 
-const statusOptions = ["All Status", "Approved", "Rejected", "Pending"];
+const statusOptions = [
+  "All Status",
+  "Pending",
+  "Approved",
+  "Rejected",
+  "Completed",
+  "On Hold",
+];
 
 function StatusDropdown() {
   const [selected, setSelected] = useState(statusOptions[0]);
@@ -112,7 +119,28 @@ const OrderRequests = () => {
       }));
     } catch {
       setError("Failed to load order requests");
-      dialog.error("Failed to load order requests");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleCancelRequest(id) {
+    const confirmed = await dialog.ask({
+      type: "confirm",
+      title: "Cancel Order Request",
+      message: "Are you sure you want to cancel this order request?",
+      confirmText: "Yes",
+      cancelText: "No",
+    });
+    if (!confirmed) return;
+    setLoading(true);
+    try {
+      await cancelOrderRequest(id);
+      await dialog.success("Order request cancelled successfully.");
+      fetchOrderRequests(pagination.page, pagination.limit);
+    } catch {
+      setError("Failed to cancel order request");
+      dialog.error("Failed to cancel order request");
     } finally {
       setLoading(false);
     }
@@ -140,7 +168,7 @@ const OrderRequests = () => {
         </div>
         {user?.permission?.permissions?.includes("create_order_request") && (
           <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => setModalOpen(true)}
           >
             <HiOutlinePlus className="text-md" /> Add Request
@@ -211,34 +239,34 @@ const OrderRequests = () => {
                 }
                 return filteredRequests.map((request, index) => (
                   <tr key={request._id}>
-                    <td className="p-3">
+                    <td className="px-3 py-1">
                       {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>
-                    <td className="p-3">
+                    <td className="px-3 py-1">
                       {request.requester?.first_name +
                         " " +
                         request.requester?.last_name || "-"}
                     </td>
-                    <td className="p-3">
+                    <td className="px-3 py-1">
                       {Array.isArray(request.items) && request.items.length > 0
                         ? request.items
                             .map((item) => item.product?.name)
                             .join(", ")
                         : "-"}
                     </td>
-                    <td className="p-3">
+                    <td className="px-3 py-1">
                       {Array.isArray(request.items) && request.items.length > 0
                         ? request.items.map((item) => item.quantity).join(", ")
                         : "-"}
                     </td>
-                    <td className="p-3">{request.notes || "-"}</td>
-                    <td className="p-3">
+                    <td className="px-3 py-1">{request.notes || "-"}</td>
+                    <td className="px-3 py-1">
                       {formatDate(request.createdAt) || "-"}
                     </td>
-                    <td className="p-3">
+                    <td className="px-3 py-1">
                       {formatDate(request.delivery_date) || "-"}
                     </td>
-                    <td className="p-3">
+                    <td className="px-3 py-1">
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${request.status === "pending" ? "bg-yellow-100 text-yellow-700" : request.status === "approved" ? "bg-green-100 text-green-700" : request.status === "rejected" ? "bg-red-100 text-red-700" : request.status === "completed" ? "bg-blue-100 text-blue-700" : request.status === "on_hold" ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-700"}`}
                       >
@@ -246,7 +274,7 @@ const OrderRequests = () => {
                           request.status.slice(1)}
                       </span>
                     </td>
-                    <td className="p-3 flex items-center gap-1">
+                    <td className="px-3 py-1 flex items-center gap-1">
                       {(user?.role === "admin" ||
                         user?.role === "staff" ||
                         String(request.requester_id) === String(user?._id)) && (
@@ -292,33 +320,7 @@ const OrderRequests = () => {
                               <button
                                 className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                                 title="Cancel"
-                                onClick={async () => {
-                                  const confirmed = await dialog.ask({
-                                    type: "confirm",
-                                    title: "Cancel Order Request",
-                                    message:
-                                      "Are you sure you want to cancel this order request?",
-                                    confirmText: "Yes",
-                                    cancelText: "No",
-                                  });
-                                  if (!confirmed) return;
-                                  try {
-                                    await import("../api").then((api) =>
-                                      api.cancelOrderRequest(request._id),
-                                    );
-                                    await dialog.success(
-                                      "Order request cancelled successfully.",
-                                    );
-                                    fetchOrderRequests(
-                                      pagination.page,
-                                      pagination.limit,
-                                    );
-                                  } catch {
-                                    await dialog.error(
-                                      "Failed to cancel order request.",
-                                    );
-                                  }
-                                }}
+                                onClick={() => handleCancelRequest(request._id)}
                               >
                                 <HiOutlineXCircle className="text-2xl" />
                               </button>

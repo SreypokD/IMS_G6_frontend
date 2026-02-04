@@ -151,7 +151,7 @@ const Users = () => {
         </div>
         {user?.permission?.permissions?.includes("create_user") && (
           <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => {
               setEditUser(null);
               setModalOpen(true);
@@ -207,16 +207,16 @@ const Users = () => {
             <tbody>
               {users.map((u, index) => (
                 <tr key={u._id}>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="p-3">
+                  <td className="px-3 py-1">
                     {u.first_name} {u.last_name}
                   </td>
-                  <td className="p-3">{u.email}</td>
-                  <td className="p-3">{u.phone}</td>
-                  <td className="p-3 capitalize">{u.role}</td>
-                  <td className="p-3 flex items-center gap-1">
+                  <td className="px-3 py-1">{u.email}</td>
+                  <td className="px-3 py-1">{u.phone}</td>
+                  <td className="px-3 py-1 capitalize">{u.role}</td>
+                  <td className="px-3 py-1 flex items-center gap-1">
                     {user?.permission?.permissions?.includes("update_user") && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"

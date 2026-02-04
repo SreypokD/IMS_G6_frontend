@@ -16,7 +16,6 @@ import {
   HiChevronRight,
   HiKey,
   HiShoppingCart,
-  HiClock,
   HiOutlineDocumentText,
   HiOutlineAnnotation,
 } from "react-icons/hi";
@@ -66,6 +65,15 @@ const navLinks = (permissions = [], activePath = "") =>
         />
       ),
     },
+    permissions.includes("view_stock") && {
+      to: "/stocks",
+      label: "Stocks",
+      icon: (
+        <HiArchive
+          className={activePath === "/stocks" ? "text-white" : "text-cyan-600"}
+        />
+      ),
+    },
     permissions.includes("view_order_request") && {
       to: "/order-requests",
       label: "Order Requests",
@@ -98,15 +106,6 @@ const navLinks = (permissions = [], activePath = "") =>
               ? "text-white"
               : "text-yellow-600"
           }
-        />
-      ),
-    },
-    permissions.includes("view_stock") && {
-      to: "/stocks",
-      label: "Stocks",
-      icon: (
-        <HiArchive
-          className={activePath === "/stocks" ? "text-white" : "text-cyan-600"}
         />
       ),
     },

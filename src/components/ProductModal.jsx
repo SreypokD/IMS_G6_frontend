@@ -65,9 +65,9 @@ const ProductModal = ({ open, onClose, onSave, initial, readOnly = false }) => {
           <div className="col-span-2 mb-2">
             <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
               <HiOutlineDocumentText className="inline-block text-xl text-black" />
-              <span>Basic Info</span>
+              <span>Basic Information</span>
             </h3>
-            <div className="mb-3 grid grid-cols-2 gap-4">
+            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
               <div>
                 <label className="block text-base font-medium mb-1">
                   Product Code
@@ -75,7 +75,7 @@ const ProductModal = ({ open, onClose, onSave, initial, readOnly = false }) => {
                 <input
                   name="code"
                   value={product.code}
-                  disabled={!!initial || readOnly}
+                  disabled
                   onChange={(e) =>
                     setProduct({ ...product, code: e.target.value })
                   }
@@ -279,13 +279,13 @@ const ProductModal = ({ open, onClose, onSave, initial, readOnly = false }) => {
                 />
                 <label
                   htmlFor="image-upload"
-                  className={`flex flex-col items-center w-full h-full ${readOnly ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
+                  className={`flex flex-col items-center w-full h-full ${readOnly ? "cursor-default opacity-60" : "cursor-pointer"}`}
                   style={readOnly ? { pointerEvents: "none" } : {}}
                 >
                   <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
                   <span className="text-gray-600">
                     Drag and drop your image here, or
-                    <span className="text-blue-600 underline">
+                    <span className="text-blue-600 underline ml-1">
                       browse files
                     </span>
                   </span>
@@ -313,7 +313,7 @@ const ProductModal = ({ open, onClose, onSave, initial, readOnly = false }) => {
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
             type="button"
-            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
+            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
             onClick={onClose}
           >
             <HiXCircle className="inline-block text-xl" />
@@ -322,7 +322,7 @@ const ProductModal = ({ open, onClose, onSave, initial, readOnly = false }) => {
           {!readOnly && (
             <button
               type="button"
-              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer"
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
               onClick={() => {
                 setValidateOnSave(true);
                 setTouched({

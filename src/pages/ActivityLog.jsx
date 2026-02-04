@@ -70,20 +70,20 @@ const ActivityLog = () => {
             <tbody>
               {logs.map((log, index) => (
                 <tr key={log._id}>
-                  <td className="p-3">
+                  <td className="px-3 py-2.5">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td className="p-3">
+                  <td className="px-3 py-2.5">
                     {log.user?.first_name + " " + log.user?.last_name || "-"}
                   </td>
-                  <td className="p-3">{log.entity_type || "-"}</td>
-                  <td className="p-3">{log.details || "-"}</td>
-                  <td className="p-3">
+                  <td className="px-3 py-2.5">{log.entity_type || "-"}</td>
+                  <td className="px-3 py-2.5">{log.details || "-"}</td>
+                  <td className="px-3 py-2.5">
                     {log.createdAt
                       ? new Date(log.createdAt).toLocaleString()
                       : "-"}
                   </td>
-                  <td className="p-3">{log.action}</td>
+                  <td className="px-3 py-2.5">{log.action}</td>
                 </tr>
               ))}
               {logs.length === 0 && (
