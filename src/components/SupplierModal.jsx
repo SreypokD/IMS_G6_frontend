@@ -258,7 +258,7 @@ const SupplierModal = ({
                     Street
                   </label>
                   <input
-                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!supplier.address.street && !initial && (touched.street || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                    className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200"
                     value={supplier.address.street}
                     onChange={(e) =>
                       setSupplier({
@@ -269,9 +269,6 @@ const SupplierModal = ({
                         },
                       })
                     }
-                    onBlur={() =>
-                      setTouched((prev) => ({ ...prev, street: true }))
-                    }
                     disabled={viewOnly}
                   />
                 </div>
@@ -279,16 +276,16 @@ const SupplierModal = ({
                   <label className="block mb-1">House</label>
                   <input
                     type="text"
-                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!supplier.address.house && !initial && (touched.house || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                    className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200"
                     value={supplier.address.house}
                     onChange={(e) =>
                       setSupplier({
                         ...supplier,
-                        address: { ...supplier.address, house: e.target.value },
+                        address: {
+                          ...supplier.address,
+                          house: e.target.value,
+                        },
                       })
-                    }
-                    onBlur={() =>
-                      setTouched((prev) => ({ ...prev, house: true }))
                     }
                     disabled={viewOnly}
                   />

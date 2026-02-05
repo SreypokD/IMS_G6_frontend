@@ -124,7 +124,7 @@ const Header = ({ onBellClick }) => {
             ref={menuRef}
             tabIndex={0}
             onClick={() => setMenuOpen((v) => !v)}
-            className="flex items-center gap-2 px-2 py-1 rounded-full transition focus:outline-none cursor-pointer hover:bg-[#f1f5f9]"
+            className="flex items-center gap-2 p-1 rounded-full transition focus:outline-none cursor-pointer hover:bg-[#f1f5f9]"
           >
             <div className="w-8 h-8 rounded-full bg-[#1e3a5f] flex items-center justify-center text-white font-bold text-xl overflow-hidden">
               {user?.profile &&

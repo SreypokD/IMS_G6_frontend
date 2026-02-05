@@ -399,9 +399,6 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                       <div>
                         <label className="block text-base font-medium mb-1">
                           Unit Price
-                          {!viewOnly && !item.unit_price ? (
-                            <sup className="text-red-500">*</sup>
-                          ) : null}
                         </label>
                         <input
                           type="number"
