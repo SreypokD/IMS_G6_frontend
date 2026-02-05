@@ -15,7 +15,6 @@ import {
   updateOrderRequest,
 } from "../api";
 import { useDialog } from "../contexts/dialog/useDialog";
-import { useAuth } from "../contexts/auth/useAuth";
 
 const initialOrderRequest = {
   supplier_id: "",
@@ -27,7 +26,6 @@ const initialOrderRequest = {
 };
 
 const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
-  const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [order, setOrder] = useState(initial || initialOrderRequest);
@@ -36,9 +34,6 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
   const [loading, setLoading] = useState(false);
   const dialog = useDialog();
   const viewOnly = initial && initial.viewOnly;
-  // Only admin/staff can edit unit price
-  const canEditUnitPrice =
-    user && (user.role === "admin" || user.role === "staff");
 
   useEffect(() => {
     if (open) {
@@ -103,24 +98,31 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
     setOrder((prev) => {
       const items = prev.orderItems.map((item, i) => {
         if (i === idx) {
-          let newValue = value;
-          if (field === "quantity") {
-            // Find the selected product
+          let newItem = { ...item };
+          if (field === "product_id") {
+            newItem.product_id = value;
+            // Set unit price from selected product
+            const product = products.find((p) => p._id === value);
+            newItem.unit_price = product ? product.price : 0;
+            // Optionally reset quantity
+            if (!item.quantity) newItem.quantity = 1;
+          } else if (field === "quantity") {
             const product = products.find((p) => p._id === item.product_id);
             const maxStock = product
               ? product.stock - (product.reserved_stock || 0)
               : null;
+            let newValue = value;
             if (maxStock !== null && Number(value) > maxStock) {
               newValue = maxStock;
             }
+            newItem.quantity = Number(newValue);
+          } else if (field === "unit_price") {
+            newItem.unit_price = Number(value);
           }
-          return {
-            ...item,
-            [field]:
-              field === "quantity" || field === "unit_price"
-                ? Number(newValue)
-                : newValue,
-          };
+          // Always update subtotal
+          newItem.subtotal =
+            (newItem.unit_price ?? 0) * (newItem.quantity ?? 0);
+          return newItem;
         }
         return item;
       });
@@ -312,9 +314,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
               </h3>
               {(order.orderItems || []).map((item, idx) => (
                 <div key={idx} className="w-full flex items-center">
-                  <div
-                    className={`w-full mb-3 grid ${canEditUnitPrice || viewOnly ? "lg:grid-cols-4 md:grid-cols-2 grid-cols-1" : "lg:grid-cols-3 md:grid-cols-2 grid-cols-1"} gap-4`}
-                  >
+                  <div className="w-full mb-3 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
                     <div>
                       <label className="block text-base font-medium mb-1">
                         Product
@@ -395,29 +395,19 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                         disabled={viewOnly}
                       />
                     </div>
-                    {(canEditUnitPrice || viewOnly) && (
-                      <div>
-                        <label className="block text-base font-medium mb-1">
-                          Unit Price
-                        </label>
-                        <input
-                          type="number"
-                          min={0}
-                          className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
-                          placeholder="Unit Price"
-                          value={item.unit_price}
-                          onChange={(e) => {
-                            if (viewOnly) return;
-                            handleOrderItemChange(
-                              idx,
-                              "unit_price",
-                              e.target.value,
-                            );
-                          }}
-                          disabled={viewOnly}
-                        />
-                      </div>
-                    )}
+                    <div>
+                      <label className="block text-base font-medium mb-1">
+                        Unit Price
+                      </label>
+                      <input
+                        type="number"
+                        min={0}
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
+                        placeholder="Unit Price"
+                        value={item.unit_price?.toFixed(2) ?? ""}
+                        disabled
+                      />
+                    </div>
                     <div>
                       <label className="block text-base font-medium mb-1">
                         Line Total

@@ -76,7 +76,7 @@ const Header = ({ onBellClick }) => {
           >
             <HiOutlineBell className="text-gray-500 hover:text-[#1e3a5f] text-2xl" />
             {unreadCount > 0 && (
-              <span className="absolute -top-3 -right-3 bg-red-500 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center font-bold border-2 border-white">
+              <span className="absolute -top-3 -right-3 bg-red-500 text-white text-sm rounded-full w-6 h-6 pt-0.5 flex items-center justify-center font-bold border-2 border-white">
                 {unreadCount}
               </span>
             )}

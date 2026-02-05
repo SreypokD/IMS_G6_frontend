@@ -295,7 +295,7 @@ const Sidebar = ({ mini }) => {
                       <span className="text-base mt-0.5 flex items-center gap-2">
                         {link.label}
                         {isApproveRequests && approveBadge > 0 && (
-                          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center font-bold border-2 border-white">
+                          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-sm rounded-full w-6 h-6 pt-0.5 flex items-center justify-center font-bold border-2 border-white">
                             {approveBadge}
                           </span>
                         )}
