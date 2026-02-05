@@ -15,15 +15,19 @@ import {
   updateOrderRequest,
 } from "../api";
 import { useDialog } from "../contexts/dialog/useDialog";
+import { useAuth } from "../contexts/auth/useAuth";
 
 const initialOrderRequest = {
   supplier_id: "",
   delivery_date: "",
   notes: "",
-  orderItems: [{ product_id: "", quantity: 1, unit_price: 0, subtotal: 0 }],
+  orderItems: [
+    { product_id: "", quantity: 1, unit_price: null, subtotal: null },
+  ],
 };
 
 const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
+  const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [order, setOrder] = useState(initial || initialOrderRequest);
@@ -32,6 +36,9 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
   const [loading, setLoading] = useState(false);
   const dialog = useDialog();
   const viewOnly = initial && initial.viewOnly;
+  // Only admin/staff can edit unit price
+  const canEditUnitPrice =
+    user && (user.role === "admin" || user.role === "staff");
 
   useEffect(() => {
     if (open) {
@@ -67,7 +74,14 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                     unit_price: item.unit_price,
                     subtotal: item.subtotal,
                   }))
-                : [{ product_id: "", quantity: 1, unit_price: 0, subtotal: 0 }],
+                : [
+                    {
+                      product_id: "",
+                      quantity: 1,
+                      unit_price: null,
+                      subtotal: null,
+                    },
+                  ],
         });
       } else {
         setOrder(initialOrderRequest);
@@ -244,7 +258,9 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                         className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!order.supplier_id && (touched.supplier_id || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                       >
                         <span>
-                          {suppliers.find((s) => s._id === (order.supplier_id || ""))?.company_name || "Select supplier"}
+                          {suppliers.find(
+                            (s) => s._id === (order.supplier_id || ""),
+                          )?.company_name || "Select supplier"}
                         </span>
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       </Listbox.Button>
@@ -297,7 +313,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
               {(order.orderItems || []).map((item, idx) => (
                 <div key={idx} className="w-full flex items-center">
                   <div
-                    className={`${viewOnly ? "w-full" : "w-[98%] "} mb-3 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4`}
+                    className={`w-full mb-3 grid ${canEditUnitPrice || viewOnly ? "lg:grid-cols-4 md:grid-cols-2 grid-cols-1" : "lg:grid-cols-3 md:grid-cols-2 grid-cols-1"} gap-4`}
                   >
                     <div>
                       <label className="block text-base font-medium mb-1">
@@ -367,7 +383,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                         min={1}
                         className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
                         placeholder="Qty"
-                        value={item.quantity ?? 0}
+                        value={item.quantity}
                         onChange={(e) => {
                           if (viewOnly) return;
                           handleOrderItemChange(
@@ -379,30 +395,32 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                         disabled={viewOnly}
                       />
                     </div>
-                    <div>
-                      <label className="block text-base font-medium mb-1">
-                        Unit Price
-                        {!viewOnly && !item.unit_price ? (
-                          <sup className="text-red-500">*</sup>
-                        ) : null}
-                      </label>
-                      <input
-                        type="number"
-                        min={0}
-                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
-                        placeholder="Unit Price"
-                        value={item.unit_price ?? 0}
-                        onChange={(e) => {
-                          if (viewOnly) return;
-                          handleOrderItemChange(
-                            idx,
-                            "unit_price",
-                            e.target.value,
-                          );
-                        }}
-                        disabled={viewOnly}
-                      />
-                    </div>
+                    {(canEditUnitPrice || viewOnly) && (
+                      <div>
+                        <label className="block text-base font-medium mb-1">
+                          Unit Price
+                          {!viewOnly && !item.unit_price ? (
+                            <sup className="text-red-500">*</sup>
+                          ) : null}
+                        </label>
+                        <input
+                          type="number"
+                          min={0}
+                          className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
+                          placeholder="Unit Price"
+                          value={item.unit_price}
+                          onChange={(e) => {
+                            if (viewOnly) return;
+                            handleOrderItemChange(
+                              idx,
+                              "unit_price",
+                              e.target.value,
+                            );
+                          }}
+                          disabled={viewOnly}
+                        />
+                      </div>
+                    )}
                     <div>
                       <label className="block text-base font-medium mb-1">
                         Line Total
@@ -411,7 +429,9 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                         className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
                         value={
                           (item.unit_price ?? 0) && (item.quantity ?? 0)
-                            ? ((item.unit_price ?? 0) * (item.quantity ?? 0)).toFixed(2)
+                            ? (
+                                (item.unit_price ?? 0) * (item.quantity ?? 0)
+                              ).toFixed(2)
                             : "0"
                         }
                         disabled

@@ -147,7 +147,6 @@ const OrderHistory = () => {
                 <th>Product(s)</th>
                 <th>Quantity(ies)</th>
                 <th>Notes</th>
-                <th>Admin Remarks</th>
                 <th>Requested Date</th>
                 <th>Delivery Date</th>
                 <th>Status</th>
@@ -178,7 +177,6 @@ const OrderHistory = () => {
                       : "-"}
                   </td>
                   <td>{order.notes || "-"}</td>
-                  <td>{order.admin_remarks || "-"}</td>
                   <td>{formatDate(order.createdAt) || "-"}</td>
                   <td>{formatDate(order.delivery_date) || "-"}</td>
                   <td>
@@ -205,7 +203,7 @@ const OrderHistory = () => {
                   )
               ).length === 0 && (
                 <tr>
-                  <td colSpan="9">
+                  <td colSpan="8">
                     <NoDataFound message="No orders found." />
                   </td>
                 </tr>

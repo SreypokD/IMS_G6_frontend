@@ -332,7 +332,7 @@ const Products = () => {
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
-          <h1 className="text-2xl font-semibold">Products</h1>
+          <h1 className="text-2xl font-semibold">Products Management</h1>
           <span className="text-gray-500">
             Manage your product catalog and inventory
           </span>

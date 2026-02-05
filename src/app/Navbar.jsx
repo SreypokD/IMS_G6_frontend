@@ -82,7 +82,7 @@ const Header = ({ onBellClick }) => {
             )}
           </button>
           {notificationOpen && (
-            <div className="absolute right-0 top-10 bg-white rounded-2xl shadow-lg p-2 w-130 z-50 animate-fade-in-up border border-gray-100">
+            <div className="absolute right-0 top-10 bg-white rounded-2xl shadow-lg p-2 w-120 z-50 animate-fade-in-up border border-gray-100">
               <div className="px-2 pt-2">
                 <div className="font-bold text-lg leading-tight">
                   Notifications
@@ -109,7 +109,7 @@ const Header = ({ onBellClick }) => {
                           </span>
                         )}
                       </div>
-                      <div className="text-sm text-gray-400 text-right min-w-10">
+                      <div className="text-sm text-gray-400 text-right min-w-35">
                         {formatDate(n.createdAt, true)}
                       </div>
                     </li>

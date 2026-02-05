@@ -270,7 +270,7 @@ const OrderRequests = () => {
                                 setModalOpen(true);
                               }}
                             >
-                              <HiOutlineEye className="text-[22px]" />
+                              <HiOutlineEye className="text-xl" />
                             </button>
                           )}
                           {request?.status === "pending" &&

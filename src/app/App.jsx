@@ -1,10 +1,11 @@
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar.jsx";
 import Navbar from "./Navbar.jsx";
-import { useState, useEffect } from "react";
 
 import Login from "../pages/Login.jsx";
+import ForgotPassword from "../pages/ForgotPassword.jsx";
 import Register from "../pages/Register.jsx";
 import Reports from "../pages/Reports.jsx";
 import Products from "../pages/Products.jsx";
@@ -54,6 +55,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route
             path="*"
             element={
@@ -87,7 +89,10 @@ function App() {
                             path: "/confirm-delivery",
                             element: <ConfirmDelivery />,
                           },
-                          { path: "/order-history", element: <OrderHistory /> },
+                          {
+                            path: "/order-history",
+                            element: <OrderHistory />,
+                          },
 
                           // Inventory / Stock
                           { path: "/stocks", element: <Stocks /> },

@@ -109,6 +109,9 @@ export const updateOrderRequest = (id, data) => api.patch(`${orderRequests}/${id
 export const deleteOrderRequest = (id) => api.delete(`${orderRequests}/${id}`);
 export const cancelOrderRequest = (id) => api.patch(`${orderRequests}/${id}/status`, { status: "cancelled" });
 
+// Get count of order requests needing approval (pending or rejected)
+export const getPendingOrderRequestCount = () => api.get(`${orderRequests}/pending/count`);
+
 // Approve order requests
 export const getApproveRequests = (params) => api.get(approveRequests, { params });
 export const updateApproveRequests = (id, data) => api.patch(`${approveRequests}/${id}`, data);

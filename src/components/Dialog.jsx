@@ -61,7 +61,7 @@ const Dialog = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl p-5 min-w-100 flex flex-col items-center shadow-lg">
+      <div className="bg-white rounded-2xl p-5 min-w-100 max-w-100 flex flex-col items-center shadow-lg">
         <div className="mb-4">
           <div
             className={`flex items-center justify-center w-12 h-12 rounded-full ${iconBg}`}

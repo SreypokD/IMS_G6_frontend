@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getPendingOrderRequestCount } from "../api/index.js";
 
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/auth/useAuth.js";
@@ -188,10 +189,27 @@ const Sidebar = ({ mini }) => {
   const location = useLocation();
   const links = navLinks(user?.permission?.permissions, location.pathname);
   const [expanded, setExpanded] = useState(null);
+  const [approveBadge, setApproveBadge] = useState(0);
+
+  useEffect(() => {
+    let mounted = true;
+    getPendingOrderRequestCount()
+      .then((res) => {
+        if (mounted && res.data && res.data.count > 0) {
+          setApproveBadge(res.data.count);
+        } else if (mounted) {
+          setApproveBadge(0);
+        }
+      })
+      .catch(() => mounted && setApproveBadge(0));
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <aside
-      className={`bg-white h-screen flex flex-col border-r border-[#ececec] transition-all duration-300 ${mini ? "w-18" : "w-64"}`}
+      className={`bg-white h-screen flex flex-col border-r border-[#ececec] transition-all duration-300 ${mini ? "w-18" : "w-60"}`}
     >
       <div
         className={`text-lg font-bold m-3 tracking-tight flex items-center justify-center gap-3 ${mini ? "flex-col" : ""}`}
@@ -200,7 +218,7 @@ const Sidebar = ({ mini }) => {
         {!mini && <span>Stockify IMS</span>}
       </div>
       <nav className="flex-1 min-h-0">
-        <ul className="space-y-2 overflow-y-auto h-[calc(100vh-100px)] px-3">
+        <ul className="space-y-2 overflow-y-auto h-[calc(100vh-110px)] px-3">
           {links.map((link, i) => {
             const parentKey = link.label || link.to || i;
             if (link.submenus) {
@@ -213,7 +231,9 @@ const Sidebar = ({ mini }) => {
                   >
                     <div className="flex items-center space-x-3">
                       <span className="text-xl">{link.icon}</span>
-                      {!mini && <span className="text-base mt-0.5">{link.label}</span>}
+                      {!mini && (
+                        <span className="text-base mt-0.5">{link.label}</span>
+                      )}
                     </div>
                     <HiChevronRight
                       className={`transition-transform ${isExpanded ? "rotate-90" : ""}`}
@@ -256,11 +276,12 @@ const Sidebar = ({ mini }) => {
                 </li>
               );
             } else {
+              const isApproveRequests = link.label === "Approve Requests";
               return (
                 <li key={parentKey}>
                   <Link
                     to={link.to}
-                    className={`group flex items-center px-3 py-2 rounded-xl transition font-base text-base space-x-3
+                    className={`group flex items-center px-3 py-2 rounded-xl transition font-base text-base space-x-3 relative
                     ${
                       location.pathname === link.to ||
                       location.pathname.includes(link.to + "/")
@@ -271,7 +292,14 @@ const Sidebar = ({ mini }) => {
                   >
                     <span className="text-xl">{link.icon}</span>
                     {!mini && (
-                      <span className="text-base mt-0.5">{link.label}</span>
+                      <span className="text-base mt-0.5 flex items-center gap-2">
+                        {link.label}
+                        {isApproveRequests && approveBadge > 0 && (
+                          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-sm rounded-full w-6 h-6 flex items-center justify-center font-bold border-2 border-white">
+                            {approveBadge}
+                          </span>
+                        )}
+                      </span>
                     )}
                   </Link>
                 </li>
@@ -280,6 +308,11 @@ const Sidebar = ({ mini }) => {
           })}
         </ul>
       </nav>
+      <div className="w-full px-3 py-2 flex items-center justify-center bg-white">
+        <span className="text-[#64748b] text-base">
+          {!mini && "Version:"} 0.0.1
+        </span>
+      </div>
     </aside>
   );
 };

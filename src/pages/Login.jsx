@@ -137,7 +137,10 @@ const Login = () => {
                 <HiOutlineDownload className="inline-block ml-1 text-lg rotate-270" />
               )}
             </button>
-            <span className="block text-sm text-[#1e3a5f] hover:underline text-center cursor-pointer">
+            <span
+              className="block text-sm text-[#1e3a5f] hover:underline text-center cursor-pointer"
+              onClick={() => navigate("/forgot-password")}
+            >
               Forgot password?
             </span>
             <span className="block text-sm text-[#1e3a5f] text-center">
