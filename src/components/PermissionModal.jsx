@@ -105,19 +105,21 @@ const initialPermission = {
 };
 
 const PermissionModal = ({ open, onClose, onSave, initial }) => {
-  const [permission, setEditPermission] = useState(
-    initial || initialPermission,
-  );
+  // Always deep clone the initial permission to avoid reference issues
+  function clonePermission(obj) {
+    return obj ? JSON.parse(JSON.stringify(obj)) : initialPermission;
+  }
+  const [permission, setEditPermission] = useState(clonePermission(initial));
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
 
   React.useEffect(() => {
     if (open && !initial) {
-      setEditPermission(initialPermission);
+      setEditPermission(clonePermission(null));
       setTouched({});
       setValidateOnSave(false);
     } else if (open && initial) {
-      setEditPermission(initial);
+      setEditPermission(clonePermission(initial));
       setTouched({});
       setValidateOnSave(false);
     }
@@ -129,10 +131,12 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
       setEditPermission((f) => ({ ...f, [name]: value }));
     } else {
       setEditPermission((f) => {
-        const perms = new Set(f.permissions || []);
-        if (checked) perms.add(value);
-        else perms.delete(value);
-        return { ...f, permissions: Array.from(perms) };
+        let perms = Array.isArray(f.permissions) ? f.permissions : [];
+        perms = perms.filter((p) => typeof p === "string");
+        const set = new Set(perms);
+        if (checked) set.add(value);
+        else set.delete(value);
+        return { ...f, permissions: Array.from(set) };
       });
     }
   }
@@ -216,13 +220,19 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                           )}
                           onChange={(e) => {
                             setEditPermission((f) => {
-                              const perms = new Set(f.permissions || []);
+                              let perms = Array.isArray(f.permissions)
+                                ? f.permissions
+                                : [];
+                              perms = perms.filter(
+                                (p) => typeof p === "string",
+                              );
+                              const set = new Set(perms);
                               if (e.target.checked) {
-                                row.actions.forEach((a) => perms.add(a));
+                                row.actions.forEach((a) => set.add(a));
                               } else {
-                                row.actions.forEach((a) => perms.delete(a));
+                                row.actions.forEach((a) => set.delete(a));
                               }
-                              return { ...f, permissions: Array.from(perms) };
+                              return { ...f, permissions: Array.from(set) };
                             });
                           }}
                         />

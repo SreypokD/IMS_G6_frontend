@@ -192,7 +192,11 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                       roles.find((role) => role.name === user.role) || null
                     }
                     onChange={(role) =>
-                      setUser({ ...user, role: role ? role.name : "" })
+                      setUser({
+                        ...user,
+                        role: role ? role.name : "",
+                        permission_id: role ? role._id : ""
+                      })
                     }
                   >
                     <div className="relative">
@@ -255,7 +259,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                     Street
                   </label>
                   <input
-                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!user.address.street && !initial && (touched.street || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                    className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200"
                     value={user.address.street}
                     onChange={(e) =>
                       setUser({
@@ -263,25 +267,19 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                         address: { ...user.address, street: e.target.value },
                       })
                     }
-                    onBlur={() =>
-                      setTouched((prev) => ({ ...prev, street: true }))
-                    }
                   />
                 </div>
                 <div>
                   <label className="block mb-1">House</label>
                   <input
                     type="text"
-                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!user.address.house && !initial && (touched.house || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                    className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200"
                     value={user.address.house}
                     onChange={(e) =>
                       setUser({
                         ...user,
                         address: { ...user.address, house: e.target.value },
                       })
-                    }
-                    onBlur={() =>
-                      setTouched((prev) => ({ ...prev, house: true }))
                     }
                   />
                 </div>

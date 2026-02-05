@@ -308,11 +308,6 @@ const Sidebar = ({ mini }) => {
           })}
         </ul>
       </nav>
-      <div className="w-full px-3 py-2 flex items-center justify-center bg-white">
-        <span className="text-[#64748b] text-base">
-          {!mini && "Version:"} 0.0.1
-        </span>
-      </div>
     </aside>
   );
 };
