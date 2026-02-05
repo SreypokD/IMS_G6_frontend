@@ -5,11 +5,13 @@ import {
   HiOutlineCheckCircle,
   HiOutlineXCircle,
   HiOutlineFilter,
+  HiOutlineEye,
 } from "react-icons/hi";
 import { getApproveRequests, updateApproveRequests } from "../api";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 import Dialog from "../components/Dialog";
+import OrderRequestModal from "../components/OrderRequestModal";
 
 const OrderRequestApproval = () => {
   const [orders, setOrders] = useState([]);
@@ -24,6 +26,7 @@ const OrderRequestApproval = () => {
   const [remarks, setRemarks] = useState({});
   const [actionId, setActionId] = useState(null);
   const [rejectDialog, setRejectDialog] = useState({ open: false, id: null });
+  const [viewDialog, setViewDialog] = useState({ open: false, order: null });
   const [rejectionReason, setRejectionReason] = useState("");
   const { user } = useAuth();
   const dialog = useDialog();
@@ -113,6 +116,10 @@ const OrderRequestApproval = () => {
     }
   }
 
+  function handleView(order) {
+    setViewDialog({ open: true, order });
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -164,7 +171,7 @@ const OrderRequestApproval = () => {
                 user?.permission?.permissions?.includes(
                   "delete_approve_request",
                 ) ? (
-                  <th>Actions</th>
+                  <th className="text-center">Actions</th>
                 ) : null}
               </tr>
             </thead>
@@ -202,24 +209,46 @@ const OrderRequestApproval = () => {
                       : "-"}
                   </td>
                   <td>{order.notes || "-"}</td>
-                  <td className="flex items-center gap-1">
+                  <td className="flex items-center gap-1 justify-center">
+                    {user?.permission?.permissions?.includes(
+                      "view_approve_request",
+                    ) && (
+                      <button
+                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                        title="View"
+                        onClick={() => handleView(order)}
+                      >
+                        <HiOutlineEye className="text-2xl" />
+                      </button>
+                    )}
+                    {user?.permission?.permissions?.includes(
+                      "update_approve_request",
+                    ) && (
+                      <OrderRequestModal
+                        open={viewDialog.open}
+                        onClose={() =>
+                          setViewDialog({ open: false, order: null })
+                        }
+                        initial={{ ...viewDialog.order, viewOnly: true }}
+                      />
+                    )}
                     {user?.permission?.permissions?.includes(
                       "update_approve_request",
                     ) && (
                       <button
-                        className="text-green-600 hover:text-green-700 rounded-full cursor-pointer mr-2"
+                        className="text-green-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Approve"
                         disabled={actionId === order._id}
                         onClick={() => handleApprove(order._id)}
                       >
-                        <HiOutlineCheckCircle className="w-8 h-8" />
+                        <HiOutlineCheckCircle className="text-2xl" />
                       </button>
                     )}
                     {user?.permission?.permissions?.includes(
                       "update_approve_request",
                     ) && (
                       <button
-                        className="text-red-500 hover:text-red-600 rounded-full cursor-pointer"
+                        className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Reject"
                         disabled={actionId === order._id}
                         onClick={() => {
@@ -227,11 +256,12 @@ const OrderRequestApproval = () => {
                           setRejectionReason("");
                         }}
                       >
-                        <HiOutlineXCircle className="w-8 h-8" />
+                        <HiOutlineXCircle className="text-2xl" />
                       </button>
                     )}
                     <Dialog
                       open={rejectDialog.open}
+                      type="confirm"
                       title="Reject Order Request"
                       cancelText="Cancel"
                       confirmText="Reject"

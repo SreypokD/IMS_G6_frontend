@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { HiXCircle, HiOutlineDocumentText } from "react-icons/hi";
+
 const initialCategory = {
   name: "",
   description: "",

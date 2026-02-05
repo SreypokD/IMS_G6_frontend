@@ -153,7 +153,7 @@ const Suppliers = () => {
   }
 
   function handleView(supplier) {
-    // Always open in view mode (readOnly) for view action
+    // Always open in view mode (viewOnly) for view action
     setEditSupplier(null);
     setViewSupplier(supplier);
     setModalOpen(true);
@@ -226,7 +226,7 @@ const Suppliers = () => {
         }}
         onSave={handleSave}
         initial={editSupplier || viewSupplier}
-        readOnly={!!viewSupplier}
+        viewOnly={!!viewSupplier}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
@@ -318,7 +318,7 @@ const Suppliers = () => {
                 <th>Phone</th>
                 <th>Products</th>
                 <th>Status</th>
-                <th>Actions</th>
+                <th className="text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -361,7 +361,7 @@ const Suppliers = () => {
                       {supplier.status}
                     </span>
                   </td>
-                  <td className="flex items-center gap-1">
+                  <td className="flex items-center gap-1 justify-center">
                     <button
                       className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                       title="View"

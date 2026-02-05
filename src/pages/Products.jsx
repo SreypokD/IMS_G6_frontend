@@ -278,7 +278,7 @@ const Products = () => {
   }
 
   function handleView(product) {
-    // Always open in view mode (readOnly) for view action
+    // Always open in view mode (viewOnly) for view action
     setEditProduct(null);
     setViewProduct(product);
     setModalOpen(true);
@@ -328,7 +328,7 @@ const Products = () => {
         }}
         onSave={handleSave}
         initial={editProduct || viewProduct}
-        readOnly={!!viewProduct}
+        viewOnly={!!viewProduct}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
@@ -412,7 +412,7 @@ const Products = () => {
                 <th>Supplier</th>
                 <th className="text-right">Stock</th>
                 <th className="text-right">Price</th>
-                <th>Actions</th>
+                <th className="text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -446,7 +446,7 @@ const Products = () => {
                   <td className="text-right">
                     ${Number(product.price).toFixed(2)}
                   </td>
-                  <td className="flex items-center gap-1">
+                  <td className="flex items-center gap-1 justify-center">
                     {user?.permission?.permissions?.includes(
                       "view_product",
                     ) && (

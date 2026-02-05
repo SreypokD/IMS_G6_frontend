@@ -67,11 +67,6 @@ const Register = () => {
           <span className="block mb-6 text-base text-center text-gray-400">
             Register to access your inventory dashboard
           </span>
-          {error && (
-            <div className="mb-4 text-red-500 text-center text-base font-medium">
-              {error}
-            </div>
-          )}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -167,6 +162,11 @@ const Register = () => {
                 placeholder="••••••••"
               />
             </div>
+            {error && (
+              <div className="mb-4 text-red-500 text-center text-base font-medium">
+                {error}
+              </div>
+            )}
             <button
               type="submit"
               className="w-full bg-[#1e3a5f] text-white hover:bg-[#1e3a5f] py-2.5 rounded-xl transition disabled:opacity-50 mt-2 cursor-pointer"

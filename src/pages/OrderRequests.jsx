@@ -17,11 +17,11 @@ import { formatDate } from "../utils/dateFormat";
 import { Listbox } from "@headlessui/react";
 
 const statusOptions = [
-  { value: "pending", label: "Pending" },
-  { value: "approved", label: "Approved" },
-  { value: "rejected", label: "Rejected" },
-  { value: "completed", label: "Completed" },
-  { value: "on_hold", label: "On Hold" },
+  { value: "Pending", label: "Pending" },
+  { value: "Approved", label: "Approved" },
+  { value: "Rejected", label: "Rejected" },
+  { value: "Completed", label: "Completed" },
+  { value: "On Hold", label: "On Hold" },
 ];
 
 function StatusDropdown({ value, onChange }) {
@@ -205,7 +205,7 @@ const OrderRequests = () => {
                 <th>Requested Date</th>
                 <th>Delivery Date</th>
                 <th>Status</th>
-                <th>Actions</th>
+                <th className="text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -251,11 +251,11 @@ const OrderRequests = () => {
                           request.status.slice(1)}
                       </span>
                     </td>
-                    <td className="lex items-center gap-1">
+                    <td className="flex items-center gap-1 justify-center">
                       {(user?.role === "admin" ||
                         user?.role === "staff" ||
                         String(request.requester_id) === String(user?._id)) && (
-                        <div className="flex items-center gap-1">
+                        <div>
                           {user?.permission?.permissions?.includes(
                             "view_order_request",
                           ) && (
@@ -270,7 +270,7 @@ const OrderRequests = () => {
                                 setModalOpen(true);
                               }}
                             >
-                              <HiOutlineEye className="text-xl" />
+                              <HiOutlineEye className="text-[22px]" />
                             </button>
                           )}
                           {request?.status === "pending" &&

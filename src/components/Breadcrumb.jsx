@@ -68,7 +68,10 @@ const Breadcrumb = () => {
                     {routeName(seg, segments, i)}
                   </span>
                 ) : (
-                  <Link to={path} className="text-[#1e3a5f] hover:text-black flex items-center">
+                  <Link
+                    to={path}
+                    className="text-[#1e3a5f] hover:text-black flex items-center"
+                  >
                     {routeName(seg, segments, i)}
                   </Link>
                 )}

@@ -164,15 +164,15 @@ const Header = ({ onBellClick }) => {
               <hr className="my-2 border-gray-200" />
               <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 rounded-xl cursor-pointer">
                 <HiUser className="text-xl" />
-                <span className="mt-1.5">Profile Settings</span>
+                <span className="mt-1">Profile Settings</span>
               </button>
               <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 rounded-xl cursor-pointer">
                 <HiOutlineCog className="text-xl" />
-                <span className="mt-1.5">Account Settings</span>
+                <span className="mt-1">Account Settings</span>
               </button>
               <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 rounded-xl cursor-pointer">
                 <HiOutlineQuestionMarkCircle className="text-xl" />
-                <span className="mt-1.5">Help & Support</span>
+                <span className="mt-1">Help & Support</span>
               </button>
               <hr className="my-2 border-gray-200" />
               <button

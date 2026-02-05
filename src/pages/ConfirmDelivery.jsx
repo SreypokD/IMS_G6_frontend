@@ -13,13 +13,13 @@ import { Listbox } from "@headlessui/react";
 import { useDialog } from "../contexts/dialog/useDialog";
 
 const deliveryStatusOptions = [
-  { value: "pending", label: "Pending" },
-  { value: "approved", label: "Approved" },
-  { value: "rejected", label: "Rejected" },
+  { value: "Pending", label: "Pending" },
+  { value: "Approved", label: "Approved" },
+  { value: "Rejected", label: "Rejected" },
 ];
 const approvalStatusOptions = [
-  { value: "delivered", label: "Delivered" },
-  { value: "pending", label: "Pending" },
+  { value: "Delivered", label: "Delivered" },
+  { value: "Pending", label: "Pending" },
 ];
 
 function ApprovalStatusDropdown({ value, onChange }) {
@@ -135,9 +135,9 @@ const DeliveryConfirmation = () => {
       const params = { page, limit };
       if (search) params.search = search;
       // approve_status maps to approve_request.status
-      if (approve_status) params["approve_request.status"] = approve_status;
+      if (approve_status) params["approve_request"] = approve_status;
       // deliveryStatus maps to confirm_delivery.status
-      if (delivery_status) params["confirm_delivery.status"] = delivery_status;
+      if (delivery_status) params["confirm_delivery"] = delivery_status;
       const res = await getConfirmDeliveries(params);
       // Only show orders that are approved and not yet delivered
       setConfirmDeliveries(
@@ -226,8 +226,7 @@ const DeliveryConfirmation = () => {
                   1,
                   pagination.limit,
                   search,
-                  status,
-                  delivery_status,
+                  approve_status,
                 );
                 setPagination((prev) => ({ ...prev, page: 1 }));
               }}
@@ -245,7 +244,6 @@ const DeliveryConfirmation = () => {
                   1,
                   pagination.limit,
                   search,
-                  approve_status,
                   delivery_status,
                 );
                 setPagination((prev) => ({ ...prev, page: 1 }));
@@ -271,7 +269,7 @@ const DeliveryConfirmation = () => {
                 <th>Delivery Date</th>
                 <th>Approval Status</th>
                 <th>Delivery Status</th>
-                <th>Actions</th>
+                <th className="text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -324,19 +322,19 @@ const DeliveryConfirmation = () => {
                           : "Pending"}
                       </span>
                     </td>
-                    <td>
+                    <td className="text-center">
                       {(!delivery || delivery.status !== "delivered") &&
                         user?.permission?.permissions?.includes(
                           "update_confirm_delivery",
                         ) && (
                           <button
-                            className="text-green-600 hover:text-green-700 rounded-full cursor-pointer mr-2"
+                            className="text-green-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                             title="Confirm Delivery"
                             onClick={() =>
                               handleConfirmDelivery(confirm_delivery._id)
                             }
                           >
-                            <HiOutlineCheckCircle className="w-8 h-8" />
+                            <HiOutlineCheckCircle className="text-2xl" />
                           </button>
                         )}
                     </td>

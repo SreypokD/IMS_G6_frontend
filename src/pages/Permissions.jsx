@@ -172,7 +172,7 @@ const Permissions = () => {
                 <th>Description</th>
                 {user?.permission?.permissions?.includes("update_permission") ||
                 user?.permission?.permissions?.includes("delete_permission") ? (
-                  <th>Actions</th>
+                  <th className="text-center">Actions</th>
                 ) : null}
               </tr>
             </thead>
@@ -186,7 +186,7 @@ const Permissions = () => {
                   <td className="whitespace-nowrap">
                     {permission.description}
                   </td>
-                  <td className="flex items-center gap-1">
+                  <td className="flex items-center gap-1 justify-center">
                     {user?.permission?.permissions?.includes(
                       "update_permission",
                     ) && (

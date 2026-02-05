@@ -58,6 +58,7 @@ function PermissionDropdown({
     </Listbox>
   );
 }
+
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [pagination, setPagination] = useState({
@@ -133,7 +134,7 @@ const Users = () => {
         await createUser(user);
         dialog.success("User created successfully");
       }
-      fetchUsers();
+      fetchUsers(1, pagination.limit, search, permission);
       setModalOpen(false);
       setEditUser(null);
     } catch {
@@ -158,7 +159,7 @@ const Users = () => {
       try {
         await deleteUser(id);
         dialog.success("User deleted successfully");
-        fetchUsers();
+        fetchUsers(pagination.page, pagination.limit, search, permission);
       } catch {
         setError("Failed to delete user");
         dialog.error("Failed to delete user");
@@ -242,7 +243,7 @@ const Users = () => {
                 <th>Role</th>
                 {user?.permission?.permissions?.includes("update_user") ||
                 user?.permission?.permissions?.includes("delete_user") ? (
-                  <th>Actions</th>
+                  <th className="text-center">Actions</th>
                 ) : null}
               </tr>
             </thead>
@@ -258,7 +259,7 @@ const Users = () => {
                   <td>{u.email}</td>
                   <td>{u.phone}</td>
                   <td className="capitalize">{u.role}</td>
-                  <td className="flex items-center gap-1">
+                  <td className="flex items-center gap-1 justify-center">
                     {user?.permission?.permissions?.includes("update_user") && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"

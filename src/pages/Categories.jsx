@@ -169,7 +169,7 @@ const Categories = () => {
                 <th>Description</th>
                 {user?.permission?.permissions?.includes("update_category") ||
                 user?.permission?.permissions?.includes("delete_category") ? (
-                  <th>Actions</th>
+                  <th className="text-center">Actions</th>
                 ) : null}
               </tr>
             </thead>
@@ -181,7 +181,7 @@ const Categories = () => {
                   </td>
                   <td>{category.name}</td>
                   <td>{category.description}</td>
-                  <td className="flex items-center gap-1">
+                  <td className="flex items-center gap-1 justify-center">
                     {user?.permission?.permissions?.includes(
                       "update_category",
                     ) && (

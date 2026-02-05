@@ -205,7 +205,11 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
         <div className="bg-white rounded-2xl p-6 w-full max-w-[60vw] max-h-[90vh] shadow-xl relative">
           <h2 className="text-2xl font-bold mb-6 text-center">
-            {initial ? "Edit Order Request" : "Add Order Request"}
+            {viewOnly
+              ? "View Order Request"
+              : initial
+                ? "Edit Order Request"
+                : "Add Order Request"}
           </h2>
           <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
             <div className="col-span-2 mb-2">
@@ -240,8 +244,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                         className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!order.supplier_id && (touched.supplier_id || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                       >
                         <span>
-                          {suppliers.find((s) => s._id === order.supplier_id)
-                            ?.company_name || "Select supplier"}
+                          {suppliers.find((s) => s._id === (order.supplier_id || ""))?.company_name || "Select supplier"}
                         </span>
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       </Listbox.Button>
@@ -276,7 +279,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                   <input
                     name="delivery_date"
                     type="date"
-                    value={order.delivery_date}
+                    value={order.delivery_date || ""}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     required
@@ -291,7 +294,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                 <HiCube className="inline-block text-xl text-black" />
                 <span>Products</span>
               </h3>
-              {order.orderItems.map((item, idx) => (
+              {(order.orderItems || []).map((item, idx) => (
                 <div key={idx} className="w-full flex items-center">
                   <div
                     className={`${viewOnly ? "w-full" : "w-[98%] "} mb-3 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4`}
@@ -364,7 +367,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                         min={1}
                         className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
                         placeholder="Qty"
-                        value={item.quantity}
+                        value={item.quantity ?? 0}
                         onChange={(e) => {
                           if (viewOnly) return;
                           handleOrderItemChange(
@@ -388,7 +391,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                         min={0}
                         className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
                         placeholder="Unit Price"
-                        value={item.unit_price}
+                        value={item.unit_price ?? 0}
                         onChange={(e) => {
                           if (viewOnly) return;
                           handleOrderItemChange(
@@ -407,9 +410,9 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                       <input
                         className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
                         value={
-                          item.unit_price && item.quantity
-                            ? (item.unit_price * item.quantity).toFixed(2)
-                            : 0
+                          (item.unit_price ?? 0) && (item.quantity ?? 0)
+                            ? ((item.unit_price ?? 0) * (item.quantity ?? 0)).toFixed(2)
+                            : "0"
                         }
                         disabled
                       />
@@ -454,7 +457,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
               </label>
               <textarea
                 name="notes"
-                value={order.notes}
+                value={order.notes || ""}
                 onChange={(e) => {
                   if (viewOnly) return;
                   handleChange(e);

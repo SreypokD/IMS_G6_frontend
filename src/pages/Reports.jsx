@@ -74,7 +74,7 @@ const Reports = () => {
       ) : error ? (
         <div className="p-4 text-center text-red-500">{error}</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-white rounded-xl p-4 border border-gray-200">
             <h2 className="text-lg mb-4">Inventory Summary</h2>
             <div className="text-base">

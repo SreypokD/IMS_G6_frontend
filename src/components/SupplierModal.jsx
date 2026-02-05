@@ -49,7 +49,7 @@ const SupplierModal = ({
   onClose,
   onSave,
   initial,
-  readOnly = false,
+  viewOnly = false,
 }) => {
   const [supplier, setSupplier] = useState(initial || initialSupplier);
   const [touched, setTouched] = useState({});
@@ -74,7 +74,7 @@ const SupplierModal = ({
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
         <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] max-h-[80vh] shadow-xl relative">
           <h2 className="text-2xl font-bold mb-6 text-center">
-            {readOnly
+            {viewOnly
               ? "View Supplier"
               : initial
                 ? "Edit Supplier"
@@ -105,7 +105,7 @@ const SupplierModal = ({
                     }
                     placeholder="Supplier Name"
                     className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!supplier.company_name && !initial && (touched.company_name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                    disabled={readOnly}
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -126,7 +126,7 @@ const SupplierModal = ({
                     }
                     placeholder="Supplier Location"
                     className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!supplier.location && !initial && (touched.location || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                    disabled={readOnly}
+                    disabled={viewOnly}
                   />
                 </div>
               </div>
@@ -161,7 +161,7 @@ const SupplierModal = ({
                     }
                     placeholder="Supplier Contact Person"
                     className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!supplier.contact_person && !initial && (touched.contact_person || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                    disabled={readOnly}
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -188,7 +188,7 @@ const SupplierModal = ({
                     }
                     placeholder="Supplier Contact Position"
                     className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!supplier.contact_position && !initial && (touched.contact_position || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                    disabled={readOnly}
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -215,7 +215,7 @@ const SupplierModal = ({
                     }
                     placeholder="Supplier Contact Email"
                     className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!supplier.contact_email && !initial && (touched.contact_email || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                    disabled={readOnly}
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -242,7 +242,7 @@ const SupplierModal = ({
                     }
                     placeholder="Supplier Contact Phone"
                     className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!supplier.contact_phone && !initial && (touched.contact_phone || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                    disabled={readOnly}
+                    disabled={viewOnly}
                   />
                 </div>
               </div>
@@ -272,7 +272,7 @@ const SupplierModal = ({
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, street: true }))
                     }
-                    disabled={readOnly}
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -290,7 +290,7 @@ const SupplierModal = ({
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, house: true }))
                     }
-                    disabled={readOnly}
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -316,7 +316,7 @@ const SupplierModal = ({
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, village: true }))
                     }
-                    disabled={readOnly}
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -342,7 +342,7 @@ const SupplierModal = ({
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, commune: true }))
                     }
-                    disabled={readOnly}
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -368,7 +368,7 @@ const SupplierModal = ({
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, district: true }))
                     }
-                    disabled={readOnly}
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -394,7 +394,7 @@ const SupplierModal = ({
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, province: true }))
                     }
-                    disabled={readOnly}
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -420,7 +420,7 @@ const SupplierModal = ({
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, country: true }))
                     }
-                    disabled={readOnly}
+                    disabled={viewOnly}
                   />
                 </div>
               </div>
@@ -443,7 +443,7 @@ const SupplierModal = ({
                       ) || null
                     }
                     onChange={
-                      readOnly
+                      viewOnly
                         ? () => {}
                         : (pt) =>
                             setSupplier({
@@ -451,12 +451,12 @@ const SupplierModal = ({
                               payment_term: pt ? pt.name : "",
                             })
                     }
-                    disabled={readOnly}
+                    disabled={viewOnly}
                   >
                     <div className="relative">
                       <Listbox.Button
-                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${readOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!supplier.payment_term && !initial && (touched.payment_term || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                        disabled={readOnly}
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${viewOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!supplier.payment_term && !initial && (touched.payment_term || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                        disabled={viewOnly}
                       >
                         <span>
                           {paymentTerms.find(
@@ -496,7 +496,7 @@ const SupplierModal = ({
                       statuses.find((st) => st.name === supplier.status) || null
                     }
                     onChange={
-                      readOnly
+                      viewOnly
                         ? () => {}
                         : (st) =>
                             setSupplier({
@@ -504,12 +504,12 @@ const SupplierModal = ({
                               status: st ? st.name : "",
                             })
                     }
-                    disabled={readOnly}
+                    disabled={viewOnly}
                   >
                     <div className="relative">
                       <Listbox.Button
-                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${readOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!supplier.status && !initial && (touched.status || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                        disabled={readOnly}
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${viewOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!supplier.status && !initial && (touched.status || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                        disabled={viewOnly}
                       >
                         <span>
                           {statuses.find((st) => st.name === supplier.status)
@@ -549,7 +549,7 @@ const SupplierModal = ({
             >
               <HiXCircle className="inline-block text-xl" /> Close
             </button>
-            {!readOnly && (
+            {!viewOnly && (
               <button
                 type="button"
                 className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"

@@ -80,11 +80,6 @@ const Login = () => {
           <span className="block mb-6 text-base text-center text-gray-400">
             Sign in to access your inventory management dashboard
           </span>
-          {error && (
-            <div className="mb-4 text-red-500 text-center text-base font-medium">
-              {error}
-            </div>
-          )}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-gray-600 mb-1 text-base font-medium">
@@ -112,6 +107,7 @@ const Login = () => {
                 required
                 placeholder="••••••••"
               />
+
               <button
                 type="button"
                 className="absolute right-3 top-12 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none z-0"
@@ -126,6 +122,11 @@ const Login = () => {
                 )}
               </button>
             </div>
+            {error && (
+              <div className="my-4 text-red-500 text-center text-base font-medium">
+                {error}
+              </div>
+            )}
             <button
               type="submit"
               className="w-full bg-[#1e3a5f] text-white hover:bg-[#1e3a5f] py-2.5 rounded-xl transition disabled:opacity-50 mt-2 cursor-pointer"
