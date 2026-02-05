@@ -126,6 +126,9 @@ export const createSale = (data) => api.post(sales, data);
 
 // Stocks
 export const getStocks = (params = {}) => api.get(stocks, { params });
+export const createStock = (data) => api.post(stocks, data);
+export const updateStock = (id, data) => api.patch(`${stocks}/${id}`, data);
+export const deleteStock = (id) => api.delete(`${stocks}/${id}`);
 
 // Activity Logs
 export const getActivityLogs = (params = {}) => api.get(activityLogs, { params });

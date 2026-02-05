@@ -41,7 +41,7 @@ export default function Pagination({
     <div className="flex items-center justify-center gap-2 pagination">
       <button
         type="button"
-        className={`w-10 h-10 rounded-lg border border-gray-200 bg-white flex items-center justify-center ${page === 1 ? "pointer-events-none" : "cursor-pointer"}`}
+        className={`w-10 h-10 rounded-lg border bg-white flex items-center justify-center ${page === 1 ? "border-gray-200" : "cursor-pointer"}`}
         disabled={page === 1}
         onClick={() => handleGoTo(1)}
         aria-label="First page"
@@ -50,7 +50,7 @@ export default function Pagination({
       </button>
       <button
         type="button"
-        className={`w-10 h-10 rounded-lg border border-gray-200 bg-white flex items-center justify-center ${page === 1 ? "pointer-events-none" : "cursor-pointer"}`}
+        className={`w-10 h-10 rounded-lg border bg-white flex items-center justify-center ${page === 1 ? "border-gray-200" : "cursor-pointer"}`}
         disabled={page === 1}
         onClick={() => handleGoTo(page - 1)}
         aria-label="Previous page"
@@ -81,7 +81,7 @@ export default function Pagination({
       )}
       <button
         type="button"
-        className={`w-10 h-10 rounded-lg border border-gray-200 bg-white flex items-center justify-center ${page === last ? "" : "cursor-pointer"}`}
+        className={`w-10 h-10 rounded-lg border bg-white flex items-center justify-center ${page === last ? "border-gray-200" : "cursor-pointer"}`}
         disabled={page === last}
         onClick={() => handleGoTo(page + 1)}
         aria-label="Next page"
@@ -90,7 +90,7 @@ export default function Pagination({
       </button>
       <button
         type="button"
-        className={`w-10 h-10 rounded-lg border border-gray-200 bg-white flex items-center justify-center ${page === last ? "" : "cursor-pointer"}`}
+        className={`w-10 h-10 rounded-lg border bg-white flex items-center justify-center ${page === last ? "border-gray-200" : "cursor-pointer"}`}
         disabled={page === last}
         onClick={() => handleGoTo(last)}
         aria-label="Last page"

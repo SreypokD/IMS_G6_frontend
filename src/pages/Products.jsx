@@ -347,7 +347,7 @@ const Products = () => {
           </button>
         )}
       </div>
-      <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
+      <div className="bg-white rounded-xl p-6 mb-4 border border-gray-200">
         <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
           <HiOutlineFilter className="inline-block text-xl text-black" />
           <span>Filters</span>
@@ -500,7 +500,10 @@ const Products = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchProducts({ page, limit })}
+            onChange={({ page, limit }) => {
+              setPagination((prev) => ({ ...prev, page, limit }));
+              fetchProducts(page, limit);
+            }}
           />
         </div>
       )}

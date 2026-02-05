@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Listbox } from "@headlessui/react";
-import { getStocks } from "../api";
-// import { useDialog } from "../contexts/dialog/useDialog";
+import { getStocks, getProducts } from "../api";
 import {
   HiSelector,
   HiOutlineFilter,
@@ -18,26 +17,28 @@ import Pagination from "../components/Pagination";
 import { useAuth } from "../contexts/auth/useAuth";
 import NoDataFound from "../components/NoDataFound";
 import { formatDate } from "../utils/dateFormat";
+import StockOutModal from "../components/StockOutModal";
+import StockInModal from "../components/StockInModal";
 
-// Custom dropdowns for Stock page
 const transactionOptions = ["All Transactions"];
 const users = ["All Users"];
-const locationOptions = [
-  "All Locations",
-  "Warehouse 1",
-  "Warehouse 2",
-  "Storefront",
-];
+const locationOptions = ["Warehouse 1", "Warehouse 2", "Storefront"];
 
-function UserDropdown({ selected, setSelected }) {
+function UserDropdown({ value, onChange }) {
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox value={value} onChange={onChange}>
       <div className="relative">
         <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
-          <span>{selected}</span>
+          <span>{value || "All Users"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          <Listbox.Option
+            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            value=""
+          >
+            <span>All Users</span>
+          </Listbox.Option>
           {users.map((option) => (
             <Listbox.Option
               key={option}
@@ -55,15 +56,21 @@ function UserDropdown({ selected, setSelected }) {
   );
 }
 
-function TransactionDropdown({ selected, setSelected }) {
+function TransactionDropdown({ value, onChange }) {
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox value={value} onChange={onChange}>
       <div className="relative">
         <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
-          <span>{selected}</span>
+          <span>{value || "All Transactions"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          <Listbox.Option
+            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            value=""
+          >
+            <span>All Transactions</span>
+          </Listbox.Option>
           {transactionOptions.map((option) => (
             <Listbox.Option
               key={option}
@@ -81,15 +88,21 @@ function TransactionDropdown({ selected, setSelected }) {
   );
 }
 
-function LocationDropdown({ selected, setSelected }) {
+function LocationDropdown({ value, onChange }) {
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Listbox value={value} onChange={onChange}>
       <div className="relative">
         <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
-          <span>{selected}</span>
+          <span>{value || "All Locations"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          <Listbox.Option
+            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            value=""
+          >
+            <span>All Locations</span>
+          </Listbox.Option>
           {locationOptions.map((option) => (
             <Listbox.Option
               key={option}
@@ -109,6 +122,9 @@ function LocationDropdown({ selected, setSelected }) {
 
 const Stocks = () => {
   const [stocks, setStocks] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [stockOutOpen, setStockOutOpen] = useState(false);
+  const [stockInOpen, setStockInOpen] = useState(false);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -118,18 +134,60 @@ const Stocks = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { user } = useAuth();
+  const [search, setSearch] = useState("");
+  const [filterUser, setFilterUser] = useState("");
+  const [filterType, setFilterType] = useState("");
+  const [filterLocation, setFilterLocation] = useState("");
 
   useEffect(() => {
     if (user) {
-      fetchStocks(1, 10);
+      fetchStocks(
+        pagination.page,
+        pagination.limit,
+        search,
+        filterType,
+        filterUser,
+        filterLocation,
+      );
+      fetchProducts();
     }
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    user,
+    pagination.page,
+    pagination.limit,
+    search,
+    filterType,
+    filterUser,
+    filterLocation,
+  ]);
 
-  async function fetchStocks(page = 1, limit = 10) {
+  async function fetchProducts() {
+    try {
+      const res = await getProducts();
+      setProducts(res.data.data || []);
+    } catch {
+      setProducts([]);
+    }
+  }
+
+  async function fetchStocks(
+    page = pagination.page,
+    limit = pagination.limit,
+    searchVal = search,
+    typeVal = filterType,
+    userVal = filterUser,
+    locationVal = filterLocation,
+  ) {
     setLoading(true);
     setError("");
     try {
-      const res = await getStocks({ page, limit });
+      const params = { page, limit };
+      if (searchVal) params.search = searchVal;
+      if (typeVal) params.type = typeVal;
+      if (userVal) params.user = userVal;
+      if (locationVal) params.location = locationVal;
+      const res = await getStocks(params);
       setStocks(res.data.data);
       setPagination((prev) => ({
         ...prev,
@@ -146,6 +204,18 @@ const Stocks = () => {
 
   return (
     <div>
+      <StockOutModal
+        open={stockOutOpen}
+        onClose={() => setStockOutOpen(false)}
+        products={products}
+        locations={locationOptions.filter((loc) => loc !== "All Locations")}
+      />
+      <StockInModal
+        open={stockInOpen}
+        onClose={() => setStockInOpen(false)}
+        products={products}
+        locations={locationOptions.filter((loc) => loc !== "All Locations")}
+      />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
           <h1 className="text-2xl font-semibold">Stock Management</h1>
@@ -160,10 +230,16 @@ const Stocks = () => {
           <span className="flex items-center text-black px-5 py-2 gap-2 cursor-pointer">
             <HiOutlineDownload className="text-md" /> Export
           </span>
-          <button className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer">
+          <button
+            className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+            onClick={() => setStockOutOpen(true)}
+          >
             <HiLogout className="text-md rotate-270" /> Stock Out
           </button>
-          <button className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer">
+          <button
+            className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+            onClick={() => setStockInOpen(true)}
+          >
             <HiDownload className="text-md" /> Stock In
           </button>
         </div>
@@ -222,7 +298,7 @@ const Stocks = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200">
+      <div className="bg-white rounded-xl p-6 mb-4 border border-gray-200">
         <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
           <HiOutlineFilter className="inline-block text-xl text-black" />
           <span>Filters</span>
@@ -235,25 +311,80 @@ const Stocks = () => {
             <input
               className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
               placeholder="Search..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                fetchStocks(
+                  1,
+                  pagination.limit,
+                  e.target.value,
+                  filterType,
+                  filterUser,
+                  filterLocation,
+                );
+                setPagination((prev) => ({ ...prev, page: 1 }));
+              }}
             />
           </div>
           <div>
             <label className="block text-gray-700 text-base font-bold mb-2">
               Transaction Type
             </label>
-            <TransactionDropdown />
+            <TransactionDropdown
+              value={filterType}
+              onChange={(val) => {
+                setFilterType(val);
+                fetchStocks(
+                  1,
+                  pagination.limit,
+                  search,
+                  val,
+                  filterUser,
+                  filterLocation,
+                );
+                setPagination((prev) => ({ ...prev, page: 1 }));
+              }}
+            />
           </div>
           <div>
             <label className="block text-gray-700 text-base font-bold mb-2">
               User
             </label>
-            <UserDropdown />
+            <UserDropdown
+              value={filterUser}
+              onChange={(val) => {
+                setFilterUser(val);
+                fetchStocks(
+                  1,
+                  pagination.limit,
+                  search,
+                  filterType,
+                  val,
+                  filterLocation,
+                );
+                setPagination((prev) => ({ ...prev, page: 1 }));
+              }}
+            />
           </div>
           <div>
             <label className="block text-gray-700 text-base font-bold mb-2">
               Location
             </label>
-            <LocationDropdown />
+            <LocationDropdown
+              value={filterLocation}
+              onChange={(val) => {
+                setFilterLocation(val);
+                fetchStocks(
+                  1,
+                  pagination.limit,
+                  search,
+                  filterType,
+                  filterUser,
+                  val,
+                );
+                setPagination((prev) => ({ ...prev, page: 1 }));
+              }}
+            />
           </div>
         </div>
       </div>
