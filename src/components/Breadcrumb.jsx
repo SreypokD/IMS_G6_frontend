@@ -48,8 +48,8 @@ const Breadcrumb = () => {
           to="/"
           className="text-[#1e3a5f] hover:text-black flex items-center"
         >
-          <HiOutlineHome className="text-xl" />
-          <span className="text-base mt-0.5 ml-2">Home</span>
+          <HiOutlineHome className="text-lg" />
+          <span className="text-base ml-2">Home</span>
         </Link>
         <HiChevronRight className="text-xl text-[#1e3a5f]" />
         {segments.length === 0 ? (

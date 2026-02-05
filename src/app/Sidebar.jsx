@@ -208,12 +208,12 @@ const Sidebar = ({ mini }) => {
               return (
                 <li key={parentKey}>
                   <div
-                    className={`group flex items-center justify-between cursor-pointer p-3 rounded-xl transition font-base text-base space-x-3 mb-2 text-[#64748b] hover:bg-[#f1f5f9] hover:text-black`}
+                    className={`group flex items-center justify-between cursor-pointer px-3 py-2 rounded-xl transition font-base text-base space-x-3 mb-2 text-[#64748b] hover:bg-[#f1f5f9] hover:text-black`}
                     onClick={() => setExpanded(isExpanded ? null : parentKey)}
                   >
                     <div className="flex items-center space-x-3">
                       <span className="text-xl">{link.icon}</span>
-                      {!mini && <span className="text-base mt-1">{link.label}</span>}
+                      {!mini && <span className="text-base mt-0.5">{link.label}</span>}
                     </div>
                     <HiChevronRight
                       className={`transition-transform ${isExpanded ? "rotate-90" : ""}`}
@@ -235,7 +235,7 @@ const Sidebar = ({ mini }) => {
                           <li key={submenuKey}>
                             <Link
                               to={submenu.to}
-                              className={`group flex items-center p-3 rounded-xl transition font-base text-base space-x-3
+                              className={`group flex items-center px-3 py-2 rounded-xl transition font-base text-base space-x-3
                             ${
                               location.pathname === submenu.to
                                 ? "bg-[#1e3a5f] text-white hover:bg-[#1e3a5f]"
@@ -244,7 +244,7 @@ const Sidebar = ({ mini }) => {
                             >
                               <span className="text-xl">{submenu.icon}</span>
                               {!mini && (
-                                <span className="text-base mt-1">
+                                <span className="text-base mt-0.5">
                                   {submenu.label}
                                 </span>
                               )}
@@ -260,7 +260,7 @@ const Sidebar = ({ mini }) => {
                 <li key={parentKey}>
                   <Link
                     to={link.to}
-                    className={`group flex items-center p-3 rounded-xl transition font-base text-base space-x-3
+                    className={`group flex items-center px-3 py-2 rounded-xl transition font-base text-base space-x-3
                     ${
                       location.pathname === link.to ||
                       location.pathname.includes(link.to + "/")
@@ -271,7 +271,7 @@ const Sidebar = ({ mini }) => {
                   >
                     <span className="text-xl">{link.icon}</span>
                     {!mini && (
-                      <span className="text-base mt-1">{link.label}</span>
+                      <span className="text-base mt-0.5">{link.label}</span>
                     )}
                   </Link>
                 </li>
