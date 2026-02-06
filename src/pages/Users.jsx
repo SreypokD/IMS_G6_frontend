@@ -6,6 +6,7 @@ import {
   HiOutlinePlus,
   HiOutlinePencil,
   HiOutlineTrash,
+  HiOutlineEye,
 } from "react-icons/hi";
 import {
   getUsers,
@@ -62,6 +63,7 @@ function PermissionDropdown({
 
 const Users = () => {
   const [users, setUsers] = useState([]);
+  const [viewUser, setViewUser] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -123,6 +125,12 @@ const Users = () => {
     }
   }
 
+  function handleView(user) {
+    setEditUser(null);
+    setViewUser(user);
+    setModalOpen(true);
+  }
+
   // Save user (create or update)
   async function handleSave(user) {
     setLoading(true);
@@ -180,7 +188,8 @@ const Users = () => {
           setEditUser(null);
         }}
         onSave={handleSave}
-        initial={editUser}
+        initial={editUser || viewUser}
+        viewOnly={!!viewUser}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
@@ -212,9 +221,7 @@ const Users = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
-              Search
-            </label>
+            <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
               className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
               placeholder="Search..."
@@ -267,6 +274,15 @@ const Users = () => {
                   <td>{u.phone}</td>
                   <td className="capitalize">{u.role}</td>
                   <td className="flex items-center gap-1 justify-center action">
+                    {user?.permission?.permissions?.includes("view_user") && (
+                      <button
+                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                        title="View"
+                        onClick={() => handleView(u)}
+                      >
+                        <HiOutlineEye className="text-xl" />
+                      </button>
+                    )}
                     {user?.permission?.permissions?.includes("update_user") && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"

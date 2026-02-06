@@ -104,7 +104,13 @@ const initialPermission = {
   permissions: [],
 };
 
-const PermissionModal = ({ open, onClose, onSave, initial }) => {
+const PermissionModal = ({
+  open,
+  onClose,
+  onSave,
+  initial,
+  viewOnly = false,
+}) => {
   // Always deep clone the initial permission to avoid reference issues
   function clonePermission(obj) {
     return obj ? JSON.parse(JSON.stringify(obj)) : initialPermission;
@@ -153,7 +159,11 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[52%] max-h-[80vh] shadow-xl relative">
         <h2 className="text-xl font-bold mb-6 text-center">
-          {initial ? "Edit Permission" : "Add Permission"}
+          {viewOnly
+            ? "View Permission"
+            : initial
+              ? "Edit Permission"
+              : "Add Permission"}
         </h2>
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
           <div className="col-span-2 mb-2">
@@ -177,6 +187,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                   onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!permission.name && !initial && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   required
+                  disabled={viewOnly}
                 />
               </div>
               <div>
@@ -193,6 +204,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                   }
                   className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200"
                   required
+                  disabled={viewOnly}
                 />
               </div>
             </div>
@@ -235,6 +247,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                               return set;
                             });
                           }}
+                          disabled={viewOnly}
                         />
                       </td>
                       {["view", "create", "update", "delete"].map((action) => {
@@ -253,6 +266,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                                   false
                                 }
                                 onChange={handlePermissionChange}
+                                disabled={viewOnly}
                               />
                             ) : null}
                           </td>
@@ -271,22 +285,25 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
             className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
             onClick={onClose}
           >
-            <HiXCircle className="inline-block text-xl" /> Cancel
+            <HiXCircle className="inline-block text-xl" />
+            {viewOnly ? "Close" : "Cancel"}
           </button>
-          <button
-            type="button"
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
-            onClick={() => {
-              setValidateOnSave(true);
-              setTouched({
-                name: true,
-              });
-              onSave(permission);
-            }}
-          >
-            <HiOutlineDocumentText className="inline-block text-xl" />
-            {initial ? "Update Permission" : "Add Permission"}
-          </button>
+          {!viewOnly && (
+            <button
+              type="button"
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
+              onClick={() => {
+                setValidateOnSave(true);
+                setTouched({
+                  name: true,
+                });
+                onSave(permission);
+              }}
+            >
+              <HiOutlineDocumentText className="inline-block text-xl" />
+              {initial ? "Update Permission" : "Add Permission"}
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -4,7 +4,9 @@ import {
   HiOutlinePencil,
   HiOutlineTrash,
   HiOutlinePlus,
-  HiOutlineFilter,HiOutlineRefresh
+  HiOutlineFilter,
+  HiOutlineRefresh,
+  HiOutlineEye,
 } from "react-icons/hi";
 import {
   getPermissions,
@@ -19,6 +21,7 @@ import { useDialog } from "../contexts/dialog/useDialog";
 
 const Permissions = () => {
   const [permissions, setPermissions] = useState([]);
+  const [viewPermission, setViewPermission] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -62,6 +65,12 @@ const Permissions = () => {
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleView(permission) {
+    setEditPermission(null);
+    setViewPermission(permission);
+    setModalOpen(true);
   }
 
   // Save permission (create or update)
@@ -120,7 +129,8 @@ const Permissions = () => {
           setEditPermission(null);
         }}
         onSave={handleSave}
-        initial={editPermission}
+        initial={editPermission || viewPermission}
+        viewOnly={!!viewPermission}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
@@ -152,9 +162,7 @@ const Permissions = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
-              Search
-            </label>
+            <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
               className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
               placeholder="Search..."
@@ -193,6 +201,17 @@ const Permissions = () => {
                     {permission.description}
                   </td>
                   <td className="flex items-center gap-1 justify-center action">
+                    {user?.permission?.permissions?.includes(
+                      "view_permission",
+                    ) && (
+                      <button
+                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                        title="View"
+                        onClick={() => handleView(permission)}
+                      >
+                        <HiOutlineEye className="text-xl" />
+                      </button>
+                    )}
                     {user?.permission?.permissions?.includes(
                       "update_permission",
                     ) && (

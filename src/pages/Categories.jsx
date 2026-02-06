@@ -5,6 +5,7 @@ import {
   HiOutlineTrash,
   HiOutlineFilter,
   HiOutlineRefresh,
+  HiOutlineEye,
 } from "react-icons/hi";
 import CategoryModal from "../components/CategoryModal";
 import {
@@ -20,6 +21,7 @@ import NoDataFound from "../components/NoDataFound";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
+  const [viewCategory, setViewCategory] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -62,6 +64,13 @@ const Categories = () => {
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleView(category) {
+    // Always open in view mode (viewOnly) for view action
+    setEditCategory(null);
+    setViewCategory(category);
+    setModalOpen(true);
   }
 
   async function handleSave(category) {
@@ -116,7 +125,8 @@ const Categories = () => {
           setEditCategory(null);
         }}
         onSave={handleSave}
-        initial={editCategory}
+        initial={editCategory || viewCategory}
+        viewOnly={!!viewCategory}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
@@ -150,9 +160,7 @@ const Categories = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
-              Search
-            </label>
+            <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
               className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
               placeholder="Search..."
@@ -189,6 +197,17 @@ const Categories = () => {
                   <td>{category.name}</td>
                   <td>{category.description}</td>
                   <td className="flex items-center gap-1 justify-center">
+                    {user?.permission?.permissions?.includes(
+                      "view_category",
+                    ) && (
+                      <button
+                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                        title="View"
+                        onClick={() => handleView(category)}
+                      >
+                        <HiOutlineEye className="text-xl" />
+                      </button>
+                    )}
                     {user?.permission?.permissions?.includes(
                       "update_category",
                     ) && (

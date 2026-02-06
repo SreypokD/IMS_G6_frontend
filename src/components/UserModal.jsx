@@ -30,7 +30,7 @@ const initialUser = {
   profile: "",
 };
 
-const UserModal = ({ open, onClose, onSave, initial }) => {
+const UserModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
   const computedInitialUser = React.useMemo(
     () => initial || initialUser,
     [initial],
@@ -77,7 +77,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
         <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] max-h-[80vh] shadow-xl relative">
           <h2 className="text-xl font-bold mb-6 text-center">
-            {initial ? "Edit User" : "Add User"}
+            {viewOnly ? "View User" : initial ? "Edit User" : "Add User"}
           </h2>
           <form
             key={initial ? initial._id || initial.id : "new"}
@@ -106,6 +106,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                       setTouched((prev) => ({ ...prev, first_name: true }))
                     }
                     required
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -125,6 +126,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                       setTouched((prev) => ({ ...prev, last_name: true }))
                     }
                     required
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -145,7 +147,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                       setTouched((prev) => ({ ...prev, email: true }))
                     }
                     required
-                    disabled={!!initial}
+                    disabled={viewOnly}
                   />
                 </div>
                 {!initial && (
@@ -169,6 +171,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                       required
                       minLength={6}
                       placeholder="Enter password"
+                      disabled={viewOnly}
                     />
                   </div>
                 )}
@@ -198,10 +201,12 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                         permission_id: role ? role._id : "",
                       })
                     }
+                    disabled={viewOnly}
                   >
                     <div className="relative">
                       <Listbox.Button
-                        className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${!user.role && !initial && (touched.role || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${viewOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!user.role && !initial && (touched.role || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                        disabled={viewOnly}
                       >
                         <span>
                           {roles.find((role) => role.name === user.role)
@@ -244,6 +249,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, phone: true }))
                     }
+                    disabled={viewOnly}
                   />
                 </div>
               </div>
@@ -267,6 +273,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                         address: { ...user.address, street: e.target.value },
                       })
                     }
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -281,6 +288,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                         address: { ...user.address, house: e.target.value },
                       })
                     }
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -303,6 +311,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, village: true }))
                     }
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -325,6 +334,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, commune: true }))
                     }
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -347,6 +357,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, district: true }))
                     }
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -369,6 +380,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, province: true }))
                     }
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -391,6 +403,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, country: true }))
                     }
+                    disabled={viewOnly}
                   />
                 </div>
               </div>
@@ -411,10 +424,12 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                     className="hidden"
                     id="image-upload"
                     onChange={handleImageChange}
+                    disabled={viewOnly}
                   />
                   <label
                     htmlFor="image-upload"
-                    className="flex flex-col items-center cursor-pointer w-full h-full"
+                    className={`flex flex-col items-center w-full h-full ${viewOnly ? "cursor-default opacity-60" : "cursor-pointer"}`}
+                    style={viewOnly ? { pointerEvents: "none" } : {}}
                   >
                     <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
                     <span className="text-gray-600">
@@ -450,32 +465,35 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
               className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
               onClick={onClose}
             >
-              <HiXCircle className="inline-block text-xl" /> Cancel
+              <HiXCircle className="inline-block text-xl" />
+              {viewOnly ? "Close" : "Cancel"}
             </button>
-            <button
-              type="button"
-              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
-              onClick={() => {
-                setValidateOnSave(true);
-                setTouched({
-                  first_name: true,
-                  last_name: true,
-                  email: true,
-                  password: true,
-                  role: true,
-                  phone: true,
-                  village: true,
-                  commune: true,
-                  district: true,
-                  province: true,
-                  country: true,
-                });
-                onSave(user);
-              }}
-            >
-              <HiOutlineDocumentText className="inline-block text-xl" />
-              {initial ? "Update User" : "Add User"}
-            </button>
+            {!viewOnly && (
+              <button
+                type="button"
+                className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
+                onClick={() => {
+                  setValidateOnSave(true);
+                  setTouched({
+                    first_name: true,
+                    last_name: true,
+                    email: true,
+                    password: true,
+                    role: true,
+                    phone: true,
+                    village: true,
+                    commune: true,
+                    district: true,
+                    province: true,
+                    country: true,
+                  });
+                  onSave(user);
+                }}
+              >
+                <HiOutlineDocumentText className="inline-block text-xl" />
+                {initial ? "Update User" : "Add User"}
+              </button>
+            )}
           </div>
         </div>
       </div>
