@@ -206,13 +206,19 @@ const Stocks = () => {
     <div>
       <StockOutModal
         open={stockOutOpen}
-        onClose={() => setStockOutOpen(false)}
+        onClose={() => {
+          setStockOutOpen(false);
+          fetchStocks();
+        }}
         products={products}
         locations={locationOptions.filter((loc) => loc !== "All Locations")}
       />
       <StockInModal
         open={stockInOpen}
-        onClose={() => setStockInOpen(false)}
+        onClose={() => {
+          setStockInOpen(false);
+          fetchStocks();
+        }}
         products={products}
         locations={locationOptions.filter((loc) => loc !== "All Locations")}
       />

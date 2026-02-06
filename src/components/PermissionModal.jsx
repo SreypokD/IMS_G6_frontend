@@ -125,18 +125,25 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
     }
   }, [open, initial]);
 
+  function updatePermissionsState(updater) {
+    setEditPermission((prev) => {
+      const currentPerms = Array.isArray(prev.permissions)
+        ? prev.permissions.filter((p) => typeof p === "string")
+        : [];
+      const newPerms = updater(new Set(currentPerms));
+      return { ...prev, permissions: Array.from(newPerms) };
+    });
+  }
+
   function handlePermissionChange(e) {
     const { name, value, checked } = e.target;
     if (name === "name" || name === "description") {
       setEditPermission((f) => ({ ...f, [name]: value }));
     } else {
-      setEditPermission((f) => {
-        let perms = Array.isArray(f.permissions) ? f.permissions : [];
-        perms = perms.filter((p) => typeof p === "string");
-        const set = new Set(perms);
+      updatePermissionsState((set) => {
         if (checked) set.add(value);
         else set.delete(value);
-        return { ...f, permissions: Array.from(set) };
+        return set;
       });
     }
   }
@@ -219,20 +226,13 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                             permission.permissions?.includes(a),
                           )}
                           onChange={(e) => {
-                            setEditPermission((f) => {
-                              let perms = Array.isArray(f.permissions)
-                                ? f.permissions
-                                : [];
-                              perms = perms.filter(
-                                (p) => typeof p === "string",
-                              );
-                              const set = new Set(perms);
+                            updatePermissionsState((set) => {
                               if (e.target.checked) {
                                 row.actions.forEach((a) => set.add(a));
                               } else {
                                 row.actions.forEach((a) => set.delete(a));
                               }
-                              return { ...f, permissions: Array.from(set) };
+                              return set;
                             });
                           }}
                         />

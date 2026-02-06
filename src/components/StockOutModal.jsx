@@ -63,7 +63,10 @@ const StockOutModal = ({ open, onClose, products, locations }) => {
               Record inventory transaction
             </span>
           </div>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form
+           
+            className="space-y-5 overflow-auto max-h-[50vh] px-1"
+          >
             <div>
               <label className="block font-medium mb-1">
                 Product

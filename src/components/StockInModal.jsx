@@ -49,6 +49,14 @@ const StockInModal = ({ open, onClose, products, locations }) => {
     }
   };
 
+  const onSave = () => {
+    setValidateOnSave(true);
+    if (!productId || !quantity || !reason || !location) {
+      return;
+    }
+    handleSubmit();
+  };
+
   if (!open) return null;
 
   return (
@@ -62,7 +70,7 @@ const StockInModal = ({ open, onClose, products, locations }) => {
               Record inventory transaction
             </span>
           </div>
-          <form className="space-y-4">
+          <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
             <div>
               <label className="block font-medium mb-1">
                 Product
@@ -223,7 +231,7 @@ const StockInModal = ({ open, onClose, products, locations }) => {
                   reason: true,
                   location: true,
                 });
-                handleSubmit();
+                onSave();
               }}
             >
               <HiOutlineDocumentText className="inline-block text-xl" /> Confirm

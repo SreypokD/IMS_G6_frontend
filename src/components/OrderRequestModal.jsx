@@ -14,11 +14,12 @@ import {
   createOrderRequest,
   updateOrderRequest,
 } from "../api";
+import { BsCurrencyDollar } from "react-icons/bs";
 import { useDialog } from "../contexts/dialog/useDialog";
 
 const initialOrderRequest = {
   supplier_id: "",
-  delivery_date: "",
+  delivery_date: new Date().toISOString().slice(0, 10),
   notes: "",
   orderItems: [
     { product_id: "", quantity: 1, unit_price: null, subtotal: null },
@@ -237,9 +238,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                 <div>
                   <label className="block text-base font-medium mb-1">
                     Supplier
-                    {!viewOnly && !order.supplier_id ? (
-                      <sup className="text-red-500">*</sup>
-                    ) : null}
+                    {!viewOnly ? <sup className="text-red-500">*</sup> : null}
                   </label>
                   <Listbox
                     value={
@@ -290,9 +289,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                 <div>
                   <label className="block text-base font-medium mb-1">
                     Delivery Date
-                    {!viewOnly && !order.delivery_date ? (
-                      <sup className="text-red-500">*</sup>
-                    ) : null}
+                    {!viewOnly ? <sup className="text-red-500">*</sup> : null}
                   </label>
                   <input
                     name="delivery_date"
@@ -318,7 +315,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                     <div>
                       <label className="block text-base font-medium mb-1">
                         Product
-                        {!viewOnly && !item.product_id ? (
+                        {!viewOnly ? (
                           <sup className="text-red-500">*</sup>
                         ) : null}
                       </label>
@@ -374,7 +371,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                     <div>
                       <label className="block text-base font-medium mb-1">
                         Quantity
-                        {!viewOnly && !item.quantity ? (
+                        {!viewOnly ? (
                           <sup className="text-red-500">*</sup>
                         ) : null}
                       </label>
@@ -457,6 +454,22 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                   </button>
                 </div>
               )}
+            </div>
+            <div>
+              <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+                <BsCurrencyDollar className="inline-block text-xl text-black" />
+                <span>Total</span>
+              </h3>
+              <input
+                type="text"
+                min={0}
+                className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200 text-right`}
+                placeholder="Unit Price"
+                value={order.orderItems
+                  .reduce((acc, item) => acc + (Number(item.subtotal) || 0), 0)
+                  .toFixed(2)}
+                disabled
+              />
             </div>
             <div>
               <label className="block text-base font-medium mb-1">

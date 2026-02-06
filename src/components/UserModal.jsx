@@ -195,7 +195,7 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                       setUser({
                         ...user,
                         role: role ? role.name : "",
-                        permission_id: role ? role._id : ""
+                        permission_id: role ? role._id : "",
                       })
                     }
                   >
@@ -464,8 +464,6 @@ const UserModal = ({ open, onClose, onSave, initial }) => {
                   password: true,
                   role: true,
                   phone: true,
-                  street: true,
-                  house: true,
                   village: true,
                   commune: true,
                   district: true,
