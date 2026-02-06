@@ -133,12 +133,12 @@ const navLinks = (permissions = [], activePath = "") =>
       ),
     },
     permissions.includes("view_activity_log") && {
-      to: "/activity-log",
-      label: "Activity Log",
+      to: "/activity-logs",
+      label: "Activity Logs",
       icon: (
         <HiOutlineAnnotation
           className={
-            activePath === "/activity-log" ? "text-white" : "text-amber-500"
+            activePath === "/activity-logs" ? "text-white" : "text-amber-500"
           }
         />
       ),
@@ -218,7 +218,7 @@ const Sidebar = ({ mini }) => {
         {!mini && <span>Stockify IMS</span>}
       </div>
       <nav className="flex-1 min-h-0">
-        <ul className="space-y-2 overflow-y-auto h-[calc(100vh-110px)] px-3">
+        <ul className="space-y-2 overflow-y-auto h-[calc(100vh-85px)] px-3">
           {links.map((link, i) => {
             const parentKey = link.label || link.to || i;
             if (link.submenus) {
@@ -226,13 +226,13 @@ const Sidebar = ({ mini }) => {
               return (
                 <li key={parentKey}>
                   <div
-                    className={`group flex items-center justify-between cursor-pointer px-3 py-2 rounded-xl transition font-base text-base space-x-3 mb-2 text-[#64748b] hover:bg-[#f1f5f9] hover:text-black`}
+                    className={`group flex items-center justify-between cursor-pointer px-3 py-2 rounded-xl transition text-sm space-x-3 mb-2 text-[#64748b] hover:bg-[#f1f5f9] hover:text-black`}
                     onClick={() => setExpanded(isExpanded ? null : parentKey)}
                   >
                     <div className="flex items-center space-x-3">
                       <span className="text-xl">{link.icon}</span>
                       {!mini && (
-                        <span className="text-base mt-0.5">{link.label}</span>
+                        <span className="text-sm mt-0.5">{link.label}</span>
                       )}
                     </div>
                     <HiChevronRight
@@ -255,7 +255,7 @@ const Sidebar = ({ mini }) => {
                           <li key={submenuKey}>
                             <Link
                               to={submenu.to}
-                              className={`group flex items-center px-3 py-2 rounded-xl transition font-base text-base space-x-3
+                              className={`group flex items-center px-3 py-2 rounded-xl transition text-sm space-x-3
                             ${
                               location.pathname === submenu.to
                                 ? "bg-[#1e3a5f] text-white hover:bg-[#1e3a5f]"
@@ -264,7 +264,7 @@ const Sidebar = ({ mini }) => {
                             >
                               <span className="text-xl">{submenu.icon}</span>
                               {!mini && (
-                                <span className="text-base mt-0.5">
+                                <span className="text-sm mt-0.5">
                                   {submenu.label}
                                 </span>
                               )}
@@ -281,7 +281,7 @@ const Sidebar = ({ mini }) => {
                 <li key={parentKey}>
                   <Link
                     to={link.to}
-                    className={`group flex items-center px-3 py-2 rounded-xl transition font-base text-base space-x-3 relative
+                    className={`group flex items-center px-3 py-2 rounded-xl transition text-sm space-x-3 relative
                     ${
                       location.pathname === link.to ||
                       location.pathname.includes(link.to + "/")
@@ -292,7 +292,7 @@ const Sidebar = ({ mini }) => {
                   >
                     <span className="text-xl">{link.icon}</span>
                     {!mini && (
-                      <span className="text-base mt-0.5 flex items-center gap-2">
+                      <span className="text-sm mt-0.5 flex items-center gap-2">
                         {link.label}
                         {isApproveRequests && approveBadge > 0 && (
                           <span className="absolute -top-2 -right-2 bg-red-500 text-white text-sm rounded-full w-6 h-6 pt-0.5 flex items-center justify-center font-bold border-2 border-white">

@@ -4,6 +4,7 @@ import {
   HiOutlinePencil,
   HiOutlineTrash,
   HiOutlineFilter,
+  HiOutlineRefresh,
 } from "react-icons/hi";
 import CategoryModal from "../components/CategoryModal";
 import {
@@ -119,8 +120,8 @@ const Categories = () => {
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
-          <h1 className="text-2xl font-semibold">Categories Management</h1>
-          <span className="text-gray-500">
+          <h1 className="text-xl font-semibold">Categories Management</h1>
+          <span className="text-gray-500 text-sm">
             Organize and manage product categories
           </span>
         </div>
@@ -137,17 +138,23 @@ const Categories = () => {
         )}
       </div>
       <div className="bg-white rounded-xl p-6 mb-4 border border-gray-200">
-        <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
-          <HiOutlineFilter className="inline-block text-xl text-black" />
-          <span>Filters</span>
-        </h3>
+        <div className="w-full flex items-center justify-between">
+          <h3 className="flex items-center gap-2 text-base mb-2 text-black">
+            <HiOutlineFilter className="inline-block text-xl text-black" />
+            <span>Filters</span>
+          </h3>
+          <button className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer">
+            <HiOutlineRefresh className="inline-block text-xl text-black" />
+            <span>Reset</span>
+          </button>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-gray-700 text-base font-bold mb-2">
+            <label className="block text-gray-700 text-sm mb-1">
               Search
             </label>
             <input
-              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
+              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
               placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -161,22 +168,22 @@ const Categories = () => {
         ) : error ? (
           <div className="p-8 text-center text-red-500">{error}</div>
         ) : (
-          <table className="min-w-full text-left text-base align-middle">
+          <table className="min-w-full text-left text-sm align-middle">
             <thead>
               <tr>
-                <th>No.</th>
+                <th className="number">No.</th>
                 <th>Name</th>
                 <th>Description</th>
                 {user?.permission?.permissions?.includes("update_category") ||
                 user?.permission?.permissions?.includes("delete_category") ? (
-                  <th className="text-center">Actions</th>
+                  <th className="text-center action">Actions</th>
                 ) : null}
               </tr>
             </thead>
             <tbody>
               {categories.map((category, index) => (
                 <tr key={category._id}>
-                  <td>
+                  <td className="number">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
                   <td>{category.name}</td>

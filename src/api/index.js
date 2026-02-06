@@ -68,6 +68,7 @@ const sales = "/sales";
 const inventorySummary = "/reports/inventory-summary";
 const orderStats = "/reports/order-stats";
 const activityLogs = "/reports/activity-logs";
+const trends = "/reports/trends";
 const permissions = "/permissions";
 const users = "/users";
 
@@ -83,6 +84,9 @@ export const getProfile = () => api.get(profile);
 // Dashboard Report
 export const getInventorySummary = () => api.get(inventorySummary);
 export const getOrderStats = (params) => api.get(orderStats, { params });
+export const getTrends = () => api.get(trends);
+export const getRecentOrders = () => api.get(orderRequests, { params: { limit: 5, page: 1, sort: "createdAt:desc" } });
+export const getRecentActivity = () => api.get(activityLogs, { params: { limit: 5, page: 1 } });
 
 // Product CRUD
 export const getProducts = (params = {}) => api.get(products, { params });
@@ -126,8 +130,9 @@ export const createSale = (data) => api.post(sales, data);
 
 // Stocks
 export const getStocks = (params = {}) => api.get(stocks, { params });
+export const getStockSummary = (params = {}) => api.get(`${stocks}/summary`, { params });
 export const createStock = (data) => api.post(stocks, data);
-export const updateStock = (id, data) => api.patch(`${stocks}/${id}`, data);
+export const updateStock = (id, data) => api.put(`${stocks}/${id}`, data);
 export const deleteStock = (id) => api.delete(`${stocks}/${id}`);
 
 // Activity Logs

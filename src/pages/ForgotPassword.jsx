@@ -51,13 +51,13 @@ const ForgotPassword = () => {
           <h2 className="text-3xl font-bold text-center text-gray-800 tracking-tight">
             Forgot Your Password?
           </h2>
-          <span className="block mb-6 text-base text-center text-gray-400">
+          <span className="block mb-6 text-sm text-center text-gray-400">
             Enter your email address and we'll send you a link to reset your
             password.
           </span>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-gray-600 mb-1 text-base font-medium">
+              <label className="block text-gray-600 mb-1 text-sm font-medium">
                 Email Address <sup className="text-red-500">*</sup>
               </label>
               <input
@@ -71,12 +71,12 @@ const ForgotPassword = () => {
               />
             </div>
             {error && (
-              <div className="my-4 text-red-500 text-center text-base font-medium">
+              <div className="my-4 text-red-500 text-center text-sm font-medium">
                 {error}
               </div>
             )}
             {message && (
-              <div className="my-4 text-green-600 text-center text-base font-medium">
+              <div className="my-4 text-green-600 text-center text-sm font-medium">
                 {message}
               </div>
             )}
@@ -90,7 +90,7 @@ const ForgotPassword = () => {
           </form>
         </div>
         <br />
-        <span className="block text-base text-[#1e3a5f] text-center mt-6">
+        <span className="block text-sm text-[#1e3a5f] text-center mt-6">
           © 2026 Inventory. All rights reserved.
         </span>
       </div>

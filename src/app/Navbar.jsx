@@ -74,7 +74,7 @@ const Header = ({ onBellClick }) => {
             className="relative mt-2 focus:outline-none hover:text-blue-700 transition hover:cursor-pointer"
             onClick={() => setNotificationOpen((v) => !v)}
           >
-            <HiOutlineBell className="text-gray-500 hover:text-[#1e3a5f] text-2xl" />
+            <HiOutlineBell className="text-gray-500 hover:text-[#1e3a5f] text-xl" />
             {unreadCount > 0 && (
               <span className="absolute -top-3 -right-3 bg-red-500 text-white text-sm rounded-full w-6 h-6 pt-0.5 flex items-center justify-center font-bold border-2 border-white">
                 {unreadCount}
@@ -84,13 +84,13 @@ const Header = ({ onBellClick }) => {
           {notificationOpen && (
             <div className="absolute right-0 top-10 bg-white rounded-2xl shadow-lg p-2 w-120 z-50 animate-fade-in-up border border-gray-100">
               <div className="px-2 pt-2">
-                <div className="font-bold text-lg leading-tight">
+                <div className="font-bold text-base leading-tight">
                   Notifications
                 </div>
               </div>
               <hr className="my-2 border-gray-200" />
               {notifications.length === 0 ? (
-                <div className="w-full p-2 text-[#64748b] text-center text-base space-x-2 rounded-xl cursor-pointer">
+                <div className="w-full p-2 text-[#64748b] text-center text-sm space-x-2 rounded-xl cursor-pointer">
                   No notifications
                 </div>
               ) : (
@@ -98,7 +98,7 @@ const Header = ({ onBellClick }) => {
                   {notifications.map((n) => (
                     <li
                       key={n._id}
-                      className="w-full flex items-center justify-between p-2 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 cursor-pointer"
+                      className="w-full flex items-center justify-between p-2 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 cursor-pointer"
                       onClick={() => handleNotificationClick(n)}
                     >
                       <div className="flex flex-col text-sm text-gray-900">
@@ -140,39 +140,37 @@ const Header = ({ onBellClick }) => {
                   }}
                 />
               ) : (
-                <HiUser className="text-white text-2xl" />
+                <HiUser className="text-white text-xl" />
               )}
             </div>
             <div className="flex flex-col items-start text-left">
-              <span className="text-gray-900 text-base leading-tight">
+              <span className="text-gray-900 text-sm leading-tight">
                 {user?.first_name + " " + user?.last_name || "User"}
               </span>
             </div>
             <HiChevronDown className="text-gray-400 text-xl ml-1" />
           </button>
           {menuOpen && (
-            <div className="absolute right-0 top-11 bg-white rounded-2xl shadow-lg p-2 w-68 z-50 animate-fade-in-up border border-gray-100">
+            <div className="absolute right-0 top-11 bg-white rounded-2xl shadow-lg p-2 w-60 z-50 animate-fade-in-up border border-gray-100">
               <div className="px-3 pt-3">
-                <div className="font-bold text-lg leading-tight">
+                <div className="font-bold text-base leading-tight">
                   {user?.first_name + " " + user?.last_name}
                   <span className="ml-2 capitalize">({user?.role})</span>
                 </div>
-                <div className="text-gray-500 text-base mb-1">
-                  {user?.email}
-                </div>
+                <div className="text-gray-500 text-sm mb-1">{user?.email}</div>
               </div>
               <hr className="my-2 border-gray-200" />
-              <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 rounded-xl cursor-pointer">
+              <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer">
                 <HiUser className="text-xl" />
-                <span className="mt-1">Profile Settings</span>
+                <span>Profile Settings</span>
               </button>
-              <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 rounded-xl cursor-pointer">
+              <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer">
                 <HiOutlineCog className="text-xl" />
-                <span className="mt-1">Account Settings</span>
+                <span>Account Settings</span>
               </button>
-              <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-base space-x-2 rounded-xl cursor-pointer">
+              <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer">
                 <HiOutlineQuestionMarkCircle className="text-xl" />
-                <span className="mt-1">Help & Support</span>
+                <span>Help & Support</span>
               </button>
               <hr className="my-2 border-gray-200" />
               <button
@@ -181,10 +179,10 @@ const Header = ({ onBellClick }) => {
                   e.preventDefault();
                   handleLogout();
                 }}
-                className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-100 transition text-base space-x-2 rounded-xl cursor-pointer"
+                className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-100 transition text-sm space-x-2 rounded-xl cursor-pointer"
               >
                 <HiOutlineLogout className="text-red-500 text-xl" />
-                <span className="mt-1">Logout</span>
+                <span>Logout</span>
               </button>
             </div>
           )}

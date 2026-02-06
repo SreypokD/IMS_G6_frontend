@@ -60,8 +60,8 @@ const Sales = () => {
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
-          <h1 className="text-2xl font-semibold">Sales Management</h1>
-          <span className="text-gray-500">
+          <h1 className="text-xl font-semibold">Sales Management</h1>
+          <span className="text-gray-500 text-sm">
             Record and track all sales transactions with customer information
           </span>
         </div>
@@ -82,8 +82,8 @@ const Sales = () => {
             </div>
           </div>
           <div>
-            <div className="text-gray-500 text-base">Total Revenue</div>
-            <div className="text-2xl font-bold">$571.87</div>
+            <div className="text-gray-500 text-sm">Total Revenue</div>
+            <div className="text-xl font-bold">$571.87</div>
           </div>
         </div>
         <div className="bg-white rounded-xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
@@ -95,8 +95,8 @@ const Sales = () => {
             </div>
           </div>
           <div>
-            <div className="text-gray-500 text-base">Total Sales</div>
-            <div className="text-2xl font-bold">6</div>
+            <div className="text-gray-500 text-sm">Total Sales</div>
+            <div className="text-xl font-bold">6</div>
           </div>
         </div>
         <div className="bg-white rounded-xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
@@ -108,8 +108,8 @@ const Sales = () => {
             </div>
           </div>
           <div>
-            <div className="text-gray-500 text-base">Avg Transaction</div>
-            <div className="text-2xl font-bold">$95.31</div>
+            <div className="text-gray-500 text-sm">Avg Transaction</div>
+            <div className="text-xl font-bold">$95.31</div>
           </div>
         </div>
         <div className="bg-white rounded-xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
@@ -121,8 +121,8 @@ const Sales = () => {
             </div>
           </div>
           <div>
-            <div className="text-gray-500 text-base">Pending Payments</div>
-            <div className="text-2xl font-bold">$145.96</div>
+            <div className="text-gray-500 text-sm">Pending Payments</div>
+            <div className="text-xl font-bold">$145.96</div>
           </div>
         </div>
       </div>
@@ -132,10 +132,10 @@ const Sales = () => {
         ) : error ? (
           <div className="p-8 text-center text-red-500">{error}</div>
         ) : (
-          <table className="min-w-full text-left text-base align-middle">
+          <table className="min-w-full text-left text-sm align-middle">
             <thead>
               <tr>
-                <th>No.</th>
+                <th className="number">No.</th>
                 <th>Transaction ID</th>
                 <th>Status</th>
                 <th>Completed At</th>
@@ -144,7 +144,7 @@ const Sales = () => {
             <tbody>
               {sales.map((sale, index) => (
                 <tr key={sale._id}>
-                  <td>
+                  <td className="number">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
                   <td>{sale.quantity}</td>

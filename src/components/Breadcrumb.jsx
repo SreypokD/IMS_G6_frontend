@@ -43,17 +43,17 @@ const Breadcrumb = () => {
   const segments = location.pathname.split("/").filter(Boolean);
   return (
     <nav className="mb-4" aria-label="Breadcrumb">
-      <div className="flex items-center text-base gap-2 space-x-1">
+      <div className="flex items-center text-sm gap-2 space-x-1">
         <Link
           to="/"
           className="text-[#1e3a5f] hover:text-black flex items-center"
         >
           <HiOutlineHome className="text-lg" />
-          <span className="text-base ml-2">Home</span>
+          <span className="text-sm ml-2">Home</span>
         </Link>
         <HiChevronRight className="text-xl text-[#1e3a5f]" />
         {segments.length === 0 ? (
-          <span className="text-black text-base">Dashboard</span>
+          <span className="text-black text-sm">Dashboard</span>
         ) : (
           segments.map((seg, i) => {
             let path = "/" + segments.slice(0, i + 1).join("/");
@@ -64,7 +64,7 @@ const Breadcrumb = () => {
                   <HiChevronRight className="text-xl text-[#1e3a5f]" />
                 )}
                 {isLast ? (
-                  <span className="text-black text-base">
+                  <span className="text-black text-sm">
                     {routeName(seg, segments, i)}
                   </span>
                 ) : (

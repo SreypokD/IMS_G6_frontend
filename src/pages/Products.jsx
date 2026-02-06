@@ -6,7 +6,7 @@ import {
   HiOutlineTrash,
   HiOutlinePlus,
   HiOutlineEye,
-  HiOutlineFilter,
+  HiOutlineFilter,HiOutlineRefresh
 } from "react-icons/hi";
 import ProductModal from "../components/ProductModal.jsx";
 import {
@@ -38,7 +38,7 @@ function CategoryDropdown({
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
           <span>
             {categories.find((p) => p._id === selected)?.name ||
               "All Categories"}
@@ -47,7 +47,7 @@ function CategoryDropdown({
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
             value=""
           >
             <span>All Categories</span>
@@ -57,7 +57,7 @@ function CategoryDropdown({
               key={option._id}
               value={option._id}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option.name}
@@ -77,7 +77,7 @@ function SupplierDropdown({
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
           <span>
             {suppliers.find((p) => p._id === selected)?.company_name ||
               "All Suppliers"}
@@ -86,7 +86,7 @@ function SupplierDropdown({
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
             value=""
           >
             <span>All Suppliers</span>
@@ -96,7 +96,7 @@ function SupplierDropdown({
               key={option._id}
               value={option._id}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option.company_name}
@@ -112,7 +112,7 @@ function StatusDropdown({ selected, setSelected, statusOptions }) {
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
           <span>
             {statusOptions.find((p) => p.value === selected)?.label ||
               "All Statuses"}
@@ -125,7 +125,7 @@ function StatusDropdown({ selected, setSelected, statusOptions }) {
               key={option.value}
               value={option.value}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option.label}
@@ -332,8 +332,8 @@ const Products = () => {
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
-          <h1 className="text-2xl font-semibold">Products Management</h1>
-          <span className="text-gray-500">
+          <h1 className="text-xl font-semibold">Products Management</h1>
+          <span className="text-gray-500 text-sm">
             Manage your product catalog and inventory
           </span>
         </div>
@@ -348,24 +348,30 @@ const Products = () => {
         )}
       </div>
       <div className="bg-white rounded-xl p-6 mb-4 border border-gray-200">
-        <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
-          <HiOutlineFilter className="inline-block text-xl text-black" />
-          <span>Filters</span>
-        </h3>
+        <div className="w-full flex items-center justify-between">
+          <h3 className="flex items-center gap-2 text-base mb-2 text-black">
+            <HiOutlineFilter className="inline-block text-xl text-black" />
+            <span>Filters</span>
+          </h3>
+          <button className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer">
+            <HiOutlineRefresh className="inline-block text-xl text-black" />
+            <span>Reset</span>
+          </button>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-gray-700 text-base font-bold mb-2">
+            <label className="block text-gray-700 text-sm mb-1">
               Search
             </label>
             <input
-              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
+              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
               placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-base font-bold mb-2">
+            <label className="block text-gray-700 text-sm mb-1">
               Category
             </label>
             <CategoryDropdown
@@ -375,7 +381,7 @@ const Products = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-base font-bold mb-2">
+            <label className="block text-gray-700 text-sm mb-1">
               Supplier
             </label>
             <SupplierDropdown
@@ -385,7 +391,7 @@ const Products = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-base font-bold mb-2">
+            <label className="block text-gray-700 text-sm mb-1">
               Stock Status
             </label>
             <StatusDropdown
@@ -402,23 +408,23 @@ const Products = () => {
         ) : error ? (
           <div className="p-8 text-center text-red-500">{error}</div>
         ) : (
-          <table className="min-w-full text-left text-base align-middle">
+          <table className="min-w-full text-left text-sm align-middle">
             <thead>
               <tr>
-                <th>No.</th>
+                <th className="number">No.</th>
                 <th>Product Code</th>
                 <th>Product Name</th>
                 <th>Category</th>
                 <th>Supplier</th>
                 <th className="text-right">Stock</th>
                 <th className="text-right">Price</th>
-                <th className="text-center">Actions</th>
+                <th className="text-center action">Actions</th>
               </tr>
             </thead>
             <tbody>
               {products.map((product, index) => (
                 <tr key={product._id}>
-                  <td>
+                  <td className="number">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
                   <td>#{product.code}</td>
@@ -438,7 +444,7 @@ const Products = () => {
                   </td>
                   <td className="text-right">
                     <span
-                      className={`text-base ${product.stock === 0 ? "text-red-600" : product.stock < 10 ? "text-orange-600" : "text-green-600"}`}
+                      className={`text-sm ${product.stock === 0 ? "text-red-600" : product.stock < 10 ? "text-orange-600" : "text-green-600"}`}
                     >
                       {product.stock} units
                     </span>
@@ -446,7 +452,7 @@ const Products = () => {
                   <td className="text-right">
                     ${Number(product.price).toFixed(2)}
                   </td>
-                  <td className="flex items-center gap-1 justify-center">
+                  <td className="flex items-center gap-1 justify-center action">
                     {user?.permission?.permissions?.includes(
                       "view_product",
                     ) && (

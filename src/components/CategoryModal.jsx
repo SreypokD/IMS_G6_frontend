@@ -43,12 +43,12 @@ const CategoryModal = ({ open, onClose, onSave, initial }) => {
     <div>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
         <div className="bg-white rounded-2xl p-5 w-full max-w-[30%] max-h-[80vh] shadow-xl relative">
-          <h2 className="text-2xl font-bold mb-6 text-center">
+          <h2 className="text-xl font-bold mb-6 text-center">
             {initial ? "Edit Category" : "Add Category"}
           </h2>
           <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
             <div>
-              <label className="block text-base font-medium mb-1">
+              <label className="block text-sm font-medium mb-1">
                 Name <sup className="text-red-500">*</sup>
               </label>
               <input
@@ -67,7 +67,7 @@ const CategoryModal = ({ open, onClose, onSave, initial }) => {
               )}
             </div>
             <div>
-              <label className="block text-base font-medium mb-1">
+              <label className="block text-sm font-medium mb-1">
                 Description
               </label>
               <textarea

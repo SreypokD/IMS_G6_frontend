@@ -73,7 +73,7 @@ const Dialog = ({
           {title || defaultTitle}
         </h2>
         <p
-          className={`${children ? "mb-4" : "mb-8"} text-center text-base text-gray-500`}
+          className={`${children ? "mb-4" : "mb-8"} text-center text-sm text-gray-500`}
         >
           {message}
         </p>

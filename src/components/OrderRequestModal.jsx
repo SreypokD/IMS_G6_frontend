@@ -220,8 +220,8 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
   return (
     <div>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
-        <div className="bg-white rounded-2xl p-6 w-full max-w-[60vw] max-h-[90vh] shadow-xl relative">
-          <h2 className="text-2xl font-bold mb-6 text-center">
+        <div className="bg-white rounded-2xl p-5 w-full max-w-[60%] max-h-[80vh] shadow-xl relative">
+          <h2 className="text-xl font-bold mb-6 text-center">
             {viewOnly
               ? "View Order Request"
               : initial
@@ -230,13 +230,13 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
           </h2>
           <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
             <div className="col-span-2 mb-2">
-              <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+              <h3 className="flex items-center gap-2 text-base mb-2 text-black">
                 <HiOutlineDocumentText className="inline-block text-xl text-black" />
                 <span>Basic Information</span>
               </h3>
               <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
                 <div>
-                  <label className="block text-base font-medium mb-1">
+                  <label className="block text-sm font-medium mb-1">
                     Supplier
                     {!viewOnly ? <sup className="text-red-500">*</sup> : null}
                   </label>
@@ -276,7 +276,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                             key={supplier._id}
                             value={supplier}
                             className={({ selected }) =>
-                              `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                              `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                             }
                           >
                             {supplier.company_name}
@@ -287,7 +287,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                   </Listbox>
                 </div>
                 <div>
-                  <label className="block text-base font-medium mb-1">
+                  <label className="block text-sm font-medium mb-1">
                     Delivery Date
                     {!viewOnly ? <sup className="text-red-500">*</sup> : null}
                   </label>
@@ -305,7 +305,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
               </div>
             </div>
             <div className="col-span-2 mb-2">
-              <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+              <h3 className="flex items-center gap-2 text-base mb-2 text-black">
                 <HiCube className="inline-block text-xl text-black" />
                 <span>Products</span>
               </h3>
@@ -313,7 +313,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                 <div key={idx} className="w-full flex items-center">
                   <div className="w-full mb-3 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
                     <div>
-                      <label className="block text-base font-medium mb-1">
+                      <label className="block text-sm font-medium mb-1">
                         Product
                         {!viewOnly ? (
                           <sup className="text-red-500">*</sup>
@@ -357,7 +357,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                                 key={product._id}
                                 value={product}
                                 className={({ selected }) =>
-                                  `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                                  `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                                 }
                               >
                                 {product.name} (Stock:
@@ -369,7 +369,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                       </Listbox>
                     </div>
                     <div>
-                      <label className="block text-base font-medium mb-1">
+                      <label className="block text-sm font-medium mb-1">
                         Quantity
                         {!viewOnly ? (
                           <sup className="text-red-500">*</sup>
@@ -393,7 +393,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-base font-medium mb-1">
+                      <label className="block text-sm font-medium mb-1">
                         Unit Price
                       </label>
                       <input
@@ -406,7 +406,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-base font-medium mb-1">
+                      <label className="block text-sm font-medium mb-1">
                         Line Total
                       </label>
                       <input
@@ -456,7 +456,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
               )}
             </div>
             <div>
-              <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+              <h3 className="flex items-center gap-2 text-base mb-2 text-black">
                 <BsCurrencyDollar className="inline-block text-xl text-black" />
                 <span>Total</span>
               </h3>
@@ -472,7 +472,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
               />
             </div>
             <div>
-              <label className="block text-base font-medium mb-1">
+              <label className="block text-sm font-medium mb-1">
                 Notes / Remarks
               </label>
               <textarea

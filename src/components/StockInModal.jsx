@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/auth/useAuth";
-import { createStock } from "../api";
+import { createStock, updateStock } from "../api";
 import { Listbox } from "@headlessui/react";
 import {
   HiSelector,
@@ -9,8 +9,9 @@ import {
   HiExclamationCircle,
   HiOutlineDownload,
 } from "react-icons/hi";
+import { useDialog } from "../contexts/dialog/useDialog";
 
-const StockInModal = ({ open, onClose, products, locations }) => {
+const StockInModal = ({ open, onClose, products, locations, initialData }) => {
   const { user } = useAuth();
   const [productId, setProductId] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -21,16 +22,41 @@ const StockInModal = ({ open, onClose, products, locations }) => {
   const [loading, setLoading] = useState(false);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
+  const dialog = useDialog();
+
+  useEffect(() => {
+    if (open) {
+      if (initialData) {
+        setProductId(initialData.product_id || initialData.product?._id || "");
+        setQuantity(initialData.quantity || "");
+        setBatchNumber(initialData.batch_number || "");
+        setReason(initialData.reason || "");
+        setLocation(initialData.location || "");
+        setNotes(initialData.note || "");
+        setTouched({});
+        setValidateOnSave(false);
+      } else {
+        setProductId("");
+        setQuantity("");
+        setBatchNumber("");
+        setReason("");
+        setLocation("");
+        setNotes("");
+        setTouched({});
+        setValidateOnSave(false);
+      }
+    }
+  }, [open, initialData]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setLoading(true);
     if (!productId || !quantity || !reason || !location) {
       setLoading(false);
       return;
     }
     try {
-      await createStock({
+      const payload = {
         product_id: productId,
         quantity: Number(quantity),
         batch_number: batchNumber,
@@ -40,21 +66,24 @@ const StockInModal = ({ open, onClose, products, locations }) => {
         type: "in",
         user_id: user?._id,
         completed_at: new Date(),
-      });
+      };
+
+      if (initialData) {
+        await updateStock(initialData._id, payload);
+        dialog.success("Stock in updated successfully");
+      } else {
+        await createStock(payload);
+        dialog.success("Stock in created successfully");
+      }
       onClose();
-    } catch {
-      // no error handling for now
+    } catch (error) {
+      dialog.error(
+        `Failed to ${initialData ? "update" : "create"} stock in: ` +
+          (error.response?.data?.error || error.message),
+      );
     } finally {
       setLoading(false);
     }
-  };
-
-  const onSave = () => {
-    setValidateOnSave(true);
-    if (!productId || !quantity || !reason || !location) {
-      return;
-    }
-    handleSubmit();
   };
 
   if (!open) return null;
@@ -65,9 +94,13 @@ const StockInModal = ({ open, onClose, products, locations }) => {
         <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] max-h-[80vh] shadow-xl relative">
           <div className="mb-6 text-center">
             <HiOutlineDownload className="text-3xl text-green-600 mx-auto mb-2" />
-            <h2 className="text-2xl font-bold mb-2 text-center">Stock In</h2>
-            <span className="text-base text-gray-600">
-              Record inventory transaction
+            <h2 className="text-xl font-bold mb-2 text-center">
+              {initialData ? "Edit Stock In" : "Stock In"}
+            </h2>
+            <span className="text-sm text-gray-600">
+              {initialData
+                ? "Update transaction details"
+                : "Record inventory transaction"}
             </span>
           </div>
           <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
@@ -93,7 +126,7 @@ const StockInModal = ({ open, onClose, products, locations }) => {
                         key={p._id}
                         value={p._id}
                         className={({ selected }) =>
-                          `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                          `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                         }
                       >
                         {p.name}
@@ -150,7 +183,7 @@ const StockInModal = ({ open, onClose, products, locations }) => {
                           key={option}
                           value={option}
                           className={({ selected }) =>
-                            `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                            `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                           }
                         >
                           {option}
@@ -180,7 +213,7 @@ const StockInModal = ({ open, onClose, products, locations }) => {
                         key={loc}
                         value={loc}
                         className={({ selected }) =>
-                          `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                          `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                         }
                       >
                         {loc}
@@ -231,11 +264,11 @@ const StockInModal = ({ open, onClose, products, locations }) => {
                   reason: true,
                   location: true,
                 });
-                onSave();
+                handleSubmit();
               }}
             >
-              <HiOutlineDocumentText className="inline-block text-xl" /> Confirm
-              Stock In
+              <HiOutlineDocumentText className="inline-block text-xl" />
+              {initialData ? "Update Stock In" : "Confirm Stock In"}
             </button>
           </div>
         </div>

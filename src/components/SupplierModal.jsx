@@ -73,7 +73,7 @@ const SupplierModal = ({
     <div>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
         <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] max-h-[80vh] shadow-xl relative">
-          <h2 className="text-2xl font-bold mb-6 text-center">
+          <h2 className="text-xl font-bold mb-6 text-center">
             {viewOnly
               ? "View Supplier"
               : initial
@@ -82,13 +82,13 @@ const SupplierModal = ({
           </h2>
           <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
             <div className="col-span-2 mb-2">
-              <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+              <h3 className="flex items-center gap-2 text-base mb-2 text-black">
                 <HiOutlineOfficeBuilding className="inline-block text-xl text-black" />
                 <span>Company Info</span>
               </h3>
               <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
                 <div>
-                  <label className="block text-base font-medium mb-1">
+                  <label className="block text-sm font-medium mb-1">
                     Company Name
                     {!supplier.company_name && !initial ? (
                       <sup className="text-red-500">*</sup>
@@ -109,7 +109,7 @@ const SupplierModal = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-base font-medium mb-1">
+                  <label className="block text-sm font-medium mb-1">
                     Location
                     {!supplier.location && !initial ? (
                       <sup className="text-red-500">*</sup>
@@ -132,13 +132,13 @@ const SupplierModal = ({
               </div>
             </div>
             <div className="col-span-2 mb-2">
-              <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+              <h3 className="flex items-center gap-2 text-base mb-2 text-black">
                 <HiOutlineUser className="inline-block text-xl text-black" />
                 <span>Primary Contact Details</span>
               </h3>
               <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
                 <div>
-                  <label className="block text-base font-medium mb-1">
+                  <label className="block text-sm font-medium mb-1">
                     Contact Person
                     {!supplier.contact_person && !initial ? (
                       <sup className="text-red-500">*</sup>
@@ -165,7 +165,7 @@ const SupplierModal = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-base font-medium mb-1">
+                  <label className="block text-sm font-medium mb-1">
                     Role/Position
                     {!supplier.contact_position && !initial ? (
                       <sup className="text-red-500">*</sup>
@@ -192,7 +192,7 @@ const SupplierModal = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-base font-medium mb-1">
+                  <label className="block text-sm font-medium mb-1">
                     Email Address
                     {!supplier.contact_email && !initial ? (
                       <sup className="text-red-500">*</sup>
@@ -219,7 +219,7 @@ const SupplierModal = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-base font-medium mb-1">
+                  <label className="block text-sm font-medium mb-1">
                     Phone Number
                     {!supplier.contact_phone && !initial ? (
                       <sup className="text-red-500">*</sup>
@@ -248,13 +248,13 @@ const SupplierModal = ({
               </div>
             </div>
             <div className="col-span-2 mb-2">
-              <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+              <h3 className="flex items-center gap-2 text-base mb-2 text-black">
                 <HiOutlineLocationMarker className="inline-block text-xl text-black" />
                 <span>Address</span>
               </h3>
               <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
                 <div>
-                  <label className="block text-base font-medium mb-1">
+                  <label className="block text-sm font-medium mb-1">
                     Street
                   </label>
                   <input
@@ -423,13 +423,13 @@ const SupplierModal = ({
               </div>
             </div>
             <div className="col-span-2 mb-2">
-              <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+              <h3 className="flex items-center gap-2 text-base mb-2 text-black">
                 <HiOutlineNewspaper className="inline-block text-xl text-black" />
                 <span>Business Terms</span>
               </h3>
               <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
                 <div>
-                  <label className="block text-base font-medium mb-1">
+                  <label className="block text-sm font-medium mb-1">
                     Payment Terms
                     {!initial ? <sup className="text-red-500">*</sup> : null}
                   </label>
@@ -473,7 +473,7 @@ const SupplierModal = ({
                             key={pt._id}
                             value={pt}
                             className={({ selected }) =>
-                              `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                              `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                             }
                           >
                             {pt.name}
@@ -484,7 +484,7 @@ const SupplierModal = ({
                   </Listbox>
                 </div>
                 <div>
-                  <label className="block text-base font-medium mb-1">
+                  <label className="block text-sm font-medium mb-1">
                     Supplier Status
                     {!initial ? <sup className="text-red-500">*</sup> : null}
                   </label>
@@ -525,7 +525,7 @@ const SupplierModal = ({
                             key={st._id}
                             value={st}
                             className={({ selected }) =>
-                              `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                              `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                             }
                           >
                             {st.name}

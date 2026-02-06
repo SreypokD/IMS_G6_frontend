@@ -58,18 +58,18 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] max-h-[80vh] shadow-xl relative">
-        <h2 className="text-2xl font-bold mb-6 text-center">
+        <h2 className="text-xl font-bold mb-6 text-center">
           {viewOnly ? "View Product" : initial ? "Edit Product" : "Add Product"}
         </h2>
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
           <div className="col-span-2 mb-2">
-            <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+            <h3 className="flex items-center gap-2 text-base mb-2 text-black">
               <HiOutlineDocumentText className="inline-block text-xl text-black" />
               <span>Basic Information</span>
             </h3>
             <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
               <div>
-                <label className="block text-base font-medium mb-1">
+                <label className="block text-sm font-medium mb-1">
                   Product Code
                 </label>
                 <input
@@ -84,7 +84,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="block text-base font-medium mb-1">
+                <label className="block text-sm font-medium mb-1">
                   Name
                   {!product.name && !initial ? (
                     <sup className="text-red-500">*</sup>
@@ -103,7 +103,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="block text-base font-medium mb-1">
+                <label className="block text-sm font-medium mb-1">
                   Category
                   {!product.category && !initial ? (
                     <sup className="text-red-500">*</sup>
@@ -147,7 +147,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                           key={cat._id}
                           value={cat}
                           className={({ selected }) =>
-                            `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                            `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                           }
                         >
                           {cat.name}
@@ -158,7 +158,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="block text-base font-medium mb-1">
+                <label className="block text-sm font-medium mb-1">
                   Supplier
                   {!product.supplier && !initial ? (
                     <sup className="text-red-500">*</sup>
@@ -202,7 +202,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                           key={sup._id}
                           value={sup}
                           className={({ selected }) =>
-                            `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                            `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                           }
                         >
                           {sup.company_name}
@@ -213,7 +213,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="block text-base font-medium mb-1">
+                <label className="block text-sm font-medium mb-1">
                   Price
                   {(!product.price || isNaN(product.price)) && !initial ? (
                     <sup className="text-red-500">*</sup>
@@ -236,7 +236,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="block text-base font-medium mb-1">
+                <label className="block text-sm font-medium mb-1">
                   Stock
                   {(!product.stock || isNaN(product.stock)) && !initial ? (
                     <sup className="text-red-500">*</sup>
@@ -260,12 +260,12 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
             </div>
           </div>
           <div className="col-span-2 mb-2">
-            <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+            <h3 className="flex items-center gap-2 text-base mb-2 text-black">
               <HiOutlineCamera className="inline-block text-xl text-black" />
               <span>Image</span>
             </h3>
             <div className="mb-4">
-              <label className="block text-gray-700 text-base font-bold mb-2">
+              <label className="block text-gray-700 text-sm mb-1">
                 Product Image
               </label>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center transition-colors">

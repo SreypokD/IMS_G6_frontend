@@ -3,6 +3,7 @@ import {
   HiOutlineCheckCircle,
   HiOutlineFilter,
   HiSelector,
+  HiOutlineRefresh,
 } from "react-icons/hi";
 import { useAuth } from "../contexts/auth/useAuth";
 import { getConfirmDeliveries, updateConfirmDelivery } from "../api";
@@ -26,13 +27,13 @@ function ApprovalStatusDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
           <span>{value || "All Statuses"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
             value=""
           >
             <span>All Statuses</span>
@@ -42,7 +43,7 @@ function ApprovalStatusDropdown({ value, onChange }) {
               key={option.value}
               value={option.value}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option.label}
@@ -58,13 +59,13 @@ function DeliveryStatusDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
           <span>{value || "All Statuses"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
             value=""
           >
             <span>All Statuses</span>
@@ -74,7 +75,7 @@ function DeliveryStatusDropdown({ value, onChange }) {
               key={option.value}
               value={option.value}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option.label}
@@ -193,29 +194,35 @@ const DeliveryConfirmation = () => {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
-          <h1 className="text-2xl font-semibold">Delivery Confirmation</h1>
-          <span className="text-gray-500">Manage and confirm deliveries</span>
+          <h1 className="text-xl font-semibold">Delivery Confirmation</h1>
+          <span className="text-gray-500 text-sm">Manage and confirm deliveries</span>
         </div>
       </div>
       <div className="bg-white rounded-xl p-6 mb-4 border border-gray-200">
-        <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
-          <HiOutlineFilter className="inline-block text-xl text-black" />
-          <span>Filters</span>
-        </h3>
+        <div className="w-full flex items-center justify-between">
+          <h3 className="flex items-center gap-2 text-base mb-2 text-black">
+            <HiOutlineFilter className="inline-block text-xl text-black" />
+            <span>Filters</span>
+          </h3>
+          <button className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer">
+            <HiOutlineRefresh className="inline-block text-xl text-black" />
+            <span>Reset</span>
+          </button>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-gray-700 text-base font-bold mb-2">
+            <label className="block text-gray-700 text-sm mb-1">
               Search
             </label>
             <input
-              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
+              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
               placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-base font-bold mb-2">
+            <label className="block text-gray-700 text-sm mb-1">
               Approval Status
             </label>
             <ApprovalStatusDropdown
@@ -233,7 +240,7 @@ const DeliveryConfirmation = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-base font-bold mb-2">
+            <label className="block text-gray-700 text-sm mb-1">
               Delivery Status
             </label>
             <DeliveryStatusDropdown
@@ -258,10 +265,10 @@ const DeliveryConfirmation = () => {
         ) : error ? (
           <div className="p-8 text-center text-red-500">{error}</div>
         ) : (
-          <table className="min-w-full text-left text-base align-middle">
+          <table className="min-w-full text-left text-sm align-middle">
             <thead>
               <tr>
-                <th>No.</th>
+                <th className="number">No.</th>
                 <th>Requested By</th>
                 <th>Product(s)</th>
                 <th>Quantity(ies)</th>
@@ -269,7 +276,7 @@ const DeliveryConfirmation = () => {
                 <th>Delivery Date</th>
                 <th>Approval Status</th>
                 <th>Delivery Status</th>
-                <th className="text-center">Actions</th>
+                <th className="text-center action">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -278,7 +285,7 @@ const DeliveryConfirmation = () => {
                 const delivery = confirm_delivery.confirm_delivery;
                 return (
                   <tr key={confirm_delivery._id}>
-                    <td>
+                    <td className="number">
                       {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>
                     <td>
@@ -322,7 +329,7 @@ const DeliveryConfirmation = () => {
                           : "Pending"}
                       </span>
                     </td>
-                    <td className="text-center">
+                    <td className="text-center action">
                       {(!delivery || delivery.status !== "delivered") &&
                         user?.permission?.permissions?.includes(
                           "update_confirm_delivery",

@@ -77,12 +77,12 @@ const Login = () => {
           <h2 className="text-3xl font-bold text-center text-gray-800 tracking-tight">
             Welcome Back
           </h2>
-          <span className="block mb-6 text-base text-center text-gray-400">
+          <span className="block mb-6 text-sm text-center text-gray-400">
             Sign in to access your inventory management dashboard
           </span>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-gray-600 mb-1 text-base font-medium">
+              <label className="block text-gray-600 mb-1 text-sm font-medium">
                 Email Address <sup className="text-red-500">*</sup>
               </label>
               <input
@@ -96,7 +96,7 @@ const Login = () => {
               />
             </div>
             <div className="relative">
-              <label className="block text-gray-600 mb-1 text-base font-medium">
+              <label className="block text-gray-600 mb-1 text-sm font-medium">
                 Password <sup className="text-red-500">*</sup>
               </label>
               <input
@@ -123,7 +123,7 @@ const Login = () => {
               </button>
             </div>
             {error && (
-              <div className="my-4 text-red-500 text-center text-base font-medium">
+              <div className="my-4 text-red-500 text-center text-sm font-medium">
                 {error}
               </div>
             )}
@@ -155,7 +155,7 @@ const Login = () => {
           </form>
         </div>
         <br />
-        <span className="block text-base text-[#1e3a5f] text-center mt-6">
+        <span className="block text-sm text-[#1e3a5f] text-center mt-6">
           © 2026 Inventory. All rights reserved.
         </span>
       </div>

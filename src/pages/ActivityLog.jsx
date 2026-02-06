@@ -46,8 +46,8 @@ const ActivityLog = () => {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
-          <h1 className="text-2xl font-semibold">Activity Log</h1>
-          <span className="text-gray-500">View and manage activity logs</span>
+          <h1 className="text-xl font-semibold">Activity Log</h1>
+          <span className="text-gray-500 text-sm">View and manage activity logs</span>
         </div>
       </div>
       <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
@@ -56,10 +56,10 @@ const ActivityLog = () => {
         ) : error ? (
           <div className="p-8 text-center text-red-500">{error}</div>
         ) : (
-          <table className="min-w-full text-left text-base align-middle">
+          <table className="min-w-full text-left text-sm align-middle">
             <thead>
               <tr>
-                <th>No.</th>
+                <th className="number">No.</th>
                 <th>User</th>
                 <th>Entity Type</th>
                 <th>Details</th>
@@ -70,7 +70,7 @@ const ActivityLog = () => {
             <tbody>
               {logs.map((log, index) => (
                 <tr key={log._id}>
-                  <td>
+                  <td className="number">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
                   <td>
@@ -83,7 +83,12 @@ const ActivityLog = () => {
                       ? new Date(log.createdAt).toLocaleString()
                       : "-"}
                   </td>
-                  <td>{log.action}</td>
+                  <td>
+                    {log.action
+                      ? log.action.replace(/_/g, " ").charAt(0).toUpperCase() +
+                        log.action.replace(/_/g, " ").slice(1)
+                      : "-"}
+                  </td>
                 </tr>
               ))}
               {logs.length === 0 && (

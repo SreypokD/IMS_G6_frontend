@@ -8,7 +8,7 @@ import {
   HiOutlineCube,
   HiOutlineEye,
 } from "react-icons/hi2";
-import { HiSelector, HiOutlineFilter } from "react-icons/hi";
+import { HiSelector, HiOutlineFilter, HiOutlineRefresh } from "react-icons/hi";
 import {
   getSuppliers,
   createSupplier,
@@ -30,13 +30,13 @@ function StatusDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
           <span>{value || "All Statuses"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
             value=""
           >
             <span>All Statuses</span>
@@ -46,7 +46,7 @@ function StatusDropdown({ value, onChange }) {
               key={option}
               value={option}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option}
@@ -62,13 +62,13 @@ function LocationDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
           <span>{value || "All Locations"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9]"
+            className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
             value=""
           >
             <span>All Locations</span>
@@ -78,7 +78,7 @@ function LocationDropdown({ value, onChange }) {
               key={option}
               value={option}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option}
@@ -230,8 +230,8 @@ const Suppliers = () => {
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
-          <h1 className="text-2xl font-semibold">Supplier Management</h1>
-          <span className="text-gray-500">
+          <h1 className="text-xl font-semibold">Supplier Management</h1>
+          <span className="text-gray-500 text-sm">
             Manage vendor relationships and product associations
           </span>
         </div>
@@ -248,17 +248,21 @@ const Suppliers = () => {
         )}
       </div>
       <div className="bg-white rounded-xl p-6 mb-4 border border-gray-200">
-        <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
-          <HiOutlineFilter className="inline-block text-xl text-black" />
-          <span>Filters</span>
-        </h3>
+        <div className="w-full flex items-center justify-between">
+          <h3 className="flex items-center gap-2 text-base mb-2 text-black">
+            <HiOutlineFilter className="inline-block text-xl text-black" />
+            <span>Filters</span>
+          </h3>
+          <button className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer">
+            <HiOutlineRefresh className="inline-block text-xl text-black" />
+            <span>Reset</span>
+          </button>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-gray-700 text-base font-bold mb-2">
-              Search
-            </label>
+            <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
-              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
+              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
               placeholder="Search..."
               value={search}
               onChange={(e) => {
@@ -275,9 +279,7 @@ const Suppliers = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-base font-bold mb-2">
-              Location
-            </label>
+            <label className="block text-gray-700 text-sm mb-1">Location</label>
             <LocationDropdown
               value={location}
               onChange={(val) => {
@@ -288,9 +290,7 @@ const Suppliers = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-base font-bold mb-2">
-              Status
-            </label>
+            <label className="block text-gray-700 text-sm mb-1">Status</label>
             <StatusDropdown
               value={status}
               onChange={(val) => {
@@ -308,45 +308,39 @@ const Suppliers = () => {
         ) : error ? (
           <div className="p-8 text-center text-red-500">{error}</div>
         ) : (
-          <table className="min-w-full text-left text-base align-middle">
+          <table className="min-w-full text-left text-sm align-middle">
             <thead>
               <tr>
-                <th>No.</th>
+                <th className="number">No.</th>
                 <th>Company Name</th>
                 <th>Contact Person</th>
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Products</th>
                 <th>Status</th>
-                <th className="text-center">Actions</th>
+                <th className="text-center action">Actions</th>
               </tr>
             </thead>
             <tbody>
               {suppliers.map((supplier, index) => (
                 <tr key={supplier._id}>
-                  <td>
+                  <td className="number">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
                   <td>
                     <div className="flex items-center gap-2">
                       <HiOutlineBuildingOffice2 className="text-lg text-blue-700" />
-                      <div className="font-semibold text-base">
-                        {supplier.company_name}
-                      </div>
-                      <div className="text-sm">({supplier.location})</div>
+                      {supplier.company_name}
                     </div>
                   </td>
                   <td className="flex items-center gap-1">
-                    <div className="font-medium  ">
-                      {supplier.contact_person}
-                    </div>
-                    <div className="text-sm">({supplier.contact_position})</div>
+                    {supplier.contact_person}
                   </td>
                   <td>{supplier.contact_email}</td>
                   <td>{supplier.contact_phone}</td>
                   <td>
                     <span className="flex items-center gap-2">
-                      <HiOutlineCube className="text-base" />
+                      <HiOutlineCube className="text-sm" />
                       <span>
                         {typeof supplier.products_count === "number"
                           ? supplier.products_count
@@ -361,7 +355,7 @@ const Suppliers = () => {
                       {supplier.status}
                     </span>
                   </td>
-                  <td className="flex items-center gap-1 justify-center">
+                  <td className="flex items-center gap-1 justify-center action">
                     <button
                       className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                       title="View"

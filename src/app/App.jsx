@@ -102,7 +102,7 @@ function App() {
 
                           // Reports & Logs
                           { path: "/reports", element: <Reports /> },
-                          { path: "/activity-log", element: <ActivityLog /> },
+                          { path: "/activity-logs", element: <ActivityLog /> },
 
                           // System / Security
                           { path: "/users", element: <Users /> },

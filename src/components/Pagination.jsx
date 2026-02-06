@@ -35,34 +35,38 @@ export default function Pagination({
     onChange && onChange({ page: p, limit });
   };
 
-  // Remove handleLimitChange, use onChange directly
-
   return (
-    <div className="flex items-center justify-center gap-2 pagination">
+    <div className="flex items-center justify-center gap-2">
       <button
         type="button"
-        className={`w-10 h-10 rounded-lg border bg-white flex items-center justify-center ${page === 1 ? "border-gray-200" : "cursor-pointer"}`}
+        className={`w-9 h-9 rounded-lg border bg-white flex items-center justify-center border-gray-200 ${page === 1 ? "" : "cursor-pointer"}`}
         disabled={page === 1}
         onClick={() => handleGoTo(1)}
         aria-label="First page"
       >
-        <MdFirstPage size={22} className="opacity-50" />
+        <MdFirstPage
+          size={22}
+          className={`${page === 1 ? "text-gray-200" : "text-gray-500"}`}
+        />
       </button>
       <button
         type="button"
-        className={`w-10 h-10 rounded-lg border bg-white flex items-center justify-center ${page === 1 ? "border-gray-200" : "cursor-pointer"}`}
+        className={`w-9 h-9 rounded-lg border bg-white flex items-center justify-center border-gray-200 ${page === 1 ? "" : "cursor-pointer"}`}
         disabled={page === 1}
         onClick={() => handleGoTo(page - 1)}
         aria-label="Previous page"
       >
-        <MdChevronLeft size={22} className="opacity-50" />
+        <MdChevronLeft
+          size={22}
+          className={`${page === 1 ? "text-gray-200" : "text-gray-500"}`}
+        />
       </button>
       {pageList.map((i, idx) =>
         i === -1 ? (
           <button
             key={idx}
             type="button"
-            className={`ellipsis w-10 h-10 bg-transparent border-none text-gray-500 cursor-default text-lg`}
+            className={`ellipsis w-9 h-9 bg-transparent border-none text-gray-200 cursor-default text-lg`}
             disabled
           >
             ...
@@ -71,7 +75,7 @@ export default function Pagination({
           <button
             key={idx}
             type="button"
-            className={`w-10 h-10 rounded-lg border flex items-center justify-center mx-0.5 ${i === page ? "bg-[#1e3a5f] border-[#1e3a5f] text-white" : "bg-white"} ${i === page ? "pointer-events-none" : "cursor-pointer"}`}
+            className={`w-9 h-9 rounded-lg border flex items-center justify-center mx-0.5 ${i === page ? "bg-[#1e3a5f] border-[#1e3a5f] text-white" : "bg-white border-gray-200"} ${i === page ? "pointer-events-none" : "cursor-pointer"}`}
             disabled={i === page}
             onClick={() => handleGoTo(i)}
           >
@@ -81,29 +85,35 @@ export default function Pagination({
       )}
       <button
         type="button"
-        className={`w-10 h-10 rounded-lg border bg-white flex items-center justify-center ${page === last ? "border-gray-200" : "cursor-pointer"}`}
+        className={`w-9 h-9 rounded-lg border bg-white flex items-center justify-center border-gray-200 ${page === last ? "" : "cursor-pointer"}`}
         disabled={page === last}
         onClick={() => handleGoTo(page + 1)}
         aria-label="Next page"
       >
-        <MdChevronRight size={22} className="opacity-50" />
+        <MdChevronRight
+          size={22}
+          className={`${page === last ? "text-gray-200" : "text-gray-500"}`}
+        />
       </button>
       <button
         type="button"
-        className={`w-10 h-10 rounded-lg border bg-white flex items-center justify-center ${page === last ? "border-gray-200" : "cursor-pointer"}`}
+        className={`w-9 h-9 rounded-lg border bg-white flex items-center justify-center border-gray-200 ${page === last ? "" : "cursor-pointer"}`}
         disabled={page === last}
         onClick={() => handleGoTo(last)}
         aria-label="Last page"
       >
-        <MdLastPage size={22} className="opacity-50" />
+        <MdLastPage
+          size={22}
+          className={`${page === last ? "text-gray-200" : "text-gray-500"}`}
+        />
       </button>
-      <span className="text-base text-[#64748b]">Rows per page:</span>
+      <span className="text-sm text-[#64748b]">Rows per page:</span>
       <Listbox
         value={limit}
         onChange={(val) => onChange && onChange({ page: 1, limit: val })}
       >
         <div className="relative w-20">
-          <Listbox.Button className="cursor-pointer w-full bg-white border border-gray-300 rounded-lg px-2 py-1 text-left text-gray-800 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-400">
+          <Listbox.Button className="cursor-pointer w-full bg-white border border-gray-300 rounded-lg w-full h-10 px-2 text-left text-gray-800 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-400">
             <span>{limit}</span>
             <HiOutlineSelector className="w-5 h-5 text-gray-400 ml-2" />
           </Listbox.Button>
@@ -113,7 +123,7 @@ export default function Pagination({
                 key={opt}
                 value={opt}
                 className={({ selected }) =>
-                  `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                  `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                 }
               >
                 {opt}

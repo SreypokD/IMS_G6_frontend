@@ -98,19 +98,19 @@ export default function SaleModal({ open, onClose, onSuccess }) {
   return (
     <div>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
-        <div className="bg-white rounded-2xl p-6 w-full max-w-[65vw] max-h-[90vh] shadow-xl relative">
-          <h2 className="text-2xl font-bold mb-6 text-center">
+        <div className="bg-white rounded-2xl p-5 w-full max-w-[60%] max-h-[80vh] shadow-xl relative">
+          <h2 className="text-xl font-bold mb-6 text-center">
             Record New Sale
           </h2>
           <form className="space-y-8 overflow-auto max-h-[70vh] px-1">
             <div className="col-span-2 mb-2">
-              <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+              <h3 className="flex items-center gap-2 text-base mb-2 text-black">
                 <HiOutlineDocumentText className="inline-block text-xl text-black" />
                 <span> Customer Information</span>
               </h3>
               <div className="mb-3 grid grid-cols-1 gap-4">
                 <div>
-                  <label className="block text-base font-medium mb-1">
+                  <label className="block text-sm font-medium mb-1">
                     Customer <span className="text-red-500">*</span>
                   </label>
                   <Listbox
@@ -144,7 +144,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                             key={u._id}
                             value={u._id}
                             className={({ selected }) =>
-                              `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                              `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                             }
                           >
                             {u.first_name} {u.last_name} ({u.email})
@@ -157,7 +157,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
               </div>
             </div>
             <div className="col-span-1 mb-2">
-              <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+              <h3 className="flex items-center gap-2 text-base mb-2 text-black">
                 <HiCube className="inline-block text-xl text-black" />
                 <span>Products</span>
               </h3>
@@ -166,7 +166,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                   <div key={idx} className="w-full flex items-center">
                     <div className="w-[98%] mb-3 grid grid-cols-5 gap-4">
                       <div>
-                        <label className="block text-base font-medium mb-1">
+                        <label className="block text-sm font-medium mb-1">
                           Product <span className="text-red-500">*</span>
                         </label>
                         <Listbox
@@ -200,7 +200,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                                   key={p._id}
                                   value={p._id}
                                   className={({ selected }) =>
-                                    `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                                    `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                                   }
                                 >
                                   {p.name}
@@ -211,7 +211,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                         </Listbox>
                       </div>
                       <div>
-                        <label className="block text-base font-medium mb-1">
+                        <label className="block text-sm font-medium mb-1">
                           Quantity <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -226,7 +226,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                         />
                       </div>
                       <div>
-                        <label className="block text-base font-medium mb-1">
+                        <label className="block text-sm font-medium mb-1">
                           Price <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -241,7 +241,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                         />
                       </div>
                       <div>
-                        <label className="block text-base font-medium mb-1">
+                        <label className="block text-sm font-medium mb-1">
                           Discount (%)
                         </label>
                         <input
@@ -256,7 +256,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                         />
                       </div>
                       <div>
-                        <label className="block text-base font-medium mb-1">
+                        <label className="block text-sm font-medium mb-1">
                           Line Total
                         </label>
                         <input
@@ -291,7 +291,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
               </div>
             </div>
             <div className="col-span-1 mb-2">
-              <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+              <h3 className="flex items-center gap-2 text-base mb-2 text-black">
                 <HiOutlineDocumentText className="inline-block text-xl text-black" />
                 <span>Payment Details</span>
               </h3>
@@ -320,7 +320,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                             key={method}
                             value={method}
                             className={({ selected }) =>
-                              `px-4 py-2 cursor-pointer text-black hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                              `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                             }
                           >
                             {method}

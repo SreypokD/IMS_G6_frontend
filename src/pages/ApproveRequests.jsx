@@ -6,6 +6,7 @@ import {
   HiOutlineXCircle,
   HiOutlineFilter,
   HiOutlineEye,
+  HiOutlineRefresh,
 } from "react-icons/hi";
 import { getApproveRequests, updateApproveRequests } from "../api";
 import Pagination from "../components/Pagination";
@@ -124,24 +125,30 @@ const OrderRequestApproval = () => {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
-          <h1 className="text-2xl font-semibold">Order Request Approvals</h1>
-          <span className="text-gray-500">
+          <h1 className="text-xl font-semibold">Order Request Approvals</h1>
+          <span className="text-gray-500 text-sm">
             Review and manage order request approvals
           </span>
         </div>
       </div>
       <div className="bg-white rounded-xl p-6 mb-4 border border-gray-200">
-        <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
-          <HiOutlineFilter className="inline-block text-xl text-black" />
-          <span>Filters</span>
-        </h3>
+        <div className="w-full flex items-center justify-between">
+          <h3 className="flex items-center gap-2 text-base mb-2 text-black">
+            <HiOutlineFilter className="inline-block text-xl text-black" />
+            <span>Filters</span>
+          </h3>
+          <button className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer">
+            <HiOutlineRefresh className="inline-block text-xl text-black" />
+            <span>Reset</span>
+          </button>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-gray-700 text-base font-bold mb-2">
+            <label className="block text-gray-700 text-sm mb-1">
               Search
             </label>
             <input
-              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full"
+              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
               placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -155,10 +162,10 @@ const OrderRequestApproval = () => {
         ) : error ? (
           <div className="p-8 text-center text-red-500">{error}</div>
         ) : (
-          <table className="min-w-full text-left text-base align-middle">
+          <table className="min-w-full text-left text-sm align-middle">
             <thead>
               <tr>
-                <th>No.</th>
+                <th className="number">No.</th>
                 <th>Requested By</th>
                 <th>Product(s)</th>
                 <th>Quantity(ies)</th>
@@ -171,14 +178,14 @@ const OrderRequestApproval = () => {
                 user?.permission?.permissions?.includes(
                   "delete_approve_request",
                 ) ? (
-                  <th className="text-center">Actions</th>
+                  <th className="text-center action">Actions</th>
                 ) : null}
               </tr>
             </thead>
             <tbody>
               {orders.map((order, index) => (
                 <tr key={order._id}>
-                  <td>
+                  <td className="number">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
                   <td>
@@ -209,7 +216,7 @@ const OrderRequestApproval = () => {
                       : "-"}
                   </td>
                   <td>{order.notes || "-"}</td>
-                  <td className="flex items-center gap-1 justify-center">
+                  <td className="flex items-center gap-1 justify-center action">
                     {user?.permission?.permissions?.includes(
                       "view_approve_request",
                     ) && (
@@ -275,7 +282,7 @@ const OrderRequestApproval = () => {
                       }
                     >
                       <div className="mb-4 w-full">
-                        <label className="block text-gray-500 text-base mb-2">
+                        <label className="block text-gray-500 text-sm mb-2">
                           Please provide a reason for rejection:
                         </label>
                         <textarea

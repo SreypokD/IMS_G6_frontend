@@ -64,13 +64,13 @@ const Register = () => {
           <h2 className="text-3xl font-bold text-center text-gray-800 tracking-tight">
             Create Account
           </h2>
-          <span className="block mb-6 text-base text-center text-gray-400">
+          <span className="block mb-6 text-sm text-center text-gray-400">
             Register to access your inventory dashboard
           </span>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-gray-600 mb-1 text-base font-medium">
+                <label className="block text-gray-600 mb-1 text-sm font-medium">
                   First Name <sup className="text-red-500">*</sup>
                 </label>
                 <input
@@ -84,7 +84,7 @@ const Register = () => {
                 />
               </div>
               <div>
-                <label className="block text-gray-600 mb-1 text-base font-medium">
+                <label className="block text-gray-600 mb-1 text-sm font-medium">
                   Last Name <sup className="text-red-500">*</sup>
                 </label>
                 <input
@@ -98,7 +98,7 @@ const Register = () => {
               </div>
             </div>
             <div>
-              <label className="block text-gray-600 mb-1 text-base font-medium">
+              <label className="block text-gray-600 mb-1 text-sm font-medium">
                 Email Address <sup className="text-red-500">*</sup>
               </label>
               <input
@@ -111,7 +111,7 @@ const Register = () => {
               />
             </div>
             <div>
-              <label className="block text-gray-600 mb-1 text-base font-medium">
+              <label className="block text-gray-600 mb-1 text-sm font-medium">
                 Phone Number <sup className="text-red-500">*</sup>
               </label>
               <input
@@ -124,7 +124,7 @@ const Register = () => {
               />
             </div>
             <div className="relative">
-              <label className="block text-gray-600 mb-1 text-base font-medium">
+              <label className="block text-gray-600 mb-1 text-sm font-medium">
                 Password <sup className="text-red-500">*</sup>
               </label>
               <input
@@ -150,7 +150,7 @@ const Register = () => {
               </button>
             </div>
             <div>
-              <label className="block text-gray-600 mb-1 text-base font-medium">
+              <label className="block text-gray-600 mb-1 text-sm font-medium">
                 Confirm Password <sup className="text-red-500">*</sup>
               </label>
               <input
@@ -163,7 +163,7 @@ const Register = () => {
               />
             </div>
             {error && (
-              <div className="mb-4 text-red-500 text-center text-base font-medium">
+              <div className="mb-4 text-red-500 text-center text-sm font-medium">
                 {error}
               </div>
             )}
@@ -178,7 +178,7 @@ const Register = () => {
               )}
             </button>
             <span
-              className="block text-base text-[#1e3a5f] hover:underline text-center cursor-pointer"
+              className="block text-sm text-[#1e3a5f] hover:underline text-center cursor-pointer"
               onClick={() => navigate("/login")}
             >
               Already have an account?
@@ -186,7 +186,7 @@ const Register = () => {
           </form>
         </div>
         <br />
-        <span className="block text-base text-[#1e3a5f] text-center mt-6">
+        <span className="block text-sm text-[#1e3a5f] text-center mt-6">
           © 2026 Inventory. All rights reserved.
         </span>
       </div>

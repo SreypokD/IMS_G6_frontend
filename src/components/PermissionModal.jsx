@@ -151,19 +151,19 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl p-5 w-full max-w-[50%] max-h-[80vh] shadow-xl relative">
-        <h2 className="text-2xl font-bold mb-6 text-center">
+      <div className="bg-white rounded-2xl p-5 w-full max-w-[52%] max-h-[80vh] shadow-xl relative">
+        <h2 className="text-xl font-bold mb-6 text-center">
           {initial ? "Edit Permission" : "Add Permission"}
         </h2>
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
           <div className="col-span-2 mb-2">
-            <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+            <h3 className="flex items-center gap-2 text-base mb-2 text-black">
               <HiOutlineDocumentText className="inline-block text-xl text-black" />
               <span>Basic Information</span>
             </h3>
             <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
               <div>
-                <label className="block text-gray-600 mb-1 text-base font-medium">
+                <label className="block text-gray-600 mb-1 text-sm font-medium">
                   Name
                   {!permission.name && !initial ? (
                     <sup className="text-red-500">*</sup>
@@ -180,7 +180,7 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
                 />
               </div>
               <div>
-                <label className="block text-gray-600 mb-1 text-base font-medium">
+                <label className="block text-gray-600 mb-1 text-sm font-medium">
                   Description
                 </label>
                 <input
@@ -198,12 +198,12 @@ const PermissionModal = ({ open, onClose, onSave, initial }) => {
             </div>
           </div>
           <div className="col-span-2 mb-2">
-            <h3 className="flex items-center gap-2 font-semibold text-lg mb-2 text-black">
+            <h3 className="flex items-center gap-2 text-base mb-2 text-black">
               <HiOutlineKey className="inline-block text-xl text-black" />
               <span>Permissions</span>
             </h3>
             <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
-              <table className="min-w-full text-center text-base align-middle">
+              <table className="min-w-full text-center text-sm align-middle">
                 <thead>
                   <tr>
                     <th className="text-left">Module</th>
