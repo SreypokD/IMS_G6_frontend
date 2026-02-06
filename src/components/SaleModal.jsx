@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getProducts, getUsers, createSale } from "../api";
+import { getProducts, getUsers } from "../api";
 import {
   HiXCircle,
   HiOutlineDocumentText,
@@ -9,6 +9,7 @@ import {
   HiOutlinePlus,
 } from "react-icons/hi";
 import { Listbox } from "@headlessui/react";
+import { useDialog } from "../contexts/dialog/useDialog";
 
 const defaultSale = {
   customer: "",
@@ -19,18 +20,51 @@ const defaultSale = {
 
 const paymentMethods = ["Cash", "Card", "Bank Transfer", "Other"];
 
-export default function SaleModal({ open, onClose, onSuccess }) {
+export default function SaleModal({
+  open,
+  onClose,
+  onSave,
+  initial,
+  viewOnly = false,
+}) {
   const [sale, setSale] = useState(defaultSale);
   const [products, setProducts] = useState([]);
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const dialog = useDialog();
 
   useEffect(() => {
     if (open) {
       getProducts().then((res) => setProducts(res.data.data || []));
       getUsers().then((res) => setUsers(res.data.data || []));
+
+      if (initial) {
+        setSale({
+          customer: initial.customer?._id || initial.customer_id || "",
+          items:
+            initial.items && initial.items.length > 0
+              ? initial.items.map((item) => ({
+                  ...item,
+                  product:
+                    typeof item.product === "object"
+                      ? item.product._id
+                      : item.product,
+                }))
+              : [
+                  {
+                    product: initial.product?._id || initial.product_id || "",
+                    quantity: initial.quantity || 1,
+                    price: initial.price || 0,
+                    discount: initial.discount || 0,
+                  },
+                ],
+          payment_method: initial.payment_method || "Cash",
+          notes: initial.notes || "",
+        });
+      } else {
+        setSale(defaultSale);
+      }
     }
-  }, [open]);
+  }, [open, initial]);
 
   const handleItemChange = (idx, field, value) => {
     setSale((prev) => {
@@ -72,25 +106,44 @@ export default function SaleModal({ open, onClose, onSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      // Compose payload as needed for backend
-      await createSale({
-        customer_id: sale.customer,
-        items: sale.items.map((item) => ({
-          product_id: item.product,
-          quantity: Number(item.quantity),
-          price: Number(item.price),
-          discount: Number(item.discount),
-        })),
-        payment_method: sale.payment_method,
-        notes: sale.notes,
-      });
-      onSuccess && onSuccess();
-      onClose();
-    } catch {
-      setLoading(false);
+
+    // Validation
+    if (!sale.customer) {
+      dialog.error("Please select a customer.");
+      return;
     }
+    if (sale.items.length === 0) {
+      dialog.error("Please add at least one product.");
+      return;
+    }
+    for (const item of sale.items) {
+      if (!item.product) {
+        dialog.error("Please select a product for all items.");
+        return;
+      }
+      if (Number(item.quantity) <= 0) {
+        dialog.error("Quantity must be greater than 0.");
+        return;
+      }
+      if (Number(item.price) < 0) {
+        dialog.error("Price cannot be negative.");
+        return;
+      }
+    }
+
+    const payload = {
+      customer_id: sale.customer,
+      items: sale.items.map((item) => ({
+        product_id: item.product,
+        quantity: Number(item.quantity),
+        price: Number(item.price),
+        discount: Number(item.discount),
+      })),
+      payment_method: sale.payment_method,
+      notes: sale.notes,
+    };
+
+    onSave(payload);
   };
 
   if (!open) return null;
@@ -100,9 +153,9 @@ export default function SaleModal({ open, onClose, onSuccess }) {
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
         <div className="bg-white rounded-2xl p-5 w-full max-w-[60%] max-h-[80vh] shadow-xl relative">
           <h2 className="text-xl font-bold mb-6 text-center">
-            Record New Sale
+            {viewOnly ? "View Sale" : initial ? "Edit Sale" : "Record New Sale"}
           </h2>
-          <form className="space-y-8 overflow-auto max-h-[70vh] px-1">
+          <form className="space-y-5 overflow-auto max-h-[60vh] px-1">
             <div className="col-span-2 mb-2">
               <h3 className="flex items-center gap-2 text-base mb-2 text-black">
                 <HiOutlineDocumentText className="inline-block text-xl text-black" />
@@ -111,7 +164,8 @@ export default function SaleModal({ open, onClose, onSuccess }) {
               <div className="mb-3 grid grid-cols-1 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    Customer <span className="text-red-500">*</span>
+                    Customer
+                    {!viewOnly ? <sup className="text-red-500">*</sup> : null}
                   </label>
                   <Listbox
                     value={sale.customer}
@@ -119,10 +173,11 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                       setSale((prev) => ({ ...prev, customer: val }))
                     }
                     as="div"
+                    disabled={viewOnly}
                   >
                     <div className="relative">
                       <Listbox.Button
-                        className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between border-gray-200`}
+                        className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between border-gray-200`}
                       >
                         <span className={sale.customer ? "" : "text-gray-400"}>
                           {sale.customer
@@ -164,10 +219,13 @@ export default function SaleModal({ open, onClose, onSuccess }) {
               {sale.items.map((item, idx) => {
                 return (
                   <div key={idx} className="w-full flex items-center">
-                    <div className="w-[98%] mb-3 grid grid-cols-5 gap-4">
+                    <div className="w-full mb-3 grid lg:grid-cols-5 md:grid-cols-2 grid-cols-1 gap-4">
                       <div>
                         <label className="block text-sm font-medium mb-1">
-                          Product <span className="text-red-500">*</span>
+                          Product
+                          {!viewOnly ? (
+                            <sup className="text-red-500">*</sup>
+                          ) : null}
                         </label>
                         <Listbox
                           value={item.product}
@@ -175,10 +233,11 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                             handleItemChange(idx, "product", val)
                           }
                           as="div"
+                          disabled={viewOnly}
                         >
                           <div className="relative">
                             <Listbox.Button
-                              className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between border-gray-200`}
+                              className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between border-gray-200`}
                             >
                               <span
                                 className={item.product ? "" : "text-gray-400"}
@@ -188,7 +247,9 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                                       const p = products.find(
                                         (p) => p._id === item.product,
                                       );
-                                      return p ? p.name : "Select an option";
+                                      return p
+                                        ? `${p.name}`
+                                        : "Select an option";
                                     })()
                                   : "Select an option"}
                               </span>
@@ -200,8 +261,9 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                                   key={p._id}
                                   value={p._id}
                                   className={({ selected }) =>
-                                    `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                                    `px-4 py-2 text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""} ${p.stock <= 0 ? "opacity-50 cursor-default bg-red-50 text-red-500" : "cursor-pointer "}`
                                   }
+                                  disabled={p.stock <= 0}
                                 >
                                   {p.name}
                                 </Listbox.Option>
@@ -212,22 +274,42 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                       </div>
                       <div>
                         <label className="block text-sm font-medium mb-1">
-                          Quantity <span className="text-red-500">*</span>
+                          Quantity
+                          {!viewOnly ? (
+                            <sup className="text-red-500">*</sup>
+                          ) : null}
                         </label>
-                        <input
-                          type="number"
-                          min="1"
-                          className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
-                          value={item.quantity}
-                          onChange={(e) =>
-                            handleItemChange(idx, "quantity", e.target.value)
-                          }
-                          required
-                        />
+                        <div className="relative">
+                          <input
+                            type="number"
+                            className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
+                            value={item.quantity}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              const p = products.find(
+                                (prod) => prod._id === item.product,
+                              );
+                              if (p && val > p.stock) {
+                                handleItemChange(idx, "quantity", p.stock);
+                              } else {
+                                handleItemChange(
+                                  idx,
+                                  "quantity",
+                                  e.target.value,
+                                );
+                              }
+                            }}
+                            required
+                            disabled={viewOnly}
+                          />
+                        </div>
                       </div>
                       <div>
                         <label className="block text-sm font-medium mb-1">
-                          Price <span className="text-red-500">*</span>
+                          Price
+                          {!viewOnly ? (
+                            <sup className="text-red-500">*</sup>
+                          ) : null}
                         </label>
                         <input
                           type="number"
@@ -238,6 +320,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                             handleItemChange(idx, "price", e.target.value)
                           }
                           required
+                          disabled={viewOnly}
                         />
                       </div>
                       <div>
@@ -253,6 +336,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                           onChange={(e) =>
                             handleItemChange(idx, "discount", e.target.value)
                           }
+                          disabled={viewOnly}
                         />
                       </div>
                       <div>
@@ -260,35 +344,39 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                           Line Total
                         </label>
                         <input
-                          className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200"
+                          className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200 bg-gray-100"
                           value={calcLineTotal(item)}
                           disabled
                         />
                       </div>
                     </div>
-                    <div className="max-w-10">
-                      <button
-                        type="button"
-                        className={`text-xl px-2 mt-6 max-w-10 ${sale.items.length === 1 ? "opacity-50 cursor-default" : "text-red-500 cursor-pointer"}`}
-                        onClick={() => removeItem(idx)}
-                        title="Remove"
-                        disabled={sale.items.length === 1}
-                      >
-                        <HiOutlineTrash />
-                      </button>
-                    </div>
+                    {!viewOnly && (
+                      <div className="max-w-10">
+                        <button
+                          type="button"
+                          className={`text-xl px-2 mt-6 max-w-10 ${sale.items.length === 1 ? "opacity-50 cursor-default" : "text-red-500 cursor-pointer"}`}
+                          onClick={() => removeItem(idx)}
+                          title="Remove"
+                          disabled={sale.items.length === 1}
+                        >
+                          <HiOutlineTrash />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 );
               })}
-              <div className="w-full flex items-center justify-center mt-4">
-                <button
-                  type="button"
-                  className=" text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-[#1e3a5f] flex items-center gap-2 cursor-pointer"
-                  onClick={addItem}
-                >
-                  <HiOutlinePlus className="text-md" /> Add Item
-                </button>
-              </div>
+              {!viewOnly && (
+                <div className="w-full flex items-center justify-center mt-4">
+                  <button
+                    type="button"
+                    className=" text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-[#1e3a5f] flex items-center gap-2 cursor-pointer"
+                    onClick={addItem}
+                  >
+                    <HiOutlinePlus className="text-md" /> Add Item
+                  </button>
+                </div>
+              )}
             </div>
             <div className="col-span-1 mb-2">
               <h3 className="flex items-center gap-2 text-base mb-2 text-black">
@@ -306,10 +394,11 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                       setSale((prev) => ({ ...prev, payment_method: val }))
                     }
                     as="div"
+                    disabled={viewOnly}
                   >
                     <div className="relative">
                       <Listbox.Button
-                        className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between border-gray-200`}
+                        className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between border-gray-200 ${viewOnly ? "bg-gray-100" : ""}`}
                       >
                         <span>{sale.payment_method}</span>
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
@@ -335,11 +424,9 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                     Total Amount
                   </label>
                   <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
+                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200 bg-gray-100`}
                     value={calcTotal()}
+                    disabled
                   />
                 </div>
               </div>
@@ -356,6 +443,7 @@ export default function SaleModal({ open, onClose, onSuccess }) {
                   setSale((prev) => ({ ...prev, notes: e.target.value }))
                 }
                 placeholder="Add any additional notes..."
+                disabled={viewOnly}
               />
             </div>
           </form>
@@ -364,19 +452,20 @@ export default function SaleModal({ open, onClose, onSuccess }) {
               type="button"
               className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
               onClick={onClose}
-              disabled={loading}
             >
-              <HiXCircle className="inline-block text-xl" /> Cancel
+              <HiXCircle className="inline-block text-xl" />
+              {viewOnly ? "Close" : "Cancel"}
             </button>
-            <button
-              type="submit"
-              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
-              disabled={loading}
-              onClick={handleSubmit}
-            >
-              <HiOutlineDocumentText className="inline-block text-xl" />
-              {loading ? "Saving..." : "Complete Sale"}
-            </button>
+            {!viewOnly && (
+              <button
+                type="submit"
+                className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
+                onClick={handleSubmit}
+              >
+                <HiOutlineDocumentText className="inline-block text-xl" />
+                {initial ? "Update Sale" : "Complete Sale"}
+              </button>
+            )}
           </div>
         </div>
       </div>

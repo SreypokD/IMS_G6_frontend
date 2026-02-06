@@ -190,6 +190,14 @@ const DeliveryConfirmation = () => {
     }
   }
 
+  const handleReset = () => {
+    setSearch("");
+    setApproveStatus("");
+    setDeliveryStatus("");
+    setPagination((prev) => ({ ...prev, page: 1 }));
+    fetchConfirmDeliveries(1, pagination.limit, "", "", "");
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -201,11 +209,14 @@ const DeliveryConfirmation = () => {
       <div className="bg-white rounded-xl p-6 mb-4 border border-gray-200">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
-            <HiOutlineFilter className="inline-block text-xl text-black" />
+            <HiOutlineFilter className="inline-block text-base text-black" />
             <span>Filters</span>
           </h3>
-          <button className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer">
-            <HiOutlineRefresh className="inline-block text-xl text-black" />
+          <button 
+            onClick={handleReset}
+            className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer"
+          >
+            <HiOutlineRefresh className="inline-block text-base text-black" />
             <span>Reset</span>
           </button>
         </div>

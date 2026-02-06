@@ -11,6 +11,7 @@ import {
   HiOutlineCalendar,
   HiOutlineChartBar,
   HiOutlineChartPie,
+  HiClipboardList,
   HiOutlineExclamationCircle,
 } from "react-icons/hi";
 import {
@@ -110,8 +111,8 @@ const Reports = () => {
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Date Filter */}
-          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-gray-200 shadow-sm">
-            <HiOutlineCalendar className="text-gray-500" />
+          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-gray-200">
+            <span className="text-gray-400 text-sm">From</span>
             <input
               type="date"
               value={dateRange.startDate}
@@ -133,14 +134,14 @@ const Reports = () => {
 
           <button
             onClick={fetchData}
-            className="p-2 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-600 shadow-sm transition-colors"
+            className="p-2 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-600 transition-colors cursor-pointer"
             title="Refresh Data"
           >
             <HiOutlineRefresh className="text-xl" />
           </button>
 
           <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-sm transition-colors cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-colors cursor-pointer"
             onClick={() => {
               if (orderStats) {
                 exportCSV(
@@ -170,8 +171,8 @@ const Reports = () => {
       ) : (
         <>
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <div className="bg-white p-6 rounded-2xl border border-gray-200 flex flex-col transition-all duration-300 hover:scale-101">
               <span className="text-gray-500 text-sm font-medium">
                 Total Products
               </span>
@@ -179,7 +180,7 @@ const Reports = () => {
                 {summary?.totalProducts || 0}
               </span>
             </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col">
+            <div className="bg-white p-6 rounded-2xl border border-gray-200 flex flex-col transition-all duration-300 hover:scale-101">
               <span className="text-gray-500 text-sm font-medium">
                 Total Inventory Value
               </span>
@@ -190,7 +191,7 @@ const Reports = () => {
                 <span className="text-sm text-gray-400">items</span>
               </div>
             </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col">
+            <div className="bg-white p-6 rounded-2xl border border-gray-200 flex flex-col transition-all duration-300 hover:scale-101">
               <span className="text-gray-500 text-sm font-medium">
                 Low Stock Items
               </span>
@@ -204,7 +205,7 @@ const Reports = () => {
                 {summary?.lowStock || 0}
               </span>
             </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col">
+            <div className="bg-white p-6 rounded-2xl border border-gray-200 flex flex-col transition-all duration-300 hover:scale-101">
               <span className="text-gray-500 text-sm font-medium">
                 Total Suppliers
               </span>
@@ -215,9 +216,9 @@ const Reports = () => {
           </div>
 
           {/* Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
             {/* Inventory Trends */}
-            <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-200">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                   <HiOutlineChartBar className="text-blue-600" /> Inventory
@@ -306,9 +307,9 @@ const Reports = () => {
             </div>
 
             {/* Order Stats Pie */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <div className="bg-white p-6 rounded-2xl border border-gray-200">
               <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <HiOutlineChartPie className="text-purple-600" /> Order Status
+                <HiClipboardList className="text-purple-600" /> Order Status
               </h2>
               <div className="h-64 w-full relative">
                 <ResponsiveContainer width="100%" height="100%">
@@ -343,22 +344,28 @@ const Reports = () => {
                   </div>
                 </div>
               </div>
-              <div className="mt-4 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500 text-sm">Pending</span>
-                  <span className="font-semibold text-gray-900">
+              <div className="grid grid-cols-3 gap-2 mt-4 text-center">
+                <div className="p-2 bg-amber-50 rounded-lg">
+                  <span className="block text-xs text-amber-500 font-medium">
+                    Pending
+                  </span>
+                  <span className="text-sm font-bold text-amber-500">
                     {orderStats?.pending || 0}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500 text-sm">Approved</span>
-                  <span className="font-semibold text-gray-900">
+                <div className="p-2 bg-green-50 rounded-lg">
+                  <span className="block text-xs text-green-600 font-medium">
+                    Approved
+                  </span>
+                  <span className="text-sm font-bold text-green-700">
                     {orderStats?.approved || 0}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500 text-sm">Rejected</span>
-                  <span className="font-semibold text-gray-900">
+                <div className="p-2 bg-red-50 rounded-lg">
+                  <span className="block text-xs text-red-600 font-medium">
+                    Rejected
+                  </span>
+                  <span className="text-sm font-bold text-red-700">
                     {orderStats?.rejected || 0}
                   </span>
                 </div>
@@ -367,8 +374,8 @@ const Reports = () => {
           </div>
 
           {/* Low Stock Alert Table */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+          <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-200">
+            <div className="flex justify-between items-center mb-6">
               <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                 <HiOutlineExclamationCircle className="text-red-500" /> Low
                 Stock Alerts
@@ -376,34 +383,22 @@ const Reports = () => {
             </div>
             <div className="overflow-x-auto">
               {lowStockProducts.length > 0 ? (
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-gray-50 text-gray-500">
+                <table className="min-w-full text-left text-sm align-middle">
+                  <thead>
                     <tr>
-                      <th className="px-6 py-3 font-medium">Product</th>
-                      <th className="px-6 py-3 font-medium">Category</th>
-                      <th className="px-6 py-3 font-medium text-right">
-                        Stock
-                      </th>
-                      <th className="px-6 py-3 font-medium text-right">
-                        Price
-                      </th>
+                      <th>Product</th>
+                      <th>Category</th>
+                      <th>Stock</th>
+                      <th>Price</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody>
                     {lowStockProducts.map((product) => (
-                      <tr key={product._id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 font-medium text-gray-900">
-                          {product.name}
-                        </td>
-                        <td className="px-6 py-4 text-gray-500">
-                          {product.category?.name || "N/A"}
-                        </td>
-                        <td className="px-6 py-4 text-right text-red-600 font-bold">
-                          {product.stock}
-                        </td>
-                        <td className="px-6 py-4 text-right text-gray-600">
-                          ${product.price}
-                        </td>
+                      <tr key={product._id}>
+                        <td>{product.name}</td>
+                        <td>{product.category?.name || "N/A"}</td>
+                        <td>{product.stock}</td>
+                        <td>${product.price}</td>
                       </tr>
                     ))}
                   </tbody>

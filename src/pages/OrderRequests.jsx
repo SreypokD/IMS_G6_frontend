@@ -128,6 +128,13 @@ const OrderRequests = () => {
     }
   }
 
+  const handleReset = () => {
+    setSearch("");
+    setStatus("");
+    setPagination((prev) => ({ ...prev, page: 1 }));
+    fetchOrderRequests(1, pagination.limit, "", "");
+  };
+
   return (
     <div>
       <OrderRequestModal
@@ -146,7 +153,9 @@ const OrderRequests = () => {
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold">Order Management</h1>
-          <span className="text-gray-500 text-sm">Manage and track order requests</span>
+          <span className="text-gray-500 text-sm">
+            Manage and track order requests
+          </span>
         </div>
         {user?.permission?.permissions?.includes("create_order_request") && (
           <button
@@ -160,19 +169,20 @@ const OrderRequests = () => {
       <div className="bg-white rounded-xl p-6 mb-4 border border-gray-200">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
-            <HiOutlineFilter className="inline-block text-xl text-black" />
+            <HiOutlineFilter className="inline-block text-base text-black" />
             <span>Filters</span>
           </h3>
-          <button className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer">
-            <HiOutlineRefresh className="inline-block text-xl text-black" />
+          <button
+            onClick={handleReset}
+            className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer"
+          >
+            <HiOutlineRefresh className="inline-block text-base text-black" />
             <span>Reset</span>
           </button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
-              Search
-            </label>
+            <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
               className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
               placeholder="Search..."
@@ -181,9 +191,7 @@ const OrderRequests = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
-              Status
-            </label>
+            <label className="block text-gray-700 text-sm mb-1">Status</label>
             <StatusDropdown
               value={status}
               onChange={(status) => {
@@ -263,9 +271,11 @@ const OrderRequests = () => {
                         user?.role === "staff" ||
                         String(request.requester_id) === String(user?._id)) && (
                         <div>
-                          {user?.permission?.permissions?.includes(
+                          {(user?.permission?.permissions?.includes(
                             "view_order_request",
-                          ) && (
+                          ) ||
+                            String(request.requester_id) ===
+                              String(user?._id)) && (
                             <button
                               className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                               title="View"

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Listbox } from "@headlessui/react";
-import { getStocks, getProducts, getStockSummary } from "../api";
+import { getStocks, getProducts, getStockSummary, getUsers } from "../api";
 import {
   HiSelector,
   HiOutlineFilter,
@@ -22,16 +22,23 @@ import StockViewModal from "../components/StockViewModal";
 import { deleteStock } from "../api";
 import { HiOutlinePencil, HiOutlineTrash, HiOutlineEye } from "react-icons/hi";
 
-const transactionOptions = ["All Transactions"];
-const users = ["All Users"];
+const transactionOptions = [
+  { value: "", label: "All Transactions" },
+  { value: "in", label: "Stock In" },
+  { value: "out", label: "Stock Out" },
+];
 const locationOptions = ["Warehouse 1", "Warehouse 2", "Storefront"];
 
-function UserDropdown({ value, onChange }) {
+function UserDropdown({ value, onChange, userOptions = [] }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
         <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
-          <span>{value || "All Users"}</span>
+          <span>
+            {userOptions.find((u) => u._id === value)
+              ? `${userOptions.find((u) => u._id === value).first_name} ${userOptions.find((u) => u._id === value).last_name}`
+              : "All Users"}
+          </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
@@ -41,15 +48,15 @@ function UserDropdown({ value, onChange }) {
           >
             <span>All Users</span>
           </Listbox.Option>
-          {users.map((option) => (
+          {userOptions.map((user) => (
             <Listbox.Option
-              key={option}
-              value={option}
+              key={user._id}
+              value={user._id}
               className={({ selected }) =>
                 `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
-              {option}
+              {user.first_name} {user.last_name}
             </Listbox.Option>
           ))}
         </Listbox.Options>
@@ -63,25 +70,22 @@ function TransactionDropdown({ value, onChange }) {
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
         <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
-          <span>{value || "All Transactions"}</span>
+          <span>
+            {transactionOptions.find((t) => t.value === value)?.label ||
+              "All Transactions"}
+          </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-          <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
-            value=""
-          >
-            <span>All Transactions</span>
-          </Listbox.Option>
           {transactionOptions.map((option) => (
             <Listbox.Option
-              key={option}
-              value={option}
+              key={option.value}
+              value={option.value}
               className={({ selected }) =>
                 `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
-              {option}
+              {option.label}
             </Listbox.Option>
           ))}
         </Listbox.Options>
@@ -140,6 +144,7 @@ const Stocks = () => {
   const [filterUser, setFilterUser] = useState("");
   const [filterType, setFilterType] = useState("");
   const [filterLocation, setFilterLocation] = useState("");
+  const [userOptions, setUserOptions] = useState([]);
 
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState(null);
@@ -162,6 +167,7 @@ const Stocks = () => {
         filterLocation,
       );
       fetchProducts();
+      fetchUsersList();
       fetchSummary();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -201,6 +207,15 @@ const Stocks = () => {
       setProducts(res.data.data || []);
     } catch {
       setProducts([]);
+    }
+  }
+
+  async function fetchUsersList() {
+    try {
+      const res = await getUsers();
+      setUserOptions(res.data.data || []);
+    } catch {
+      setUserOptions([]);
     }
   }
 
@@ -274,6 +289,16 @@ const Stocks = () => {
     }
   }
 
+  const handleReset = () => {
+    setSearch("");
+    setFilterType("");
+    setFilterUser("");
+    setFilterLocation("");
+    setPagination((prev) => ({ ...prev, page: 1 }));
+    fetchStocks(1, pagination.limit, "", "", "", "");
+    fetchSummary("", "", "", "");
+  };
+
   return (
     <div>
       <StockOutModal
@@ -330,7 +355,7 @@ const Stocks = () => {
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div className="bg-white rounded-xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiDownload className="text-3xl text-green-600" />
             <div className="flex items-center gap-2 text-green-600 text-sm">
@@ -343,7 +368,7 @@ const Stocks = () => {
             <div className="text-xl font-bold">{summary.totalStockIn}</div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiLogout className="text-3xl text-red-500 rotate-270" />
             <div className="flex items-center gap-2 text-green-600 text-sm">
@@ -356,7 +381,7 @@ const Stocks = () => {
             <div className="text-xl font-bold">{summary.totalStockOut}</div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiCube className="text-3xl text-black" />
             <div className="flex items-center gap-2 text-green-600 text-sm">
@@ -369,7 +394,7 @@ const Stocks = () => {
             <div className="text-xl font-bold">{summary.currentBalance}</div>
           </div>
         </div>
-        <div className="bg-white rounded-xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiOutlineExclamation className="text-3xl text-yellow-600" />
             <div className="flex items-center gap-2 text-red-600 text-sm">
@@ -383,14 +408,17 @@ const Stocks = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl p-6 mb-4 border border-gray-200">
+      <div className="bg-white rounded-2xl p-6 mb-4 border border-gray-200">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
-            <HiOutlineFilter className="inline-block text-xl text-black" />
+            <HiOutlineFilter className="inline-block text-base text-black" />
             <span>Filters</span>
           </h3>
-          <button className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer">
-            <HiOutlineRefresh className="inline-block text-xl text-black" />
+          <button
+            onClick={handleReset}
+            className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer"
+          >
+            <HiOutlineRefresh className="inline-block text-base text-black" />
             <span>Reset</span>
           </button>
         </div>
@@ -451,6 +479,7 @@ const Stocks = () => {
                 );
                 setPagination((prev) => ({ ...prev, page: 1 }));
               }}
+              userOptions={userOptions}
             />
           </div>
           <div>
@@ -473,7 +502,7 @@ const Stocks = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
+      <div className="bg-white rounded-2xl overflow-x-auto border border-gray-200 px-3">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading...</div>
         ) : error ? (

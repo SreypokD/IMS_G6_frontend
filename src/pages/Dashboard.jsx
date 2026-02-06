@@ -110,7 +110,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           <Link
             to="/products"
-            className="bg-white rounded-xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101"
+            className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101"
           >
             <div className="flex items-center justify-between">
               <div className="p-3 bg-purple-50 rounded-lg">
@@ -128,7 +128,7 @@ const Dashboard = () => {
           </Link>
           <Link
             to="/products"
-            className="bg-white rounded-xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101"
+            className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101"
           >
             <div className="flex items-center justify-between">
               <div className="p-3 bg-yellow-50 rounded-lg">
@@ -144,7 +144,7 @@ const Dashboard = () => {
           </Link>
           <Link
             to="/suppliers"
-            className="bg-white rounded-xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101"
+            className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101"
           >
             <div className="flex items-center justify-between">
               <div className="p-3 bg-pink-50 rounded-lg">
@@ -161,7 +161,7 @@ const Dashboard = () => {
 
           <Link
             to="/order-requests"
-            className="bg-white rounded-xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101"
+            className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101"
           >
             <div className="flex items-center justify-between">
               <div className="p-3 bg-orange-50 rounded-lg">

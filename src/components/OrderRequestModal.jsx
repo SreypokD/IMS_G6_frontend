@@ -465,7 +465,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                 min={0}
                 className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200 text-right`}
                 placeholder="Unit Price"
-                value={order.orderItems
+                value={(order.orderItems || [])
                   .reduce((acc, item) => acc + (Number(item.subtotal) || 0), 0)
                   .toFixed(2)}
                 disabled
