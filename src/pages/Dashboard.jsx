@@ -316,10 +316,10 @@ const Dashboard = () => {
 
       {/* Recent Orders & Activity */}
       <div
-        className={`grid grid-cols-1 ${isAllowed ? "lg:grid-cols-2" : "lg:grid-cols-1"} gap-4 mb-4`}
+        className={`grid grid-cols-1 ${isAllowed ? "lg:grid-cols-3" : "lg:grid-cols-1"} gap-4 mb-4`}
       >
         {/* Recent Orders */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200">
+        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-200">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-sm font-semibold flex items-center gap-2">
               <HiClipboardList className="text-xl text-gray-600" /> Recent
