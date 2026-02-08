@@ -220,7 +220,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
   return (
     <div>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
-        <div className="bg-white rounded-2xl p-5 w-full max-w-[60%] max-h-[80vh] shadow-xl relative">
+        <div className="bg-white rounded-2xl p-5 w-full max-w-[65%] max-h-[80vh] shadow-xl relative">
           <h2 className="text-xl font-bold mb-6 text-center">
             {viewOnly
               ? "View Order Request"
@@ -357,8 +357,9 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                                 key={product._id}
                                 value={product}
                                 className={({ selected }) =>
-                                  `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                                  `px-4 py-2 text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""} ${product.stock <= 0 ? "opacity-50 cursor-default bg-red-50 text-red-500" : "cursor-pointer "}`
                                 }
+                                disabled={product.stock <= 0}
                               >
                                 {product.name} (Stock:
                                 {product.stock - (product.reserved_stock || 0)})

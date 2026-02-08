@@ -151,7 +151,7 @@ export default function SaleModal({
   return (
     <div>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
-        <div className="bg-white rounded-2xl p-5 w-full max-w-[60%] max-h-[80vh] shadow-xl relative">
+        <div className="bg-white rounded-2xl p-5 w-full max-w-[70%] max-h-[80vh] shadow-xl relative">
           <h2 className="text-xl font-bold mb-6 text-center">
             {viewOnly ? "View Sale" : initial ? "Edit Sale" : "Record New Sale"}
           </h2>
@@ -265,7 +265,8 @@ export default function SaleModal({
                                   }
                                   disabled={p.stock <= 0}
                                 >
-                                  {p.name}
+                                  {p.name} (Stock:
+                                  {p.stock - (p.reserved_stock || 0)})
                                 </Listbox.Option>
                               ))}
                             </Listbox.Options>

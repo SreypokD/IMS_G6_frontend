@@ -60,7 +60,7 @@ function App() {
             path="*"
             element={
               <PrivateRoute>
-                <div className="h-screen flex overflow-hidden bg-[#fafbfc]">
+                <div className="h-screen flex overflow-hidden bg-[#f9fafb]">
                   <Sidebar mini={sidebarHidden} />
                   <div className="flex-1 flex flex-col min-w-0">
                     <Navbar onBellClick={() => setSidebarHidden((v) => !v)} />
