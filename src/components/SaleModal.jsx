@@ -346,7 +346,7 @@ export default function SaleModal({
                           Line Total
                         </label>
                         <input
-                          className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200 bg-gray-100"
+                          className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200"
                           value={calcLineTotal(item)}
                           disabled
                         />
@@ -426,7 +426,7 @@ export default function SaleModal({
                     Total Amount
                   </label>
                   <input
-                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200 bg-gray-100`}
+                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200`}
                     value={calcTotal()}
                     disabled
                   />
