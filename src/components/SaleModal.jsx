@@ -38,6 +38,7 @@ export default function SaleModal({
       getUsers().then((res) => setUsers(res.data.data || []));
 
       if (initial) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSale({
           customer: initial.customer?._id || initial.customer_id || "",
           items:
