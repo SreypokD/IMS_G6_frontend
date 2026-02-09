@@ -40,7 +40,9 @@ const Dashboard = () => {
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-  const isAllowed = ["admin", "staff", "manager"].includes(user?.role);
+  const isAllowed = ["admin", "staff", "manager"].includes(
+    user?.role?.toLowerCase(),
+  );
 
   useEffect(() => {
     async function fetchData() {
