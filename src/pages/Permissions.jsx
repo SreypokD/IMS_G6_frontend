@@ -35,6 +35,10 @@ const Permissions = () => {
   const { user } = useAuth();
   const dialog = useDialog();
   const [search, setSearch] = useState("");
+  const canView = user?.permission?.permissions?.includes("view_permission");
+  const canCreate = user?.permission?.permissions?.includes("create_permission");
+  const canUpdate = user?.permission?.permissions?.includes("update_permission");
+  const canDelete = user?.permission?.permissions?.includes("delete_permission");
 
   useEffect(() => {
     if (user) {
@@ -143,7 +147,7 @@ const Permissions = () => {
           <h1 className="text-xl font-semibold">Permissions</h1>
           <span className="text-gray-500 text-sm">Manage permissions</span>
         </div>
-        {user?.permission?.permissions?.includes("create_permission") && (
+        {canCreate && (
           <button
             className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => {
@@ -161,7 +165,7 @@ const Permissions = () => {
             <HiOutlineFilter className="inline-block text-base text-black" />
             <span>Filters</span>
           </h3>
-          <button 
+          <button
             onClick={handleReset}
             className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer"
           >
@@ -193,8 +197,7 @@ const Permissions = () => {
                 <th className="number">No.</th>
                 <th>Name</th>
                 <th>Description</th>
-                {user?.permission?.permissions?.includes("update_permission") ||
-                user?.permission?.permissions?.includes("delete_permission") ? (
+                {canView || canUpdate || canDelete ? (
                   <th className="text-center action">Actions</th>
                 ) : null}
               </tr>
@@ -210,9 +213,7 @@ const Permissions = () => {
                     {permission.description}
                   </td>
                   <td className="flex items-center gap-1 justify-center action">
-                    {user?.permission?.permissions?.includes(
-                      "view_permission",
-                    ) && (
+                    {canView && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="View"
@@ -221,9 +222,7 @@ const Permissions = () => {
                         <HiOutlineEye className="text-xl" />
                       </button>
                     )}
-                    {user?.permission?.permissions?.includes(
-                      "update_permission",
-                    ) && (
+                    {canUpdate && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Edit"
@@ -235,9 +234,7 @@ const Permissions = () => {
                         <HiOutlinePencil className="text-xl" />
                       </button>
                     )}
-                    {user?.permission?.permissions?.includes(
-                      "delete_permission",
-                    ) && (
+                    {canDelete && (
                       <button
                         className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Delete"

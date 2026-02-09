@@ -32,6 +32,8 @@ const OrderRequestApproval = () => {
   const { user } = useAuth();
   const dialog = useDialog();
   const [search, setSearch] = useState("");
+  const canView = user?.permission?.permissions?.includes("view_approve_request");
+  const canUpdate = user?.permission?.permissions?.includes("update_approve_request");
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -186,12 +188,7 @@ const OrderRequestApproval = () => {
                 <th>Requested Date</th>
                 <th>Delivery Date</th>
                 <th>Notes</th>
-                {user?.permission?.permissions?.includes(
-                  "update_approve_request",
-                ) ||
-                user?.permission?.permissions?.includes(
-                  "delete_approve_request",
-                ) ? (
+                {canUpdate ? (
                   <th className="text-center action">Actions</th>
                 ) : null}
               </tr>
@@ -231,9 +228,7 @@ const OrderRequestApproval = () => {
                   </td>
                   <td>{order.notes || "-"}</td>
                   <td className="flex items-center gap-1 justify-center action">
-                    {user?.permission?.permissions?.includes(
-                      "view_approve_request",
-                    ) && (
+                    {canView && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="View"
@@ -242,9 +237,7 @@ const OrderRequestApproval = () => {
                         <HiOutlineEye className="text-2xl" />
                       </button>
                     )}
-                    {user?.permission?.permissions?.includes(
-                      "update_approve_request",
-                    ) && (
+                    {canUpdate && (
                       <button
                         className="text-green-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Approve"
@@ -254,9 +247,7 @@ const OrderRequestApproval = () => {
                         <HiOutlineCheckCircle className="text-2xl" />
                       </button>
                     )}
-                    {user?.permission?.permissions?.includes(
-                      "update_approve_request",
-                    ) && (
+                    {canUpdate && (
                       <button
                         className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Reject"

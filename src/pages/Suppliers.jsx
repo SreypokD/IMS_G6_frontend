@@ -108,6 +108,10 @@ const Suppliers = () => {
   const [location, setLocation] = useState("");
   const dialog = useDialog();
   const { user } = useAuth();
+  const canView = user?.permission?.permissions?.includes("view_supplier");
+  const canCreate = user?.permission?.permissions?.includes("create_supplier");
+  const canUpdate = user?.permission?.permissions?.includes("update_supplier");
+  const canDelete = user?.permission?.permissions?.includes("delete_supplier");
 
   useEffect(() => {
     if (user) {
@@ -243,7 +247,7 @@ const Suppliers = () => {
             Manage vendor relationships and product associations
           </span>
         </div>
-        {user?.permission?.permissions?.includes("create_supplier") && (
+        {canCreate && (
           <button
             className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => {
@@ -329,7 +333,9 @@ const Suppliers = () => {
                 <th>Phone</th>
                 <th>Products</th>
                 <th>Status</th>
-                <th className="text-center action">Actions</th>
+                {canView || canUpdate || canDelete ? (
+                  <th className="text-center action">Actions</th>
+                ) : null}
               </tr>
             </thead>
             <tbody>
@@ -367,16 +373,16 @@ const Suppliers = () => {
                     </span>
                   </td>
                   <td className="flex items-center gap-1 justify-center action">
-                    <button
-                      className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                      title="View"
-                      onClick={() => handleView(supplier)}
-                    >
-                      <HiOutlineEye className="text-xl" />
-                    </button>
-                    {user?.permission?.permissions?.includes(
-                      "update_supplier",
-                    ) && (
+                    {canView && (
+                      <button
+                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                        title="View"
+                        onClick={() => handleView(supplier)}
+                      >
+                        <HiOutlineEye className="text-xl" />
+                      </button>
+                    )}
+                    {canUpdate && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Edit"
@@ -388,9 +394,7 @@ const Suppliers = () => {
                         <HiOutlinePencil className="text-xl" />
                       </button>
                     )}
-                    {user?.permission?.permissions?.includes(
-                      "delete_supplier",
-                    ) && (
+                    {canDelete && (
                       <button
                         className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Delete"

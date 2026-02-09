@@ -6,7 +6,8 @@ import {
   HiOutlineTrash,
   HiOutlinePlus,
   HiOutlineEye,
-  HiOutlineFilter,HiOutlineRefresh
+  HiOutlineFilter,
+  HiOutlineRefresh,
 } from "react-icons/hi";
 import ProductModal from "../components/ProductModal.jsx";
 import {
@@ -159,6 +160,10 @@ const Products = () => {
   const [error, setError] = useState("");
   const dialog = useDialog();
   const { user } = useAuth();
+  const canView = user?.permission?.permissions?.includes("view_product");
+  const canCreate = user?.permission?.permissions?.includes("create_product");
+  const canUpdate = user?.permission?.permissions?.includes("update_product");
+  const canDelete = user?.permission?.permissions?.includes("delete_product");
 
   useEffect(() => {
     getCategories().then((res) => setCategories(res.data.data || []));
@@ -346,7 +351,7 @@ const Products = () => {
             Manage your product catalog and inventory
           </span>
         </div>
-        {user?.permission?.permissions?.includes("create_product") && (
+        {canCreate && (
           <button
             onClick={handleAdd}
             disabled={loading}
@@ -362,7 +367,7 @@ const Products = () => {
             <HiOutlineFilter className="inline-block text-base text-black" />
             <span>Filters</span>
           </h3>
-          <button 
+          <button
             onClick={handleReset}
             className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer"
           >
@@ -372,9 +377,7 @@ const Products = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
-              Search
-            </label>
+            <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
               className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
               placeholder="Search..."
@@ -383,9 +386,7 @@ const Products = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
-              Category
-            </label>
+            <label className="block text-gray-700 text-sm mb-1">Category</label>
             <CategoryDropdown
               selected={category}
               setSelected={setCategory}
@@ -393,9 +394,7 @@ const Products = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
-              Supplier
-            </label>
+            <label className="block text-gray-700 text-sm mb-1">Supplier</label>
             <SupplierDropdown
               selected={supplier}
               setSelected={setSupplier}
@@ -430,7 +429,9 @@ const Products = () => {
                 <th>Supplier</th>
                 <th className="text-right">Stock</th>
                 <th className="text-right">Price</th>
-                <th className="text-center action">Actions</th>
+                {canView || canUpdate || canDelete ? (
+                  <th className="text-center action">Actions</th>
+                ) : null}
               </tr>
             </thead>
             <tbody>
@@ -465,9 +466,7 @@ const Products = () => {
                     ${Number(product.price).toFixed(2)}
                   </td>
                   <td className="flex items-center gap-1 justify-center action">
-                    {user?.permission?.permissions?.includes(
-                      "view_product",
-                    ) && (
+                    {canView && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="View"
@@ -476,9 +475,7 @@ const Products = () => {
                         <HiOutlineEye className="text-xl" />
                       </button>
                     )}
-                    {user?.permission?.permissions?.includes(
-                      "update_product",
-                    ) && (
+                    {canUpdate && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Edit"
@@ -487,9 +484,7 @@ const Products = () => {
                         <HiOutlinePencil className="text-xl" />
                       </button>
                     )}
-                    {user?.permission?.permissions?.includes(
-                      "delete_product",
-                    ) && (
+                    {canDelete && (
                       <button
                         className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Delete"

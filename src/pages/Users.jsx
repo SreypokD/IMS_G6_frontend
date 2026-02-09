@@ -80,6 +80,11 @@ const Users = () => {
   const [permission, setPermission] = useState("");
   const [permissions, setPermissions] = useState([]);
 
+  const canView = user?.permission?.permissions?.includes("view_user");
+  const canCreate = user?.permission?.permissions?.includes("create_user");
+  const canUpdate = user?.permission?.permissions?.includes("update_user");
+  const canDelete = user?.permission?.permissions?.includes("delete_user");
+
   useEffect(() => {
     getPermissions().then((res) => {
       if (Array.isArray(res.data)) {
@@ -203,7 +208,7 @@ const Users = () => {
           <h1 className="text-xl font-semibold">Users</h1>
           <span className="text-gray-500 text-sm">Manage users</span>
         </div>
-        {user?.permission?.permissions?.includes("create_user") && (
+        {canCreate && (
           <button
             className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => {
@@ -265,8 +270,7 @@ const Users = () => {
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Role</th>
-                {user?.permission?.permissions?.includes("update_user") ||
-                user?.permission?.permissions?.includes("delete_user") ? (
+                {canView || canUpdate || canDelete ? (
                   <th className="text-center action">Actions</th>
                 ) : null}
               </tr>
@@ -284,7 +288,7 @@ const Users = () => {
                   <td>{u.phone}</td>
                   <td className="capitalize">{u.role}</td>
                   <td className="flex items-center gap-1 justify-center action">
-                    {user?.permission?.permissions?.includes("view_user") && (
+                    {canView && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="View"
@@ -293,7 +297,7 @@ const Users = () => {
                         <HiOutlineEye className="text-xl" />
                       </button>
                     )}
-                    {user?.permission?.permissions?.includes("update_user") && (
+                    {canUpdate && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Edit"
@@ -305,7 +309,7 @@ const Users = () => {
                         <HiOutlinePencil className="text-xl" />
                       </button>
                     )}
-                    {user?.permission?.permissions?.includes("delete_user") && (
+                    {canDelete && (
                       <button
                         className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Delete"

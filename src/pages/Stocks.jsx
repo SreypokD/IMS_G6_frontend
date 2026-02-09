@@ -156,6 +156,10 @@ const Stocks = () => {
     currentBalance: 0,
     lowStockItems: 0,
   });
+  const canView = user?.permission?.permissions?.includes("view_stock");
+  const canCreate = user?.permission?.permissions?.includes("create_stock");
+  const canUpdate = user?.permission?.permissions?.includes("update_stock");
+  const canDelete = user?.permission?.permissions?.includes("delete_stock");
 
   useEffect(() => {
     if (user) {
@@ -347,20 +351,22 @@ const Stocks = () => {
             Track and manage inventory movements with real-time updates
           </span>
         </div>
-        <div className="flex items-center gap-3">
-          <button
-            className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
-            onClick={() => setStockOutOpen(true)}
-          >
-            <HiLogout className="text-md rotate-270" /> Stock Out
-          </button>
-          <button
-            className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
-            onClick={() => setStockInOpen(true)}
-          >
-            <HiDownload className="text-md" /> Stock In
-          </button>
-        </div>
+        {canCreate && (
+          <div className="flex items-center gap-3">
+            <button
+              className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+              onClick={() => setStockOutOpen(true)}
+            >
+              <HiLogout className="text-md rotate-270" /> Stock Out
+            </button>
+            <button
+              className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+              onClick={() => setStockInOpen(true)}
+            >
+              <HiDownload className="text-md" /> Stock In
+            </button>
+          </div>
+        )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
@@ -528,7 +534,9 @@ const Stocks = () => {
                 <th>User</th>
                 <th>Location</th>
                 <th>Notes</th>
-                <th className="action">Actions</th>
+                {canView || canUpdate || canDelete ? (
+                  <th className="action">Actions</th>
+                ) : null}
               </tr>
             </thead>
             <tbody>
@@ -563,27 +571,33 @@ const Stocks = () => {
                   <td>{stock.location || "-"}</td>
                   <td>{stock.note || "-"}</td>
                   <td className="action flex items-center gap-2">
-                    <button
-                      onClick={() => handleView(stock)}
-                      className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                      title="View"
-                    >
-                      <HiOutlineEye className="text-xl" />
-                    </button>
-                    <button
-                      onClick={() => handleEdit(stock)}
-                      className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                      title="Edit"
-                    >
-                      <HiOutlinePencil className="text-xl" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(stock._id)}
-                      className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                      title="Delete"
-                    >
-                      <HiOutlineTrash className="text-xl" />
-                    </button>
+                    {canView && (
+                      <button
+                        onClick={() => handleView(stock)}
+                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                        title="View"
+                      >
+                        <HiOutlineEye className="text-xl" />
+                      </button>
+                    )}
+                    {canUpdate && (
+                      <button
+                        onClick={() => handleEdit(stock)}
+                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                        title="Edit"
+                      >
+                        <HiOutlinePencil className="text-xl" />
+                      </button>
+                    )}
+                    {canDelete && (
+                      <button
+                        onClick={() => handleDelete(stock._id)}
+                        className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                        title="Delete"
+                      >
+                        <HiOutlineTrash className="text-xl" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

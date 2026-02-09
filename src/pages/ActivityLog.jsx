@@ -47,7 +47,9 @@ const ActivityLog = () => {
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold">Activity Log</h1>
-          <span className="text-gray-500 text-sm">View and manage activity logs</span>
+          <span className="text-gray-500 text-sm">
+            View and manage activity logs
+          </span>
         </div>
       </div>
       <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">

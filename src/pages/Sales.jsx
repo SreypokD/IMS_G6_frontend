@@ -114,6 +114,10 @@ const Sales = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [status, setStatus] = useState("");
+  const canView = user?.permission?.permissions?.includes("view_sale");
+  const canCreate = user?.permission?.permissions?.includes("create_sale");
+  const canUpdate = user?.permission?.permissions?.includes("update_sale");
+  const canDelete = user?.permission?.permissions?.includes("delete_sale");
 
   useEffect(() => {
     if (user) {
@@ -168,10 +172,7 @@ const Sales = () => {
         await updateSale(editSale._id, saleData);
         dialog.success("Sale updated successfully");
         // Show notification if status changed to Completed
-        if (
-          saleData.status &&
-          saleData.status.toLowerCase() === "completed"
-        ) {
+        if (saleData.status && saleData.status.toLowerCase() === "completed") {
           notification?.show?.({
             type: "success",
             message: "Sale marked as completed!",
@@ -246,16 +247,18 @@ const Sales = () => {
             Record and track all sales transactions with customer information
           </span>
         </div>
-        <button
-          className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
-          onClick={() => {
-            setViewSale(null);
-            setEditSale(null);
-            setModalOpen(true);
-          }}
-        >
-          <HiOutlinePlus className="text-md" /> Record Sale
-        </button>
+        {canCreate && (
+          <button
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
+            onClick={() => {
+              setViewSale(null);
+              setEditSale(null);
+              setModalOpen(true);
+            }}
+          >
+            <HiOutlinePlus className="text-md" /> Record Sale
+          </button>
+        )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
@@ -373,7 +376,9 @@ const Sales = () => {
                 <th>Payment Method</th>
                 <th>Status</th>
                 <th>Date</th>
-                <th className="action">Actions</th>
+                {canView || canUpdate || canDelete ? (
+                  <th className="action">Actions</th>
+                ) : null}
               </tr>
             </thead>
             <tbody>
@@ -419,7 +424,7 @@ const Sales = () => {
                     </td>
                     <td>{formatDate(sale.completed_at) || "-"}</td>
                     <td className="flex items-center gap-1 justify-center action">
-                      {user?.permission?.permissions?.includes("view_sale") && (
+                      {canView && (
                         <button
                           className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                           title="View"
@@ -428,9 +433,7 @@ const Sales = () => {
                           <HiOutlineEye className="text-xl" />
                         </button>
                       )}
-                      {user?.permission?.permissions?.includes(
-                        "update_sale",
-                      ) && (
+                      {canUpdate && (
                         <button
                           className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                           title="Edit"
@@ -443,9 +446,7 @@ const Sales = () => {
                           <HiOutlinePencil className="text-xl" />
                         </button>
                       )}
-                      {user?.permission?.permissions?.includes(
-                        "delete_sale",
-                      ) && (
+                      {canDelete && (
                         <button
                           className="text-red-500 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                           title="Delete"

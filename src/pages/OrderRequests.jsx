@@ -73,6 +73,10 @@ const OrderRequests = () => {
   const dialog = useDialog();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
+  const canView = user?.permission?.permissions?.includes("view_order_request");
+  const canCreate = user?.permission?.permissions?.includes("create_order_request");
+  const canUpdate = user?.permission?.permissions?.includes("update_order_request");
+  const canDelete = user?.permission?.permissions?.includes("delete_order_request");
 
   useEffect(() => {
     if (user) {
@@ -157,7 +161,7 @@ const OrderRequests = () => {
             Manage and track order requests
           </span>
         </div>
-        {user?.permission?.permissions?.includes("create_order_request") && (
+        {canCreate && (
           <button
             className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => setModalOpen(true)}
@@ -220,7 +224,9 @@ const OrderRequests = () => {
                 <th>Requested Date</th>
                 <th>Delivery Date</th>
                 <th>Status</th>
-                <th className="text-center action">Actions</th>
+                {(canView || canUpdate || canDelete) ? (
+                  <th className="text-center action">Actions</th>
+                ) : null}
               </tr>
             </thead>
             <tbody>

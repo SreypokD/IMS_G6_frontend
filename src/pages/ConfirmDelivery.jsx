@@ -102,6 +102,7 @@ const DeliveryConfirmation = () => {
   const [search, setSearch] = useState("");
   const [approve_status, setApproveStatus] = useState("");
   const [delivery_status, setDeliveryStatus] = useState("");
+  const canUpdate = user?.permission?.permissions?.includes("update_confirm_delivery");
 
   useEffect(() => {
     if (user) {
@@ -203,7 +204,9 @@ const DeliveryConfirmation = () => {
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold">Delivery Confirmation</h1>
-          <span className="text-gray-500 text-sm">Manage and confirm deliveries</span>
+          <span className="text-gray-500 text-sm">
+            Manage and confirm deliveries
+          </span>
         </div>
       </div>
       <div className="bg-white rounded-xl p-6 mb-4 border border-gray-200">
@@ -212,7 +215,7 @@ const DeliveryConfirmation = () => {
             <HiOutlineFilter className="inline-block text-base text-black" />
             <span>Filters</span>
           </h3>
-          <button 
+          <button
             onClick={handleReset}
             className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer"
           >
@@ -222,9 +225,7 @@ const DeliveryConfirmation = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
-              Search
-            </label>
+            <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
               className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
               placeholder="Search..."
@@ -342,9 +343,7 @@ const DeliveryConfirmation = () => {
                     </td>
                     <td className="text-center action">
                       {(!delivery || delivery.status !== "delivered") &&
-                        user?.permission?.permissions?.includes(
-                          "update_confirm_delivery",
-                        ) && (
+                        canUpdate && (
                           <button
                             className="text-green-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                             title="Confirm Delivery"

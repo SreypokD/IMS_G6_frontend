@@ -35,6 +35,10 @@ const Categories = () => {
   const { user } = useAuth();
   const dialog = useDialog();
   const [search, setSearch] = useState("");
+  const canView = user?.permission?.permissions?.includes("view_category");
+  const canCreate = user?.permission?.permissions?.includes("create_category");
+  const canUpdate = user?.permission?.permissions?.includes("update_category");
+  const canDelete = user?.permission?.permissions?.includes("delete_category");
 
   useEffect(() => {
     if (user) {
@@ -140,7 +144,7 @@ const Categories = () => {
             Organize and manage product categories
           </span>
         </div>
-        {user?.permission?.permissions?.includes("create_category") && (
+        {canCreate && (
           <button
             className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
             onClick={() => {
@@ -190,8 +194,7 @@ const Categories = () => {
                 <th className="number">No.</th>
                 <th>Name</th>
                 <th>Description</th>
-                {user?.permission?.permissions?.includes("update_category") ||
-                user?.permission?.permissions?.includes("delete_category") ? (
+                {canUpdate || canDelete ? (
                   <th className="text-center action">Actions</th>
                 ) : null}
               </tr>
@@ -205,9 +208,7 @@ const Categories = () => {
                   <td>{category.name}</td>
                   <td>{category.description}</td>
                   <td className="flex items-center gap-1 justify-center">
-                    {user?.permission?.permissions?.includes(
-                      "view_category",
-                    ) && (
+                    {canView && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="View"
@@ -216,9 +217,7 @@ const Categories = () => {
                         <HiOutlineEye className="text-xl" />
                       </button>
                     )}
-                    {user?.permission?.permissions?.includes(
-                      "update_category",
-                    ) && (
+                    {canUpdate && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Edit"
@@ -230,9 +229,7 @@ const Categories = () => {
                         <HiOutlinePencil className="text-xl" />
                       </button>
                     )}
-                    {user?.permission?.permissions?.includes(
-                      "delete_category",
-                    ) && (
+                    {canDelete && (
                       <button
                         className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Delete"
