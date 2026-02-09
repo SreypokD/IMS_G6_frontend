@@ -19,6 +19,7 @@ import { HiOutlinePencil, HiOutlineTrash, HiOutlineEye } from "react-icons/hi";
 import { useDialog } from "../contexts/dialog/useDialog";
 import { Listbox } from "@headlessui/react";
 import { formatDate } from "../utils/dateFormat";
+import { useNotification } from "../contexts/notification/useNotification";
 
 const statusOptions = ["Processing", "Completed", "Cancelled"];
 
@@ -105,6 +106,7 @@ const Sales = () => {
   const { user } = useAuth();
   const dialog = useDialog();
   const [editSale, setEditSale] = useState(null);
+  const notification = useNotification();
 
   // Filters
   const [users, setUsers] = useState([]);
@@ -118,10 +120,12 @@ const Sales = () => {
       getUsers().then((res) => setUsers(res.data.data || []));
       fetchSales(1, 10);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   useEffect(() => {
     fetchSales(1, 10);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customer, startDate, endDate, status]);
 
   async function fetchSales(page = 1, limit = 10) {
@@ -163,6 +167,16 @@ const Sales = () => {
       if (editSale) {
         await updateSale(editSale._id, saleData);
         dialog.success("Sale updated successfully");
+        // Show notification if status changed to Completed
+        if (
+          saleData.status &&
+          saleData.status.toLowerCase() === "completed"
+        ) {
+          notification?.show?.({
+            type: "success",
+            message: "Sale marked as completed!",
+          });
+        }
       } else {
         await createSale(saleData);
         dialog.success("Sale created successfully");

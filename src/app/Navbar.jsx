@@ -126,7 +126,7 @@ const Header = ({ onBellClick }) => {
             onClick={() => setMenuOpen((v) => !v)}
             className="flex items-center gap-2 p-1 rounded-full transition focus:outline-none cursor-pointer hover:bg-[#f1f5f9]"
           >
-            <div className="w-8 h-8 rounded-full bg-[#1e3a5f] flex items-center justify-center text-white font-bold text-xl overflow-hidden">
+            <div className="w-8 h-8 rounded-full bg-[#1e3a5f] flex items-center justify-center text-white text-base overflow-hidden">
               {user?.profile &&
               user.profile !== "null" &&
               user.profile !== "" ? (
@@ -153,7 +153,7 @@ const Header = ({ onBellClick }) => {
           {menuOpen && (
             <div className="absolute right-0 top-11 bg-white rounded-2xl shadow-lg p-2 w-60 z-50 animate-fade-in-up border border-gray-100">
               <div className="px-3 pt-3">
-                <div className="font-bold text-base leading-tight">
+                <div className="text-base leading-tight">
                   {user?.first_name + " " + user?.last_name}
                   <span className="ml-2 capitalize">({user?.role})</span>
                 </div>

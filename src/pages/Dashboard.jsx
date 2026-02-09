@@ -402,7 +402,7 @@ const Dashboard = () => {
                     key={log._id}
                     className="flex items-start gap-4 pb-4 border-b border-gray-100 last:border-0 last:pb-0"
                   >
-                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
                       <span className="font-bold text-blue-600 text-sm">
                         {log.user?.first_name?.[0] ||
                           log.user?.username?.[0] ||

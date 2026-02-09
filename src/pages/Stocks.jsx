@@ -21,6 +21,7 @@ import StockInModal from "../components/StockInModal";
 import StockViewModal from "../components/StockViewModal";
 import { deleteStock } from "../api";
 import { HiOutlinePencil, HiOutlineTrash, HiOutlineEye } from "react-icons/hi";
+import { useDialog } from "../contexts/dialog/useDialog";
 
 const transactionOptions = [
   { value: "", label: "All Transactions" },
@@ -145,7 +146,7 @@ const Stocks = () => {
   const [filterType, setFilterType] = useState("");
   const [filterLocation, setFilterLocation] = useState("");
   const [userOptions, setUserOptions] = useState([]);
-
+  const dialog = useDialog();
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -279,7 +280,14 @@ const Stocks = () => {
       try {
         await deleteStock(id);
         dialog.success("Stock deleted successfully");
-        fetchStocks(pagination.page, pagination.limit, search, permission);
+        fetchStocks(
+          pagination.page,
+          pagination.limit,
+          search,
+          filterType,
+          filterUser,
+          filterLocation,
+        );
       } catch {
         setError("Failed to delete stock");
         dialog.error("Failed to delete stock");

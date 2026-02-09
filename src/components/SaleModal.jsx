@@ -142,6 +142,7 @@ export default function SaleModal({
       })),
       payment_method: sale.payment_method,
       notes: sale.notes,
+      status: "Processing",
     };
 
     onSave(payload);
