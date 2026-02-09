@@ -40,8 +40,15 @@ const Dashboard = () => {
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-  const isAllowed = ["admin", "staff", "manager"].includes(
-    user?.role?.toLowerCase(),
+  const isAllowed = !!(
+    user?.permission?.permissions?.includes("view_user") ||
+    user?.permission?.permissions?.includes("view_permission") ||
+    user?.permission?.permissions?.includes("view_stock") ||
+    user?.permission?.permissions?.includes("view_sale") ||
+    user?.permission?.permissions?.includes("view_report") ||
+    user?.permission?.permissions?.includes("view_approve_request") ||
+    user?.permission?.permissions?.includes("view_confirm_delivery") ||
+    user?.permission?.permissions?.includes("view_activity_log")
   );
 
   useEffect(() => {
