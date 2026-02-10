@@ -84,7 +84,7 @@ const Header = ({ onBellClick }) => {
           {notificationOpen && (
             <div className="absolute right-0 top-10 bg-white rounded-2xl shadow-lg p-2 w-120 z-50 animate-fade-in-up border border-gray-100">
               <div className="px-2 pt-2">
-                <div className="font-bold text-base leading-tight">
+                <div className="font-bold text-sm leading-tight">
                   Notifications
                 </div>
               </div>
@@ -126,7 +126,7 @@ const Header = ({ onBellClick }) => {
             onClick={() => setMenuOpen((v) => !v)}
             className="flex items-center gap-2 p-1 rounded-full transition focus:outline-none cursor-pointer hover:bg-[#f1f5f9]"
           >
-            <div className="w-8 h-8 rounded-full bg-[#1e3a5f] flex items-center justify-center text-white text-base overflow-hidden">
+            <div className="w-8 h-8 rounded-full bg-[#1e3a5f] flex items-center justify-center text-white text-sm overflow-hidden">
               {user?.profile &&
               user.profile !== "null" &&
               user.profile !== "" ? (
@@ -153,11 +153,13 @@ const Header = ({ onBellClick }) => {
           {menuOpen && (
             <div className="absolute right-0 top-11 bg-white rounded-2xl shadow-lg p-2 w-60 z-50 animate-fade-in-up border border-gray-100">
               <div className="px-3 pt-3">
-                <div className="text-base leading-tight">
+                <div className="text-sm leading-tight">
                   {user?.first_name + " " + user?.last_name}
                   <span className="ml-2 capitalize">({user?.role})</span>
                 </div>
-                <div className="text-gray-500 text-sm mb-1">{user?.email}</div>
+                <div className="text-gray-500 text-sm mb-1">
+                  {user?.email}
+                </div>
               </div>
               <hr className="my-2 border-gray-200" />
               <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer">

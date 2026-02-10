@@ -4,16 +4,19 @@ import {
   getOrderStats,
   getTrends,
   getProducts,
+  getFinancialSummary,
 } from "../api";
 import {
   HiOutlineDownload,
   HiOutlineRefresh,
-  HiOutlineCalendar,
   HiOutlineChartBar,
-  HiOutlineChartPie,
   HiClipboardList,
   HiOutlineExclamationCircle,
+  HiCube,
+  HiUserGroup,
+  HiOutlineExclamation,
 } from "react-icons/hi";
+import { MdInventory } from "react-icons/md";
 import {
   AreaChart,
   Area,
@@ -27,6 +30,7 @@ import {
   Cell,
   Legend,
 } from "recharts";
+import DatePicker from "../components/DatePicker";
 
 const COLORS = ["#f59e0b", "#10b981", "#ef4444"]; // Amber, Green, Red for Pending, Approved, Rejected
 
@@ -47,12 +51,24 @@ function exportCSV(data, filename) {
 
 const Reports = () => {
   const [summary, setSummary] = useState(null);
+
+  // Order Stats
   const [orderStats, setOrderStats] = useState(null);
+
+  // Trends
   const [trends, setTrends] = useState([]);
+
+  // Financials
+  const [financials, setFinancials] = useState(null);
+
+  // Low Stock Products
   const [lowStockProducts, setLowStockProducts] = useState([]);
+
+  // Loading and Error
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Date Range
   const [dateRange, setDateRange] = useState({
     startDate: new Date(new Date().setDate(new Date().getDate() - 30))
       .toISOString()
@@ -69,17 +85,22 @@ const Reports = () => {
     setLoading(true);
     setError("");
     try {
-      const [summaryRes, statsRes, trendsRes, lowStockRes] = await Promise.all([
-        getInventorySummary(),
-        getOrderStats({ from: dateRange.startDate, to: dateRange.endDate }),
-        getTrends(), // Trends endpoint might need date filtering in future, currently static 7 days in backend
-        getProducts({ status: "low_stock", limit: 5 }),
-      ]);
-
+      const [summaryRes, statsRes, trendsRes, lowStockRes, financialRes] =
+        await Promise.all([
+          getInventorySummary(),
+          getOrderStats({ from: dateRange.startDate, to: dateRange.endDate }),
+          getTrends(), // Trends endpoint might need date filtering in future, currently static 7 days in backend
+          getProducts({ status: "low_stock", limit: 5 }),
+          getFinancialSummary({
+            startDate: dateRange.startDate,
+            endDate: dateRange.endDate,
+          }),
+        ]);
       setSummary(summaryRes.data);
       setOrderStats(statsRes.data);
       setTrends(trendsRes.data?.data || []);
       setLowStockProducts(lowStockRes.data?.data || []);
+      setFinancials(financialRes.data?.data || null);
     } catch (err) {
       console.error(err);
       setError("Failed to load reports");
@@ -113,22 +134,28 @@ const Reports = () => {
           {/* Date Filter */}
           <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-gray-200">
             <span className="text-gray-400 text-sm">From</span>
-            <input
-              type="date"
-              value={dateRange.startDate}
-              onChange={(e) =>
-                setDateRange({ ...dateRange, startDate: e.target.value })
+            <DatePicker
+              selected={dateRange.startDate}
+              onChange={(date) =>
+                setDateRange({
+                  ...dateRange,
+                  startDate: date ? date.toISOString().split("T")[0] : "",
+                })
               }
-              className="text-sm border-none focus:ring-0 text-gray-700 bg-transparent outline-none"
+              placeholder="Start Date"
+              className="border-none bg-transparent focus:ring-0 w-28"
             />
             <span className="text-gray-400">-</span>
-            <input
-              type="date"
-              value={dateRange.endDate}
-              onChange={(e) =>
-                setDateRange({ ...dateRange, endDate: e.target.value })
+            <DatePicker
+              selected={dateRange.endDate}
+              onChange={(date) =>
+                setDateRange({
+                  ...dateRange,
+                  endDate: date ? date.toISOString().split("T")[0] : "",
+                })
               }
-              className="text-sm border-none focus:ring-0 text-gray-700 bg-transparent outline-none"
+              placeholder="End Date"
+              className="border-none bg-transparent focus:ring-0 w-28"
             />
           </div>
 
@@ -141,7 +168,7 @@ const Reports = () => {
           </button>
 
           <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-colors cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-colors cursor-pointer text-sm"
             onClick={() => {
               if (orderStats) {
                 exportCSV(
@@ -172,46 +199,104 @@ const Reports = () => {
         <>
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <div className="bg-white p-6 rounded-2xl border border-gray-200 flex flex-col transition-all duration-300 hover:scale-101">
-              <span className="text-gray-500 text-sm font-medium">
-                Total Products
-              </span>
-              <span className="text-3xl font-bold text-gray-900 mt-2">
-                {summary?.totalProducts || 0}
-              </span>
-            </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-200 flex flex-col transition-all duration-300 hover:scale-101">
-              <span className="text-gray-500 text-sm font-medium">
-                Total Inventory Value
-              </span>
-              <div className="flex items-baseline gap-1 mt-2">
-                <span className="text-3xl font-bold text-gray-900">
-                  {summary?.totalQuantity || 0}
-                </span>
-                <span className="text-sm text-gray-400">items</span>
+            <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+              <HiCube className="text-3xl text-purple-600" />
+              <div>
+                <div className="text-gray-500 text-sm font-medium">
+                  Total Products
+                </div>
+                <div className="text-3xl font-bold text-gray-800">
+                  {summary?.totalProducts ?? 0}
+                </div>
               </div>
             </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-200 flex flex-col transition-all duration-300 hover:scale-101">
-              <span className="text-gray-500 text-sm font-medium">
-                Low Stock Items
-              </span>
-              <span
-                className={`text-3xl font-bold mt-2 ${
-                  (summary?.lowStock || 0) > 0
-                    ? "text-red-600"
-                    : "text-green-600"
-                }`}
-              >
-                {summary?.lowStock || 0}
-              </span>
+            <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+              <MdInventory className="text-3xl text-blue-600" />
+              <div>
+                <div className="text-gray-500 text-sm font-medium">
+                  Total Inventory Value
+                </div>
+                <div className="text-3xl font-bold text-gray-800">
+                  {summary?.totalQuantity ?? 0}
+                </div>
+              </div>
             </div>
-            <div className="bg-white p-6 rounded-2xl border border-gray-200 flex flex-col transition-all duration-300 hover:scale-101">
-              <span className="text-gray-500 text-sm font-medium">
-                Total Suppliers
-              </span>
-              <span className="text-3xl font-bold text-gray-900 mt-2">
-                {summary?.totalSuppliers || 0}
-              </span>
+            <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+              <HiOutlineExclamation className="text-3xl text-yellow-600" />
+              <div>
+                <div className="text-gray-500 text-sm font-medium">
+                  Low Stock Items
+                </div>
+                <div className="text-3xl font-bold text-gray-800">
+                  {summary?.lowStock ?? 0}
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+              <HiUserGroup className="text-3xl text-pink-600" />
+              <div>
+                <div className="text-gray-500 text-sm font-medium">
+                  Total Suppliers
+                </div>
+                <div className="text-3xl font-bold text-gray-800">
+                  {summary?.totalSuppliers ?? 0}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Financial Overview */}
+          <div className="mb-6">
+            <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <span>💰</span> Financial Overview
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              <div className="bg-white p-4 rounded-xl border border-gray-200 transition-all duration-300 hover:scale-101">
+                <span className="block text-gray-500 text-xs uppercase tracking-wider">
+                  Revenue
+                </span>
+                <span className="block text-xl font-bold text-green-600 mt-1">
+                  ${Number(financials?.revenue || 0).toFixed(2)}
+                </span>
+              </div>
+              <div className="bg-white p-4 rounded-xl border border-gray-200 transition-all duration-300 hover:scale-101">
+                <span className="block text-gray-500 text-xs uppercase tracking-wider">
+                  COGS
+                </span>
+                <span className="block text-xl font-bold text-gray-700 mt-1">
+                  ${Number(financials?.cogs || 0).toFixed(2)}
+                </span>
+              </div>
+              <div className="bg-white p-4 rounded-xl border border-gray-200 transition-all duration-300 hover:scale-101">
+                <span className="block text-gray-500 text-xs uppercase tracking-wider">
+                  Gross Profit
+                </span>
+                <span className="block text-xl font-bold text-gray-800 mt-1">
+                  ${Number(financials?.grossProfit || 0).toFixed(2)}
+                </span>
+              </div>
+              <div className="bg-white p-4 rounded-xl border border-gray-200 transition-all duration-300 hover:scale-101">
+                <span className="block text-gray-500 text-xs uppercase tracking-wider">
+                  Expenses
+                </span>
+                <span className="block text-xl font-bold text-red-500 mt-1">
+                  ${Number(financials?.expenses || 0).toFixed(2)}
+                </span>
+              </div>
+              <div className="bg-[#1e3a5f] p-4 rounded-xl border border-blue-900 transition-all duration-300 hover:scale-101">
+                <span className="block text-blue-200 text-xs uppercase tracking-wider">
+                  Net Profit
+                </span>
+                <span
+                  className={`block text-2xl font-bold mt-1 ${
+                    (financials?.netProfit || 0) >= 0
+                      ? "text-white"
+                      : "text-red-300"
+                  }`}
+                >
+                  ${Number(financials?.netProfit || 0).toFixed(2)}
+                </span>
+              </div>
             </div>
           </div>
 

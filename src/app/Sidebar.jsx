@@ -19,6 +19,7 @@ import {
   HiShoppingCart,
   HiOutlineDocumentText,
   HiOutlineAnnotation,
+  HiOutlineCurrencyDollar,
 } from "react-icons/hi";
 import logo from "../assets/images/logo.png";
 
@@ -121,6 +122,17 @@ const navLinks = (permissions = [], activePath = "") =>
         />
       ),
     },
+    permissions.includes("view_expense") && {
+      to: "/expenses",
+      label: "Expenses",
+      icon: (
+        <HiOutlineCurrencyDollar
+          className={
+            activePath === "/expenses" ? "text-white" : "text-rose-600"
+          }
+        />
+      ),
+    },
     permissions.includes("view_order_history") && {
       to: "/order-history",
       label: "Order History",
@@ -154,6 +166,7 @@ const navLinks = (permissions = [], activePath = "") =>
         />
       ),
     },
+
     permissions.includes("view_permission") && {
       label: "Settings",
       icon: <HiCog className="text-slate-700" />,

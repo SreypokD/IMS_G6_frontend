@@ -85,6 +85,7 @@ export const getProfile = () => api.get(profile);
 export const getInventorySummary = () => api.get(inventorySummary);
 export const getOrderStats = (params) => api.get(orderStats, { params });
 export const getTrends = () => api.get(trends);
+export const getFinancialSummary = (params) => api.get('/reports/financial-summary', { params });
 export const getRecentOrders = () => api.get(orderRequests, { params: { limit: 5, page: 1, sort: "createdAt:desc" } });
 export const getRecentActivity = () => api.get(activityLogs, { params: { limit: 5, page: 1 } });
 
@@ -152,6 +153,13 @@ export const getUser = (id) => api.get(`${users}/${id}`);
 export const createUser = (data) => api.post(users, data);
 export const updateUser = (id, data) => api.patch(`${users}/${id}`, data);
 export const deleteUser = (id) => api.delete(`${users}/${id}`);
+
+// Expense CRUD
+const expenses = "/expenses";
+export const getExpenses = (params = {}) => api.get(expenses, { params });
+export const createExpense = (data) => api.post(expenses, data);
+export const updateExpense = (id, data) => api.patch(`${expenses}/${id}`, data);
+export const deleteExpense = (id) => api.delete(`${expenses}/${id}`);
 
 // Upload File
 export const uploadFile = (file) => {

@@ -11,44 +11,84 @@ import {
 import { getApproveRequests, updateApproveRequests } from "../api";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
+import Loading from "../components/Loading";
 import Dialog from "../components/Dialog";
 import OrderRequestModal from "../components/OrderRequestModal";
+import DatePicker from "../components/DatePicker";
 
 const OrderRequestApproval = () => {
   const [orders, setOrders] = useState([]);
+
+  // Pagination
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     totalItems: 0,
     totalPages: 1,
   });
+
+  // Loading and Error
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Modal
   const [remarks, setRemarks] = useState({});
   const [actionId, setActionId] = useState(null);
+
+  // Dialog
   const [rejectDialog, setRejectDialog] = useState({ open: false, id: null });
   const [viewDialog, setViewDialog] = useState({ open: false, order: null });
   const [rejectionReason, setRejectionReason] = useState("");
+
+  // Auth
   const { user } = useAuth();
   const dialog = useDialog();
+
+  // Filters
   const [search, setSearch] = useState("");
-  const canView = user?.permission?.permissions?.includes("view_approve_request");
-  const canUpdate = user?.permission?.permissions?.includes("update_approve_request");
+  const [startDate, setStartDate] = useState(
+    new Date(new Date().setDate(new Date().getDate() - 7))
+      .toISOString()
+      .split("T")[0],
+  );
+  const [endDate, setEndDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
+
+  // Permissions
+  const canView = user?.permission?.permissions?.includes(
+    "view_approve_request",
+  );
+  const canUpdate = user?.permission?.permissions?.includes(
+    "update_approve_request",
+  );
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      fetchApproveRequests(1, pagination.limit, search);
+      fetchApproveRequests(1, pagination.limit, search, startDate, endDate);
       setPagination((prev) => ({ ...prev, page: 1 }));
     }, 500);
     return () => clearTimeout(delayDebounceFn);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, search]);
+  }, [user, search, startDate, endDate]);
 
-  async function fetchApproveRequests(page = 1, limit = 10, search) {
+  async function fetchApproveRequests(
+    page = 1,
+    limit = 10,
+    search,
+    startDate,
+    endDate,
+  ) {
     setLoading(true);
     setError("");
     try {
-      const res = await getApproveRequests({ page, limit, search });
+      const res = await getApproveRequests({
+        page,
+        limit,
+        search,
+        startDate,
+        endDate,
+      });
       setOrders(res.data.data.filter((o) => o.status === "pending"));
       setPagination((prev) => ({
         ...prev,
@@ -84,7 +124,7 @@ const OrderRequestApproval = () => {
       setRejectionReason({});
       // setShowReject({});
       setPagination((prev) => ({ ...prev, page: 1 }));
-      fetchApproveRequests(1, pagination.limit, search);
+      fetchApproveRequests(1, pagination.limit, search, startDate, endDate);
     } catch (err) {
       const msg =
         err?.response?.data?.error || err?.message || "Failed to approve order";
@@ -108,7 +148,7 @@ const OrderRequestApproval = () => {
       setRejectionReason("");
       setRejectDialog({ open: false, id: null });
       setPagination((prev) => ({ ...prev, page: 1 }));
-      fetchApproveRequests(1, pagination.limit, search);
+      fetchApproveRequests(1, pagination.limit, search, startDate, endDate);
     } catch (err) {
       const msg =
         err?.response?.data?.error || err?.message || "Failed to approve order";
@@ -125,8 +165,10 @@ const OrderRequestApproval = () => {
 
   const handleReset = () => {
     setSearch("");
+    setStartDate("");
+    setEndDate("");
     setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchApproveRequests(1, pagination.limit, "");
+    fetchApproveRequests(1, pagination.limit, "", "", "");
   };
 
   return (
@@ -149,14 +191,14 @@ const OrderRequestApproval = () => {
       <div className="bg-white rounded-xl p-6 mb-4 border border-gray-200">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
-            <HiOutlineFilter className="inline-block text-base text-black" />
+            <HiOutlineFilter className="inline-block text-sm text-black" />
             <span>Filters</span>
           </h3>
           <button
             onClick={handleReset}
-            className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer"
+            className="flex items-center gap-2 text-sm mb-2 text-black cursor-pointer"
           >
-            <HiOutlineRefresh className="inline-block text-base text-black" />
+            <HiOutlineRefresh className="inline-block text-sm text-black" />
             <span>Reset</span>
           </button>
         </div>
@@ -170,11 +212,31 @@ const OrderRequestApproval = () => {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
+          <div>
+            <label className="block text-gray-700 text-sm mb-1">From</label>
+            <DatePicker
+              selected={startDate}
+              onChange={(date) =>
+                setStartDate(date ? date.toISOString().split("T")[0] : "")
+              }
+              placeholder="Start Date"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm mb-1">To</label>
+            <DatePicker
+              selected={endDate}
+              onChange={(date) =>
+                setEndDate(date ? date.toISOString().split("T")[0] : "")
+              }
+              placeholder="End Date"
+            />
+          </div>
         </div>
       </div>
       <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading...</div>
+          <Loading />
         ) : error ? (
           <div className="p-8 text-center text-red-500">{error}</div>
         ) : (
@@ -281,7 +343,7 @@ const OrderRequestApproval = () => {
                         </label>
                         <textarea
                           type="text"
-                          className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200"
+                          className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
                           placeholder="Rejection reason"
                           value={rejectionReason}
                           onChange={(e) => setRejectionReason(e.target.value)}

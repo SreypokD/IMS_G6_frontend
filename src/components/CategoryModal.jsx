@@ -46,76 +46,72 @@ const CategoryModal = ({
   }
 
   return (
-    <div>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
-        <div className="bg-white rounded-2xl p-5 w-full max-w-[30%] max-h-[80vh] shadow-xl relative">
-          <h2 className="text-xl font-bold mb-6 text-center">
-            {viewOnly
-              ? "View Category"
-              : initial
-                ? "Edit Category"
-                : "Add Category"}
-          </h2>
-          <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Name
-                {!category.name && !initial ? (
-                  <sup className="text-red-500">*</sup>
-                ) : null}
-              </label>
-              <input
-                name="name"
-                value={category.name}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                placeholder="Category name"
-                className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!category.name && !initial && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                required
-                disabled={viewOnly}
-              />
-              {!category.name && (touched.name || validateOnSave) && (
-                <div className="text-red-500 text-sm mt-1">
-                  Name is required
-                </div>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Description
-              </label>
-              <textarea
-                name="description"
-                value={category.description}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                placeholder="Description (optional)"
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
-                rows={3}
-                disabled={viewOnly}
-              />
-            </div>
-          </form>
-          <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
-            <button
-              type="button"
-              className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
-              onClick={onClose}
-            >
-              <HiXCircle className="inline-block text-xl" />
-              {viewOnly ? "Close" : "Cancel"}
-            </button>
-            {!viewOnly && (
-              <button
-                type="button"
-                className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
-                onClick={handleSubmit}
-              >
-                <HiOutlineDocumentText className="inline-block text-xl" />
-                {initial ? "Update Category" : "Add Category"}
-              </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl p-5 w-full max-w-[30%] max-h-[80vh] shadow-xl relative">
+        <h2 className="text-xl font-bold mb-6 text-center">
+          {viewOnly
+            ? "View Category"
+            : initial
+              ? "Edit Category"
+              : "Add Category"}
+        </h2>
+        <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Name
+              {!category.name && !initial ? (
+                <sup className="text-red-500">*</sup>
+              ) : null}
+            </label>
+            <input
+              name="name"
+              value={category.name}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Category name"
+              className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!category.name && !initial && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+              required
+              disabled={viewOnly}
+            />
+            {!category.name && (touched.name || validateOnSave) && (
+              <div className="text-red-500 text-sm mt-1">Name is required</div>
             )}
           </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              Description
+            </label>
+            <textarea
+              name="description"
+              value={category.description}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Description (optional)"
+              className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
+              rows={3}
+              disabled={viewOnly}
+            />
+          </div>
+        </form>
+        <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
+          <button
+            type="button"
+            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
+            onClick={onClose}
+          >
+            <HiXCircle className="inline-block text-xl" />
+            {viewOnly ? "Close" : "Cancel"}
+          </button>
+          {!viewOnly && (
+            <button
+              type="button"
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+              onClick={handleSubmit}
+            >
+              <HiOutlineDocumentText className="inline-block text-xl" />
+              {initial ? "Update Category" : "Add Category"}
+            </button>
+          )}
         </div>
       </div>
     </div>

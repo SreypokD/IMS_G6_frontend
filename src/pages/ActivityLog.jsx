@@ -3,31 +3,64 @@ import { getActivityLogs } from "../api";
 import Pagination from "../components/Pagination";
 import { useAuth } from "../contexts/auth/useAuth";
 import NoDataFound from "../components/NoDataFound";
+import Loading from "../components/Loading";
+import { HiOutlineFilter, HiOutlineRefresh } from "react-icons/hi";
+import DatePicker from "../components/DatePicker";
+import { formatDate } from "../utils/dateFormat";
 
 const ActivityLog = () => {
   const [logs, setLogs] = useState([]);
+
+  // Pagination
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     totalItems: 0,
     totalPages: 1,
   });
+
+  // Loading and Error
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Auth
   const { user } = useAuth();
+
+  // Filters
+  const [search, setSearch] = useState("");
+  const [startDate, setStartDate] = useState(
+    new Date(new Date().setDate(new Date().getDate() - 7))
+      .toISOString()
+      .split("T")[0],
+  );
+  const [endDate, setEndDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
 
   useEffect(() => {
     if (user) {
-      fetchLogs(1, 10);
+      fetchLogs(1, pagination.limit, search, startDate, endDate);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, search, startDate, endDate]);
 
-  async function fetchLogs(page = pagination.page, limit = pagination.limit) {
+  async function fetchLogs(
+    page = pagination.page,
+    limit = pagination.limit,
+    search = "",
+    startDate,
+    endDate,
+  ) {
     setLoading(true);
     setError("");
     try {
-      const res = await getActivityLogs({ page, limit });
+      const res = await getActivityLogs({
+        page,
+        limit,
+        search,
+        startDate,
+        endDate,
+      });
       setLogs(res.data.data);
       setPagination((prev) => ({
         ...prev,
@@ -42,6 +75,13 @@ const ActivityLog = () => {
     }
   }
 
+  const handleReset = () => {
+    setStartDate("");
+    setEndDate("");
+    setSearch("");
+    fetchLogs(1, pagination.limit, "", start, end);
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -52,9 +92,56 @@ const ActivityLog = () => {
           </span>
         </div>
       </div>
+      <div className="bg-white rounded-2xl p-6 mb-4 border border-gray-200">
+        <div className="w-full flex items-center justify-between">
+          <h3 className="flex items-center gap-2 text-base mb-2 text-black">
+            <HiOutlineFilter className="inline-block text-sm text-black" />
+            <span>Filters</span>
+          </h3>
+          <button
+            onClick={handleReset}
+            className="flex items-center gap-2 text-sm mb-2 text-black cursor-pointer"
+          >
+            <HiOutlineRefresh className="inline-block text-sm text-black" />
+            <span>Reset</span>
+          </button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-gray-700 text-sm mb-1">Search</label>
+            <input
+              type="text"
+              className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 text-gray-700 text-sm"
+              placeholder="Search description..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm mb-1">From</label>
+            <DatePicker
+              selected={startDate}
+              onChange={(date) =>
+                setStartDate(date ? date.toISOString().split("T")[0] : "")
+              }
+              placeholder="Start Date"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm mb-1">To</label>
+            <DatePicker
+              selected={endDate}
+              onChange={(date) =>
+                setEndDate(date ? date.toISOString().split("T")[0] : "")
+              }
+              placeholder="End Date"
+            />
+          </div>
+        </div>
+      </div>
       <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading...</div>
+          <Loading />
         ) : error ? (
           <div className="p-8 text-center text-red-500">{error}</div>
         ) : (
@@ -80,11 +167,7 @@ const ActivityLog = () => {
                   </td>
                   <td>{log.entity_type || "-"}</td>
                   <td>{log.details || "-"}</td>
-                  <td>
-                    {log.createdAt
-                      ? new Date(log.createdAt).toLocaleString()
-                      : "-"}
-                  </td>
+                  <td>{formatDate(log.createdAt, true)}</td>
                   <td>
                     {log.action
                       ? log.action.replace(/_/g, " ").charAt(0).toUpperCase() +

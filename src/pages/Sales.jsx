@@ -4,6 +4,7 @@ import Pagination from "../components/Pagination";
 import SaleModal from "../components/SaleModal";
 import { useAuth } from "../contexts/auth/useAuth";
 import NoDataFound from "../components/NoDataFound";
+import Loading from "../components/Loading";
 import {
   HiOutlinePlus,
   HiOutlineShoppingCart,
@@ -20,6 +21,7 @@ import { useDialog } from "../contexts/dialog/useDialog";
 import { Listbox } from "@headlessui/react";
 import { formatDate } from "../utils/dateFormat";
 import { useNotification } from "../contexts/notification/useNotification";
+import DatePicker from "../components/DatePicker";
 
 const statusOptions = ["Processing", "Completed", "Cancelled"];
 
@@ -93,16 +95,26 @@ function StatusDropdown({ value, onChange }) {
 
 const Sales = () => {
   const [sales, setSales] = useState([]);
+
+  // View Sale
   const [viewSale, setViewSale] = useState(null);
+
+  // Pagination
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     totalItems: 0,
     totalPages: 1,
   });
+
+  // Modal
+  const [modalOpen, setModalOpen] = useState(false);
+
+  // Loading and Error
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
+
+  // Dialog
   const { user } = useAuth();
   const dialog = useDialog();
   const [editSale, setEditSale] = useState(null);
@@ -110,10 +122,19 @@ const Sales = () => {
 
   // Filters
   const [users, setUsers] = useState([]);
+  const [search, setSearch] = useState("");
   const [customer, setCustomer] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(
+    new Date(new Date().setDate(new Date().getDate() - 7))
+      .toISOString()
+      .split("T")[0],
+  );
+  const [endDate, setEndDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
   const [status, setStatus] = useState("");
+
+  // Permissions
   const canView = user?.permission?.permissions?.includes("view_sale");
   const canCreate = user?.permission?.permissions?.includes("create_sale");
   const canUpdate = user?.permission?.permissions?.includes("update_sale");
@@ -130,13 +151,14 @@ const Sales = () => {
   useEffect(() => {
     fetchSales(1, 10);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [customer, startDate, endDate, status]);
+  }, [search, customer, startDate, endDate, status]);
 
   async function fetchSales(page = 1, limit = 10) {
     setLoading(true);
     setError("");
     try {
       const params = { page, limit };
+      if (search) params.search = search;
       if (customer !== "All Customers") params.customer = customer;
       if (status !== "All Status") params.status = status;
       if (startDate) params.startDate = startDate;
@@ -249,7 +271,7 @@ const Sales = () => {
         </div>
         {canCreate && (
           <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
             onClick={() => {
               setViewSale(null);
               setEditSale(null);
@@ -317,34 +339,46 @@ const Sales = () => {
       <div className="bg-white rounded-2xl p-6 mb-4 border border-gray-200">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
-            <HiOutlineFilter className="inline-block text-base text-black" />
+            <HiOutlineFilter className="inline-block text-sm text-black" />
             <span>Filters</span>
           </h3>
           <button
             onClick={handleReset}
-            className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer"
+            className="flex items-center gap-2 text-sm mb-2 text-black cursor-pointer"
           >
-            <HiOutlineRefresh className="inline-block text-base text-black" />
+            <HiOutlineRefresh className="inline-block text-sm text-black" />
             <span>Reset</span>
           </button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-gray-700 text-sm mb-1">From</label>
+            <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
-              type="date"
+              type="text"
               className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 text-gray-700 text-sm"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm mb-1">From</label>
+            <DatePicker
+              selected={startDate}
+              onChange={(date) =>
+                setStartDate(date ? date.toISOString().split("T")[0] : "")
+              }
+              placeholder="Start Date"
             />
           </div>
           <div>
             <label className="block text-gray-700 text-sm mb-1">To</label>
-            <input
-              type="date"
-              className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 text-gray-700 text-sm"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
+            <DatePicker
+              selected={endDate}
+              onChange={(date) =>
+                setEndDate(date ? date.toISOString().split("T")[0] : "")
+              }
+              placeholder="End Date"
             />
           </div>
           <div>
@@ -363,7 +397,7 @@ const Sales = () => {
       </div>
       <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading...</div>
+          <Loading />
         ) : error ? (
           <div className="p-8 text-center text-red-500">{error}</div>
         ) : (

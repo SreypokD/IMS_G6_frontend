@@ -68,6 +68,15 @@ const permissionTable = [
     actions: ["view_sale", "create_sale", "update_sale", "delete_sale"],
   },
   {
+    label: "Expenses",
+    actions: [
+      "view_expense",
+      "create_expense",
+      "update_expense",
+      "delete_expense",
+    ],
+  },
+  {
     label: "Order History",
     actions: ["view_order_history"],
   },
@@ -185,7 +194,7 @@ const PermissionModal = ({
                   value={permission.name}
                   onChange={handlePermissionChange}
                   onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!permission.name && !initial && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!permission.name && !initial && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   required
                   disabled={viewOnly}
                 />
@@ -202,7 +211,7 @@ const PermissionModal = ({
                   onBlur={() =>
                     setTouched((prev) => ({ ...prev, description: true }))
                   }
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200"
+                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
                   required
                   disabled={viewOnly}
                 />
@@ -215,7 +224,7 @@ const PermissionModal = ({
               <span>Permissions</span>
             </h3>
             <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
-              <table className="min-w-full text-center text-sm align-middle">
+              <table className="min-w-full text-center align-middle">
                 <thead>
                   <tr>
                     <th className="text-left">Module</th>
@@ -291,7 +300,7 @@ const PermissionModal = ({
           {!viewOnly && (
             <button
               type="button"
-              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
               onClick={() => {
                 setValidateOnSave(true);
                 setTouched({

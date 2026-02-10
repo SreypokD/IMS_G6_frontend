@@ -1,29 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar.jsx";
 import Navbar from "./Navbar.jsx";
-
-import Login from "../pages/Login.jsx";
-import ForgotPassword from "../pages/ForgotPassword.jsx";
-import Register from "../pages/Register.jsx";
-import Reports from "../pages/Reports.jsx";
-import Products from "../pages/Products.jsx";
-import Suppliers from "../pages/Suppliers.jsx";
-import Dashboard from "../pages/Dashboard.jsx";
+import Loading from "../components/Loading.jsx";
 import { useAuth } from "../contexts/auth/useAuth.js";
 import { DialogProvider } from "../contexts/dialog/DialogContext.jsx";
-import Categories from "../pages/Categories.jsx";
-import Stocks from "../pages/Stocks.jsx";
 import Breadcrumb from "../components/Breadcrumb.jsx";
-import OrderRequests from "../pages/OrderRequests.jsx";
-import OrderHistory from "../pages/OrderHistory.jsx";
-import ApproveRequests from "../pages/ApproveRequests.jsx";
-import ConfirmDelivery from "../pages/ConfirmDelivery.jsx";
-import Sales from "../pages/Sales.jsx";
-import ActivityLog from "../pages/ActivityLog.jsx";
-import Permissions from "../pages/Permissions.jsx";
-import Users from "../pages/Users.jsx";
+
+// Lazy-loaded components
+const Login = lazy(() => import("../pages/Login.jsx"));
+const ForgotPassword = lazy(() => import("../pages/ForgotPassword.jsx"));
+const Register = lazy(() => import("../pages/Register.jsx"));
+const Reports = lazy(() => import("../pages/Reports.jsx"));
+const Products = lazy(() => import("../pages/Products.jsx"));
+const Suppliers = lazy(() => import("../pages/Suppliers.jsx"));
+const Dashboard = lazy(() => import("../pages/Dashboard.jsx"));
+const Categories = lazy(() => import("../pages/Categories.jsx"));
+const Stocks = lazy(() => import("../pages/Stocks.jsx"));
+const OrderRequests = lazy(() => import("../pages/OrderRequests.jsx"));
+const OrderHistory = lazy(() => import("../pages/OrderHistory.jsx"));
+const ApproveRequests = lazy(() => import("../pages/ApproveRequests.jsx"));
+const ConfirmDelivery = lazy(() => import("../pages/ConfirmDelivery.jsx"));
+const Sales = lazy(() => import("../pages/Sales.jsx"));
+const Expenses = lazy(() => import("../pages/Expenses.jsx"));
+const ActivityLog = lazy(() => import("../pages/ActivityLog.jsx"));
+const Permissions = lazy(() => import("../pages/Permissions.jsx"));
+const Users = lazy(() => import("../pages/Users.jsx"));
 
 // A wrapper for private routes that checks authentication
 function PrivateRoute({ children }) {
@@ -52,76 +55,99 @@ function App() {
   return (
     <DialogProvider>
       <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route
-            path="*"
-            element={
-              <PrivateRoute>
-                <div className="h-screen flex overflow-hidden bg-[#f9fafb]">
-                  <Sidebar mini={sidebarHidden} />
-                  <div className="flex-1 flex flex-col min-w-0">
-                    <Navbar onBellClick={() => setSidebarHidden((v) => !v)} />
-                    <main className="flex-1 p-3 overflow-y-auto min-h-0">
-                      <Breadcrumb />
-                      <Routes>
-                        {[
-                          // Dashboard
-                          { path: "/", element: <Dashboard /> },
+        <Suspense
+          fallback={
+            <div className="h-screen w-screen flex items-center justify-center">
+              <Loading />
+            </div>
+          }
+        >
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route
+              path="*"
+              element={
+                <PrivateRoute>
+                  <div className="h-screen flex overflow-hidden bg-[#f9fafb]">
+                    <Sidebar mini={sidebarHidden} />
+                    <div className="flex-1 flex flex-col min-w-0">
+                      <Navbar onBellClick={() => setSidebarHidden((v) => !v)} />
+                      <main className="flex-1 p-3 overflow-y-auto min-h-0">
+                        <Breadcrumb />
+                        <Suspense
+                          fallback={
+                            <div className="h-full w-full flex items-center justify-center">
+                              <Loading />
+                            </div>
+                          }
+                        >
+                          <Routes>
+                            {[
+                              // Dashboard
+                              { path: "/", element: <Dashboard /> },
 
-                          // Master Data
-                          { path: "/categories", element: <Categories /> },
-                          { path: "/products", element: <Products /> },
-                          { path: "/suppliers", element: <Suppliers /> },
+                              // Master Data
+                              { path: "/categories", element: <Categories /> },
+                              { path: "/products", element: <Products /> },
+                              { path: "/suppliers", element: <Suppliers /> },
 
-                          // Purchasing / Procurement
-                          {
-                            path: "/order-requests",
-                            element: <OrderRequests />,
-                          },
-                          {
-                            path: "/approve-requests",
-                            element: <ApproveRequests />,
-                          },
-                          {
-                            path: "/confirm-delivery",
-                            element: <ConfirmDelivery />,
-                          },
-                          {
-                            path: "/order-history",
-                            element: <OrderHistory />,
-                          },
+                              // Purchasing / Procurement
+                              {
+                                path: "/order-requests",
+                                element: <OrderRequests />,
+                              },
+                              {
+                                path: "/approve-requests",
+                                element: <ApproveRequests />,
+                              },
+                              {
+                                path: "/confirm-delivery",
+                                element: <ConfirmDelivery />,
+                              },
+                              {
+                                path: "/order-history",
+                                element: <OrderHistory />,
+                              },
 
-                          // Inventory / Stock
-                          { path: "/stocks", element: <Stocks /> },
+                              // Inventory / Stock
+                              { path: "/stocks", element: <Stocks /> },
 
-                          // Sales
-                          { path: "/sales", element: <Sales /> },
+                              // Sales
+                              { path: "/sales", element: <Sales /> },
+                              { path: "/expenses", element: <Expenses /> },
 
-                          // Reports & Logs
-                          { path: "/reports", element: <Reports /> },
-                          { path: "/activity-logs", element: <ActivityLog /> },
+                              // Reports & Logs
+                              { path: "/reports", element: <Reports /> },
+                              {
+                                path: "/activity-logs",
+                                element: <ActivityLog />,
+                              },
 
-                          // System / Security
-                          { path: "/users", element: <Users /> },
-                          { path: "/permissions", element: <Permissions /> },
-                        ].map((route) => (
-                          <Route
-                            key={route.path}
-                            path={route.path}
-                            element={route.element}
-                          />
-                        ))}
-                      </Routes>
-                    </main>
+                              // System / Security
+                              { path: "/users", element: <Users /> },
+                              {
+                                path: "/permissions",
+                                element: <Permissions />,
+                              },
+                            ].map((route) => (
+                              <Route
+                                key={route.path}
+                                path={route.path}
+                                element={route.element}
+                              />
+                            ))}
+                          </Routes>
+                        </Suspense>
+                      </main>
+                    </div>
                   </div>
-                </div>
-              </PrivateRoute>
-            }
-          />
-        </Routes>
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </Suspense>
       </Router>
     </DialogProvider>
   );

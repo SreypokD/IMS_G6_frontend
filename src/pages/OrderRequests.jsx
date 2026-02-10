@@ -14,8 +14,10 @@ import OrderRequestModal from "../components/OrderRequestModal.jsx";
 import { getOrderRequests, cancelOrderRequest } from "../api";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
+import Loading from "../components/Loading";
 import { formatDate } from "../utils/dateFormat";
 import { Listbox } from "@headlessui/react";
+import DatePicker from "../components/DatePicker";
 
 const statusOptions = [
   { value: "Pending", label: "Pending" },
@@ -59,43 +61,83 @@ function StatusDropdown({ value, onChange }) {
 
 const OrderRequests = () => {
   const [requests, setRequests] = useState([]);
+
+  // Pagination
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     totalItems: 0,
     totalPages: 1,
   });
+
+  // Modal
   const [modalOpen, setModalOpen] = useState(false);
   const [editOrderRequest, setEditOrderRequest] = useState(null);
+
+  // Loading and Error
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { user } = useAuth();
   const dialog = useDialog();
+
+  // Filters
   const [search, setSearch] = useState("");
+  const [startDate, setStartDate] = useState(
+    new Date(new Date().setDate(new Date().getDate() - 7))
+      .toISOString()
+      .split("T")[0],
+  );
+  const [endDate, setEndDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
   const [status, setStatus] = useState("");
+
+  // Permissions
   const canView = user?.permission?.permissions?.includes("view_order_request");
-  const canCreate = user?.permission?.permissions?.includes("create_order_request");
-  const canUpdate = user?.permission?.permissions?.includes("update_order_request");
-  const canDelete = user?.permission?.permissions?.includes("delete_order_request");
+  const canCreate = user?.permission?.permissions?.includes(
+    "create_order_request",
+  );
+  const canUpdate = user?.permission?.permissions?.includes(
+    "update_order_request",
+  );
+  const canDelete = user?.permission?.permissions?.includes(
+    "delete_order_request",
+  );
 
   useEffect(() => {
     if (user) {
-      fetchOrderRequests(pagination.page, pagination.limit, search, status);
+      fetchOrderRequests(
+        pagination.page,
+        pagination.limit,
+        search,
+        startDate,
+        endDate,
+        status,
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, search, status]);
+  }, [user, search, status, startDate, endDate]);
 
   // Fetch order requests from API
   async function fetchOrderRequests(
     page = pagination.page,
     limit = pagination.limit,
     search,
+    startDate,
+    endDate,
     status,
   ) {
     setLoading(true);
     setError("");
     try {
-      const res = await getOrderRequests({ page, limit, search, status });
+      const res = await getOrderRequests({
+        page,
+        limit,
+        search,
+        startDate,
+        endDate,
+        status,
+      });
       setRequests(res.data.data);
       setPagination((prev) => ({
         ...prev,
@@ -134,9 +176,11 @@ const OrderRequests = () => {
 
   const handleReset = () => {
     setSearch("");
+    setStartDate("");
+    setEndDate("");
     setStatus("");
     setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchOrderRequests(1, pagination.limit, "", "");
+    fetchOrderRequests(1, pagination.limit, "", "", "", "");
   };
 
   return (
@@ -163,7 +207,7 @@ const OrderRequests = () => {
         </div>
         {canCreate && (
           <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
             onClick={() => setModalOpen(true)}
           >
             <HiOutlinePlus className="text-md" /> Add Request
@@ -173,14 +217,14 @@ const OrderRequests = () => {
       <div className="bg-white rounded-xl p-6 mb-4 border border-gray-200">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
-            <HiOutlineFilter className="inline-block text-base text-black" />
+            <HiOutlineFilter className="inline-block text-sm text-black" />
             <span>Filters</span>
           </h3>
           <button
             onClick={handleReset}
-            className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer"
+            className="flex items-center gap-2 text-sm mb-2 text-black cursor-pointer"
           >
-            <HiOutlineRefresh className="inline-block text-base text-black" />
+            <HiOutlineRefresh className="inline-block text-sm text-black" />
             <span>Reset</span>
           </button>
         </div>
@@ -192,6 +236,26 @@ const OrderRequests = () => {
               placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm mb-1">From</label>
+            <DatePicker
+              selected={startDate}
+              onChange={(date) =>
+                setStartDate(date ? date.toISOString().split("T")[0] : "")
+              }
+              placeholder="Start Date"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm mb-1">To</label>
+            <DatePicker
+              selected={endDate}
+              onChange={(date) =>
+                setEndDate(date ? date.toISOString().split("T")[0] : "")
+              }
+              placeholder="End Date"
             />
           </div>
           <div>
@@ -209,7 +273,7 @@ const OrderRequests = () => {
       </div>
       <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading...</div>
+          <Loading />
         ) : error ? (
           <div className="p-8 text-center text-red-500">{error}</div>
         ) : (
@@ -224,7 +288,7 @@ const OrderRequests = () => {
                 <th>Requested Date</th>
                 <th>Delivery Date</th>
                 <th>Status</th>
-                {(canView || canUpdate || canDelete) ? (
+                {canView || canUpdate || canDelete ? (
                   <th className="text-center action">Actions</th>
                 ) : null}
               </tr>

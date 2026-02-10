@@ -11,6 +11,7 @@ const initialProduct = {
   name: "",
   category: "",
   supplier: "",
+  cost_price: "",
   price: "",
   stock: "",
   image: "",
@@ -80,7 +81,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                     setProduct({ ...product, code: e.target.value })
                   }
                   placeholder="Product Code"
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 border-gray-200"
+                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
                 />
               </div>
               <div>
@@ -98,7 +99,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                   }
                   onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
                   placeholder="Product Name"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${!product.name && !initial && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!product.name && !initial && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   disabled={viewOnly}
                 />
               </div>
@@ -127,7 +128,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between cursor-pointer${viewOnly ? "bg-gray-100 cursor-default" : ""} ${!product.category && !initial && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer${viewOnly ? "bg-gray-100 cursor-default" : ""} ${!product.category && !initial && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                       disabled={viewOnly}
                     >
                       <span>
@@ -136,7 +137,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                       </span>
                       <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                     </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {categories.length === 0 && (
                         <div className="px-4 py-2 text-gray-400">
                           No categories
@@ -182,7 +183,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-gray-800 flex items-center justify-between ${viewOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!product.supplier && !initial && (touched.supplier || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!product.supplier && !initial && (touched.supplier || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                       disabled={viewOnly}
                     >
                       <span>
@@ -191,7 +192,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                       </span>
                       <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                     </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {suppliers.length === 0 && (
                         <div className="px-4 py-2 text-gray-400">
                           No suppliers
@@ -231,7 +232,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                   type="number"
                   step="0.01"
                   placeholder="Price"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${(!product.price || isNaN(product.price)) && !initial && (touched.price || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.price || isNaN(product.price)) && !initial && (touched.price || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   disabled={viewOnly}
                 />
               </div>
@@ -253,7 +254,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                   }
                   type="number"
                   placeholder="Stock"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-gray-800 ${(!product.stock || isNaN(product.stock)) && !initial && (touched.stock || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.stock || isNaN(product.stock)) && !initial && (touched.stock || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   disabled={viewOnly}
                 />
               </div>
@@ -322,7 +323,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
           {!viewOnly && (
             <button
               type="button"
-              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
               onClick={() => {
                 setValidateOnSave(true);
                 setTouched({

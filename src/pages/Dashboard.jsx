@@ -40,6 +40,8 @@ const Dashboard = () => {
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+
+  // Permissions
   const isAllowed = !!(
     user?.permission?.permissions?.includes("view_user") ||
     user?.permission?.permissions?.includes("view_permission") ||
@@ -48,7 +50,8 @@ const Dashboard = () => {
     user?.permission?.permissions?.includes("view_report") ||
     user?.permission?.permissions?.includes("view_approve_request") ||
     user?.permission?.permissions?.includes("view_confirm_delivery") ||
-    user?.permission?.permissions?.includes("view_activity_log")
+    user?.permission?.permissions?.includes("view_activity_log") ||
+    user?.permission?.permissions?.includes("view_expense")
   );
 
   useEffect(() => {
@@ -113,7 +116,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Stats Cards */}
       {/* Stats Cards */}
       {isAllowed && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">

@@ -3,9 +3,11 @@ import { useAuth } from "../contexts/auth/useAuth";
 import { getOrderRequests } from "../api";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
+import Loading from "../components/Loading";
 import { formatDate } from "../utils/dateFormat";
 import { HiSelector, HiOutlineFilter, HiOutlineRefresh } from "react-icons/hi";
 import { Listbox } from "@headlessui/react";
+import DatePicker from "../components/DatePicker";
 
 const statusOptions = [
   { value: "pending", label: "Pending" },
@@ -49,35 +51,63 @@ function StatusDropdown({ value, onChange }) {
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
+
+  // Pagination
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     totalItems: 0,
     totalPages: 1,
   });
+
+  // Loading and Error
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { user } = useAuth();
+
+  // Filters
   const [search, setSearch] = useState("");
+  const [startDate, setStartDate] = useState(
+    new Date(new Date().setDate(new Date().getDate() - 7))
+      .toISOString()
+      .split("T")[0],
+  );
+  const [endDate, setEndDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
   const [status, setStatus] = useState("");
 
   useEffect(() => {
     if (user) {
-      fetchOrders(pagination.page, pagination.limit, search, status);
+      fetchOrders(
+        pagination.page,
+        pagination.limit,
+        search,
+        startDate,
+        endDate,
+        status,
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, search, status]);
+  }, [user, search, status, startDate, endDate]);
 
   async function fetchOrders(
     page = pagination.page,
     limit = pagination.limit,
     search,
+    startDate,
+    endDate,
     status,
   ) {
     setLoading(true);
     setError("");
     try {
-      const res = await getOrderRequests({ page, limit, search, status });
+      const params = { page, limit };
+      if (status !== "") params.status = status;
+      if (startDate) params.startDate = startDate;
+      if (endDate) params.endDate = endDate;
+      if (search) params.search = search;
+      const res = await getOrderRequests(params);
       setOrders(res.data.data);
       setPagination((prev) => ({
         ...prev,
@@ -95,8 +125,14 @@ const OrderHistory = () => {
   const handleReset = () => {
     setSearch("");
     setStatus("");
+    const start = new Date(new Date().setDate(new Date().getDate() - 7))
+      .toISOString()
+      .split("T")[0];
+    const end = new Date().toISOString().split("T")[0];
+    setStartDate(start);
+    setEndDate(end);
     setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchOrders(1, pagination.limit, "", "");
+    fetchOrders(1, pagination.limit, "", start, end, "");
   };
 
   return (
@@ -112,22 +148,20 @@ const OrderHistory = () => {
       <div className="bg-white rounded-xl p-6 mb-4 border border-gray-200">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
-            <HiOutlineFilter className="inline-block text-base text-black" />
+            <HiOutlineFilter className="inline-block text-sm text-black" />
             <span>Filters</span>
           </h3>
-          <button 
+          <button
             onClick={handleReset}
-            className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer"
+            className="flex items-center gap-2 text-sm mb-2 text-black cursor-pointer"
           >
-            <HiOutlineRefresh className="inline-block text-base text-black" />
+            <HiOutlineRefresh className="inline-block text-sm text-black" />
             <span>Reset</span>
           </button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
-              Search
-            </label>
+            <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
               className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
               placeholder="Search..."
@@ -136,9 +170,27 @@ const OrderHistory = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
-              Status
-            </label>
+            <label className="block text-gray-700 text-sm mb-1">From</label>
+            <DatePicker
+              selected={startDate}
+              onChange={(date) =>
+                setStartDate(date ? date.toISOString().split("T")[0] : "")
+              }
+              placeholder="Start Date"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm mb-1">To</label>
+            <DatePicker
+              selected={endDate}
+              onChange={(date) =>
+                setEndDate(date ? date.toISOString().split("T")[0] : "")
+              }
+              placeholder="End Date"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm mb-1">Status</label>
             <StatusDropdown
               value={status}
               onChange={(status) => {
@@ -152,7 +204,7 @@ const OrderHistory = () => {
       </div>
       <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading...</div>
+          <Loading />
         ) : error ? (
           <div className="p-8 text-center text-red-500">{error}</div>
         ) : (

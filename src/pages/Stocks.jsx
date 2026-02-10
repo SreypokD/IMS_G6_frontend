@@ -15,6 +15,7 @@ import {
 import Pagination from "../components/Pagination";
 import { useAuth } from "../contexts/auth/useAuth";
 import NoDataFound from "../components/NoDataFound";
+import Loading from "../components/Loading";
 import { formatDate } from "../utils/dateFormat";
 import StockOutModal from "../components/StockOutModal";
 import StockInModal from "../components/StockInModal";
@@ -129,33 +130,49 @@ function LocationDropdown({ value, onChange }) {
 
 const Stocks = () => {
   const [stocks, setStocks] = useState([]);
+
+  // Products
   const [products, setProducts] = useState([]);
+
+  // Modals
   const [stockOutOpen, setStockOutOpen] = useState(false);
   const [stockInOpen, setStockInOpen] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [selectedStock, setSelectedStock] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const dialog = useDialog();
+
+  // Pagination
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     totalItems: 0,
     totalPages: 1,
   });
+
+  // Loading and Error
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Dialog
   const { user } = useAuth();
+
+  // Filters
   const [search, setSearch] = useState("");
   const [filterUser, setFilterUser] = useState("");
   const [filterType, setFilterType] = useState("");
   const [filterLocation, setFilterLocation] = useState("");
   const [userOptions, setUserOptions] = useState([]);
-  const dialog = useDialog();
-  const [viewModalOpen, setViewModalOpen] = useState(false);
-  const [selectedStock, setSelectedStock] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
+
+  // Summary
   const [summary, setSummary] = useState({
     totalStockIn: 0,
     totalStockOut: 0,
     currentBalance: 0,
     lowStockItems: 0,
   });
+
+  // Permissions
   const canView = user?.permission?.permissions?.includes("view_stock");
   const canCreate = user?.permission?.permissions?.includes("create_stock");
   const canUpdate = user?.permission?.permissions?.includes("update_stock");
@@ -425,14 +442,14 @@ const Stocks = () => {
       <div className="bg-white rounded-2xl p-6 mb-4 border border-gray-200">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
-            <HiOutlineFilter className="inline-block text-base text-black" />
+            <HiOutlineFilter className="inline-block text-sm text-black" />
             <span>Filters</span>
           </h3>
           <button
             onClick={handleReset}
-            className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer"
+            className="flex items-center gap-2 text-sm mb-2 text-black cursor-pointer"
           >
-            <HiOutlineRefresh className="inline-block text-base text-black" />
+            <HiOutlineRefresh className="inline-block text-sm text-black" />
             <span>Reset</span>
           </button>
         </div>
@@ -518,7 +535,7 @@ const Stocks = () => {
       </div>
       <div className="bg-white rounded-2xl overflow-x-auto border border-gray-200 px-3">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading...</div>
+          <Loading />
         ) : error ? (
           <div className="p-8 text-center text-red-500">{error}</div>
         ) : (

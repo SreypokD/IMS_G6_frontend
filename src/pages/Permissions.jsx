@@ -17,28 +17,46 @@ import {
 import { useAuth } from "../contexts/auth/useAuth";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
+import Loading from "../components/Loading";
 import { useDialog } from "../contexts/dialog/useDialog";
 
 const Permissions = () => {
   const [permissions, setPermissions] = useState([]);
+
+  // View permission
   const [viewPermission, setViewPermission] = useState(null);
+
+  // Pagination
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     totalItems: 0,
     totalPages: 1,
   });
+
+  // Modal
   const [modalOpen, setModalOpen] = useState(false);
   const [editPermission, setEditPermission] = useState(null);
+
+  // Loading and Error
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Dialog
   const { user } = useAuth();
   const dialog = useDialog();
+
+  // Filters
   const [search, setSearch] = useState("");
+
+  // Permissions
   const canView = user?.permission?.permissions?.includes("view_permission");
-  const canCreate = user?.permission?.permissions?.includes("create_permission");
-  const canUpdate = user?.permission?.permissions?.includes("update_permission");
-  const canDelete = user?.permission?.permissions?.includes("delete_permission");
+  const canCreate =
+    user?.permission?.permissions?.includes("create_permission");
+  const canUpdate =
+    user?.permission?.permissions?.includes("update_permission");
+  const canDelete =
+    user?.permission?.permissions?.includes("delete_permission");
 
   useEffect(() => {
     if (user) {
@@ -149,27 +167,27 @@ const Permissions = () => {
         </div>
         {canCreate && (
           <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer"
+            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm text-sm"
             onClick={() => {
               setEditPermission(null);
               setModalOpen(true);
             }}
           >
-            <HiOutlinePlus className="text-md" /> Add Permission
+            <HiOutlinePlus /> Add Permission
           </button>
         )}
       </div>
       <div className="bg-white rounded-xl p-6 mb-4 border border-gray-200">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
-            <HiOutlineFilter className="inline-block text-base text-black" />
+            <HiOutlineFilter className="inline-block text-sm text-black" />
             <span>Filters</span>
           </h3>
           <button
             onClick={handleReset}
-            className="flex items-center gap-2 text-base mb-2 text-black cursor-pointer"
+            className="flex items-center gap-2 text-sm mb-2 text-black cursor-pointer"
           >
-            <HiOutlineRefresh className="inline-block text-base text-black" />
+            <HiOutlineRefresh className="inline-block text-sm text-black" />
             <span>Reset</span>
           </button>
         </div>
@@ -187,7 +205,7 @@ const Permissions = () => {
       </div>
       <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading...</div>
+          <Loading />
         ) : error ? (
           <div className="p-8 text-center text-red-500">{error}</div>
         ) : (
