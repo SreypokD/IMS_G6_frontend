@@ -35,7 +35,7 @@ function UserDropdown({ value, onChange, userOptions = [] }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
           <span>
             {userOptions.find((u) => u._id === value)
               ? `${userOptions.find((u) => u._id === value).first_name} ${userOptions.find((u) => u._id === value).last_name}`
@@ -43,7 +43,7 @@ function UserDropdown({ value, onChange, userOptions = [] }) {
           </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
             className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
             value=""
@@ -71,14 +71,14 @@ function TransactionDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
           <span>
             {transactionOptions.find((t) => t.value === value)?.label ||
               "All Transactions"}
           </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {transactionOptions.map((option) => (
             <Listbox.Option
               key={option.value}
@@ -100,11 +100,11 @@ function LocationDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
           <span>{value || "All Locations"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
             className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
             value=""
@@ -386,9 +386,9 @@ const Stocks = () => {
         )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
-            <HiDownload className="text-3xl text-green-600" />
+            <HiDownload className="text-2xl text-green-600" />
             <div className="flex items-center gap-2 text-green-600 text-sm">
               <HiTrendingUp />
               <span>+12.5%</span>
@@ -399,9 +399,9 @@ const Stocks = () => {
             <div className="text-xl font-bold">{summary.totalStockIn}</div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
-            <HiLogout className="text-3xl text-red-500 rotate-270" />
+            <HiLogout className="text-2xl text-red-500 rotate-270" />
             <div className="flex items-center gap-2 text-green-600 text-sm">
               <HiTrendingUp />
               <span>+8.3%</span>
@@ -412,9 +412,9 @@ const Stocks = () => {
             <div className="text-xl font-bold">{summary.totalStockOut}</div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
-            <HiCube className="text-3xl text-black" />
+            <HiCube className="text-2xl text-black" />
             <div className="flex items-center gap-2 text-green-600 text-sm">
               <HiTrendingUp />
               <span>+5.2%</span>
@@ -425,9 +425,9 @@ const Stocks = () => {
             <div className="text-xl font-bold">{summary.currentBalance}</div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
-            <HiOutlineExclamation className="text-3xl text-yellow-600" />
+            <HiOutlineExclamation className="text-2xl text-yellow-600" />
             <div className="flex items-center gap-2 text-red-600 text-sm">
               <HiTrendingDown />
               <span>-2 items</span>
@@ -439,7 +439,7 @@ const Stocks = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-2xl p-6 mb-4 border border-gray-200">
+      <div className="bg-white rounded-2xl p-6 mb-4 border border-gray-100">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
             <HiOutlineFilter className="inline-block text-sm text-black" />
@@ -457,7 +457,7 @@ const Stocks = () => {
           <div>
             <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
-              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
+              className="bg-gray-50 border border-gray-100 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
               placeholder="Search..."
               value={search}
               onChange={(e) => {
@@ -533,7 +533,7 @@ const Stocks = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-2xl overflow-x-auto border border-gray-200 px-3">
+      <div className="bg-white rounded-2xl overflow-x-auto border border-gray-100 px-3">
         {loading ? (
           <Loading />
         ) : error ? (

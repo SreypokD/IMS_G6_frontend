@@ -29,7 +29,7 @@ function UserDropdown({ value, onChange, userOptions = [] }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
           <span>
             {userOptions.find((u) => u._id === value)
               ? `${userOptions.find((u) => u._id === value).first_name} ${userOptions.find((u) => u._id === value).last_name}`
@@ -37,7 +37,7 @@ function UserDropdown({ value, onChange, userOptions = [] }) {
           </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
             className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
             value=""
@@ -65,11 +65,11 @@ function StatusDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
           <span>{value || "All Status"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
             className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
             value="All Status"
@@ -283,9 +283,9 @@ const Sales = () => {
         )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
-            <BsCurrencyDollar className="text-3xl text-green-600" />
+            <BsCurrencyDollar className="text-2xl text-green-600" />
             <div className="flex items-center gap-2 text-green-600 text-sm">
               <HiTrendingUp />
               <span>12.5%</span>
@@ -296,9 +296,9 @@ const Sales = () => {
             <div className="text-xl font-bold">$571.87</div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
-            <HiOutlineShoppingCart className="text-3xl text-gray-700" />
+            <HiOutlineShoppingCart className="text-2xl text-gray-700" />
             <div className="flex items-center gap-2 text-green-600 text-sm">
               <HiTrendingUp />
               <span>8.3%</span>
@@ -309,9 +309,9 @@ const Sales = () => {
             <div className="text-xl font-bold">6</div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
-            <HiTrendingUp className="text-3xl text-yellow-600" />
+            <HiTrendingUp className="text-2xl text-yellow-600" />
             <div className="flex items-center gap-2 text-green-600 text-sm">
               <HiTrendingUp />
               <span>5.2%</span>
@@ -322,9 +322,9 @@ const Sales = () => {
             <div className="text-xl font-bold">$95.31</div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
-            <HiOutlineClock className="text-3xl text-yellow-600" />
+            <HiOutlineClock className="text-2xl text-yellow-600" />
             <div className="flex items-center gap-2 text-red-600 text-sm">
               <HiTrendingDown />
               <span>3.1%</span>
@@ -336,7 +336,7 @@ const Sales = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-2xl p-6 mb-4 border border-gray-200">
+      <div className="bg-white rounded-2xl p-6 mb-4 border border-gray-100">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
             <HiOutlineFilter className="inline-block text-sm text-black" />
@@ -355,7 +355,7 @@ const Sales = () => {
             <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
               type="text"
-              className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 text-gray-700 text-sm"
+              className="w-full bg-gray-50 border border-gray-100 rounded-lg py-2 px-3 text-gray-700 text-sm"
               placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -395,7 +395,7 @@ const Sales = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
+      <div className="bg-white rounded-xl overflow-x-auto border border-gray-100 px-3">
         {loading ? (
           <Loading />
         ) : error ? (

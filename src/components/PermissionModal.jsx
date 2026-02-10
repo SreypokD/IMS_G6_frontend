@@ -194,7 +194,7 @@ const PermissionModal = ({
                   value={permission.name}
                   onChange={handlePermissionChange}
                   onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!permission.name && !initial && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!permission.name && !initial && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   required
                   disabled={viewOnly}
                 />
@@ -211,7 +211,7 @@ const PermissionModal = ({
                   onBlur={() =>
                     setTouched((prev) => ({ ...prev, description: true }))
                   }
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                   required
                   disabled={viewOnly}
                 />
@@ -223,7 +223,7 @@ const PermissionModal = ({
               <HiOutlineKey className="inline-block text-xl text-black" />
               <span>Permissions</span>
             </h3>
-            <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
+            <div className="bg-white rounded-xl overflow-x-auto border border-gray-100 px-3">
               <table className="min-w-full text-center align-middle">
                 <thead>
                   <tr>
@@ -237,7 +237,7 @@ const PermissionModal = ({
                 </thead>
                 <tbody>
                   {permissionTable.map((row) => (
-                    <tr key={row.label} className="border-t border-gray-200">
+                    <tr key={row.label} className="border-t border-gray-100">
                       <td className="text-left">{row.label}</td>
                       <td>
                         <input
@@ -291,7 +291,7 @@ const PermissionModal = ({
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
             type="button"
-            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
+            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-100 flex items-center gap-2 cursor-pointer text-sm"
             onClick={onClose}
           >
             <HiXCircle className="inline-block text-xl" />

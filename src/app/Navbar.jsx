@@ -88,7 +88,7 @@ const Header = ({ onBellClick }) => {
                   Notifications
                 </div>
               </div>
-              <hr className="my-2 border-gray-200" />
+              <hr className="my-2 border-gray-100" />
               {notifications.length === 0 ? (
                 <div className="w-full p-2 text-[#64748b] text-center text-sm space-x-2 rounded-xl cursor-pointer">
                   No notifications
@@ -119,9 +119,8 @@ const Header = ({ onBellClick }) => {
             </div>
           )}
         </div>
-        <div className="flex items-center gap-3 relative">
+        <div className="flex items-center gap-3 relative" ref={menuRef}>
           <button
-            ref={menuRef}
             tabIndex={0}
             onClick={() => setMenuOpen((v) => !v)}
             className="flex items-center gap-2 p-1 rounded-full transition focus:outline-none cursor-pointer hover:bg-[#f1f5f9]"
@@ -157,16 +156,26 @@ const Header = ({ onBellClick }) => {
                   {user?.first_name + " " + user?.last_name}
                   <span className="ml-2 capitalize">({user?.role})</span>
                 </div>
-                <div className="text-gray-500 text-sm mb-1">
-                  {user?.email}
-                </div>
+                <div className="text-gray-500 text-sm mb-1">{user?.email}</div>
               </div>
-              <hr className="my-2 border-gray-200" />
-              <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer">
+              <hr className="my-2 border-gray-100" />
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/settings?tab=profile");
+                }}
+                className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"
+              >
                 <HiUser className="text-xl" />
                 <span>Profile Settings</span>
               </button>
-              <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer">
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/settings?tab=account");
+                }}
+                className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"
+              >
                 <HiOutlineCog className="text-xl" />
                 <span>Account Settings</span>
               </button>
@@ -174,7 +183,7 @@ const Header = ({ onBellClick }) => {
                 <HiOutlineQuestionMarkCircle className="text-xl" />
                 <span>Help & Support</span>
               </button>
-              <hr className="my-2 border-gray-200" />
+              <hr className="my-2 border-gray-100" />
               <button
                 type="button"
                 onMouseDown={(e) => {

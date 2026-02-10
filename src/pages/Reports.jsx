@@ -132,8 +132,7 @@ const Reports = () => {
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Date Filter */}
-          <div className="flex items-center gap-2 ">
-            <span className="text-gray-400 text-sm">From</span>
+          <div className="flex items-center gap-3">
             <DatePicker
               selected={dateRange.startDate}
               onChange={(date) =>
@@ -143,9 +142,7 @@ const Reports = () => {
                 })
               }
               placeholder="Start Date"
-              className="border-none bg-transparent focus:ring-0 w-28"
             />
-            <span className="text-gray-400">To</span>
             <DatePicker
               selected={dateRange.endDate}
               onChange={(date) =>
@@ -155,12 +152,11 @@ const Reports = () => {
                 })
               }
               placeholder="End Date"
-              className="border-none bg-transparent focus:ring-0 w-28"
             />
           </div>
           <button
             onClick={fetchData}
-            className="p-2 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-600 transition-colors cursor-pointer"
+            className="p-2 bg-white border border-gray-100 rounded-xl hover:bg-gray-50 text-gray-600 transition-colors cursor-pointer"
             title="Refresh Data"
           >
             <HiOutlineRefresh className="text-xl" />
@@ -198,46 +194,46 @@ const Reports = () => {
         <>
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
-              <HiCube className="text-3xl text-purple-600" />
+            <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
+              <HiCube className="text-2xl text-purple-600" />
               <div>
                 <div className="text-gray-500 text-sm font-medium">
                   Total Products
                 </div>
-                <div className="text-3xl font-bold text-gray-800">
+                <div className="text-xl font-bold text-gray-800">
                   {summary?.totalProducts ?? 0}
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
-              <MdInventory className="text-3xl text-blue-600" />
+            <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
+              <MdInventory className="text-2xl text-blue-600" />
               <div>
                 <div className="text-gray-500 text-sm font-medium">
                   Total Inventory Value
                 </div>
-                <div className="text-3xl font-bold text-gray-800">
+                <div className="text-xl font-bold text-gray-800">
                   {summary?.totalQuantity ?? 0}
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
-              <HiOutlineExclamation className="text-3xl text-yellow-600" />
+            <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
+              <HiOutlineExclamation className="text-2xl text-yellow-600" />
               <div>
                 <div className="text-gray-500 text-sm font-medium">
                   Low Stock Items
                 </div>
-                <div className="text-3xl font-bold text-gray-800">
+                <div className="text-xl font-bold text-gray-800">
                   {summary?.lowStock ?? 0}
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101">
-              <HiUserGroup className="text-3xl text-pink-600" />
+            <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
+              <HiUserGroup className="text-2xl text-pink-600" />
               <div>
                 <div className="text-gray-500 text-sm font-medium">
                   Total Suppliers
                 </div>
-                <div className="text-3xl font-bold text-gray-800">
+                <div className="text-xl font-bold text-gray-800">
                   {summary?.totalSuppliers ?? 0}
                 </div>
               </div>
@@ -245,12 +241,12 @@ const Reports = () => {
           </div>
 
           {/* Financial Overview */}
-          <div className="mb-6">
+          <div className="mb-4">
             <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
               <span>💰</span> Financial Overview
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              <div className="bg-white p-4 rounded-xl border border-gray-200 transition-all duration-300 hover:scale-101">
+              <div className="bg-white p-4 rounded-xl border border-gray-100 transition-all duration-300 hover:scale-101">
                 <span className="block text-gray-500 text-xs uppercase tracking-wider">
                   Revenue
                 </span>
@@ -258,7 +254,7 @@ const Reports = () => {
                   ${Number(financial?.revenue || 0).toFixed(2)}
                 </span>
               </div>
-              <div className="bg-white p-4 rounded-xl border border-gray-200 transition-all duration-300 hover:scale-101">
+              <div className="bg-white p-4 rounded-xl border border-gray-100 transition-all duration-300 hover:scale-101">
                 <span className="block text-gray-500 text-xs uppercase tracking-wider">
                   COGS
                 </span>
@@ -266,7 +262,7 @@ const Reports = () => {
                   ${Number(financial?.cogs || 0).toFixed(2)}
                 </span>
               </div>
-              <div className="bg-white p-4 rounded-xl border border-gray-200 transition-all duration-300 hover:scale-101">
+              <div className="bg-white p-4 rounded-xl border border-gray-100 transition-all duration-300 hover:scale-101">
                 <span className="block text-gray-500 text-xs uppercase tracking-wider">
                   Gross Profit
                 </span>
@@ -274,7 +270,7 @@ const Reports = () => {
                   ${Number(financial?.grossProfit || 0).toFixed(2)}
                 </span>
               </div>
-              <div className="bg-white p-4 rounded-xl border border-gray-200 transition-all duration-300 hover:scale-101">
+              <div className="bg-white p-4 rounded-xl border border-gray-100 transition-all duration-300 hover:scale-101">
                 <span className="block text-gray-500 text-xs uppercase tracking-wider">
                   Expenses
                 </span>
@@ -282,12 +278,12 @@ const Reports = () => {
                   ${Number(financial?.expenses || 0).toFixed(2)}
                 </span>
               </div>
-              <div className="bg-[#1e3a5f] p-4 rounded-xl border border-blue-900 transition-all duration-300 hover:scale-101">
+              <div className="bg-[#1e3a5f] p-4 rounded-xl border border--[#1e3a5f] transition-all duration-300 hover:scale-101">
                 <span className="block text-blue-200 text-xs uppercase tracking-wider">
                   Net Profit
                 </span>
                 <span
-                  className={`block text-2xl font-bold mt-1 ${
+                  className={`block text-xl font-bold mt-1 ${
                     (financial?.netProfit || 0) >= 0
                       ? "text-white"
                       : "text-red-300"
@@ -302,7 +298,7 @@ const Reports = () => {
           {/* Charts Row */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
             {/* Inventory Trends */}
-            <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-200">
+            <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                   <HiOutlineChartBar className="text-blue-600" /> Inventory
@@ -391,7 +387,7 @@ const Reports = () => {
             </div>
 
             {/* Order Stats Pie */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-200">
+            <div className="bg-white p-6 rounded-2xl border border-gray-100">
               <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
                 <HiClipboardList className="text-purple-600" /> Order Status
               </h2>
@@ -458,7 +454,7 @@ const Reports = () => {
           </div>
 
           {/* Low Stock Alert Table */}
-          <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-200">
+          <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                 <HiOutlineExclamationCircle className="text-red-500" /> Low

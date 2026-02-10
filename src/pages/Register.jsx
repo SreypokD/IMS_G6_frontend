@@ -57,7 +57,7 @@ const Register = () => {
         />
       </div>
       <div className="flex flex-col w-full md:w-1/2 items-center justify-center">
-        <div className="w-full max-w-lg bg-white/90 rounded-xl p-8 border border-gray-200 shadow-xl">
+        <div className="w-full max-w-lg bg-white/90 rounded-xl p-8 border border-gray-100 shadow-xl">
           <div className="w-18 h-15 m-auto bg-linear-to-br from-[#1e3a5f] to-[#bb7c18] rounded-xl flex items-center justify-center mb-3">
             <HiCube className="w-9 h-9 mx-auto text-white" />
           </div>
@@ -75,7 +75,7 @@ const Register = () => {
                 </label>
                 <input
                   type="text"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] bg-gray-50 text-gray-800 placeholder-gray-400"
+                  className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] bg-gray-50 text-gray-800 placeholder-gray-400"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   required
@@ -89,7 +89,7 @@ const Register = () => {
                 </label>
                 <input
                   type="text"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] bg-gray-50 text-gray-800 placeholder-gray-400"
+                  className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] bg-gray-50 text-gray-800 placeholder-gray-400"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   required
@@ -103,7 +103,7 @@ const Register = () => {
               </label>
               <input
                 type="email"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] bg-gray-50 text-gray-800 placeholder-gray-400"
+                className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] bg-gray-50 text-gray-800 placeholder-gray-400"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -116,7 +116,7 @@ const Register = () => {
               </label>
               <input
                 type="tel"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] bg-gray-50 text-gray-800 placeholder-gray-400"
+                className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] bg-gray-50 text-gray-800 placeholder-gray-400"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 required
@@ -129,7 +129,7 @@ const Register = () => {
               </label>
               <input
                 type={showPassword ? "text" : "password"}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] bg-gray-50 text-gray-800 placeholder-gray-400 pr-10"
+                className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] bg-gray-50 text-gray-800 placeholder-gray-400 pr-10"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -155,7 +155,7 @@ const Register = () => {
               </label>
               <input
                 type={showPassword ? "text" : "password"}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] bg-gray-50 text-gray-800 placeholder-gray-400"
+                className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] bg-gray-50 text-gray-800 placeholder-gray-400"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required

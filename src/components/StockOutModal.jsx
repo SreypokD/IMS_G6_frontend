@@ -110,7 +110,7 @@ const StockOutModal = ({ open, onClose, products, locations, initialData }) => {
             <Listbox value={productId} onChange={setProductId}>
               <div className="relative">
                 <Listbox.Button
-                  className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${!productId && (touched.productId || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${!productId && (touched.productId || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                 >
                   <span>
                     {products.find((p) => p._id === productId)?.name ||
@@ -118,7 +118,7 @@ const StockOutModal = ({ open, onClose, products, locations, initialData }) => {
                   </span>
                   <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                 </Listbox.Button>
-                <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                   {products.map((p) => (
                     <Listbox.Option
                       key={p._id}
@@ -142,7 +142,7 @@ const StockOutModal = ({ open, onClose, products, locations, initialData }) => {
               </label>
               <input
                 type="number"
-                className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!quantity && (touched.quantity || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!quantity && (touched.quantity || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                 value={quantity}
                 min={1}
                 onChange={(e) => setQuantity(e.target.value)}
@@ -155,7 +155,7 @@ const StockOutModal = ({ open, onClose, products, locations, initialData }) => {
               <label className="block font-medium mb-1">Batch Number</label>
               <input
                 type="text"
-                className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+                className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                 value={batchNumber}
                 onChange={(e) => setBatchNumber(e.target.value)}
                 placeholder="Optional batch number"
@@ -169,12 +169,12 @@ const StockOutModal = ({ open, onClose, products, locations, initialData }) => {
             <Listbox value={reason} onChange={setReason}>
               <div className="relative">
                 <Listbox.Button
-                  className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${!reason && (touched.reason || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${!reason && (touched.reason || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                 >
                   <span>{reason || "Select transaction reason"}</span>
                   <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                 </Listbox.Button>
-                <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                   {["Sale", "Damage", "Adjustment", "Other"].map((option) => (
                     <Listbox.Option
                       key={option}
@@ -198,12 +198,12 @@ const StockOutModal = ({ open, onClose, products, locations, initialData }) => {
             <Listbox value={location} onChange={setLocation}>
               <div className="relative">
                 <Listbox.Button
-                  className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${!location && (touched.location || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${!location && (touched.location || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                 >
                   <span>{location || "Select storage location"}</span>
                   <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                 </Listbox.Button>
-                <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                   {locations.map((loc) => (
                     <Listbox.Option
                       key={loc}
@@ -222,7 +222,7 @@ const StockOutModal = ({ open, onClose, products, locations, initialData }) => {
           <div>
             <label className="block font-medium mb-1">Notes (Optional)</label>
             <textarea
-              className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+              className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Add any additional notes or comments..."
@@ -243,7 +243,7 @@ const StockOutModal = ({ open, onClose, products, locations, initialData }) => {
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
             type="button"
-            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
+            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-100 flex items-center gap-2 cursor-pointer text-sm"
             onClick={onClose}
           >
             <HiXCircle className="inline-block text-xl" /> Cancel

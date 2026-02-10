@@ -69,7 +69,7 @@ const CategoryModal = ({
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="Category name"
-              className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!category.name && !initial && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+              className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!category.name && !initial && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
               required
               disabled={viewOnly}
             />
@@ -87,7 +87,7 @@ const CategoryModal = ({
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="Description (optional)"
-              className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-gray-800"
+              className="w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-gray-800"
               rows={3}
               disabled={viewOnly}
             />
@@ -96,7 +96,7 @@ const CategoryModal = ({
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
             type="button"
-            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
+            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-100 flex items-center gap-2 cursor-pointer text-sm"
             onClick={onClose}
           >
             <HiXCircle className="inline-block text-xl" />

@@ -96,7 +96,7 @@ const UserModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                   ) : null}
                 </label>
                 <input
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.first_name && !initial && (touched.first_name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.first_name && !initial && (touched.first_name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   value={user.first_name}
                   onChange={(e) =>
                     setUser({ ...user, first_name: e.target.value })
@@ -116,7 +116,7 @@ const UserModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                   ) : null}
                 </label>
                 <input
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.last_name && !initial && (touched.last_name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.last_name && !initial && (touched.last_name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   value={user.last_name}
                   onChange={(e) =>
                     setUser({ ...user, last_name: e.target.value })
@@ -136,7 +136,7 @@ const UserModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                   ) : null}
                 </label>
                 <input
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.email && !initial && (touched.email || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.email && !initial && (touched.email || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   type="email"
                   value={user.email}
                   onChange={(e) => setUser({ ...user, email: e.target.value })}
@@ -156,7 +156,7 @@ const UserModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                     ) : null}
                   </label>
                   <input
-                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.password && !initial && (touched.password || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.password && !initial && (touched.password || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     type="password"
                     value={user.password || ""}
                     onChange={(e) =>
@@ -200,7 +200,7 @@ const UserModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!user.role && !initial && (touched.role || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!user.role && !initial && (touched.role || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                       disabled={viewOnly}
                     >
                       <span>
@@ -209,7 +209,7 @@ const UserModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                       </span>
                       <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                     </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {roles.length === 0 && (
                         <div className="px-4 py-2 text-gray-400">No roles</div>
                       )}
@@ -234,7 +234,7 @@ const UserModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                   {!initial ? <sup className="text-red-500">*</sup> : null}
                 </label>
                 <input
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.phone && !initial && (touched.phone || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.phone && !initial && (touched.phone || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   value={user.phone}
                   onChange={(e) => setUser({ ...user, phone: e.target.value })}
                   onBlur={() =>
@@ -254,7 +254,7 @@ const UserModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
               <div>
                 <label className="block text-sm font-medium mb-1">Street</label>
                 <input
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                   value={user.address.street}
                   onChange={(e) =>
                     setUser({
@@ -269,7 +269,7 @@ const UserModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 <label className="block mb-1">House</label>
                 <input
                   type="text"
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                   value={user.address.house}
                   onChange={(e) =>
                     setUser({
@@ -289,7 +289,7 @@ const UserModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 </label>
                 <input
                   type="text"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.address.village && !initial && (touched.village || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.address.village && !initial && (touched.village || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   value={user.address.village}
                   onChange={(e) =>
                     setUser({
@@ -312,7 +312,7 @@ const UserModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 </label>
                 <input
                   type="text"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.address.commune && !initial && (touched.commune || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.address.commune && !initial && (touched.commune || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   value={user.address.commune}
                   onChange={(e) =>
                     setUser({
@@ -335,7 +335,7 @@ const UserModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 </label>
                 <input
                   type="text"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.address.district && !initial && (touched.district || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.address.district && !initial && (touched.district || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   value={user.address.district}
                   onChange={(e) =>
                     setUser({
@@ -358,7 +358,7 @@ const UserModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 </label>
                 <input
                   type="text"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.address.province && !initial && (touched.province || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.address.province && !initial && (touched.province || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   value={user.address.province}
                   onChange={(e) =>
                     setUser({
@@ -381,7 +381,7 @@ const UserModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 </label>
                 <input
                   type="text"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.address.country && !initial && (touched.country || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.address.country && !initial && (touched.country || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   value={user.address.country}
                   onChange={(e) =>
                     setUser({
@@ -451,7 +451,7 @@ const UserModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
             type="button"
-            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
+            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-100 flex items-center gap-2 cursor-pointer text-sm"
             onClick={onClose}
           >
             <HiXCircle className="inline-block text-xl" />

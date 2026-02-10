@@ -27,6 +27,7 @@ const Expenses = lazy(() => import("../pages/Expenses.jsx"));
 const ActivityLog = lazy(() => import("../pages/ActivityLog.jsx"));
 const Permissions = lazy(() => import("../pages/Permissions.jsx"));
 const Users = lazy(() => import("../pages/Users.jsx"));
+const Settings = lazy(() => import("../pages/Settings.jsx"));
 
 // A wrapper for private routes that checks authentication
 function PrivateRoute({ children }) {
@@ -131,6 +132,7 @@ function App() {
                                 path: "/permissions",
                                 element: <Permissions />,
                               },
+                              { path: "/settings", element: <Settings /> },
                             ].map((route) => (
                               <Route
                                 key={route.path}

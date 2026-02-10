@@ -103,7 +103,7 @@ const SupplierModal = ({
                     setTouched((prev) => ({ ...prev, company_name: true }))
                   }
                   placeholder="Supplier Name"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.company_name && !initial && (touched.company_name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.company_name && !initial && (touched.company_name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
@@ -124,7 +124,7 @@ const SupplierModal = ({
                     setTouched((prev) => ({ ...prev, location: true }))
                   }
                   placeholder="Supplier Location"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.location && !initial && (touched.location || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.location && !initial && (touched.location || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
@@ -159,7 +159,7 @@ const SupplierModal = ({
                     }))
                   }
                   placeholder="Supplier Contact Person"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_person && !initial && (touched.contact_person || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_person && !initial && (touched.contact_person || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
@@ -186,7 +186,7 @@ const SupplierModal = ({
                     }))
                   }
                   placeholder="Supplier Contact Position"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_position && !initial && (touched.contact_position || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_position && !initial && (touched.contact_position || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
@@ -213,7 +213,7 @@ const SupplierModal = ({
                     }))
                   }
                   placeholder="Supplier Contact Email"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_email && !initial && (touched.contact_email || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_email && !initial && (touched.contact_email || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
@@ -240,7 +240,7 @@ const SupplierModal = ({
                     }))
                   }
                   placeholder="Supplier Contact Phone"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_phone && !initial && (touched.contact_phone || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_phone && !initial && (touched.contact_phone || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
@@ -255,7 +255,7 @@ const SupplierModal = ({
               <div>
                 <label className="block text-sm font-medium mb-1">Street</label>
                 <input
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                   value={supplier.address.street}
                   onChange={(e) =>
                     setSupplier({
@@ -273,7 +273,7 @@ const SupplierModal = ({
                 <label className="block mb-1">House</label>
                 <input
                   type="text"
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                   value={supplier.address.house}
                   onChange={(e) =>
                     setSupplier({
@@ -296,7 +296,7 @@ const SupplierModal = ({
                 </label>
                 <input
                   type="text"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.address.village && !initial && (touched.village || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.address.village && !initial && (touched.village || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   value={supplier.address.village}
                   onChange={(e) =>
                     setSupplier({
@@ -322,7 +322,7 @@ const SupplierModal = ({
                 </label>
                 <input
                   type="text"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.address.commune && !initial && (touched.commune || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.address.commune && !initial && (touched.commune || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   value={supplier.address.commune}
                   onChange={(e) =>
                     setSupplier({
@@ -348,7 +348,7 @@ const SupplierModal = ({
                 </label>
                 <input
                   type="text"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.address.district && !initial && (touched.district || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.address.district && !initial && (touched.district || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   value={supplier.address.district}
                   onChange={(e) =>
                     setSupplier({
@@ -374,7 +374,7 @@ const SupplierModal = ({
                 </label>
                 <input
                   type="text"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.address.province && !initial && (touched.province || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.address.province && !initial && (touched.province || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   value={supplier.address.province}
                   onChange={(e) =>
                     setSupplier({
@@ -400,7 +400,7 @@ const SupplierModal = ({
                 </label>
                 <input
                   type="text"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.address.country && !initial && (touched.country || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.address.country && !initial && (touched.country || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   value={supplier.address.country}
                   onChange={(e) =>
                     setSupplier({
@@ -449,7 +449,7 @@ const SupplierModal = ({
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!supplier.payment_term && !initial && (touched.payment_term || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!supplier.payment_term && !initial && (touched.payment_term || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                       disabled={viewOnly}
                     >
                       <span>
@@ -459,7 +459,7 @@ const SupplierModal = ({
                       </span>
                       <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                     </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {paymentTerms.length === 0 && (
                         <div className="px-4 py-2 text-gray-400">
                           No payment terms
@@ -502,7 +502,7 @@ const SupplierModal = ({
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!supplier.status && !initial && (touched.status || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!supplier.status && !initial && (touched.status || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                       disabled={viewOnly}
                     >
                       <span>
@@ -511,7 +511,7 @@ const SupplierModal = ({
                       </span>
                       <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                     </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {statuses.length === 0 && (
                         <div className="px-4 py-2 text-gray-400">
                           No statuses
@@ -538,7 +538,7 @@ const SupplierModal = ({
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
             type="button"
-            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
+            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-100 flex items-center gap-2 cursor-pointer text-sm"
             onClick={onClose}
           >
             <HiXCircle className="inline-block text-xl" /> Close

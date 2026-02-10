@@ -52,11 +52,11 @@ function CategoryDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
           <span>{value || "All Categories"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {categories.map((cat) => (
             <Listbox.Option
               key={cat}
@@ -245,7 +245,7 @@ const Expenses = () => {
           </button>
         )}
       </div>
-      <div className="bg-white rounded-2xl p-6 mb-4 border border-gray-200">
+      <div className="bg-white rounded-2xl p-6 mb-4 border border-gray-100">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
             <HiOutlineFilter className="inline-block text-sm text-black" />
@@ -264,7 +264,7 @@ const Expenses = () => {
             <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
               type="text"
-              className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 text-gray-700 text-sm"
+              className="w-full bg-gray-50 border border-gray-100 rounded-lg py-2 px-3 text-gray-700 text-sm"
               placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -296,7 +296,7 @@ const Expenses = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
+      <div className="bg-white rounded-xl overflow-x-auto border border-gray-100 px-3">
         {loading ? (
           <Loading />
         ) : error ? (

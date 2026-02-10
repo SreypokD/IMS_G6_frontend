@@ -188,7 +188,7 @@ const OrderRequestApproval = () => {
           </span>
         </div>
       </div>
-      <div className="bg-white rounded-xl p-6 mb-4 border border-gray-200">
+      <div className="bg-white rounded-xl p-6 mb-4 border border-gray-100">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
             <HiOutlineFilter className="inline-block text-sm text-black" />
@@ -206,7 +206,7 @@ const OrderRequestApproval = () => {
           <div>
             <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
-              className="bg-gray-50 border border-gray-200 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
+              className="bg-gray-50 border border-gray-100 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
               placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -234,7 +234,7 @@ const OrderRequestApproval = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
+      <div className="bg-white rounded-xl overflow-x-auto border border-gray-100 px-3">
         {loading ? (
           <Loading />
         ) : error ? (
@@ -343,7 +343,7 @@ const OrderRequestApproval = () => {
                         </label>
                         <textarea
                           type="text"
-                          className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+                          className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                           placeholder="Rejection reason"
                           value={rejectionReason}
                           onChange={(e) => setRejectionReason(e.target.value)}

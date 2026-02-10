@@ -256,7 +256,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${!order.supplier_id && (touched.supplier_id || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                      className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${!order.supplier_id && (touched.supplier_id || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     >
                       <span>
                         {suppliers.find(
@@ -265,7 +265,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                       </span>
                       <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                     </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {suppliers.length === 0 && (
                         <div className="px-4 py-2 text-gray-400">
                           No suppliers
@@ -335,7 +335,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                     >
                       <div className="relative">
                         <Listbox.Button
-                          className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${!item.product_id && validateOnSave ? "border-red-500" : "border-gray-200"}`}
+                          className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${!item.product_id && validateOnSave ? "border-red-500" : "border-gray-100"}`}
                         >
                           <span>
                             {products.find((p) => p._id === item.product_id)
@@ -345,7 +345,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                           </span>
                           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                         </Listbox.Button>
-                        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {products.length === 0 && (
                             <div className="px-4 py-2 text-gray-400">
                               No products
@@ -376,7 +376,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                     <input
                       type="number"
                       min={1}
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                       placeholder="Qty"
                       value={item.quantity}
                       onChange={(e) => {
@@ -393,7 +393,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                     <input
                       type="number"
                       min={0}
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                       placeholder="Unit Price"
                       value={item.unit_price?.toFixed(2) ?? ""}
                       disabled
@@ -404,7 +404,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                       Line Total
                     </label>
                     <input
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                       value={
                         (item.unit_price ?? 0) && (item.quantity ?? 0)
                           ? (
@@ -457,7 +457,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
             <input
               type="text"
               min={0}
-              className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200 text-right`}
+              className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100 text-right`}
               placeholder="Unit Price"
               value={(order.orderItems || [])
                 .reduce((acc, item) => acc + (Number(item.subtotal) || 0), 0)
@@ -477,7 +477,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                 handleChange(e);
               }}
               onBlur={handleBlur}
-              className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+              className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
               disabled={viewOnly}
               rows={3}
             />
@@ -486,7 +486,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
             type="button"
-            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
+            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-100 flex items-center gap-2 cursor-pointer text-sm"
             onClick={handleClose}
           >
             <HiXCircle className="inline-block text-xl" />

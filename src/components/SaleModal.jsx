@@ -178,7 +178,7 @@ export default function SaleModal({
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-200`}
+                      className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-100`}
                     >
                       <span className={sale.customer ? "" : "text-gray-400"}>
                         {sale.customer
@@ -194,7 +194,7 @@ export default function SaleModal({
                       </span>
                       <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                     </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {users.map((u) => (
                         <Listbox.Option
                           key={u._id}
@@ -238,7 +238,7 @@ export default function SaleModal({
                       >
                         <div className="relative">
                           <Listbox.Button
-                            className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-200`}
+                            className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-100`}
                           >
                             <span
                               className={item.product ? "" : "text-gray-400"}
@@ -254,7 +254,7 @@ export default function SaleModal({
                             </span>
                             <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                           </Listbox.Button>
-                          <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                          <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                             {products.map((p) => (
                               <Listbox.Option
                                 key={p._id}
@@ -282,7 +282,7 @@ export default function SaleModal({
                       <div className="relative">
                         <input
                           type="number"
-                          className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200`}
+                          className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                           value={item.quantity}
                           onChange={(e) => {
                             const val = Number(e.target.value);
@@ -310,7 +310,7 @@ export default function SaleModal({
                       <input
                         type="number"
                         min="0"
-                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200`}
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                         value={item.price}
                         onChange={(e) =>
                           handleItemChange(idx, "price", e.target.value)
@@ -327,7 +327,7 @@ export default function SaleModal({
                         type="number"
                         min="0"
                         max="100"
-                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200`}
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                         value={item.discount}
                         onChange={(e) =>
                           handleItemChange(idx, "discount", e.target.value)
@@ -340,7 +340,7 @@ export default function SaleModal({
                         Line Total
                       </label>
                       <input
-                        className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+                        className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                         value={calcLineTotal(item)}
                         disabled
                       />
@@ -366,7 +366,7 @@ export default function SaleModal({
               <div className="w-full flex items-center justify-center mt-4">
                 <button
                   type="button"
-                  className=" text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-[#1e3a5f] flex items-center gap-2 cursor-pointer"
+                  className="text-sm text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-[#1e3a5f] flex items-center gap-2 cursor-pointer"
                   onClick={addItem}
                 >
                   <HiOutlinePlus className="text-md" /> Add Item
@@ -394,12 +394,12 @@ export default function SaleModal({
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-200 ${viewOnly ? "bg-gray-100" : ""}`}
+                      className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-100 ${viewOnly ? "bg-gray-100" : ""}`}
                     >
                       <span>{sale.payment_method}</span>
                       <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                     </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {paymentMethods.map((method) => (
                         <Listbox.Option
                           key={method}
@@ -420,7 +420,7 @@ export default function SaleModal({
                   Total Amount
                 </label>
                 <input
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                   value={calcTotal()}
                   disabled
                 />
@@ -432,7 +432,7 @@ export default function SaleModal({
               Notes (Optional)
             </label>
             <textarea
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-gray-800"
+              className="w-full border border-gray-100 rounded-lg px-3 py-2 bg-gray-50 text-gray-800"
               rows={3}
               value={sale.notes}
               onChange={(e) =>
@@ -446,7 +446,7 @@ export default function SaleModal({
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
             type="button"
-            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
+            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-100 flex items-center gap-2 cursor-pointer text-sm"
             onClick={onClose}
           >
             <HiXCircle className="inline-block text-xl" />

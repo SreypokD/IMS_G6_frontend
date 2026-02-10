@@ -92,7 +92,7 @@ const ActivityLog = () => {
           </span>
         </div>
       </div>
-      <div className="bg-white rounded-2xl p-6 mb-4 border border-gray-200">
+      <div className="bg-white rounded-2xl p-6 mb-4 border border-gray-100">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
             <HiOutlineFilter className="inline-block text-sm text-black" />
@@ -111,7 +111,7 @@ const ActivityLog = () => {
             <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
               type="text"
-              className="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 text-gray-700 text-sm"
+              className="w-full bg-gray-50 border border-gray-100 rounded-lg py-2 px-3 text-gray-700 text-sm"
               placeholder="Search description..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -139,7 +139,7 @@ const ActivityLog = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-200 px-3">
+      <div className="bg-white rounded-xl overflow-x-auto border border-gray-100 px-3">
         {loading ? (
           <Loading />
         ) : error ? (

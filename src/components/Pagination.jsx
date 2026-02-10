@@ -39,7 +39,7 @@ export default function Pagination({
     <div className="flex items-center justify-center gap-2">
       <button
         type="button"
-        className={`w-9 h-9 rounded-lg border bg-white flex items-center justify-center border-gray-200 ${page === 1 ? "" : "cursor-pointer"}`}
+        className={`w-9 h-9 rounded-lg border bg-white flex items-center justify-center border-gray-100 ${page === 1 ? "" : "cursor-pointer"}`}
         disabled={page === 1}
         onClick={() => handleGoTo(1)}
         aria-label="First page"
@@ -51,7 +51,7 @@ export default function Pagination({
       </button>
       <button
         type="button"
-        className={`w-9 h-9 rounded-lg border bg-white flex items-center justify-center border-gray-200 ${page === 1 ? "" : "cursor-pointer"}`}
+        className={`w-9 h-9 rounded-lg border bg-white flex items-center justify-center border-gray-100 ${page === 1 ? "" : "cursor-pointer"}`}
         disabled={page === 1}
         onClick={() => handleGoTo(page - 1)}
         aria-label="Previous page"
@@ -75,7 +75,7 @@ export default function Pagination({
           <button
             key={idx}
             type="button"
-            className={`w-9 h-9 rounded-lg border flex items-center justify-center mx-0.5 ${i === page ? "bg-[#1e3a5f] border-[#1e3a5f] text-white" : "bg-white border-gray-200"} ${i === page ? "pointer-events-none" : "cursor-pointer"}`}
+            className={`w-9 h-9 rounded-lg border flex items-center justify-center mx-0.5 ${i === page ? "bg-[#1e3a5f] border-[#1e3a5f] text-white" : "bg-white border-gray-100"} ${i === page ? "pointer-events-none" : "cursor-pointer"}`}
             disabled={i === page}
             onClick={() => handleGoTo(i)}
           >
@@ -85,7 +85,7 @@ export default function Pagination({
       )}
       <button
         type="button"
-        className={`w-9 h-9 rounded-lg border bg-white flex items-center justify-center border-gray-200 ${page === last ? "" : "cursor-pointer"}`}
+        className={`w-9 h-9 rounded-lg border bg-white flex items-center justify-center border-gray-100 ${page === last ? "" : "cursor-pointer"}`}
         disabled={page === last}
         onClick={() => handleGoTo(page + 1)}
         aria-label="Next page"
@@ -97,7 +97,7 @@ export default function Pagination({
       </button>
       <button
         type="button"
-        className={`w-9 h-9 rounded-lg border bg-white flex items-center justify-center border-gray-200 ${page === last ? "" : "cursor-pointer"}`}
+        className={`w-9 h-9 rounded-lg border bg-white flex items-center justify-center border-gray-100 ${page === last ? "" : "cursor-pointer"}`}
         disabled={page === last}
         onClick={() => handleGoTo(last)}
         aria-label="Last page"
@@ -117,7 +117,7 @@ export default function Pagination({
             <span>{limit}</span>
             <HiOutlineSelector className="w-5 h-5 text-gray-400 ml-2" />
           </Listbox.Button>
-          <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
             {pageOptions.map((opt) => (
               <Listbox.Option
                 key={opt}

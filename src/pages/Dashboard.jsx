@@ -121,11 +121,11 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           <Link
             to="/products"
-            className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101"
+            className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101"
           >
             <div className="flex items-center justify-between">
-              <div className="p-3 bg-purple-50 rounded-lg">
-                <HiCube className="text-xl text-purple-600" />
+              <div className="p-2 bg-purple-50 rounded-lg">
+                <HiCube className="text-2xl text-purple-600" />
               </div>
             </div>
             <div>
@@ -139,11 +139,11 @@ const Dashboard = () => {
           </Link>
           <Link
             to="/products"
-            className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101"
+            className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101"
           >
             <div className="flex items-center justify-between">
-              <div className="p-3 bg-yellow-50 rounded-lg">
-                <HiOutlineExclamation className="text-xl text-yellow-600" />
+              <div className="p-2 bg-yellow-50 rounded-lg">
+                <HiOutlineExclamation className="text-2xl text-yellow-600" />
               </div>
             </div>
             <div>
@@ -155,11 +155,11 @@ const Dashboard = () => {
           </Link>
           <Link
             to="/suppliers"
-            className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101"
+            className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101"
           >
             <div className="flex items-center justify-between">
-              <div className="p-3 bg-pink-50 rounded-lg">
-                <HiUserGroup className="text-xl text-pink-600" />
+              <div className="p-2 bg-pink-50 rounded-lg">
+                <HiUserGroup className="text-2xl text-pink-600" />
               </div>
             </div>
             <div>
@@ -172,11 +172,11 @@ const Dashboard = () => {
 
           <Link
             to="/order-requests"
-            className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-200 transition-all duration-300 hover:scale-101"
+            className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101"
           >
             <div className="flex items-center justify-between">
-              <div className="p-3 bg-orange-50 rounded-lg">
-                <HiClipboardList className="text-xl text-orange-600" />
+              <div className="p-2 bg-orange-50 rounded-lg">
+                <HiClipboardList className="text-2xl text-orange-600" />
               </div>
             </div>
             <div>
@@ -197,7 +197,7 @@ const Dashboard = () => {
       >
         {/* Inventory Trends Chart */}
         {isAllowed && (
-          <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-200">
+          <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100">
             <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
               <HiChartBar className="text-xl text-blue-600" /> Inventory Trends
               (Last 7 Days)
@@ -263,7 +263,7 @@ const Dashboard = () => {
         )}
 
         {/* Order Status Chart */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200">
+        <div className="bg-white rounded-2xl p-6 border border-gray-100">
           <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
             <HiClipboardList className="text-xl text-orange-600" /> Order Status
           </h2>
@@ -330,7 +330,7 @@ const Dashboard = () => {
         className={`grid grid-cols-1 ${isAllowed ? "lg:grid-cols-3" : "lg:grid-cols-1"} gap-4 mb-4`}
       >
         {/* Recent Orders */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-200">
+        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-sm font-semibold flex items-center gap-2">
               <HiClipboardList className="text-xl text-gray-600" /> Recent
@@ -393,7 +393,7 @@ const Dashboard = () => {
 
         {/* Recent Activity */}
         {isAllowed && (
-          <div className="bg-white rounded-2xl p-6 border border-gray-200">
+          <div className="bg-white rounded-2xl p-6 border border-gray-100">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-sm font-semibold flex items-center gap-2">
                 <HiOutlineClock className="text-xl text-gray-600" /> Recent

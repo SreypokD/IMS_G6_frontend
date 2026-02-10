@@ -20,7 +20,7 @@ const CustomDatePicker = ({
         onChange={onChange}
         dateFormat="dd/MM/yyyy"
         placeholderText={placeholder}
-        className="w-full bg-gray-50 border rounded-lg pl-10 px-3 py-2 text-gray-800 border-gray-200 text-sm"
+        className="w-full bg-gray-50 border rounded-lg pl-10 px-3 py-2 text-gray-800 border-gray-100 text-sm"
         wrapperClassName="w-full"
         showPopperArrow={false}
       />

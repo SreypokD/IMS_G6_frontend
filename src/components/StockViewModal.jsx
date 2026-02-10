@@ -26,7 +26,7 @@ const StockViewModal = ({ open, onClose, stock }) => {
               <label className="block text-sm mb-1">Product</label>
               <input
                 type="text"
-                className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+                className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                 value={stock.product?.name || "N/A"}
                 disabled
               />
@@ -37,7 +37,7 @@ const StockViewModal = ({ open, onClose, stock }) => {
               <div>
                 <label className="block text-sm mb-1">Quantity</label>
                 <input
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200 ${
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100 ${
                     stock.type === "in" ? "text-green-600" : "text-red-600"
                   }`}
                   value={(stock.type === "in" ? "+" : "-") + stock.quantity}
@@ -47,7 +47,7 @@ const StockViewModal = ({ open, onClose, stock }) => {
               <div>
                 <label className="block text-sm mb-1">Batch Number</label>
                 <input
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                   value={stock.batch_number || "-"}
                   disabled
                 />
@@ -55,7 +55,7 @@ const StockViewModal = ({ open, onClose, stock }) => {
               <div>
                 <label className="block text-sm mb-1">Type</label>
                 <input
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200 ${
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100 ${
                     stock.type === "in" ? "text-green-600" : "text-red-600"
                   }`}
                   value={"Stock " + stock.type}
@@ -65,7 +65,7 @@ const StockViewModal = ({ open, onClose, stock }) => {
               <div>
                 <label className="block text-sm mb-1">Reason</label>
                 <input
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                   value={stock.reason || "-"}
                   disabled
                 />
@@ -73,7 +73,7 @@ const StockViewModal = ({ open, onClose, stock }) => {
               <div>
                 <label className="block text-sm mb-1">Balance After</label>
                 <input
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                   value={stock.balance || "-"}
                   disabled
                 />
@@ -81,7 +81,7 @@ const StockViewModal = ({ open, onClose, stock }) => {
               <div>
                 <label className="block text-sm mb-1">Location</label>
                 <input
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                   value={stock.location || "-"}
                   disabled
                 />
@@ -89,7 +89,7 @@ const StockViewModal = ({ open, onClose, stock }) => {
               <div>
                 <label className="block text-sm mb-1">User</label>
                 <input
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                   value={
                     stock.user?.first_name
                       ? `${stock.user.first_name} ${stock.user.last_name}`
@@ -101,7 +101,7 @@ const StockViewModal = ({ open, onClose, stock }) => {
               <div>
                 <label className="block text-sm mb-1">Date</label>
                 <input
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                   value={new Date(stock.createdAt).toLocaleString()}
                   disabled
                 />
@@ -112,7 +112,7 @@ const StockViewModal = ({ open, onClose, stock }) => {
             <div>
               <label className="block text-sm mb-1">Notes</label>
               <textarea
-                className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200"
+                className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                 value={stock.note || "-"}
                 disabled
                 rows={2}
@@ -123,7 +123,7 @@ const StockViewModal = ({ open, onClose, stock }) => {
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
             type="button"
-            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
+            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-100 flex items-center gap-2 cursor-pointer text-sm"
             onClick={onClose}
           >
             <HiXCircle className="inline-block text-xl" /> Close

@@ -93,7 +93,7 @@ const ExpenseModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                     setTouched((prev) => ({ ...prev, description: true }))
                   }
                   placeholder="Expense Description"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!expense.description && !initial && (touched.description || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!expense.description && !initial && (touched.description || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
@@ -121,7 +121,7 @@ const ExpenseModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      className={`w-full bg-gray-50 border rounded-lg pl-7 pr-3 py-2 text-sm text-gray-800 ${(!expense.amount || isNaN(expense.amount)) && !initial && (touched.amount || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                      className={`w-full bg-gray-50 border rounded-lg pl-7 pr-3 py-2 text-sm text-gray-800 ${(!expense.amount || isNaN(expense.amount)) && !initial && (touched.amount || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                       disabled={viewOnly}
                     />
                   </div>
@@ -148,13 +148,13 @@ const ExpenseModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                   >
                     <div className="relative">
                       <Listbox.Button
-                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer${viewOnly ? "bg-gray-100 cursor-default" : ""} ${!expense.category && !initial && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer${viewOnly ? "bg-gray-100 cursor-default" : ""} ${!expense.category && !initial && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                         disabled={viewOnly}
                       >
                         <span>{expense.category || "Select category"}</span>
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       </Listbox.Button>
-                      <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                      <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                         {categories.length === 0 && (
                           <div className="px-4 py-2 text-gray-400">
                             No categories
@@ -243,7 +243,7 @@ const ExpenseModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
             type="button"
-            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-200 flex items-center gap-2 cursor-pointer"
+            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-100 flex items-center gap-2 cursor-pointer text-sm"
             onClick={onClose}
           >
             <HiXCircle className="inline-block text-xl" />

@@ -81,7 +81,7 @@ const Dialog = ({
         {showActions ? (
           <div className="flex gap-4">
             <button
-              className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-gray-200 cursor-pointer"
+              className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-gray-100 cursor-pointer"
               onClick={onClose}
             >
               {cancelText}
