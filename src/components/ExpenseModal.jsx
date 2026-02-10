@@ -38,6 +38,7 @@ const ExpenseModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
 
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setExpense(initial || initialExpense);
       setSelectedImage(null);
       setTouched({});

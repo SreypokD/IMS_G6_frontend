@@ -113,7 +113,7 @@ export default function Pagination({
         onChange={(val) => onChange && onChange({ page: 1, limit: val })}
       >
         <div className="relative w-20">
-          <Listbox.Button className="cursor-pointer w-full bg-white border border-gray-300 rounded-lg w-full h-10 px-2 text-left text-gray-800 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-400">
+          <Listbox.Button className="cursor-pointer w-full bg-white border border-gray-300 rounded-lg h-10 px-2 text-left text-gray-800 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-400">
             <span>{limit}</span>
             <HiOutlineSelector className="w-5 h-5 text-gray-400 ml-2" />
           </Listbox.Button>

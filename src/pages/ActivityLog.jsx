@@ -79,7 +79,7 @@ const ActivityLog = () => {
     setStartDate("");
     setEndDate("");
     setSearch("");
-    fetchLogs(1, pagination.limit, "", start, end);
+    fetchLogs(1, pagination.limit, "", "", "");
   };
 
   return (
