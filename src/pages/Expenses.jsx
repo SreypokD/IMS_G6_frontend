@@ -325,7 +325,7 @@ const Expenses = () => {
                   <td>{expense.description}</td>
                   <td>
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${categoryStyles[expense?.category] || "bg-gray-100 text-gray-700"}`}
+                      className={`inline-block px-3 py-1 rounded-full text-sm ${categoryStyles[expense?.category] || "bg-gray-100 text-gray-700"}`}
                     >
                       {expense.category}
                     </span>

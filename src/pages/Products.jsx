@@ -24,7 +24,6 @@ import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 import Loading from "../components/Loading";
 
-const initialProducts = [];
 const statusOptions = [
   { value: "", label: "All Statuses" },
   { value: "in_stock", label: "In Stock" },

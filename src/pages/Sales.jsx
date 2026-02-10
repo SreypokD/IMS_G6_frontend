@@ -451,7 +451,7 @@ const Sales = () => {
                     <td>{sale.payment_method}</td>
                     <td>
                       <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm font-semibold capitalize ${sale.status === "processing" ? "bg-yellow-100 text-yellow-700" : sale.status === "completed" ? "bg-blue-100 text-blue-700" : sale.status === "cancelled" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"}`}
+                        className={`inline-block px-3 py-1 rounded-full text-sm capitalize ${sale.status === "processing" ? "bg-yellow-100 text-yellow-700" : sale.status === "completed" ? "bg-blue-100 text-blue-700" : sale.status === "cancelled" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"}`}
                       >
                         {sale.status}
                       </span>

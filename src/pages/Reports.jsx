@@ -58,8 +58,8 @@ const Reports = () => {
   // Trends
   const [trends, setTrends] = useState([]);
 
-  // Financials
-  const [financials, setFinancials] = useState(null);
+  // Financial Summary
+  const [financial, setFinancial] = useState(null);
 
   // Low Stock Products
   const [lowStockProducts, setLowStockProducts] = useState([]);
@@ -100,7 +100,7 @@ const Reports = () => {
       setOrderStats(statsRes.data);
       setTrends(trendsRes.data?.data || []);
       setLowStockProducts(lowStockRes.data?.data || []);
-      setFinancials(financialRes.data?.data || null);
+      setFinancial(financialRes.data?.data || null);
     } catch (err) {
       console.error(err);
       setError("Failed to load reports");
@@ -132,7 +132,7 @@ const Reports = () => {
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Date Filter */}
-          <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-gray-200">
+          <div className="flex items-center gap-2 ">
             <span className="text-gray-400 text-sm">From</span>
             <DatePicker
               selected={dateRange.startDate}
@@ -145,7 +145,7 @@ const Reports = () => {
               placeholder="Start Date"
               className="border-none bg-transparent focus:ring-0 w-28"
             />
-            <span className="text-gray-400">-</span>
+            <span className="text-gray-400">To</span>
             <DatePicker
               selected={dateRange.endDate}
               onChange={(date) =>
@@ -158,7 +158,6 @@ const Reports = () => {
               className="border-none bg-transparent focus:ring-0 w-28"
             />
           </div>
-
           <button
             onClick={fetchData}
             className="p-2 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 text-gray-600 transition-colors cursor-pointer"
@@ -256,7 +255,7 @@ const Reports = () => {
                   Revenue
                 </span>
                 <span className="block text-xl font-bold text-green-600 mt-1">
-                  ${Number(financials?.revenue || 0).toFixed(2)}
+                  ${Number(financial?.revenue || 0).toFixed(2)}
                 </span>
               </div>
               <div className="bg-white p-4 rounded-xl border border-gray-200 transition-all duration-300 hover:scale-101">
@@ -264,7 +263,7 @@ const Reports = () => {
                   COGS
                 </span>
                 <span className="block text-xl font-bold text-gray-700 mt-1">
-                  ${Number(financials?.cogs || 0).toFixed(2)}
+                  ${Number(financial?.cogs || 0).toFixed(2)}
                 </span>
               </div>
               <div className="bg-white p-4 rounded-xl border border-gray-200 transition-all duration-300 hover:scale-101">
@@ -272,7 +271,7 @@ const Reports = () => {
                   Gross Profit
                 </span>
                 <span className="block text-xl font-bold text-gray-800 mt-1">
-                  ${Number(financials?.grossProfit || 0).toFixed(2)}
+                  ${Number(financial?.grossProfit || 0).toFixed(2)}
                 </span>
               </div>
               <div className="bg-white p-4 rounded-xl border border-gray-200 transition-all duration-300 hover:scale-101">
@@ -280,7 +279,7 @@ const Reports = () => {
                   Expenses
                 </span>
                 <span className="block text-xl font-bold text-red-500 mt-1">
-                  ${Number(financials?.expenses || 0).toFixed(2)}
+                  ${Number(financial?.expenses || 0).toFixed(2)}
                 </span>
               </div>
               <div className="bg-[#1e3a5f] p-4 rounded-xl border border-blue-900 transition-all duration-300 hover:scale-101">
@@ -289,12 +288,12 @@ const Reports = () => {
                 </span>
                 <span
                   className={`block text-2xl font-bold mt-1 ${
-                    (financials?.netProfit || 0) >= 0
+                    (financial?.netProfit || 0) >= 0
                       ? "text-white"
                       : "text-red-300"
                   }`}
                 >
-                  ${Number(financials?.netProfit || 0).toFixed(2)}
+                  ${Number(financial?.netProfit || 0).toFixed(2)}
                 </span>
               </div>
             </div>

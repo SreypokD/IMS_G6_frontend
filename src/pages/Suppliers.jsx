@@ -380,7 +380,7 @@ const Suppliers = () => {
                   </td>
                   <td>
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${supplier.status === "Active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}
+                      className={`inline-block px-3 py-1 rounded-full text-sm ${supplier.status === "Active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}
                     >
                       {supplier.status}
                     </span>
