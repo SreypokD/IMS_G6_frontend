@@ -343,6 +343,7 @@ const Stocks = () => {
           setSelectedStock(null);
           fetchStocks();
           fetchSummary();
+          fetchProducts();
         }}
         products={products}
         locations={locationOptions.filter((loc) => loc !== "All Locations")}
@@ -356,6 +357,7 @@ const Stocks = () => {
           setSelectedStock(null);
           fetchStocks();
           fetchSummary();
+          fetchProducts();
         }}
         products={products}
         locations={locationOptions.filter((loc) => loc !== "All Locations")}
@@ -557,7 +559,6 @@ const Stocks = () => {
                 <th>Balance</th>
                 <th>User</th>
                 <th>Location</th>
-                <th>Notes</th>
                 {canView || canUpdate || canDelete ? (
                   <th className="action">Actions</th>
                 ) : null}
@@ -569,7 +570,7 @@ const Stocks = () => {
                   <td className="number">
                     {index + 1 + (pagination.page - 1) * pagination.limit}
                   </td>
-                  <td>{formatDate(stock.createdAt) || "-"}</td>
+                  <td>{formatDate(stock.createdAt, true) || "-"}</td>
                   <td>{stock.product?.name || stock.product_id || "-"}</td>
                   <td>
                     {stock.type === "in" ? (
@@ -593,7 +594,6 @@ const Stocks = () => {
                       : stock.user_id || "-"}
                   </td>
                   <td>{stock.location || "-"}</td>
-                  <td>{stock.note || "-"}</td>
                   <td className="action flex items-center gap-2">
                     {canView && (
                       <button
@@ -627,7 +627,7 @@ const Stocks = () => {
               ))}
               {stocks.length === 0 && (
                 <tr>
-                  <td colSpan="10">
+                  <td colSpan="9">
                     <NoDataFound message="No stocks found." />
                   </td>
                 </tr>

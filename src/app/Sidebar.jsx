@@ -206,17 +206,22 @@ const Sidebar = ({ mini }) => {
 
   useEffect(() => {
     let mounted = true;
-    getPendingOrderRequestCount()
-      .then((res) => {
-        if (mounted && res.data && res.data.count > 0) {
-          setApproveBadge(res.data.count);
-        } else if (mounted) {
-          setApproveBadge(0);
-        }
-      })
-      .catch(() => mounted && setApproveBadge(0));
+    const fetchBadge = () => {
+      getPendingOrderRequestCount()
+        .then((res) => {
+          if (mounted && res.data && res.data.count >= 0) {
+            setApproveBadge(res.data.count);
+          }
+        })
+        .catch(() => mounted && setApproveBadge(0));
+    };
+
+    fetchBadge();
+    const interval = setInterval(fetchBadge, 15000);
+
     return () => {
       mounted = false;
+      clearInterval(interval);
     };
   }, []);
 
@@ -307,11 +312,11 @@ const Sidebar = ({ mini }) => {
                     {!mini && (
                       <span className="text-sm mt-0.5 flex items-center gap-2">
                         {link.label}
-                        {isApproveRequests && approveBadge > 0 && (
-                          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-sm rounded-full w-6 h-6 pt-0.5 flex items-center justify-center font-bold border-2 border-white">
-                            {approveBadge}
-                          </span>
-                        )}
+                      </span>
+                    )}
+                    {isApproveRequests && approveBadge > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-sm rounded-full w-6 h-6 pt-0.5 flex items-center justify-center font-bold border-2 border-white">
+                        {approveBadge}
                       </span>
                     )}
                   </Link>

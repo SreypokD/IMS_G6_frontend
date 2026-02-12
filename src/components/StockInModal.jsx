@@ -8,7 +8,6 @@ import {
   HiOutlineDocumentText,
   HiExclamationCircle,
   HiOutlineDownload,
-  HiCheck,
 } from "react-icons/hi";
 
 import { useDialog } from "../contexts/dialog/useDialog";
@@ -132,34 +131,21 @@ const StockInModal = ({ open, onClose, products, data }) => {
                 </Listbox.Button>
                 <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                   {products.map((p) => {
-                    const isDisabled = p.stock - (p.reserved_stock || 0) <= 0;
                     return (
                       <Listbox.Option
                         key={p._id}
                         value={p._id}
                         className={({ selected }) =>
-                          `px-4 py-2 text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""} ${isDisabled ? "opacity-50 cursor-default bg-gray-50 text-gray-400" : "cursor-pointer"}`
+                          `px-4 py-2 text-black text-sm hover:bg-[#f1f5f9] cursor-pointer ${selected ? "bg-blue-50" : ""}`
                         }
-                        disabled={isDisabled}
                       >
                         {({ selected }) => (
-                          <>
-                            <span
-                              className={`block truncate ${selected ? "font-medium" : "font-normal"}`}
-                            >
-                              {p.name} (Stock:{" "}
-                              {p.stock - (p.reserved_stock || 0)})
-                              {isDisabled ? " - Out of stock" : ""}
-                            </span>
-                            {selected ? (
-                              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[#1e3a5f]">
-                                <HiCheck
-                                  className="h-5 w-5"
-                                  aria-hidden="true"
-                                />
-                              </span>
-                            ) : null}
-                          </>
+                          <span
+                            className={`block truncate ${selected ? "font-medium" : "font-normal"}`}
+                          >
+                            {p.name} (Stock: {p.stock - (p.reserved_stock || 0)}
+                            )
+                          </span>
                         )}
                       </Listbox.Option>
                     );

@@ -243,8 +243,10 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-700">
-                  Stock
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
+                  {product._id ? "Current Stock" : "Initial Stock"}
+                  {!viewOnly && !product._id && (
+                    <sup className="text-red-500">*</sup>
+                  )}
                 </label>
                 <input
                   name="stock"
@@ -256,10 +258,15 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     setTouched((prev) => ({ ...prev, stock: true }))
                   }
                   type="number"
-                  placeholder="Stock"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.stock || isNaN(product.stock)) && !data && (touched.stock || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                  disabled={viewOnly}
+                  placeholder={product._id ? "Current Stock" : "Initial Quantity"}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.stock || isNaN(product.stock)) && !data && (touched.stock || validateOnSave) ? "border-red-500" : "border-gray-100"} ${product._id ? "cursor-default" : ""}`}
+                  disabled={viewOnly || !!product._id}
                 />
+                {!!product._id && !viewOnly && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    To adjust stock, use "Stock In" or "Stock Out".
+                  </p>
+                )}
               </div>
             </div>
           </div>

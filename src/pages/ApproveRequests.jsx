@@ -180,6 +180,34 @@ const OrderRequestApproval = () => {
         }
         onClose={() => setViewDialog({ open: false, order: null })}
       />
+      <Dialog
+        open={rejectDialog.open}
+        type="confirm"
+        title="Reject Order Request"
+        cancelText="Cancel"
+        confirmText="Reject"
+        showActions
+        onClose={() => setRejectDialog({ open: false, id: null })}
+        onConfirm={() => handleReject(rejectDialog.id, rejectionReason)}
+        confirmDisabled={
+          actionId === rejectDialog.id || !rejectionReason.trim()
+        }
+      >
+        <div className="mb-3 w-full">
+          <label className="block text-gray-500 text-sm mb-2">
+            Please provide a reason for rejection:
+          </label>
+          <textarea
+            type="text"
+            className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
+            placeholder="Rejection reason"
+            value={rejectionReason}
+            onChange={(e) => setRejectionReason(e.target.value)}
+            disabled={actionId === rejectDialog.id}
+            autoFocus
+          />
+        </div>
+      </Dialog>
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold">Order Request Approvals</h1>
@@ -322,36 +350,6 @@ const OrderRequestApproval = () => {
                         <HiOutlineXCircle className="text-2xl" />
                       </button>
                     )}
-                    <Dialog
-                      open={rejectDialog.open}
-                      type="confirm"
-                      title="Reject Order Request"
-                      cancelText="Cancel"
-                      confirmText="Reject"
-                      showActions
-                      onClose={() => setRejectDialog({ open: false, id: null })}
-                      onConfirm={() =>
-                        handleReject(rejectDialog.id, rejectionReason)
-                      }
-                      confirmDisabled={
-                        actionId === rejectDialog.id || !rejectionReason.trim()
-                      }
-                    >
-                      <div className="mb-3 w-full">
-                        <label className="block text-gray-500 text-sm mb-2">
-                          Please provide a reason for rejection:
-                        </label>
-                        <textarea
-                          type="text"
-                          className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
-                          placeholder="Rejection reason"
-                          value={rejectionReason}
-                          onChange={(e) => setRejectionReason(e.target.value)}
-                          disabled={actionId === rejectDialog.id}
-                          autoFocus
-                        />
-                      </div>
-                    </Dialog>
                   </td>
                 </tr>
               ))}
