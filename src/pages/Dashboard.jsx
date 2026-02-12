@@ -101,7 +101,7 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold">
             Welcome, {user?.first_name || user?.username || "User"}!
@@ -118,10 +118,10 @@ const Dashboard = () => {
 
       {/* Stats Cards */}
       {isAllowed && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-3">
           <Link
             to="/products"
-            className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101"
+            className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101"
           >
             <div className="flex items-center justify-between">
               <div className="p-2 bg-purple-50 rounded-lg">
@@ -139,7 +139,7 @@ const Dashboard = () => {
           </Link>
           <Link
             to="/products"
-            className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101"
+            className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101"
           >
             <div className="flex items-center justify-between">
               <div className="p-2 bg-yellow-50 rounded-lg">
@@ -155,7 +155,7 @@ const Dashboard = () => {
           </Link>
           <Link
             to="/suppliers"
-            className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101"
+            className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101"
           >
             <div className="flex items-center justify-between">
               <div className="p-2 bg-pink-50 rounded-lg">
@@ -172,7 +172,7 @@ const Dashboard = () => {
 
           <Link
             to="/order-requests"
-            className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101"
+            className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101"
           >
             <div className="flex items-center justify-between">
               <div className="p-2 bg-orange-50 rounded-lg">
@@ -193,7 +193,7 @@ const Dashboard = () => {
 
       {/* Charts Section */}
       <div
-        className={`grid grid-cols-1 ${isAllowed ? "lg:grid-cols-3" : "lg:grid-cols-1"} gap-4 mb-4`}
+        className={`grid grid-cols-1 ${isAllowed ? "lg:grid-cols-3" : "lg:grid-cols-1"} gap-3 mb-3`}
       >
         {/* Inventory Trends Chart */}
         {isAllowed && (
@@ -327,7 +327,7 @@ const Dashboard = () => {
 
       {/* Recent Orders & Activity */}
       <div
-        className={`grid grid-cols-1 ${isAllowed ? "lg:grid-cols-3" : "lg:grid-cols-1"} gap-4 mb-4`}
+        className={`grid grid-cols-1 ${isAllowed ? "lg:grid-cols-3" : "lg:grid-cols-1"} gap-3 mb-3`}
       >
         {/* Recent Orders */}
         <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-gray-100">
@@ -411,7 +411,7 @@ const Dashboard = () => {
                 recentActivity.map((log) => (
                   <div
                     key={log._id}
-                    className="flex items-start gap-4 pb-4 border-b border-gray-100 last:border-0 last:pb-0"
+                    className="flex items-start gap-3 pb-4 border-b border-gray-100 last:border-0 last:pb-0"
                   >
                     <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
                       <span className="font-bold text-blue-600 text-sm">

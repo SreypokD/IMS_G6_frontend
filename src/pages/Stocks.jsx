@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Listbox } from "@headlessui/react";
+import { locations } from "../data/locations";
 import { getStocks, getProducts, getStockSummary, getUsers } from "../api";
 import {
   HiSelector,
@@ -29,7 +30,7 @@ const transactionOptions = [
   { value: "in", label: "Stock In" },
   { value: "out", label: "Stock Out" },
 ];
-const locationOptions = ["Warehouse 1", "Warehouse 2", "Storefront"];
+const locationOptions = ["Main Warehouse", "Showroom"];
 
 function UserDropdown({ value, onChange, userOptions = [] }) {
   return (
@@ -139,7 +140,7 @@ const Stocks = () => {
   const [stockInOpen, setStockInOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const dialog = useDialog();
 
   // Pagination
@@ -177,6 +178,7 @@ const Stocks = () => {
   const canCreate = user?.permission?.permissions?.includes("create_stock");
   const canUpdate = user?.permission?.permissions?.includes("update_stock");
   const canDelete = user?.permission?.permissions?.includes("delete_stock");
+  const canViewUsers = user?.permission?.permissions?.includes("view_user");
 
   useEffect(() => {
     if (user) {
@@ -189,7 +191,10 @@ const Stocks = () => {
         filterLocation,
       );
       fetchProducts();
-      fetchUsersList();
+      fetchProducts();
+      if (canViewUsers) {
+        fetchUsersList();
+      }
       fetchSummary();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -272,9 +277,9 @@ const Stocks = () => {
     }
   }
 
-  const handleEdit = (stock) => {
+  const handleUpdate = (stock) => {
     setSelectedStock(stock);
-    setIsEditing(true);
+    setIsUpdating(true);
     if (stock.type === "in") {
       setStockInOpen(true);
     } else {
@@ -334,27 +339,27 @@ const Stocks = () => {
         open={stockOutOpen}
         onClose={() => {
           setStockOutOpen(false);
-          setIsEditing(false);
+          setIsUpdating(false);
           setSelectedStock(null);
           fetchStocks();
           fetchSummary();
         }}
         products={products}
         locations={locationOptions.filter((loc) => loc !== "All Locations")}
-        initialData={isEditing ? selectedStock : null}
+        data={isUpdating ? selectedStock : null}
       />
       <StockInModal
         open={stockInOpen}
         onClose={() => {
           setStockInOpen(false);
-          setIsEditing(false);
+          setIsUpdating(false);
           setSelectedStock(null);
           fetchStocks();
           fetchSummary();
         }}
         products={products}
         locations={locationOptions.filter((loc) => loc !== "All Locations")}
-        initialData={isEditing ? selectedStock : null}
+        data={isUpdating ? selectedStock : null}
       />
       <StockViewModal
         open={viewModalOpen}
@@ -385,8 +390,8 @@ const Stocks = () => {
           </div>
         )}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiDownload className="text-2xl text-green-600" />
             <div className="flex items-center gap-2 text-green-600 text-sm">
@@ -399,7 +404,7 @@ const Stocks = () => {
             <div className="text-xl font-bold">{summary.totalStockIn}</div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiLogout className="text-2xl text-red-500 rotate-270" />
             <div className="flex items-center gap-2 text-green-600 text-sm">
@@ -412,7 +417,7 @@ const Stocks = () => {
             <div className="text-xl font-bold">{summary.totalStockOut}</div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiCube className="text-2xl text-black" />
             <div className="flex items-center gap-2 text-green-600 text-sm">
@@ -425,7 +430,7 @@ const Stocks = () => {
             <div className="text-xl font-bold">{summary.currentBalance}</div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiOutlineExclamation className="text-2xl text-yellow-600" />
             <div className="flex items-center gap-2 text-red-600 text-sm">
@@ -439,7 +444,7 @@ const Stocks = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-2xl p-6 mb-4 border border-gray-100">
+      <div className="bg-white rounded-2xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
             <HiOutlineFilter className="inline-block text-sm text-black" />
@@ -453,7 +458,7 @@ const Stocks = () => {
             <span>Reset</span>
           </button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <div>
             <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
@@ -494,25 +499,27 @@ const Stocks = () => {
               }}
             />
           </div>
-          <div>
-            <label className="block text-gray-700 text-sm mb-1">User</label>
-            <UserDropdown
-              value={filterUser}
-              onChange={(val) => {
-                setFilterUser(val);
-                fetchStocks(
-                  1,
-                  pagination.limit,
-                  search,
-                  filterType,
-                  val,
-                  filterLocation,
-                );
-                setPagination((prev) => ({ ...prev, page: 1 }));
-              }}
-              userOptions={userOptions}
-            />
-          </div>
+          {canViewUsers && (
+            <div>
+              <label className="block text-gray-700 text-sm mb-1">User</label>
+              <UserDropdown
+                value={filterUser}
+                onChange={(val) => {
+                  setFilterUser(val);
+                  fetchStocks(
+                    1,
+                    pagination.limit,
+                    search,
+                    filterType,
+                    val,
+                    filterLocation,
+                  );
+                  setPagination((prev) => ({ ...prev, page: 1 }));
+                }}
+                userOptions={userOptions}
+              />
+            </div>
+          )}
           <div>
             <label className="block text-gray-700 text-sm mb-1">Location</label>
             <LocationDropdown
@@ -599,9 +606,9 @@ const Stocks = () => {
                     )}
                     {canUpdate && (
                       <button
-                        onClick={() => handleEdit(stock)}
+                        onClick={() => handleUpdate(stock)}
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Edit"
+                        title="Update"
                       >
                         <HiOutlinePencil className="text-xl" />
                       </button>

@@ -5,7 +5,7 @@ import { HiOutlineHome, HiChevronRight } from "react-icons/hi";
 const routeName = (segment, segments, i) => {
   // Context-aware for forms
   if (segment === "new" || segment === "create") return "Create";
-  if (segment === "edit" || segment === "update") return "Update";
+  if (segment === "update") return "Update";
   // If the previous segment is products/categories/suppliers and this is an id, show 'Update'
   if (
     i > 0 &&
@@ -42,7 +42,7 @@ const Breadcrumb = () => {
   const location = useLocation();
   const segments = location.pathname.split("/").filter(Boolean);
   return (
-    <nav className="mb-4" aria-label="Breadcrumb">
+    <nav className="mb-3" aria-label="Breadcrumb">
       <div className="flex items-center text-sm gap-2 space-x-1">
         <Link
           to="/"

@@ -68,7 +68,7 @@ const Register = () => {
             Register to access your inventory dashboard
           </span>
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-gray-600 mb-1 text-sm font-medium">
                   First Name <sup className="text-red-500">*</sup>
@@ -163,7 +163,7 @@ const Register = () => {
               />
             </div>
             {error && (
-              <div className="mb-4 text-red-500 text-center text-sm font-medium">
+              <div className="mb-3 text-red-500 text-center text-sm font-medium">
                 {error}
               </div>
             )}
@@ -187,7 +187,7 @@ const Register = () => {
         </div>
         <br />
         <span className="block text-sm text-[#1e3a5f] text-center mt-6">
-          © 2026 Inventory. All rights reserved.
+          © 2026 IMS. All rights reserved.
         </span>
       </div>
     </div>

@@ -151,7 +151,7 @@ const Products = () => {
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false);
-  const [editProduct, setEditProduct] = useState(null);
+  const [updateProduct, setUpdateProduct] = useState(null);
   const [viewProduct, setViewProduct] = useState(null);
 
   // Filters
@@ -224,11 +224,11 @@ const Products = () => {
   }
 
   function handleAdd() {
-    setEditProduct(null);
+    setUpdateProduct(null);
     setModalOpen(true);
   }
 
-  function handleEdit(product) {
+  function handleUpdate(product) {
     // Ensure category and supplier are _id strings for the modal, handle nulls
     let category = "";
     let supplier = "";
@@ -242,7 +242,7 @@ const Products = () => {
     } else if (typeof product.supplier === "string") {
       supplier = product.supplier;
     }
-    setEditProduct({ ...product, category: category, supplier: supplier });
+    setUpdateProduct({ ...product, category: category, supplier: supplier });
     setModalOpen(true);
   }
 
@@ -260,8 +260,8 @@ const Products = () => {
         data = formData;
       }
       let res;
-      if (editProduct) {
-        res = await updateProduct(editProduct._id, data);
+      if (updateProduct) {
+        res = await updateProduct(updateProduct._id, data);
       } else {
         res = await createProduct(data);
       }
@@ -279,7 +279,7 @@ const Products = () => {
         return;
       }
       dialog.success(
-        editProduct
+        updateProduct
           ? "Product updated successfully"
           : "Product created successfully",
       );
@@ -295,7 +295,7 @@ const Products = () => {
 
   function handleView(product) {
     // Always open in view mode (viewOnly) for view action
-    setEditProduct(null);
+    setUpdateProduct(null);
     setViewProduct(product);
     setModalOpen(true);
   }
@@ -338,8 +338,8 @@ const Products = () => {
       <ProductModal
         key={
           modalOpen
-            ? editProduct
-              ? editProduct._id
+            ? updateProduct
+              ? updateProduct._id
               : viewProduct
                 ? viewProduct._id
                 : "new"
@@ -348,11 +348,11 @@ const Products = () => {
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setEditProduct(null);
+          setUpdateProduct(null);
           setViewProduct(null);
         }}
         onSave={handleSave}
-        initial={editProduct || viewProduct}
+        data={updateProduct || viewProduct}
         viewOnly={!!viewProduct}
       />
       <div className="flex items-center justify-between mb-8">
@@ -372,7 +372,7 @@ const Products = () => {
           </button>
         )}
       </div>
-      <div className="bg-white rounded-xl p-6 mb-4 border border-gray-100">
+      <div className="bg-white rounded-xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
             <HiOutlineFilter className="inline-block text-sm text-black" />
@@ -386,7 +386,7 @@ const Products = () => {
             <span>Reset</span>
           </button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <div>
             <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
@@ -439,7 +439,9 @@ const Products = () => {
                 <th>Category</th>
                 <th>Supplier</th>
                 <th className="text-right">Stock</th>
-                <th className="text-right">Cost</th>
+                {canCreate || canUpdate || canDelete ? (
+                  <th className="text-right">Cost</th>
+                ) : null}
                 <th className="text-right">Price</th>
                 {canView || canUpdate || canDelete ? (
                   <th className="text-center action">Actions</th>
@@ -474,11 +476,13 @@ const Products = () => {
                       {product.stock} units
                     </span>
                   </td>
-                  <td className="text-right">
-                    <span className="text-gray-500">
-                      ${Number(product.cost_price || 0).toFixed(2)}
-                    </span>
-                  </td>
+                  {canCreate || canUpdate || canDelete ? (
+                    <td className="text-right">
+                      <span className="text-gray-500">
+                        ${Number(product.cost_price || 0).toFixed(2)}
+                      </span>
+                    </td>
+                  ) : null}
                   <td className="text-right">
                     ${Number(product.price).toFixed(2)}
                   </td>
@@ -495,8 +499,8 @@ const Products = () => {
                     {canUpdate && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Edit"
-                        onClick={() => handleEdit(product)}
+                        title="Update"
+                        onClick={() => handleUpdate(product)}
                       >
                         <HiOutlinePencil className="text-xl" />
                       </button>

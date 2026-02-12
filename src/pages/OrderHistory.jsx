@@ -145,7 +145,7 @@ const OrderHistory = () => {
           </span>
         </div>
       </div>
-      <div className="bg-white rounded-xl p-6 mb-4 border border-gray-100">
+      <div className="bg-white rounded-xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
             <HiOutlineFilter className="inline-block text-sm text-black" />
@@ -159,7 +159,7 @@ const OrderHistory = () => {
             <span>Reset</span>
           </button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <div>
             <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input

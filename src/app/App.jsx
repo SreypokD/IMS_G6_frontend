@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar.jsx";
@@ -8,26 +8,25 @@ import { useAuth } from "../contexts/auth/useAuth.js";
 import { DialogProvider } from "../contexts/dialog/DialogContext.jsx";
 import Breadcrumb from "../components/Breadcrumb.jsx";
 
-// Lazy-loaded components
-const Login = lazy(() => import("../pages/Login.jsx"));
-const ForgotPassword = lazy(() => import("../pages/ForgotPassword.jsx"));
-const Register = lazy(() => import("../pages/Register.jsx"));
-const Reports = lazy(() => import("../pages/Reports.jsx"));
-const Products = lazy(() => import("../pages/Products.jsx"));
-const Suppliers = lazy(() => import("../pages/Suppliers.jsx"));
-const Dashboard = lazy(() => import("../pages/Dashboard.jsx"));
-const Categories = lazy(() => import("../pages/Categories.jsx"));
-const Stocks = lazy(() => import("../pages/Stocks.jsx"));
-const OrderRequests = lazy(() => import("../pages/OrderRequests.jsx"));
-const OrderHistory = lazy(() => import("../pages/OrderHistory.jsx"));
-const ApproveRequests = lazy(() => import("../pages/ApproveRequests.jsx"));
-const ConfirmDelivery = lazy(() => import("../pages/ConfirmDelivery.jsx"));
-const Sales = lazy(() => import("../pages/Sales.jsx"));
-const Expenses = lazy(() => import("../pages/Expenses.jsx"));
-const ActivityLog = lazy(() => import("../pages/ActivityLog.jsx"));
-const Permissions = lazy(() => import("../pages/Permissions.jsx"));
-const Users = lazy(() => import("../pages/Users.jsx"));
-const Settings = lazy(() => import("../pages/Settings.jsx"));
+import Login from "../pages/Login.jsx";
+import ForgotPassword from "../pages/ForgotPassword.jsx";
+import Register from "../pages/Register.jsx";
+import Reports from "../pages/Reports.jsx";
+import Products from "../pages/Products.jsx";
+import Suppliers from "../pages/Suppliers.jsx";
+import Dashboard from "../pages/Dashboard.jsx";
+import Categories from "../pages/Categories.jsx";
+import Stocks from "../pages/Stocks.jsx";
+import OrderRequests from "../pages/OrderRequests.jsx";
+import OrderHistory from "../pages/OrderHistory.jsx";
+import ApproveRequests from "../pages/ApproveRequests.jsx";
+import ConfirmDelivery from "../pages/ConfirmDelivery.jsx";
+import Sales from "../pages/Sales.jsx";
+import Expenses from "../pages/Expenses.jsx";
+import ActivityLog from "../pages/ActivityLog.jsx";
+import Permissions from "../pages/Permissions.jsx";
+import Users from "../pages/Users.jsx";
+import Settings from "../pages/Settings.jsx";
 
 // A wrapper for private routes that checks authentication
 function PrivateRoute({ children }) {
@@ -71,7 +70,7 @@ function App() {
               path="*"
               element={
                 <PrivateRoute>
-                  <div className="h-screen flex overflow-hidden bg-[#f9fafb]">
+                  <div className="h-screen flex overflow-hidden bg-[#f5f5f7]">
                     <Sidebar mini={sidebarHidden} />
                     <div className="flex-1 flex flex-col min-w-0">
                       <Navbar onBellClick={() => setSidebarHidden((v) => !v)} />

@@ -9,6 +9,7 @@ import {
   HiOutlineLocationMarker,
   HiOutlineNewspaper,
 } from "react-icons/hi";
+import { locations } from "../data/locations";
 
 const paymentTerms = [
   { _id: 1, name: "Net 30 Days" },
@@ -38,35 +39,72 @@ const initialSupplier = {
     commune: "",
     district: "",
     province: "",
-    country: "",
   },
   payment_term: "",
   status: statuses[0].name,
 };
 
-const SupplierModal = ({
-  open,
-  onClose,
-  onSave,
-  initial,
-  viewOnly = false,
-}) => {
-  const [supplier, setSupplier] = useState(initial || initialSupplier);
+const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
+  const [supplier, setSupplier] = useState(data || initialSupplier);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
 
-  // Clear form fields when opening for create
+  // Reset form when modal opens or closes
   React.useEffect(() => {
-    if (open && !initial) {
+    if (open && !data) {
       setSupplier(initialSupplier);
       setTouched({});
       setValidateOnSave(false);
-    } else if (open && initial) {
-      setSupplier(initial);
+    } else if (open && data) {
+      setSupplier(data);
       setTouched({});
       setValidateOnSave(false);
     }
-  }, [open, initial]);
+  }, [open, data]);
+
+  const handleProvinceChange = (provinceName) => {
+    setSupplier((prev) => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        province: provinceName,
+        district: "",
+        commune: "",
+      },
+    }));
+  };
+
+  const handleDistrictChange = (districtName) => {
+    setSupplier((prev) => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        district: districtName,
+        commune: "",
+      },
+    }));
+  };
+
+  const handleCommuneChange = (communeName) => {
+    setSupplier((prev) => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        commune: communeName,
+        village: "",
+      },
+    }));
+  };
+
+  const handleVillageChange = (villageName) => {
+    setSupplier((prev) => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        village: villageName,
+      },
+    }));
+  };
 
   if (!open) return null;
   return (
@@ -74,9 +112,9 @@ const SupplierModal = ({
       <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] max-h-[80vh] shadow-xl relative">
         <h2 className="text-xl font-bold mb-6 text-center">
           {viewOnly
-            ? "View Supplier"
-            : initial
-              ? "Edit Supplier"
+            ? "Supplier Details"
+            : data
+              ? "Update Supplier"
               : "Add Supplier"}
         </h2>
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
@@ -85,13 +123,11 @@ const SupplierModal = ({
               <HiOutlineOfficeBuilding className="inline-block text-xl text-black" />
               <span>Company Info</span>
             </h3>
-            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
+            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Company Name
-                  {!supplier.company_name && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
                   name="company_name"
@@ -103,16 +139,14 @@ const SupplierModal = ({
                     setTouched((prev) => ({ ...prev, company_name: true }))
                   }
                   placeholder="Supplier Name"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.company_name && !initial && (touched.company_name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.company_name && !data && (touched.company_name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Location
-                  {!supplier.location && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
                   name="location"
@@ -124,7 +158,7 @@ const SupplierModal = ({
                     setTouched((prev) => ({ ...prev, location: true }))
                   }
                   placeholder="Supplier Location"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.location && !initial && (touched.location || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.location && !data && (touched.location || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
@@ -135,13 +169,11 @@ const SupplierModal = ({
               <HiOutlineUser className="inline-block text-xl text-black" />
               <span>Primary Contact Details</span>
             </h3>
-            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
+            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Contact Person
-                  {!supplier.contact_person && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
                   name="contact_person"
@@ -159,16 +191,14 @@ const SupplierModal = ({
                     }))
                   }
                   placeholder="Supplier Contact Person"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_person && !initial && (touched.contact_person || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_person && !data && (touched.contact_person || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Role/Position
-                  {!supplier.contact_position && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
                   name="contact_position"
@@ -186,16 +216,14 @@ const SupplierModal = ({
                     }))
                   }
                   placeholder="Supplier Contact Position"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_position && !initial && (touched.contact_position || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_position && !data && (touched.contact_position || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Email Address
-                  {!supplier.contact_email && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
                   name="contact_email"
@@ -213,16 +241,14 @@ const SupplierModal = ({
                     }))
                   }
                   placeholder="Supplier Contact Email"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_email && !initial && (touched.contact_email || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_email && !data && (touched.contact_email || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Phone Number
-                  {!supplier.contact_phone && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
                   name="contact_phone"
@@ -240,7 +266,7 @@ const SupplierModal = ({
                     }))
                   }
                   placeholder="Supplier Contact Phone"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_phone && !initial && (touched.contact_phone || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_phone && !data && (touched.contact_phone || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
@@ -251,26 +277,158 @@ const SupplierModal = ({
               <HiOutlineLocationMarker className="inline-block text-xl text-black" />
               <span>Address</span>
             </h3>
-            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
+            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
-                <label className="block text-sm font-medium mb-1">Street</label>
-                <input
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
-                  value={supplier.address.street}
-                  onChange={(e) =>
-                    setSupplier({
-                      ...supplier,
-                      address: {
-                        ...supplier.address,
-                        street: e.target.value,
-                      },
-                    })
-                  }
+                <label className="text-sm font-medium text-gray-700">
+                  City/Province
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
+                </label>
+                <Listbox
+                  value={supplier.address.province}
+                  onChange={handleProvinceChange}
                   disabled={viewOnly}
-                />
+                >
+                  <div className="relative">
+                    <Listbox.Button
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.address.province && !data && (touched.province || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                    >
+                      <span>{supplier.address.province}</span>
+                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                    </Listbox.Button>
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                      {locations.map((province) => (
+                        <Listbox.Option
+                          key={province.name}
+                          value={province.name}
+                          className={({ selected }) =>
+                            `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                          }
+                        >
+                          {province.name}
+                        </Listbox.Option>
+                      ))}
+                    </Listbox.Options>
+                  </div>
+                </Listbox>
               </div>
               <div>
-                <label className="block mb-1">House</label>
+                <label className="text-sm font-medium text-gray-700">
+                  District
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
+                </label>
+                <Listbox
+                  value={supplier.address.district}
+                  onChange={handleDistrictChange}
+                  disabled={viewOnly || !supplier.address.province}
+                >
+                  <div className="relative">
+                    <Listbox.Button
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.address.district && !data && (touched.district || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                    >
+                      <span>{supplier.address.district}</span>
+                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                    </Listbox.Button>
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                      {locations
+                        .find((p) => p.name === supplier.address.province)
+                        ?.districts.map((district) => (
+                          <Listbox.Option
+                            key={district.name}
+                            value={district.name}
+                            className={({ selected }) =>
+                              `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                            }
+                          >
+                            {district.name}
+                          </Listbox.Option>
+                        ))}
+                    </Listbox.Options>
+                  </div>
+                </Listbox>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Commune
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
+                </label>
+                <Listbox
+                  value={supplier.address.commune}
+                  onChange={handleCommuneChange}
+                  disabled={viewOnly || !supplier.address.district}
+                >
+                  <div className="relative">
+                    <Listbox.Button
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.address.commune && !data && (touched.commune || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                    >
+                      <span>{supplier.address.commune}</span>
+                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                    </Listbox.Button>
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                      {locations
+                        .find((p) => p.name === supplier.address.province)
+                        ?.districts.find(
+                          (d) => d.name === supplier.address.district,
+                        )
+                        ?.communes.map((commune) => (
+                          <Listbox.Option
+                            key={commune.name}
+                            value={commune.name}
+                            className={({ selected }) =>
+                              `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                            }
+                          >
+                            {commune.name}
+                          </Listbox.Option>
+                        ))}
+                    </Listbox.Options>
+                  </div>
+                </Listbox>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Village
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
+                </label>
+                <Listbox
+                  value={supplier.address.village}
+                  onChange={handleVillageChange}
+                  disabled={viewOnly || !supplier.address.commune}
+                >
+                  <div className="relative">
+                    <Listbox.Button
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.address.village && !data && (touched.village || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                    >
+                      <span>{supplier.address.village}</span>
+                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                    </Listbox.Button>
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                      {locations
+                        .find((p) => p.name === supplier.address.province)
+                        ?.districts.find(
+                          (d) => d.name === supplier.address.district,
+                        )
+                        ?.communes.find(
+                          (c) => c.name === supplier.address.commune,
+                        )
+                        ?.villages.map((village) => (
+                          <Listbox.Option
+                            key={village}
+                            value={village}
+                            className={({ selected }) =>
+                              `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                            }
+                          >
+                            {village}
+                          </Listbox.Option>
+                        ))}
+                    </Listbox.Options>
+                  </div>
+                </Listbox>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  House
+                </label>
                 <input
                   type="text"
                   className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
@@ -288,131 +446,20 @@ const SupplierModal = ({
                 />
               </div>
               <div>
-                <label className="block mb-1">
-                  Village
-                  {!supplier.address.village && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
+                <label className="text-sm font-medium text-gray-700">
+                  Street
                 </label>
                 <input
-                  type="text"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.address.village && !initial && (touched.village || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                  value={supplier.address.village}
+                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
+                  value={supplier.address.street}
                   onChange={(e) =>
                     setSupplier({
                       ...supplier,
                       address: {
                         ...supplier.address,
-                        village: e.target.value,
+                        street: e.target.value,
                       },
                     })
-                  }
-                  onBlur={() =>
-                    setTouched((prev) => ({ ...prev, village: true }))
-                  }
-                  disabled={viewOnly}
-                />
-              </div>
-              <div>
-                <label className="block mb-1">
-                  Commune
-                  {!supplier.address.commune && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
-                </label>
-                <input
-                  type="text"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.address.commune && !initial && (touched.commune || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                  value={supplier.address.commune}
-                  onChange={(e) =>
-                    setSupplier({
-                      ...supplier,
-                      address: {
-                        ...supplier.address,
-                        commune: e.target.value,
-                      },
-                    })
-                  }
-                  onBlur={() =>
-                    setTouched((prev) => ({ ...prev, commune: true }))
-                  }
-                  disabled={viewOnly}
-                />
-              </div>
-              <div>
-                <label className="block mb-1">
-                  District
-                  {!supplier.address.district && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
-                </label>
-                <input
-                  type="text"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.address.district && !initial && (touched.district || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                  value={supplier.address.district}
-                  onChange={(e) =>
-                    setSupplier({
-                      ...supplier,
-                      address: {
-                        ...supplier.address,
-                        district: e.target.value,
-                      },
-                    })
-                  }
-                  onBlur={() =>
-                    setTouched((prev) => ({ ...prev, district: true }))
-                  }
-                  disabled={viewOnly}
-                />
-              </div>
-              <div>
-                <label className="block mb-1">
-                  City/Province
-                  {!supplier.address.province && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
-                </label>
-                <input
-                  type="text"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.address.province && !initial && (touched.province || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                  value={supplier.address.province}
-                  onChange={(e) =>
-                    setSupplier({
-                      ...supplier,
-                      address: {
-                        ...supplier.address,
-                        province: e.target.value,
-                      },
-                    })
-                  }
-                  onBlur={() =>
-                    setTouched((prev) => ({ ...prev, province: true }))
-                  }
-                  disabled={viewOnly}
-                />
-              </div>
-              <div>
-                <label className="block mb-1">
-                  Country
-                  {!supplier.address.country && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
-                </label>
-                <input
-                  type="text"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.address.country && !initial && (touched.country || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                  value={supplier.address.country}
-                  onChange={(e) =>
-                    setSupplier({
-                      ...supplier,
-                      address: {
-                        ...supplier.address,
-                        country: e.target.value,
-                      },
-                    })
-                  }
-                  onBlur={() =>
-                    setTouched((prev) => ({ ...prev, country: true }))
                   }
                   disabled={viewOnly}
                 />
@@ -424,11 +471,11 @@ const SupplierModal = ({
               <HiOutlineNewspaper className="inline-block text-xl text-black" />
               <span>Business Terms</span>
             </h3>
-            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
+            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Payment Terms
-                  {!initial ? <sup className="text-red-500">*</sup> : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <Listbox
                   value={
@@ -449,7 +496,7 @@ const SupplierModal = ({
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!supplier.payment_term && !initial && (touched.payment_term || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.payment_term && !data && (touched.payment_term || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                       disabled={viewOnly}
                     >
                       <span>
@@ -481,9 +528,9 @@ const SupplierModal = ({
                 </Listbox>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Supplier Status
-                  {!initial ? <sup className="text-red-500">*</sup> : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <Listbox
                   value={
@@ -502,7 +549,7 @@ const SupplierModal = ({
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!supplier.status && !initial && (touched.status || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.status && !data && (touched.status || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                       disabled={viewOnly}
                     >
                       <span>
@@ -541,7 +588,8 @@ const SupplierModal = ({
             className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-100 flex items-center gap-2 cursor-pointer text-sm"
             onClick={onClose}
           >
-            <HiXCircle className="inline-block text-xl" /> Close
+            <HiXCircle className="inline-block text-xl" />
+            {viewOnly ? "Close" : "Cancel"}
           </button>
           {!viewOnly && (
             <button
@@ -561,7 +609,7 @@ const SupplierModal = ({
               }}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />
-              {initial ? "Update Supplier" : "Add Supplier"}
+              {data ? "Update Supplier" : "Add Supplier"}
             </button>
           )}
         </div>

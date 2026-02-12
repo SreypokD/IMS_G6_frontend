@@ -30,8 +30,8 @@ const categories = [
   "Other",
 ];
 
-const ExpenseModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
-  const [expense, setExpense] = useState(initial || initialExpense);
+const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
+  const [expense, setExpense] = useState(data || initialExpense);
   const [selectedImage, setSelectedImage] = useState(null);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
@@ -39,12 +39,12 @@ const ExpenseModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
   useEffect(() => {
     if (open) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setExpense(initial || initialExpense);
+      setExpense(data || initialExpense);
       setSelectedImage(null);
       setTouched({});
       setValidateOnSave(false);
     }
-  }, [open, initial]);
+  }, [open, data]);
 
   async function handleImageChange(e) {
     if (e.target.files && e.target.files[0]) {
@@ -67,7 +67,7 @@ const ExpenseModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] max-h-[80vh] shadow-xl relative">
         <h2 className="text-xl font-bold mb-6 text-center">
-          {viewOnly ? "View Expense" : initial ? "Edit Expense" : "Add Expense"}
+          {viewOnly ? "Expense Details" : expense._id ? "Update Expense" : "Add Expense"}
         </h2>
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
           <div className="col-span-2 mb-2">
@@ -75,13 +75,11 @@ const ExpenseModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
               <HiOutlineDocumentText className="inline-block text-xl text-black" />
               <span>Expense Details</span>
             </h3>
-            <div className="mb-3 grid grid-cols-1 gap-4">
+            <div className="mb-3 grid grid-cols-1 gap-3">
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Description
-                  {!expense.description && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
                   name="description"
@@ -92,18 +90,15 @@ const ExpenseModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                   onBlur={() =>
                     setTouched((prev) => ({ ...prev, description: true }))
                   }
-                  placeholder="Expense Description"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!expense.description && !initial && (touched.description || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!expense.description && !data && (touched.description || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="text-sm font-medium text-gray-700">
                     Amount
-                    {(!expense.amount || isNaN(expense.amount)) && !initial ? (
-                      <sup className="text-red-500">*</sup>
-                    ) : null}
+                    {!viewOnly && <sup className="text-red-500">*</sup>}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -121,13 +116,13 @@ const ExpenseModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                       type="number"
                       step="0.01"
                       placeholder="0.00"
-                      className={`w-full bg-gray-50 border rounded-lg pl-7 pr-3 py-2 text-sm text-gray-800 ${(!expense.amount || isNaN(expense.amount)) && !initial && (touched.amount || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                      className={`w-full bg-gray-50 border rounded-lg pl-7 pr-3 py-2 text-sm text-gray-800 ${(!expense.amount || isNaN(expense.amount)) && !data && (touched.amount || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                       disabled={viewOnly}
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="text-sm font-medium text-gray-700">
                     Category
                   </label>
                   <Listbox
@@ -148,7 +143,7 @@ const ExpenseModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                   >
                     <div className="relative">
                       <Listbox.Button
-                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer${viewOnly ? "bg-gray-100 cursor-default" : ""} ${!expense.category && !initial && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!expense.category && !data && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                         disabled={viewOnly}
                       >
                         <span>{expense.category || "Select category"}</span>
@@ -185,7 +180,9 @@ const ExpenseModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Date</label>
+                <label className="text-sm font-medium text-gray-700">
+                  Date
+                </label>
                 <DatePicker
                   selected={expense.date}
                   onChange={(date) =>
@@ -205,8 +202,8 @@ const ExpenseModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
               <HiOutlineCamera className="inline-block text-xl text-black" />
               <span>Receipt</span>
             </h3>
-            <div className="mb-4">
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center transition-colors">
+            <div className="mb-3">
+              <div className="border-2 border-dashed border-gray-100 rounded-lg p-6 flex flex-col items-center justify-center transition-colors">
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/gif,application/pdf"
@@ -262,7 +259,7 @@ const ExpenseModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
               }}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />
-              {initial ? "Update Expense" : "Add Expense"}
+              {expense._id ? "Update Expense" : "Add Expense"}
             </button>
           )}
         </div>

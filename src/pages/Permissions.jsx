@@ -36,7 +36,7 @@ const Permissions = () => {
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false);
-  const [editPermission, setEditPermission] = useState(null);
+  const [updatePermission, setUpdatePermission] = useState(null);
 
   // Loading and Error
   const [loading, setLoading] = useState(false);
@@ -90,7 +90,7 @@ const Permissions = () => {
   }
 
   function handleView(permission) {
-    setEditPermission(null);
+    setUpdatePermission(null);
     setViewPermission(permission);
     setModalOpen(true);
   }
@@ -100,8 +100,8 @@ const Permissions = () => {
     setLoading(true);
     setError("");
     try {
-      if (editPermission) {
-        await updatePermission(editPermission._id, permission);
+      if (updatePermission) {
+        await updatePermission(updatePermission._id, permission);
         dialog.success("Permission updated successfully");
       } else {
         await createPermission(permission);
@@ -109,7 +109,7 @@ const Permissions = () => {
       }
       fetchPermissions(1, pagination.limit, search);
       setModalOpen(false);
-      setEditPermission(null);
+      setUpdatePermission(null);
     } catch {
       setError("Failed to save permission");
       dialog.error("Failed to save permission");
@@ -154,10 +154,10 @@ const Permissions = () => {
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setEditPermission(null);
+          setUpdatePermission(null);
         }}
         onSave={handleSave}
-        initial={editPermission || viewPermission}
+        data={updatePermission || viewPermission}
         viewOnly={!!viewPermission}
       />
       <div className="flex items-center justify-between mb-8">
@@ -169,7 +169,7 @@ const Permissions = () => {
           <button
             className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
             onClick={() => {
-              setEditPermission(null);
+              setUpdatePermission(null);
               setModalOpen(true);
             }}
           >
@@ -177,7 +177,7 @@ const Permissions = () => {
           </button>
         )}
       </div>
-      <div className="bg-white rounded-xl p-6 mb-4 border border-gray-100">
+      <div className="bg-white rounded-xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
             <HiOutlineFilter className="inline-block text-sm text-black" />
@@ -191,7 +191,7 @@ const Permissions = () => {
             <span>Reset</span>
           </button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <div>
             <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
@@ -243,9 +243,10 @@ const Permissions = () => {
                     {canUpdate && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Edit"
+                        title="Update"
                         onClick={() => {
-                          setEditPermission(permission);
+                          setUpdatePermission(permission);
+                          setViewPermission(null);
                           setModalOpen(true);
                         }}
                       >

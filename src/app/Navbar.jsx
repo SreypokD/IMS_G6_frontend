@@ -179,7 +179,13 @@ const Header = ({ onBellClick }) => {
                 <HiOutlineCog className="text-xl" />
                 <span>Account Settings</span>
               </button>
-              <button className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer">
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/settings?tab=help");
+                }}
+                className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"
+              >
                 <HiOutlineQuestionMarkCircle className="text-xl" />
                 <span>Help & Support</span>
               </button>

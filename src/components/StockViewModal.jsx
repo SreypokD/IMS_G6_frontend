@@ -1,5 +1,6 @@
 import React from "react";
 import { HiXCircle, HiCube } from "react-icons/hi";
+import { formatDate } from "../utils/dateFormat";
 
 const StockViewModal = ({ open, onClose, stock }) => {
   if (!open || !stock) return null;
@@ -23,7 +24,7 @@ const StockViewModal = ({ open, onClose, stock }) => {
         <div className="space-y-5 overflow-auto max-h-[60vh] px-1">
           <div className="col-span-2 mb-2">
             <div>
-              <label className="block text-sm mb-1">Product</label>
+              <label className="text-sm font-medium text-gray-700">Product</label>
               <input
                 type="text"
                 className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
@@ -33,9 +34,9 @@ const StockViewModal = ({ open, onClose, stock }) => {
             </div>
           </div>
           <div className="col-span-2 mb-2">
-            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
+            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
-                <label className="block text-sm mb-1">Quantity</label>
+                <label className="text-sm font-medium text-gray-700">Quantity</label>
                 <input
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100 ${
                     stock.type === "in" ? "text-green-600" : "text-red-600"
@@ -45,15 +46,15 @@ const StockViewModal = ({ open, onClose, stock }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Batch Number</label>
+                <label className="text-sm font-medium text-gray-700">Batch Number</label>
                 <input
                   className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
-                  value={stock.batch_number || "-"}
+                  value={stock.batch_number}
                   disabled
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Type</label>
+                <label className="text-sm font-medium text-gray-700">Type</label>
                 <input
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100 ${
                     stock.type === "in" ? "text-green-600" : "text-red-600"
@@ -63,31 +64,31 @@ const StockViewModal = ({ open, onClose, stock }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Reason</label>
+                <label className="text-sm font-medium text-gray-700">Reason</label>
                 <input
                   className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
-                  value={stock.reason || "-"}
+                  value={stock.reason}
                   disabled
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Balance After</label>
+                <label className="text-sm font-medium text-gray-700">Balance After</label>
                 <input
                   className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
-                  value={stock.balance || "-"}
+                  value={stock.balance}
                   disabled
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Location</label>
+                <label className="text-sm font-medium text-gray-700">Location</label>
                 <input
                   className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
-                  value={stock.location || "-"}
+                  value={stock.location}
                   disabled
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">User</label>
+                <label className="text-sm font-medium text-gray-700">User</label>
                 <input
                   className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                   value={
@@ -99,10 +100,10 @@ const StockViewModal = ({ open, onClose, stock }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Date</label>
+                <label className="text-sm font-medium text-gray-700">Date</label>
                 <input
                   className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
-                  value={new Date(stock.createdAt).toLocaleString()}
+                  value={formatDate(stock.createdAt, true)}
                   disabled
                 />
               </div>
@@ -110,10 +111,10 @@ const StockViewModal = ({ open, onClose, stock }) => {
           </div>
           <div className="col-span-2 mb-2">
             <div>
-              <label className="block text-sm mb-1">Notes</label>
+              <label className="text-sm font-medium text-gray-700">Notes</label>
               <textarea
                 className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
-                value={stock.note || "-"}
+                value={stock.note}
                 disabled
                 rows={2}
               />

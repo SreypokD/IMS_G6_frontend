@@ -117,7 +117,7 @@ const Sales = () => {
   // Dialog
   const { user } = useAuth();
   const dialog = useDialog();
-  const [editSale, setEditSale] = useState(null);
+  const [updateSale, setUpdateSale] = useState(null);
   const notification = useNotification();
 
   // Filters
@@ -139,10 +139,13 @@ const Sales = () => {
   const canCreate = user?.permission?.permissions?.includes("create_sale");
   const canUpdate = user?.permission?.permissions?.includes("update_sale");
   const canDelete = user?.permission?.permissions?.includes("delete_sale");
+  const canViewUsers = user?.permission?.permissions?.includes("view_user");
 
   useEffect(() => {
     if (user) {
-      getUsers().then((res) => setUsers(res.data.data || []));
+      if (canViewUsers) {
+        getUsers().then((res) => setUsers(res.data.data || []));
+      }
       fetchSales(1, 10);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -180,7 +183,7 @@ const Sales = () => {
   }
 
   function handleView(sale) {
-    setEditSale(null);
+    setUpdateSale(null);
     setViewSale(sale);
     setModalOpen(true);
   }
@@ -190,8 +193,8 @@ const Sales = () => {
     setLoading(true);
     setError("");
     try {
-      if (editSale) {
-        await updateSale(editSale._id, saleData);
+      if (updateSale) {
+        await updateSale(updateSale._id, saleData);
         dialog.success("Sale updated successfully");
         // Show notification if status changed to Completed
         if (saleData.status && saleData.status.toLowerCase() === "completed") {
@@ -206,7 +209,7 @@ const Sales = () => {
       }
       fetchSales(1, pagination.limit);
       setModalOpen(false);
-      setEditSale(null);
+      setUpdateSale(null);
     } catch (err) {
       const msg =
         err?.response?.data?.error || err?.message || "Failed to save sale";
@@ -251,15 +254,15 @@ const Sales = () => {
   return (
     <div>
       <SaleModal
-        key={modalOpen ? (editSale ? editSale._id : "new") : "closed"}
+        key={modalOpen ? (updateSale ? updateSale._id : "new") : "closed"}
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setEditSale(null);
+          setUpdateSale(null);
           setViewSale(null);
         }}
         onSave={handleSave}
-        initial={editSale || viewSale}
+        data={updateSale || viewSale}
         viewOnly={!!viewSale}
       />
       <div className="flex items-center justify-between mb-8">
@@ -274,7 +277,7 @@ const Sales = () => {
             className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
             onClick={() => {
               setViewSale(null);
-              setEditSale(null);
+              setUpdateSale(null);
               setModalOpen(true);
             }}
           >
@@ -282,8 +285,8 @@ const Sales = () => {
           </button>
         )}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <BsCurrencyDollar className="text-2xl text-green-600" />
             <div className="flex items-center gap-2 text-green-600 text-sm">
@@ -296,7 +299,7 @@ const Sales = () => {
             <div className="text-xl font-bold">$571.87</div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiOutlineShoppingCart className="text-2xl text-gray-700" />
             <div className="flex items-center gap-2 text-green-600 text-sm">
@@ -309,7 +312,7 @@ const Sales = () => {
             <div className="text-xl font-bold">6</div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiTrendingUp className="text-2xl text-yellow-600" />
             <div className="flex items-center gap-2 text-green-600 text-sm">
@@ -322,7 +325,7 @@ const Sales = () => {
             <div className="text-xl font-bold">$95.31</div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
+        <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiOutlineClock className="text-2xl text-yellow-600" />
             <div className="flex items-center gap-2 text-red-600 text-sm">
@@ -336,7 +339,7 @@ const Sales = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-2xl p-6 mb-4 border border-gray-100">
+      <div className="bg-white rounded-2xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
             <HiOutlineFilter className="inline-block text-sm text-black" />
@@ -350,7 +353,7 @@ const Sales = () => {
             <span>Reset</span>
           </button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <div>
             <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
@@ -381,14 +384,18 @@ const Sales = () => {
               placeholder="End Date"
             />
           </div>
-          <div>
-            <label className="block text-gray-700 text-sm mb-1">Customer</label>
-            <UserDropdown
-              value={customer}
-              onChange={setCustomer}
-              userOptions={users}
-            />
-          </div>
+          {canViewUsers && (
+            <div>
+              <label className="block text-gray-700 text-sm mb-1">
+                Customer
+              </label>
+              <UserDropdown
+                value={customer}
+                onChange={setCustomer}
+                userOptions={users}
+              />
+            </div>
+          )}
           <div>
             <label className="block text-gray-700 text-sm mb-1">Status</label>
             <StatusDropdown value={status} onChange={setStatus} />
@@ -470,10 +477,10 @@ const Sales = () => {
                       {canUpdate && (
                         <button
                           className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                          title="Edit"
+                          title="Update"
                           onClick={() => {
                             setViewSale(null);
-                            setEditSale(sale);
+                            setUpdateSale(sale);
                             setModalOpen(true);
                           }}
                         >

@@ -117,31 +117,31 @@ const PermissionModal = ({
   open,
   onClose,
   onSave,
-  initial,
+  data,
   viewOnly = false,
 }) => {
   // Always deep clone the initial permission to avoid reference issues
   function clonePermission(obj) {
     return obj ? JSON.parse(JSON.stringify(obj)) : initialPermission;
   }
-  const [permission, setEditPermission] = useState(clonePermission(initial));
+  const [permission, setUpdatePermission] = useState(clonePermission(data));
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
 
   React.useEffect(() => {
-    if (open && !initial) {
-      setEditPermission(clonePermission(null));
+    if (open && !data) {
+      setUpdatePermission(clonePermission(null));
       setTouched({});
       setValidateOnSave(false);
-    } else if (open && initial) {
-      setEditPermission(clonePermission(initial));
+    } else if (open && data) {
+      setUpdatePermission(clonePermission(data));
       setTouched({});
       setValidateOnSave(false);
     }
-  }, [open, initial]);
+  }, [open, data]);
 
   function updatePermissionsState(updater) {
-    setEditPermission((prev) => {
+    setUpdatePermission((prev) => {
       const currentPerms = Array.isArray(prev.permissions)
         ? prev.permissions.filter((p) => typeof p === "string")
         : [];
@@ -153,7 +153,7 @@ const PermissionModal = ({
   function handlePermissionChange(e) {
     const { name, value, checked } = e.target;
     if (name === "name" || name === "description") {
-      setEditPermission((f) => ({ ...f, [name]: value }));
+      setUpdatePermission((f) => ({ ...f, [name]: value }));
     } else {
       updatePermissionsState((set) => {
         if (checked) set.add(value);
@@ -169,9 +169,9 @@ const PermissionModal = ({
       <div className="bg-white rounded-2xl p-5 w-full max-w-[52%] max-h-[80vh] shadow-xl relative">
         <h2 className="text-xl font-bold mb-6 text-center">
           {viewOnly
-            ? "View Permission"
-            : initial
-              ? "Edit Permission"
+            ? "Permission Details"
+            : data
+              ? "Update Permission"
               : "Add Permission"}
         </h2>
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
@@ -180,13 +180,11 @@ const PermissionModal = ({
               <HiOutlineDocumentText className="inline-block text-xl text-black" />
               <span>Basic Information</span>
             </h3>
-            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
+            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
                 <label className="block text-gray-600 mb-1 text-sm font-medium">
                   Name
-                  {!permission.name && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
                   type="text"
@@ -194,7 +192,7 @@ const PermissionModal = ({
                   value={permission.name}
                   onChange={handlePermissionChange}
                   onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!permission.name && !initial && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!permission.name && !data && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   required
                   disabled={viewOnly}
                 />
@@ -310,7 +308,7 @@ const PermissionModal = ({
               }}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />
-              {initial ? "Update Permission" : "Add Permission"}
+           {viewOnly ? "Permission Details" : permission._id ? "Update Permission" : "Add Permission"}
             </button>
           )}
         </div>

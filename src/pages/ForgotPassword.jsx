@@ -91,7 +91,7 @@ const ForgotPassword = () => {
         </div>
         <br />
         <span className="block text-sm text-[#1e3a5f] text-center mt-6">
-          © 2026 Inventory. All rights reserved.
+          © 2026 IMS. All rights reserved.
         </span>
       </div>
     </div>

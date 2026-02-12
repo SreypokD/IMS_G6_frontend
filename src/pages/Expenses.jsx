@@ -90,7 +90,7 @@ const Expenses = () => {
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false);
-  const [editExpense, setEditExpense] = useState(null);
+  const [updateExpense, setUpdateExpense] = useState(null);
 
   // Loading and Error
   const [loading, setLoading] = useState(false);
@@ -151,7 +151,7 @@ const Expenses = () => {
   }
 
   function handleView(expense) {
-    setEditExpense(null);
+    setUpdateExpense(null);
     setViewExpense(expense);
     setModalOpen(true);
   }
@@ -160,8 +160,8 @@ const Expenses = () => {
     setLoading(true);
     setError("");
     try {
-      if (editExpense) {
-        await updateExpense(editExpense._id, expenseData);
+      if (updateExpense) {
+        await updateExpense(updateExpense._id, expenseData);
         dialog.success("Expense updated successfully");
       } else {
         await createExpense(expenseData);
@@ -169,7 +169,7 @@ const Expenses = () => {
       }
       fetchExpenses(1, pagination.limit);
       setModalOpen(false);
-      setEditExpense(null);
+      setUpdateExpense(null);
     } catch (err) {
       const msg =
         err?.response?.data?.error || err?.message || "Failed to save expense";
@@ -214,15 +214,15 @@ const Expenses = () => {
   return (
     <div>
       <ExpenseModal
-        key={modalOpen ? (editExpense ? editExpense._id : "new") : "closed"}
+        key={modalOpen ? (updateExpense ? updateExpense._id : "new") : "closed"}
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setEditExpense(null);
+          setUpdateExpense(null);
           setViewExpense(null);
         }}
         onSave={handleSave}
-        initial={editExpense || viewExpense}
+        data={updateExpense || viewExpense}
         viewOnly={!!viewExpense}
       />
       <div className="flex items-center justify-between mb-8">
@@ -237,7 +237,7 @@ const Expenses = () => {
             className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
             onClick={() => {
               setViewExpense(null);
-              setEditExpense(null);
+              setUpdateExpense(null);
               setModalOpen(true);
             }}
           >
@@ -245,7 +245,7 @@ const Expenses = () => {
           </button>
         )}
       </div>
-      <div className="bg-white rounded-2xl p-6 mb-4 border border-gray-100">
+      <div className="bg-white rounded-2xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
             <HiOutlineFilter className="inline-block text-sm text-black" />
@@ -259,7 +259,7 @@ const Expenses = () => {
             <span>Reset</span>
           </button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <div>
             <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
@@ -362,10 +362,10 @@ const Expenses = () => {
                     {canUpdate && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Edit"
+                        title="Update"
                         onClick={() => {
                           setViewExpense(null);
-                          setEditExpense(expense);
+                          setUpdateExpense(expense);
                           setModalOpen(true);
                         }}
                       >

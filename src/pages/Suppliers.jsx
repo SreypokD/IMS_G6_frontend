@@ -24,7 +24,7 @@ import Loading from "../components/Loading";
 
 // Custom dropdowns for Suppliers page
 const statusOptions = ["Active", "Inactive"];
-const locationOptions = ["Warehouse 1", "Warehouse 2", "Storefront"];
+const locationOptions = ["Main Warehouse", "Showroom"];
 
 // Dropdowns now accept value and onChange from parent
 function StatusDropdown({ value, onChange }) {
@@ -107,7 +107,7 @@ const Suppliers = () => {
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false);
-  const [editSupplier, setEditSupplier] = useState(null);
+  const [updateSupplier, setUpdateSupplier] = useState(null);
 
   // Loading and Error
   const [loading, setLoading] = useState(false);
@@ -171,7 +171,7 @@ const Suppliers = () => {
 
   function handleView(supplier) {
     // Always open in view mode (viewOnly) for view action
-    setEditSupplier(null);
+    setUpdateSupplier(null);
     setViewSupplier(supplier);
     setModalOpen(true);
   }
@@ -181,8 +181,8 @@ const Suppliers = () => {
     setLoading(true);
     setError("");
     try {
-      if (editSupplier) {
-        await updateSupplier(editSupplier._id, supplier);
+      if (updateSupplier) {
+        await updateSupplier(updateSupplier._id, supplier);
         dialog.success("Supplier updated successfully");
       } else {
         await createSupplier(supplier);
@@ -190,7 +190,7 @@ const Suppliers = () => {
       }
       fetchSuppliers(pagination.page, pagination.limit);
       setModalOpen(false);
-      setEditSupplier(null);
+      setUpdateSupplier(null);
     } catch {
       setError("Failed to save supplier");
       dialog.error("Failed to save supplier");
@@ -236,8 +236,8 @@ const Suppliers = () => {
       <SupplierModal
         key={
           modalOpen
-            ? editSupplier
-              ? editSupplier._id
+            ? updateSupplier
+              ? updateSupplier._id
               : viewSupplier
                 ? viewSupplier._id
                 : "new"
@@ -246,11 +246,11 @@ const Suppliers = () => {
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setEditSupplier(null);
+          setUpdateSupplier(null);
           setViewSupplier(null);
         }}
         onSave={handleSave}
-        initial={editSupplier || viewSupplier}
+        data={updateSupplier || viewSupplier}
         viewOnly={!!viewSupplier}
       />
       <div className="flex items-center justify-between mb-8">
@@ -264,7 +264,7 @@ const Suppliers = () => {
           <button
             className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
             onClick={() => {
-              setEditSupplier(null);
+              setUpdateSupplier(null);
               setModalOpen(true);
             }}
           >
@@ -272,7 +272,7 @@ const Suppliers = () => {
           </button>
         )}
       </div>
-      <div className="bg-white rounded-xl p-6 mb-4 border border-gray-100">
+      <div className="bg-white rounded-xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
             <HiOutlineFilter className="inline-block text-sm text-black" />
@@ -286,7 +286,7 @@ const Suppliers = () => {
             <span>Reset</span>
           </button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <div>
             <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
@@ -398,9 +398,9 @@ const Suppliers = () => {
                     {canUpdate && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Edit"
+                        title="Update"
                         onClick={() => {
-                          setEditSupplier(supplier);
+                          setUpdateSupplier(supplier);
                           setModalOpen(true);
                         }}
                       >

@@ -10,12 +10,25 @@ const CategoryModal = ({
   open,
   onClose,
   onSave,
-  initial,
+  data,
   viewOnly = false,
 }) => {
-  const [category, setCategory] = useState(initial || initialCategory);
+  const [category, setCategory] = useState(data || initialCategory);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
+
+  // Reset form when modal opens or closes
+  React.useEffect(() => {
+    if (open && !data) {
+      setCategory(initialCategory);
+      setTouched({});
+      setValidateOnSave(false);
+    } else if (open && data) {
+      setCategory(data);
+      setTouched({});
+      setValidateOnSave(false);
+    }
+  }, [open, data]);
 
   // Reset state when modal closes
   function handleClose() {
@@ -50,18 +63,16 @@ const CategoryModal = ({
       <div className="bg-white rounded-2xl p-5 w-full max-w-[30%] max-h-[80vh] shadow-xl relative">
         <h2 className="text-xl font-bold mb-6 text-center">
           {viewOnly
-            ? "View Category"
-            : initial
-              ? "Edit Category"
+            ? "Category Details"
+            : data
+              ? "Update Category"
               : "Add Category"}
         </h2>
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="text-sm font-medium text-gray-700">
               Name
-              {!category.name && !initial ? (
-                <sup className="text-red-500">*</sup>
-              ) : null}
+              {!viewOnly && <sup className="text-red-500">*</sup>}
             </label>
             <input
               name="name"
@@ -69,16 +80,13 @@ const CategoryModal = ({
               onChange={handleChange}
               onBlur={handleBlur}
               placeholder="Category name"
-              className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!category.name && !initial && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+              className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!category.name && !data && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
               required
               disabled={viewOnly}
             />
-            {!category.name && (touched.name || validateOnSave) && (
-              <div className="text-red-500 text-sm mt-1">Name is required</div>
-            )}
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="text-sm font-medium text-gray-700">
               Description
             </label>
             <textarea
@@ -109,7 +117,7 @@ const CategoryModal = ({
               onClick={handleSubmit}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />
-              {initial ? "Update Category" : "Add Category"}
+           {viewOnly ? "Category Details" : category._id ? "Update Category" : "Add Category"}
             </button>
           )}
         </div>

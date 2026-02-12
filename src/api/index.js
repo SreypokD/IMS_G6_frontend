@@ -86,7 +86,7 @@ export const getProfile = () => api.get(profile);
 // Dashboard Report
 export const getInventorySummary = () => api.get(inventorySummary);
 export const getOrderStats = (params) => api.get(orderStats, { params });
-export const getTrends = () => api.get(trends);
+export const getTrends = (params) => api.get(trends, { params });
 export const getFinancialSummary = (params) =>
   api.get("/reports/financial-summary", { params });
 export const getRecentOrders = () =>
@@ -173,6 +173,8 @@ export const createUser = (data) => api.post(users, data);
 export const updateUser = (id, data) => api.patch(`${users}/${id}`, data);
 export const deleteUser = (id) => api.delete(`${users}/${id}`);
 export const updateSelfProfile = (data) => api.put("/users/profile", data);
+export const resetUserPassword = (id, password) =>
+  api.patch(`/users/${id}/reset-password`, { password });
 
 // Expense CRUD
 const expenses = "/expenses";

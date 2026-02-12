@@ -89,7 +89,7 @@ const Reports = () => {
         await Promise.all([
           getInventorySummary(),
           getOrderStats({ from: dateRange.startDate, to: dateRange.endDate }),
-          getTrends(), // Trends endpoint might need date filtering in future, currently static 7 days in backend
+          getTrends({ from: dateRange.startDate, to: dateRange.endDate }),
           getProducts({ status: "low_stock", limit: 5 }),
           getFinancialSummary({
             startDate: dateRange.startDate,
@@ -120,7 +120,7 @@ const Reports = () => {
   return (
     <div className="space-y-6">
       {/* Header & Actions */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-gray-900">
             Reports & Analytics
@@ -129,10 +129,10 @@ const Reports = () => {
             Insights into inventory, orders, and stock movements
           </p>
         </div>
-
         <div className="flex flex-wrap items-center gap-3">
           {/* Date Filter */}
           <div className="flex items-center gap-3">
+            <label className="text-sm text-gray-700">From</label>
             <DatePicker
               selected={dateRange.startDate}
               onChange={(date) =>
@@ -142,7 +142,9 @@ const Reports = () => {
                 })
               }
               placeholder="Start Date"
+              className="bg-white rounded-xl border border-gray-100"
             />
+            <label className="text-sm text-gray-700">To</label>
             <DatePicker
               selected={dateRange.endDate}
               onChange={(date) =>
@@ -152,6 +154,7 @@ const Reports = () => {
                 })
               }
               placeholder="End Date"
+              className="bg-white rounded-xl border border-gray-100"
             />
           </div>
           <button
@@ -161,7 +164,6 @@ const Reports = () => {
           >
             <HiOutlineRefresh className="text-xl" />
           </button>
-
           <button
             className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-colors cursor-pointer text-sm"
             onClick={() => {
@@ -193,8 +195,8 @@ const Reports = () => {
       ) : (
         <>
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-            <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+            <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
               <HiCube className="text-2xl text-purple-600" />
               <div>
                 <div className="text-gray-500 text-sm font-medium">
@@ -205,7 +207,7 @@ const Reports = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
+            <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
               <MdInventory className="text-2xl text-blue-600" />
               <div>
                 <div className="text-gray-500 text-sm font-medium">
@@ -216,7 +218,7 @@ const Reports = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
+            <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
               <HiOutlineExclamation className="text-2xl text-yellow-600" />
               <div>
                 <div className="text-gray-500 text-sm font-medium">
@@ -227,7 +229,7 @@ const Reports = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-2xl p-6 flex flex-col gap-4 border border-gray-100 transition-all duration-300 hover:scale-101">
+            <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
               <HiUserGroup className="text-2xl text-pink-600" />
               <div>
                 <div className="text-gray-500 text-sm font-medium">
@@ -241,11 +243,11 @@ const Reports = () => {
           </div>
 
           {/* Financial Overview */}
-          <div className="mb-4">
-            <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <div className="mb-3">
+            <h2 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
               <span>💰</span> Financial Overview
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
               <div className="bg-white p-4 rounded-xl border border-gray-100 transition-all duration-300 hover:scale-101">
                 <span className="block text-gray-500 text-xs uppercase tracking-wider">
                   Revenue
@@ -296,7 +298,7 @@ const Reports = () => {
           </div>
 
           {/* Charts Row */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3">
             {/* Inventory Trends */}
             <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100">
               <div className="flex items-center justify-between mb-6">

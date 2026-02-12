@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   HiCheckCircle,
   HiExclamationCircle,
   HiExclamation,
   HiInformationCircle,
+  HiEye,
+  HiEyeOff,
 } from "react-icons/hi";
 
 const Dialog = ({
@@ -16,11 +18,22 @@ const Dialog = ({
   confirmText = "Yes",
   cancelText = "No",
   showActions = false,
+  showInput = false,
+  inputType = "text",
+  placeholder = "",
   children,
 }) => {
+  const [promptValue, setPromptValue] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (open) setPromptValue("");
+  }, [open]);
+
   if (!open) return null;
 
   let icon, iconBg, iconColor, defaultTitle;
+  // ... (switch case remains same, I will include it to match target)
   switch (type) {
     case "success":
       iconBg = "bg-[#e6f7ed]";
@@ -62,7 +75,7 @@ const Dialog = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 min-w-100 max-w-100 flex flex-col items-center shadow-lg">
-        <div className="mb-4">
+        <div className="mb-3">
           <div
             className={`flex items-center justify-center w-12 h-12 rounded-full ${iconBg}`}
           >
@@ -73,13 +86,36 @@ const Dialog = ({
           {title || defaultTitle}
         </h2>
         <p
-          className={`${children ? "mb-4" : "mb-8"} text-center text-sm text-gray-500`}
+          className={`${children || showInput ? "mb-3" : "mb-8"} text-center text-sm text-gray-500`}
         >
           {message}
         </p>
+        {showInput && (
+          <div className="relative w-full">
+            <input
+              type={showPassword ? "text" : "password"}
+              className="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-2 text-sm mb-6"
+              placeholder={placeholder}
+              value={promptValue}
+              onChange={(e) => setPromptValue(e.target.value)}
+              minLength={8}
+            />
+            <button
+              type="button"
+              className="absolute inset-y-0 -top-5 right-0 pr-3 flex items-center text-gray-400 cursor-pointer"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <HiEyeOff className="w-5 h-5" />
+              ) : (
+                <HiEye className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+        )}
         {children}
-        {showActions ? (
-          <div className="flex gap-4">
+        {showActions || showInput ? (
+          <div className="flex gap-3">
             <button
               className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-full focus:outline-none border border-gray-100 cursor-pointer"
               onClick={onClose}
@@ -88,7 +124,7 @@ const Dialog = ({
             </button>
             <button
               className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none cursor-pointer"
-              onClick={onConfirm}
+              onClick={() => onConfirm(promptValue)}
             >
               {confirmText}
             </button>
@@ -96,7 +132,7 @@ const Dialog = ({
         ) : (
           <button
             className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-full focus:outline-none cursor-pointer"
-            onClick={onClose}
+            onClick={() => onConfirm(promptValue)}
           >
             OK
           </button>

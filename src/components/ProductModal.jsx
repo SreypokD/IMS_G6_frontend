@@ -21,8 +21,8 @@ import { getCategories, getSuppliers, uploadFile } from "../api";
 import { Listbox } from "@headlessui/react";
 import { HiSelector } from "react-icons/hi";
 
-const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
-  const [product, setProduct] = useState(initial || initialProduct);
+const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
+  const [product, setProduct] = useState(data || initialProduct);
   const [selectedImage, setSelectedImage] = useState(null);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
@@ -31,6 +31,15 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
 
   useEffect(() => {
     if (open) {
+      if (!data) {
+        setProduct(initialProduct);
+        setTouched({});
+        setValidateOnSave(false);
+      } else {
+        setProduct(data);
+        setTouched({});
+        setValidateOnSave(false);
+      }
       getCategories().then((res) => {
         setCategories(res.data.data || []);
       });
@@ -38,7 +47,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
         setSuppliers(res.data.data || []);
       });
     }
-  }, [open]);
+  }, [open, data]);
 
   async function handleImageChange(e) {
     if (e.target.files && e.target.files[0]) {
@@ -60,7 +69,11 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] max-h-[80vh] shadow-xl relative">
         <h2 className="text-xl font-bold mb-6 text-center">
-          {viewOnly ? "View Product" : initial ? "Edit Product" : "Add Product"}
+          {viewOnly
+            ? "Product Details"
+            : product._id
+              ? "Update Product"
+              : "Add Product"}
         </h2>
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
           <div className="col-span-2 mb-2">
@@ -68,9 +81,9 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
               <HiOutlineDocumentText className="inline-block text-xl text-black" />
               <span>Basic Information</span>
             </h3>
-            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
+            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Product Code
                 </label>
                 <input
@@ -85,11 +98,9 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Name
-                  {!product.name && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
                   name="name"
@@ -99,16 +110,14 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                   }
                   onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
                   placeholder="Product Name"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!product.name && !initial && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!product.name && !data && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Category
-                  {!product.category && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <Listbox
                   value={
@@ -128,7 +137,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer${viewOnly ? "bg-gray-100 cursor-default" : ""} ${!product.category && !initial && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!product.category && !data && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                       disabled={viewOnly}
                     >
                       <span>
@@ -159,11 +168,9 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Supplier
-                  {!product.supplier && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <Listbox
                   value={
@@ -183,7 +190,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "bg-gray-100 cursor-default" : "cursor-pointer"} ${!product.supplier && !initial && (touched.supplier || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!product.supplier && !data && (touched.supplier || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                       disabled={viewOnly}
                     >
                       <span>
@@ -214,11 +221,9 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Price
-                  {(!product.price || isNaN(product.price)) && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
                   name="price"
@@ -232,16 +237,14 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                   type="number"
                   step="0.01"
                   placeholder="Price"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.price || isNaN(product.price)) && !initial && (touched.price || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.price || isNaN(product.price)) && !data && (touched.price || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Stock
-                  {(!product.stock || isNaN(product.stock)) && !initial ? (
-                    <sup className="text-red-500">*</sup>
-                  ) : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
                   name="stock"
@@ -254,62 +257,74 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
                   }
                   type="number"
                   placeholder="Stock"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.stock || isNaN(product.stock)) && !initial && (touched.stock || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.stock || isNaN(product.stock)) && !data && (touched.stock || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
             </div>
           </div>
-          <div className="col-span-2 mb-2">
-            <h3 className="flex items-center gap-2 text-base mb-2 text-black">
-              <HiOutlineCamera className="inline-block text-xl text-black" />
-              <span>Image</span>
-            </h3>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm mb-1">
-                Product Image
-              </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center transition-colors">
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/gif"
-                  className="hidden"
-                  id="image-upload"
-                  onChange={handleImageChange}
-                  disabled={viewOnly}
-                />
-                <label
-                  htmlFor="image-upload"
-                  className={`flex flex-col items-center w-full h-full ${viewOnly ? "cursor-default opacity-60" : "cursor-pointer"}`}
-                  style={viewOnly ? { pointerEvents: "none" } : {}}
-                >
-                  <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
-                  <span className="text-gray-600">
-                    Drag and drop your image here, or
-                    <span className="text-blue-600 underline ml-1">
-                      browse files
-                    </span>
-                  </span>
-                  <span className="text-sm text-gray-400 mt-1">
-                    Supported formats: JPG, PNG, GIF (Max 5MB)
-                  </span>
+          {(!viewOnly || product.image) && (
+            <div className="col-span-2 mb-2">
+              <h3 className="flex items-center gap-2 text-base mb-2 text-black">
+                <HiOutlineCamera className="inline-block text-xl text-black" />
+                <span>Image</span>
+              </h3>
+              <div className="mb-3">
+                <label className="block text-gray-700 text-sm mb-1">
+                  Product Image
                 </label>
-                {(selectedImage || product.image) && (
-                  <div className="mt-2 flex items-center">
+                {viewOnly ? (
+                  <div className="mt-2 flex items-center justify-center border border-gray-200 rounded-lg p-4 bg-gray-50">
                     <img
-                      src={
-                        selectedImage
-                          ? URL.createObjectURL(selectedImage)
-                          : product.image
-                      }
-                      alt="Preview"
-                      className="h-40 w-40 object-cover rounded mr-2"
+                      src={product.image}
+                      alt="Product"
+                      className="h-40 w-40 object-cover rounded"
                     />
+                  </div>
+                ) : (
+                  <div className="border-2 border-dashed border-gray-100 rounded-lg p-6 flex flex-col items-center justify-center transition-colors">
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/gif"
+                      className="hidden"
+                      id="image-upload"
+                      onChange={handleImageChange}
+                      disabled={viewOnly}
+                    />
+                    <label
+                      htmlFor="image-upload"
+                      className={`flex flex-col items-center w-full h-full ${viewOnly ? "cursor-default opacity-60" : "cursor-pointer"}`}
+                      style={viewOnly ? { pointerEvents: "none" } : {}}
+                    >
+                      <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
+                      <span className="text-gray-600">
+                        Drag and drop your image here, or
+                        <span className="text-blue-600 underline ml-1">
+                          browse files
+                        </span>
+                      </span>
+                      <span className="text-sm text-gray-400 mt-1">
+                        Supported formats: JPG, PNG, GIF (Max 5MB)
+                      </span>
+                    </label>
+                    {(selectedImage || product.image) && (
+                      <div className="mt-2 flex items-center">
+                        <img
+                          src={
+                            selectedImage
+                              ? URL.createObjectURL(selectedImage)
+                              : product.image
+                          }
+                          alt="Preview"
+                          className="h-40 w-40 object-cover rounded mr-2"
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
             </div>
-          </div>
+          )}
         </form>
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
@@ -339,7 +354,7 @@ const ProductModal = ({ open, onClose, onSave, initial, viewOnly = false }) => {
               }}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />
-              {initial ? "Update Product" : "Add Product"}
+              {product._id ? "Update Product" : "Add Product"}
             </button>
           )}
         </div>

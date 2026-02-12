@@ -44,6 +44,41 @@ export function DialogProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Promise-based prompt dialog
+  const prompt = useCallback((options) => {
+    return new Promise((resolve) => {
+      if (isLoginRoute) {
+        resolve(null);
+        return;
+      }
+      setDialog({
+        open: true,
+        type: options.type || "info",
+        title: options.title,
+        message: options.message,
+        confirmText: options.confirmText || "OK",
+        cancelText: options.cancelText || "Cancel",
+        showActions: true,
+        showInput: true,
+        inputType: options.inputType || "text",
+        placeholder: options.placeholder,
+        onConfirm: (val) => {
+          setDialog({ open: false });
+          resolve(val);
+        },
+        onCancel: () => {
+          setDialog({ open: false });
+          resolve(null);
+        },
+        onClose: () => {
+          setDialog({ open: false });
+          resolve(null);
+        },
+      });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Simple success/info/error dialogs
   const show = useCallback((type, message, title = "", confirmText = "OK") => {
     return new Promise((resolve) => {
@@ -74,6 +109,7 @@ export function DialogProvider({ children }) {
 
   const value = {
     ask,
+    prompt,
     success: (msg, title, confirmText) =>
       show("success", msg, title, confirmText),
     error: (msg, title, confirmText) => show("error", msg, title, confirmText),

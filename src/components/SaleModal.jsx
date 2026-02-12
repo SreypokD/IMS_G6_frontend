@@ -24,7 +24,7 @@ export default function SaleModal({
   open,
   onClose,
   onSave,
-  initial,
+  data,
   viewOnly = false,
 }) {
   const [sale, setSale] = useState(defaultSale);
@@ -37,13 +37,14 @@ export default function SaleModal({
       getProducts().then((res) => setProducts(res.data.data || []));
       getUsers().then((res) => setUsers(res.data.data || []));
 
-      if (initial) {
+      if (data) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setSale({
-          customer: initial.customer?._id || initial.customer_id || "",
+          _id: data._id, // Ensure we keep the ID if updating
+          customer: data.customer?._id || data.customer_id || "",
           items:
-            initial.items && initial.items.length > 0
-              ? initial.items.map((item) => ({
+            data.items && data.items.length > 0
+              ? data.items.map((item) => ({
                   ...item,
                   product:
                     typeof item.product === "object"
@@ -52,20 +53,20 @@ export default function SaleModal({
                 }))
               : [
                   {
-                    product: initial.product?._id || initial.product_id || "",
-                    quantity: initial.quantity || 1,
-                    price: initial.price || 0,
-                    discount: initial.discount || 0,
+                    product: data.product?._id || data.product_id || "",
+                    quantity: data.quantity || 1,
+                    price: data.price || 0,
+                    discount: data.discount || 0,
                   },
                 ],
-          payment_method: initial.payment_method || "Cash",
-          notes: initial.notes || "",
+          payment_method: data.payment_method || "Cash",
+          notes: data.notes || "",
         });
       } else {
         setSale(defaultSale);
       }
     }
-  }, [open, initial]);
+  }, [open, data]);
 
   const handleItemChange = (idx, field, value) => {
     setSale((prev) => {
@@ -154,7 +155,7 @@ export default function SaleModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[70%] max-h-[80vh] shadow-xl relative">
         <h2 className="text-xl font-bold mb-6 text-center">
-          {viewOnly ? "View Sale" : initial ? "Edit Sale" : "Record New Sale"}
+          {viewOnly ? "Sale Details" : sale._id ? "Update Sale" : "New Sale"}
         </h2>
         <form className="space-y-5 overflow-auto max-h-[60vh] px-1">
           <div className="col-span-2 mb-2">
@@ -162,11 +163,11 @@ export default function SaleModal({
               <HiOutlineDocumentText className="inline-block text-xl text-black" />
               <span> Customer Information</span>
             </h3>
-            <div className="mb-3 grid grid-cols-1 gap-4">
+            <div className="mb-3 grid grid-cols-1 gap-3">
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Customer
-                  {!viewOnly ? <sup className="text-red-500">*</sup> : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <Listbox
                   value={sale.customer}
@@ -178,7 +179,7 @@ export default function SaleModal({
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-100`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-100 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span className={sale.customer ? "" : "text-gray-400"}>
                         {sale.customer
@@ -220,13 +221,11 @@ export default function SaleModal({
             {sale.items.map((item, idx) => {
               return (
                 <div key={idx} className="w-full flex items-center">
-                  <div className="w-full mb-3 grid lg:grid-cols-5 md:grid-cols-2 grid-cols-1 gap-4">
+                  <div className="w-full mb-3 grid lg:grid-cols-5 md:grid-cols-2 grid-cols-1 gap-3">
                     <div>
-                      <label className="block text-sm font-medium mb-1">
+                      <label className="text-sm font-medium text-gray-700">
                         Product
-                        {!viewOnly ? (
-                          <sup className="text-red-500">*</sup>
-                        ) : null}
+                        {!viewOnly && <sup className="text-red-500">*</sup>}
                       </label>
                       <Listbox
                         value={item.product}
@@ -238,7 +237,7 @@ export default function SaleModal({
                       >
                         <div className="relative">
                           <Listbox.Button
-                            className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-100`}
+                            className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-100 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                           >
                             <span
                               className={item.product ? "" : "text-gray-400"}
@@ -255,29 +254,37 @@ export default function SaleModal({
                             <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                           </Listbox.Button>
                           <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
-                            {products.map((p) => (
-                              <Listbox.Option
-                                key={p._id}
-                                value={p._id}
-                                className={({ selected }) =>
-                                  `px-4 py-2 text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""} ${p.stock <= 0 ? "opacity-50 cursor-default bg-red-50 text-red-500" : "cursor-pointer "}`
-                                }
-                                disabled={p.stock <= 0}
-                              >
-                                {p.name} (Stock:
-                                {p.stock - (p.reserved_stock || 0)})
-                              </Listbox.Option>
-                            ))}
+                            {products.map((p) => {
+                              const isSelected = sale.items.some(
+                                (saleItem, saleIdx) =>
+                                  saleItem.product === p._id && saleIdx !== idx,
+                              );
+                              const isDisabled = p.stock <= 0 || isSelected;
+
+                              return (
+                                <Listbox.Option
+                                  key={p._id}
+                                  value={p._id}
+                                  className={({ selected }) =>
+                                    `px-4 py-2 text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""} ${isDisabled ? "opacity-50 cursor-default bg-gray-50 text-gray-400" : "cursor-pointer "}`
+                                  }
+                                  disabled={isDisabled}
+                                >
+                                  {p.name} (Stock:
+                                  {p.stock - (p.reserved_stock || 0)})
+                                  {isSelected ? " - Already added" : ""}
+                                  {p.stock <= 0 ? " - Out of stock" : ""}
+                                </Listbox.Option>
+                              );
+                            })}
                           </Listbox.Options>
                         </div>
                       </Listbox>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1">
+                      <label className="text-sm font-medium text-gray-700">
                         Quantity
-                        {!viewOnly ? (
-                          <sup className="text-red-500">*</sup>
-                        ) : null}
+                        {!viewOnly && <sup className="text-red-500">*</sup>}
                       </label>
                       <div className="relative">
                         <input
@@ -301,11 +308,9 @@ export default function SaleModal({
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1">
+                      <label className="text-sm font-medium text-gray-700">
                         Price
-                        {!viewOnly ? (
-                          <sup className="text-red-500">*</sup>
-                        ) : null}
+                        {!viewOnly && <sup className="text-red-500">*</sup>}
                       </label>
                       <input
                         type="number"
@@ -320,7 +325,7 @@ export default function SaleModal({
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1">
+                      <label className="text-sm font-medium text-gray-700">
                         Discount (%)
                       </label>
                       <input
@@ -336,7 +341,7 @@ export default function SaleModal({
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1">
+                      <label className="text-sm font-medium text-gray-700">
                         Line Total
                       </label>
                       <input
@@ -379,10 +384,11 @@ export default function SaleModal({
               <HiOutlineDocumentText className="inline-block text-xl text-black" />
               <span>Payment Details</span>
             </h3>
-            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
+            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Payment Method <span className="text-red-500">*</span>
+                  Payment Method{" "}
+                  {!viewOnly && <span className="text-red-500">*</span>}
                 </label>
                 <Listbox
                   value={sale.payment_method}
@@ -394,7 +400,7 @@ export default function SaleModal({
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-100 ${viewOnly ? "bg-gray-100" : ""}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-100 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span>{sale.payment_method}</span>
                       <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
@@ -459,7 +465,7 @@ export default function SaleModal({
               onClick={handleSubmit}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />
-              {initial ? "Update Sale" : "Complete Sale"}
+              {sale._id ? "Update Sale" : "Complete Sale"}
             </button>
           )}
         </div>

@@ -72,7 +72,7 @@ const OrderRequests = () => {
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false);
-  const [editOrderRequest, setEditOrderRequest] = useState(null);
+  const [updateOrderRequest, setUpdateOrderRequest] = useState(null);
 
   // Loading and Error
   const [loading, setLoading] = useState(false);
@@ -187,14 +187,14 @@ const OrderRequests = () => {
     <div>
       <OrderRequestModal
         open={modalOpen}
-        initial={editOrderRequest}
+        data={updateOrderRequest}
         onClose={() => {
           setModalOpen(false);
-          setEditOrderRequest(null);
+          setUpdateOrderRequest(null);
         }}
         onSave={() => {
           setModalOpen(false);
-          setEditOrderRequest(null);
+          setUpdateOrderRequest(null);
           fetchOrderRequests(pagination.page, pagination.limit, search, status);
         }}
       />
@@ -214,7 +214,7 @@ const OrderRequests = () => {
           </button>
         )}
       </div>
-      <div className="bg-white rounded-xl p-6 mb-4 border border-gray-100">
+      <div className="bg-white rounded-xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
             <HiOutlineFilter className="inline-block text-sm text-black" />
@@ -228,12 +228,12 @@ const OrderRequests = () => {
             <span>Reset</span>
           </button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <div>
             <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
               className="bg-gray-50 border border-gray-100 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
-              placeholder="Search..."
+              placeholder="Search by Requester, Product, Quantity..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -350,7 +350,7 @@ const OrderRequests = () => {
                               className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                               title="View"
                               onClick={() => {
-                                setEditOrderRequest({
+                                setUpdateOrderRequest({
                                   ...request,
                                   viewOnly: true,
                                 });
@@ -367,9 +367,9 @@ const OrderRequests = () => {
                                 String(user?._id)) && (
                               <button
                                 className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                                title="Edit"
+                                title="Update"
                                 onClick={() => {
-                                  setEditOrderRequest(request);
+                                  setUpdateOrderRequest(request);
                                   setModalOpen(true);
                                 }}
                               >

@@ -33,7 +33,7 @@ const Categories = () => {
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false);
-  const [editCategory, setEditCategory] = useState(null);
+  const [updateCategory, setUpdateCategory] = useState(null);
   const [viewCategory, setViewCategory] = useState(null);
 
   // Loading and Error
@@ -84,7 +84,7 @@ const Categories = () => {
   }
 
   function handleView(category) {
-    setEditCategory(null);
+    setUpdateCategory(null);
     setViewCategory(category);
     setModalOpen(true);
   }
@@ -93,8 +93,8 @@ const Categories = () => {
     setLoading(true);
     setError("");
     try {
-      if (editCategory) {
-        await updateCategory(editCategory._id, category);
+      if (updateCategory) {
+        await updateCategory(updateCategory._id, category);
         await dialog.success("Category updated successfully.");
       } else {
         await createCategory(category);
@@ -102,7 +102,7 @@ const Categories = () => {
       }
       fetchCategories();
       setModalOpen(false);
-      setEditCategory(null);
+      setUpdateCategory(null);
     } catch {
       await dialog.error("Failed to save category.");
     } finally {
@@ -140,14 +140,14 @@ const Categories = () => {
   return (
     <div>
       <CategoryModal
-        key={modalOpen ? (editCategory ? editCategory._id : "new") : "closed"}
+        key={modalOpen ? (updateCategory ? updateCategory._id : "new") : "closed"}
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setEditCategory(null);
+          setUpdateCategory(null);
         }}
         onSave={handleSave}
-        initial={editCategory || viewCategory}
+        data={updateCategory || viewCategory}
         viewOnly={!!viewCategory}
       />
       <div className="flex items-center justify-between mb-8">
@@ -161,7 +161,7 @@ const Categories = () => {
           <button
             className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
             onClick={() => {
-              setEditCategory(null);
+              setUpdateCategory(null);
               setModalOpen(true);
             }}
           >
@@ -169,7 +169,7 @@ const Categories = () => {
           </button>
         )}
       </div>
-      <div className="bg-white rounded-xl p-6 mb-4 border border-gray-100">
+      <div className="bg-white rounded-xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-2 text-black">
             <HiOutlineFilter className="inline-block text-sm text-black" />
@@ -183,7 +183,7 @@ const Categories = () => {
             <span>Reset</span>
           </button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <div>
             <label className="block text-gray-700 text-sm mb-1">Search</label>
             <input
@@ -233,9 +233,10 @@ const Categories = () => {
                     {canUpdate && (
                       <button
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Edit"
+                        title="Update"
                         onClick={() => {
-                          setEditCategory(category);
+                          setUpdateCategory(category);
+                          setViewCategory(null);
                           setModalOpen(true);
                         }}
                       >

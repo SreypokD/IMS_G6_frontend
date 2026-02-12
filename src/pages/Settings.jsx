@@ -3,15 +3,21 @@ import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/auth/useAuth";
 import { useDialog } from "../contexts/dialog/useDialog";
 import { updateSelfProfile, uploadFile } from "../api";
+import { Listbox } from "@headlessui/react";
+import { locations } from "../data/locations";
 import {
   HiUser,
   HiOutlineCog,
   HiCamera,
-  HiOutlineMail,
-  HiOutlinePhone,
   HiOutlineLocationMarker,
   HiOutlineKey,
   HiCheck,
+  HiEye,
+  HiEyeOff,
+  HiOutlineQuestionMarkCircle,
+  HiOutlineMail,
+  HiOutlinePhone,
+  HiSelector,
 } from "react-icons/hi";
 import Loading from "../components/Loading";
 
@@ -22,6 +28,8 @@ export default function Settings() {
   const [activeTab, setActiveTab] = useState("profile");
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Profile Form State
   const [profileData, setProfileData] = useState({
@@ -36,7 +44,6 @@ export default function Settings() {
       commune: "",
       district: "",
       province: "",
-      country: "",
     },
   });
 
@@ -51,7 +58,7 @@ export default function Settings() {
   // Sync tab with URL
   useEffect(() => {
     const tab = searchParams.get("tab");
-    if (tab && ["profile", "account"].includes(tab)) {
+    if (tab && ["profile", "account", "help"].includes(tab)) {
       setActiveTab(tab);
     }
   }, [searchParams]);
@@ -71,7 +78,6 @@ export default function Settings() {
           commune: user.address?.commune || "",
           district: user.address?.district || "",
           province: user.address?.province || "",
-          country: user.address?.country || "",
         },
       });
     }
@@ -93,6 +99,50 @@ export default function Settings() {
     } else {
       setProfileData((prev) => ({ ...prev, [name]: value }));
     }
+  };
+
+  const handleProvinceChange = (provinceName) => {
+    setProfileData((prev) => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        province: provinceName,
+        district: "",
+        commune: "",
+      },
+    }));
+  };
+
+  const handleDistrictChange = (districtName) => {
+    setProfileData((prev) => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        district: districtName,
+        commune: "",
+      },
+    }));
+  };
+
+  const handleCommuneChange = (communeName) => {
+    setProfileData((prev) => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        commune: communeName,
+        village: "",
+      },
+    }));
+  };
+
+  const handleVillageChange = (villageName) => {
+    setProfileData((prev) => ({
+      ...prev,
+      address: {
+        ...prev.address,
+        village: villageName,
+      },
+    }));
   };
 
   const handlePasswordChange = (e) => {
@@ -190,7 +240,7 @@ export default function Settings() {
 
   return (
     <div className="max-w-6xl space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
           <p className="text-gray-500">
@@ -198,8 +248,7 @@ export default function Settings() {
           </p>
         </div>
       </div>
-
-      <div className="flex flex-col lg:flex-row gap-4">
+      <div className="flex flex-col lg:flex-row gap-3">
         {/* Sidebar / Tabs */}
         <div className="w-full h-fit lg:w-64 bg-white rounded-2xl p-2 border border-gray-100">
           <button
@@ -224,8 +273,18 @@ export default function Settings() {
             <HiOutlineCog className="text-xl" />
             <span>Account & Security</span>
           </button>
+          <button
+            onClick={() => handleTabChange("help")}
+            className={`w-full flex items-center gap-3 px-2 py-3 transition text-sm rounded-xl cursor-pointer ${
+              activeTab === "help"
+                ? "bg-[#1e3a5f] text-white hover:bg-[#1e3a5f]"
+                : "text-[#64748b] hover:bg-[#f1f5f9] hover:text-black"
+            }`}
+          >
+            <HiOutlineQuestionMarkCircle className="text-xl" />
+            <span>Help & Support</span>
+          </button>
         </div>
-
         {/* Content */}
         <div className="flex-1">
           <div className="bg-white rounded-2xl border border-gray-100 p-6">
@@ -236,7 +295,7 @@ export default function Settings() {
               >
                 <div className="flex flex-col md:flex-row gap-6">
                   {/* Avatar Upload */}
-                  <div className="flex flex-col items-center gap-4">
+                  <div className="flex flex-col items-center gap-3">
                     <div className="relative group">
                       <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-gray-100">
                         {profileData.profile ? (
@@ -278,9 +337,8 @@ export default function Settings() {
                       </h3>
                     </div>
                   </div>
-
                   {/* Fields */}
-                  <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                       <label className="text-sm font-medium text-gray-700">
                         First Name
@@ -324,11 +382,151 @@ export default function Settings() {
                 </div>
                 <hr className="border-gray-100" />
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
                     <HiOutlineLocationMarker className="text-gray-400" />
                     Address Information
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Province/City
+                      </label>
+                      <Listbox
+                        value={profileData.address.province}
+                        onChange={handleProvinceChange}
+                      >
+                        <div className="relative">
+                          <Listbox.Button className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer border-gray-100">
+                            <span>{profileData.address.province}</span>
+                            <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                          </Listbox.Button>
+                          <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                            {locations.map((province) => (
+                              <Listbox.Option
+                                key={province.name}
+                                value={province.name}
+                                className={({ selected }) =>
+                                  `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                                }
+                              >
+                                {province.name}
+                              </Listbox.Option>
+                            ))}
+                          </Listbox.Options>
+                        </div>
+                      </Listbox>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        District/Khan
+                      </label>
+                      <Listbox
+                        value={profileData.address.district}
+                        onChange={handleDistrictChange}
+                        disabled={!profileData.address.province}
+                      >
+                        <div className="relative">
+                          <Listbox.Button className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer border-gray-100">
+                            <span>{profileData.address.district}</span>
+                            <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                          </Listbox.Button>
+                          <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                            {locations
+                              .find(
+                                (p) => p.name === profileData.address.province,
+                              )
+                              ?.districts.map((district) => (
+                                <Listbox.Option
+                                  key={district.name}
+                                  value={district.name}
+                                  className={({ selected }) =>
+                                    `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                                  }
+                                >
+                                  {district.name}
+                                </Listbox.Option>
+                              ))}
+                          </Listbox.Options>
+                        </div>
+                      </Listbox>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Commune/Sangkat
+                      </label>
+                      <Listbox
+                        value={profileData.address.commune}
+                        onChange={handleCommuneChange}
+                        disabled={!profileData.address.district}
+                      >
+                        <div className="relative">
+                          <Listbox.Button className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer border-gray-100">
+                            <span>{profileData.address.commune}</span>
+                            <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                          </Listbox.Button>
+                          <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                            {locations
+                              .find(
+                                (p) => p.name === profileData.address.province,
+                              )
+                              ?.districts.find(
+                                (d) => d.name === profileData.address.district,
+                              )
+                              ?.communes.map((commune) => (
+                                <Listbox.Option
+                                  key={commune.name}
+                                  value={commune.name}
+                                  className={({ selected }) =>
+                                    `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                                  }
+                                >
+                                  {commune.name}
+                                </Listbox.Option>
+                              ))}
+                          </Listbox.Options>
+                        </div>
+                      </Listbox>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Village
+                      </label>
+                      <Listbox
+                        value={profileData.address.village}
+                        onChange={handleVillageChange}
+                        disabled={!profileData.address.commune}
+                      >
+                        <div className="relative">
+                          <Listbox.Button className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer border-gray-100">
+                            <span>{profileData.address.village}</span>
+                            <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                          </Listbox.Button>
+                          <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                            {locations
+                              .find(
+                                (p) => p.name === profileData.address.province,
+                              )
+                              ?.districts.find(
+                                (d) => d.name === profileData.address.district,
+                              )
+                              ?.communes.find(
+                                (c) => c.name === profileData.address.commune,
+                              )
+                              ?.villages.map((village) => (
+                                <Listbox.Option
+                                  key={village}
+                                  value={village}
+                                  className={({ selected }) =>
+                                    `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                                  }
+                                >
+                                  {village}
+                                </Listbox.Option>
+                              ))}
+                          </Listbox.Options>
+                        </div>
+                      </Listbox>
+                    </div>
                     <div>
                       <label className="text-sm font-medium text-gray-700">
                         House No.
@@ -353,57 +551,8 @@ export default function Settings() {
                         className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                       />
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">
-                        Village
-                      </label>
-                      <input
-                        type="text"
-                        name="address.village"
-                        value={profileData.address.village}
-                        onChange={handleProfileChange}
-                        className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">
-                        Commune/Sangkat
-                      </label>
-                      <input
-                        type="text"
-                        name="address.commune"
-                        value={profileData.address.commune}
-                        onChange={handleProfileChange}
-                        className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">
-                        District/Khan
-                      </label>
-                      <input
-                        type="text"
-                        name="address.district"
-                        value={profileData.address.district}
-                        onChange={handleProfileChange}
-                        className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">
-                        Province/City
-                      </label>
-                      <input
-                        type="text"
-                        name="address.province"
-                        value={profileData.address.province}
-                        onChange={handleProfileChange}
-                        className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
-                      />
-                    </div>
                   </div>
                 </div>
-
                 <div className="flex justify-end pt-4">
                   <button
                     type="submit"
@@ -422,33 +571,13 @@ export default function Settings() {
                 </div>
               </form>
             )}
-
             {activeTab === "account" && (
               <form
                 onSubmit={submitPassword}
                 className="space-y-6 animate-fade-in-up"
               >
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Account Information
-                  </h3>
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      value={user.email}
-                      className="w-full px-4 py-2 rounded-xl border border-gray-100 bg-gray-50 text-gray-500 cursor-default"
-                      disabled
-                    />
-                  </div>
-                </div>
-
-                <hr className="border-gray-100" />
-
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
                     <HiOutlineKey className="text-gray-400" />
                     Change Password
                   </h3>
@@ -457,31 +586,60 @@ export default function Settings() {
                       <label className="text-sm font-medium text-gray-700">
                         New Password
                       </label>
-                      <input
-                        type="password"
-                        name="password"
-                        value={passwordData.password}
-                        onChange={handlePasswordChange}
-                        className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
-                        placeholder="••••••••"
-                      />
+                      <div className="relative">
+                        <input
+                          name="password"
+                          value={passwordData.password}
+                          onChange={handlePasswordChange}
+                          className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
+                          placeholder="••••••••"
+                          minLength={8}
+                          type={showPassword ? "text" : "password"}
+                        />
+                        <button
+                          type="button"
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <HiEyeOff className="w-5 h-5" />
+                          ) : (
+                            <HiEye className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-700">
                         Confirm New Password
                       </label>
-                      <input
-                        type="password"
-                        name="confirmPassword"
-                        value={passwordData.confirmPassword}
-                        onChange={handlePasswordChange}
-                        className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
-                        placeholder="••••••••"
-                      />
+                      <div className="relative">
+                        <input
+                          name="confirmPassword"
+                          value={passwordData.confirmPassword}
+                          onChange={handlePasswordChange}
+                          className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
+                          placeholder="••••••••"
+                          minLength={8}
+                          type={showConfirmPassword ? "text" : "password"}
+                        />
+                        <button
+                          type="button"
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer"
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                        >
+                          {showConfirmPassword ? (
+                            <HiEyeOff className="w-5 h-5" />
+                          ) : (
+                            <HiEye className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-
                 <div className="flex justify-end pt-4">
                   <button
                     type="submit"
@@ -499,6 +657,100 @@ export default function Settings() {
                   </button>
                 </div>
               </form>
+            )}
+            {activeTab === "help" && (
+              <div className="space-y-8 animate-fade-in-up">
+                {/* Contact Support */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-2">
+                    Contact Support
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-blue-50 p-4 rounded-xl flex items-start gap-3">
+                      <div className="bg-blue-100 p-2 rounded-lg text-blue-600">
+                        <HiOutlineMail className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">Email Us</h4>
+                        <p className="text-sm text-gray-500 mb-1">
+                          Our team is here to help.
+                        </p>
+                        <a
+                          href="mailto:stockify.support@gmail.com"
+                          className="text-blue-600 font-medium text-sm hover:underline"
+                        >
+                          stockify.support@gmail.com
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="bg-green-50 p-4 rounded-xl flex items-start gap-3">
+                      <div className="bg-green-100 p-2 rounded-lg text-green-600">
+                        <HiOutlinePhone className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">Call Us</h4>
+                        <p className="text-sm text-gray-500 mb-1">
+                          Monday - Friday from 8am to 5pm.
+                        </p>
+                        <a
+                          href="tel:+855123456789"
+                          className="text-green-600 font-medium text-sm hover:underline"
+                        >
+                          +855 (123) 456-789
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* FAQ */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-2">
+                    Frequently Asked Questions
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="border border-gray-100 rounded-xl p-4 hover:border-blue-100 transition-colors cursor-help">
+                      <h4 className="font-medium text-gray-900 mb-2">
+                        How do I reset my password?
+                      </h4>
+                      <p className="text-sm text-gray-500">
+                        You can reset your password in the "Account & Security"
+                        tab on this page. If you cannot log in, please contact
+                        your administrator.
+                      </p>
+                    </div>
+                    <div className="border border-gray-100 rounded-xl p-4 hover:border-blue-100 transition-colors cursor-help">
+                      <h4 className="font-medium text-gray-900 mb-2">
+                        How do I update my profile picture?
+                      </h4>
+                      <p className="text-sm text-gray-500">
+                        Go to the "Profile Settings" tab and click the camera
+                        icon on your profile picture to upload a new one.
+                      </p>
+                    </div>
+                    <div className="border border-gray-100 rounded-xl p-4 hover:border-blue-100 transition-colors cursor-help">
+                      <h4 className="font-medium text-gray-900 mb-2">
+                        Can I change my role?
+                      </h4>
+                      <p className="text-sm text-gray-500">
+                        User roles are managed by administrators. Please contact
+                        an admin if you need your permissions updated.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* System Info */}
+                <div className="bg-gray-50 rounded-xl p-6 text-center">
+                  <p className="text-sm text-gray-500 mb-1">
+                    System Version 1.0.0
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    &copy; 2026 IMS. All rights reserved.
+                  </p>
+                </div>
+              </div>
             )}
           </div>
         </div>

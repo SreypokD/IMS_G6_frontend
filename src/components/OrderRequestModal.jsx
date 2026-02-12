@@ -27,23 +27,22 @@ const initialOrderRequest = {
   ],
 };
 
-const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
+const OrderRequestModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   const [products, setProducts] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
-  const [order, setOrder] = useState(initial || initialOrderRequest);
+  const [order, setOrder] = useState(data || initialOrderRequest);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
   const [loading, setLoading] = useState(false);
   const dialog = useDialog();
-  const viewOnly = initial && initial.viewOnly;
 
   useEffect(() => {
     if (open) {
       getProducts().then((res) => setProducts(res.data.data || []));
       getSuppliers().then((res) => setSuppliers(res.data.data || []));
-      if (initial) {
+      if (data) {
         // Convert delivery_date to yyyy-MM-dd for input value
-        let deliveryDateValue = initial.delivery_date || "";
+        let deliveryDateValue = data.delivery_date || "";
         if (deliveryDateValue) {
           const d = new Date(deliveryDateValue);
           if (!isNaN(d)) {
@@ -51,21 +50,22 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
           }
         }
         setOrder({
+          _id: data._id, // Keep ID
           supplier_id:
-            initial.supplier_id ||
-            (typeof initial.supplier === "object"
-              ? initial.supplier?._id
-              : initial.supplier) ||
+            data.supplier_id ||
+            (typeof data.supplier === "object"
+              ? data.supplier?._id
+              : data.supplier) ||
             "",
           delivery_date: deliveryDateValue,
-          notes: initial.notes || "",
+          notes: data.notes || "",
           orderItems:
-            initial.orderItems &&
-            Array.isArray(initial.orderItems) &&
-            initial.orderItems.length > 0
-              ? initial.orderItems
-              : initial.items && Array.isArray(initial.items)
-                ? initial.items.map((item) => ({
+            data.orderItems &&
+            Array.isArray(data.orderItems) &&
+            data.orderItems.length > 0
+              ? data.orderItems
+              : data.items && Array.isArray(data.items)
+                ? data.items.map((item) => ({
                     product_id: item.product_id,
                     quantity: item.quantity,
                     unit_price: item.unit_price,
@@ -86,7 +86,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
       setTouched({});
       setValidateOnSave(false);
     }
-  }, [open, initial]);
+  }, [open, data]);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -157,7 +157,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
   async function handleSubmit(e) {
     e.preventDefault();
     setValidateOnSave(true);
-    const isEdit = Boolean(initial);
+    const isUpdate = Boolean(data);
     const supplierField = order.supplier_id;
     if (
       !supplierField ||
@@ -192,8 +192,8 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
               : 0,
         })),
       };
-      if (isEdit) {
-        await updateOrderRequest(initial._id, payload);
+      if (isUpdate) {
+        await updateOrderRequest(data._id, payload);
         await dialog.success("Order request updated successfully.");
         if (onSave) onSave();
         handleClose();
@@ -222,11 +222,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[65%] max-h-[80vh] shadow-xl relative">
         <h2 className="text-xl font-bold mb-6 text-center">
-          {viewOnly
-            ? "View Order Request"
-            : initial
-              ? "Edit Order Request"
-              : "Add Order Request"}
+          {viewOnly ? "Order Request Details" : data?._id ? "Update Order Request" : "New Order Request"}
         </h2>
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
           <div className="col-span-2 mb-2">
@@ -234,9 +230,9 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
               <HiOutlineDocumentText className="inline-block text-xl text-black" />
               <span>Basic Information</span>
             </h3>
-            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-4">
+            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Supplier
                   {!viewOnly ? <sup className="text-red-500">*</sup> : null}
                 </label>
@@ -246,10 +242,26 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                   }
                   onChange={(supplier) => {
                     if (viewOnly) return;
-                    setOrder((prev) => ({
-                      ...prev,
-                      supplier_id: supplier ? supplier._id : "",
-                    }));
+                    // If supplier changes, reset items to avoid mismatch
+                    if (order.supplier_id !== (supplier ? supplier._id : "")) {
+                      setOrder((prev) => ({
+                        ...prev,
+                        supplier_id: supplier ? supplier._id : "",
+                        orderItems: [
+                          {
+                            product_id: "",
+                            quantity: 1,
+                            unit_price: null,
+                            subtotal: null,
+                          },
+                        ],
+                      }));
+                    } else {
+                      setOrder((prev) => ({
+                        ...prev,
+                        supplier_id: supplier ? supplier._id : "",
+                      }));
+                    }
                     setTouched((prev) => ({ ...prev, supplier_id: true }));
                   }}
                   disabled={viewOnly}
@@ -287,7 +299,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="text-sm font-medium text-gray-700">
                   Delivery Date
                   {!viewOnly ? <sup className="text-red-500">*</sup> : null}
                 </label>
@@ -313,9 +325,9 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
             </h3>
             {(order.orderItems || []).map((item, idx) => (
               <div key={idx} className="w-full flex items-center">
-                <div className="w-full mb-3 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
+                <div className="w-full mb-3 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-3">
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label className="text-sm font-medium text-gray-700">
                       Product
                       {!viewOnly ? <sup className="text-red-500">*</sup> : null}
                     </label>
@@ -331,45 +343,75 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                           product ? product._id : "",
                         );
                       }}
-                      disabled={viewOnly}
+                      disabled={viewOnly || !order.supplier_id}
                     >
                       <div className="relative">
                         <Listbox.Button
-                          className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${!item.product_id && validateOnSave ? "border-red-500" : "border-gray-100"}`}
+                          className={`${viewOnly || !order.supplier_id ? "cursor-default" : "cursor-pointer"} bg-gray-50 w-full border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${!item.product_id && validateOnSave ? "border-red-500" : "border-gray-100"}`}
                         >
                           <span>
                             {products.find((p) => p._id === item.product_id)
                               ?.name
                               ? `${products.find((p) => p._id === item.product_id)?.name} (Stock: ${products.find((p) => p._id === item.product_id)?.stock - (products.find((p) => p._id === item.product_id)?.reserved_stock || 0)})`
-                              : "Select product"}
+                              : order.supplier_id
+                                ? "Select product"
+                                : "Select supplier first"}
                           </span>
                           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                         </Listbox.Button>
                         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
-                          {products.length === 0 && (
-                            <div className="px-4 py-2 text-gray-400">
-                              No products
-                            </div>
-                          )}
-                          {products.map((product) => (
-                            <Listbox.Option
-                              key={product._id}
-                              value={product}
-                              className={({ selected }) =>
-                                `px-4 py-2 text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""} ${product.stock <= 0 ? "opacity-50 cursor-default bg-red-50 text-red-500" : "cursor-pointer "}`
-                              }
-                              disabled={product.stock <= 0}
-                            >
-                              {product.name} (Stock:
-                              {product.stock - (product.reserved_stock || 0)})
-                            </Listbox.Option>
-                          ))}
+                          {(() => {
+                            const filteredProducts = order.supplier_id
+                              ? products.filter(
+                                  (p) =>
+                                    p.supplier_id === order.supplier_id ||
+                                    p.supplier?._id === order.supplier_id,
+                                )
+                              : [];
+
+                            if (filteredProducts.length === 0) {
+                              return (
+                                <div className="px-4 py-2 text-gray-400">
+                                  {order.supplier_id
+                                    ? "No products for this supplier"
+                                    : "Select a supplier first"}
+                                </div>
+                              );
+                            }
+
+                            return filteredProducts.map((product) => {
+                              const isSelected = order.orderItems.some(
+                                (orderItem, orderIdx) =>
+                                  orderItem.product_id === product._id &&
+                                  orderIdx !== idx,
+                              );
+                              const isDisabled =
+                                product.stock <= 0 || isSelected;
+                              return (
+                                <Listbox.Option
+                                  key={product._id}
+                                  value={product}
+                                  className={({ selected }) =>
+                                    `px-4 py-2 text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""} ${isDisabled ? "opacity-50 cursor-default bg-gray-50 text-gray-400" : "cursor-pointer"}`
+                                  }
+                                  disabled={isDisabled}
+                                >
+                                  {product.name} (Stock:
+                                  {product.stock -
+                                    (product.reserved_stock || 0)}
+                                  )
+                                  {isSelected ? " - Already added" : ""}
+                                  {product.stock <= 0 ? " - Out of stock" : ""}
+                                </Listbox.Option>
+                              );
+                            });
+                          })()}
                         </Listbox.Options>
                       </div>
                     </Listbox>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label className="text-sm font-medium text-gray-700">
                       Quantity
                       {!viewOnly ? <sup className="text-red-500">*</sup> : null}
                     </label>
@@ -387,7 +429,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label className="text-sm font-medium text-gray-700">
                       Unit Price
                     </label>
                     <input
@@ -400,7 +442,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label className="text-sm font-medium text-gray-700">
                       Line Total
                     </label>
                     <input
@@ -449,24 +491,19 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
               </div>
             )}
           </div>
-          <div>
-            <h3 className="flex items-center justify-end gap-2 text-base mb-2 text-black">
-              <BsCurrencyDollar className="inline-block text-xl text-black" />
-              <span>Total</span>
+          <div className="w-full bg-gray-50 border rounded-lg px-3 py-4 text-sm text-gray-800 border-gray-100 flex items-center justify-end gap-2">
+            <h3 className="flex items-center justify-end text-lg text-black">
+              <BsCurrencyDollar className="inline-block" />
+              <span>Total:</span>
+              <span className="ml-2 font-bold">
+                {(order.orderItems || [])
+                  .reduce((acc, item) => acc + (Number(item.subtotal) || 0), 0)
+                  .toFixed(2)}
+              </span>
             </h3>
-            <input
-              type="text"
-              min={0}
-              className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100 text-right`}
-              placeholder="Unit Price"
-              value={(order.orderItems || [])
-                .reduce((acc, item) => acc + (Number(item.subtotal) || 0), 0)
-                .toFixed(2)}
-              disabled
-            />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="text-sm font-medium text-gray-700">
               Notes / Remarks
             </label>
             <textarea
@@ -499,7 +536,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
               onClick={handleSubmit}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />
-              {loading ? "Submitting..." : initial ? "Update" : "Submit"}
+              {loading ? "Submitting..." : data ? "Update" : "Submit"}
             </button>
           )}
         </div>
