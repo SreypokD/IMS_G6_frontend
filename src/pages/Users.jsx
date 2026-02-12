@@ -80,7 +80,7 @@ const Users = () => {
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false);
-  const [updateUser, setUpdateUser] = useState(null);
+  const [editUser, setEditUser] = useState(null);
 
   // Loading and Error
   const [loading, setLoading] = useState(false);
@@ -149,7 +149,7 @@ const Users = () => {
   }
 
   function handleView(user) {
-    setUpdateUser(null);
+    setEditUser(null);
     setViewUser(user);
     setModalOpen(true);
   }
@@ -159,8 +159,8 @@ const Users = () => {
     setLoading(true);
     setError("");
     try {
-      if (updateUser) {
-        await updateUser(updateUser._id, user);
+      if (editUser) {
+        await updateUser(editUser._id, user);
         dialog.success("User updated successfully");
       } else {
         await createUser(user);
@@ -168,7 +168,7 @@ const Users = () => {
       }
       fetchUsers(1, pagination.limit, search, permission);
       setModalOpen(false);
-      setUpdateUser(null);
+      setEditUser(null);
     } catch {
       setError("Failed to save user");
       dialog.error("Failed to save user");
@@ -238,15 +238,15 @@ const Users = () => {
   return (
     <div>
       <UserModal
-        key={modalOpen ? (updateUser ? updateUser._id : "new") : "closed"}
+        key={modalOpen ? (editUser ? editUser._id : "new") : "closed"}
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setUpdateUser(null);
+          setEditUser(null);
           setViewUser(null);
         }}
         onSave={handleSave}
-        data={updateUser || viewUser}
+        data={editUser || viewUser}
         viewOnly={!!viewUser}
       />
       <div className="flex items-center justify-between mb-8">
@@ -258,7 +258,7 @@ const Users = () => {
           <button
             className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
             onClick={() => {
-              setUpdateUser(null);
+              setEditUser(null);
               setViewUser(null);
               setModalOpen(true);
             }}
@@ -349,7 +349,7 @@ const Users = () => {
                         className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
                         title="Update"
                         onClick={() => {
-                          setUpdateUser(u);
+                          setEditUser(u);
                           setViewUser(null);
                           setModalOpen(true);
                         }}
