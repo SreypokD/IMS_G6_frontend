@@ -207,7 +207,7 @@ const Categories = () => {
                 <th className="number">No.</th>
                 <th>Name</th>
                 <th>Description</th>
-                {canUpdate || canDelete ? (
+                {canView || canUpdate || canDelete ? (
                   <th className="text-center action">Actions</th>
                 ) : null}
               </tr>

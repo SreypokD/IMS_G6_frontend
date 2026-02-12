@@ -450,7 +450,7 @@ const OrderRequestModal = ({ open, onClose, onSave, initial }) => {
             )}
           </div>
           <div>
-            <h3 className="flex items-center gap-2 text-base mb-2 text-black">
+            <h3 className="flex items-center justify-end gap-2 text-base mb-2 text-black">
               <BsCurrencyDollar className="inline-block text-xl text-black" />
               <span>Total</span>
             </h3>
