@@ -224,7 +224,7 @@ const OrderRequestModal = ({ open, onClose, onSave, data, viewOnly = false }) =>
         <h2 className="text-xl font-bold mb-6 text-center">
           {viewOnly ? "Order Request Details" : data?._id ? "Update Order Request" : "New Order Request"}
         </h2>
-        <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
+        <form className="space-y-5 overflow-auto max-h-[60vh] px-1">
           <div className="col-span-2 mb-2">
             <h3 className="flex items-center gap-2 text-base mb-2 text-black">
               <HiOutlineDocumentText className="inline-block text-xl text-black" />
