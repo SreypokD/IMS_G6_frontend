@@ -33,7 +33,7 @@ const Categories = () => {
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false);
-  const [updateCategory, setUpdateCategory] = useState(null);
+  const [editCategory, setEditCategory] = useState(null);
   const [viewCategory, setViewCategory] = useState(null);
 
   // Loading and Error
@@ -84,7 +84,7 @@ const Categories = () => {
   }
 
   function handleView(category) {
-    setUpdateCategory(null);
+    setEditCategory(null);
     setViewCategory(category);
     setModalOpen(true);
   }
@@ -93,8 +93,8 @@ const Categories = () => {
     setLoading(true);
     setError("");
     try {
-      if (updateCategory) {
-        await updateCategory(updateCategory._id, category);
+      if (editCategory) {
+        await updateCategory(editCategory._id, category);
         await dialog.success("Category updated successfully.");
       } else {
         await createCategory(category);
@@ -102,7 +102,7 @@ const Categories = () => {
       }
       fetchCategories();
       setModalOpen(false);
-      setUpdateCategory(null);
+      setEditCategory(null);
     } catch {
       await dialog.error("Failed to save category.");
     } finally {
@@ -138,16 +138,18 @@ const Categories = () => {
   };
 
   return (
-    <div>
+    <div className="h-content-available">
       <CategoryModal
-        key={modalOpen ? (updateCategory ? updateCategory._id : "new") : "closed"}
+        key={
+          modalOpen ? (editCategory ? editCategory._id : "new") : "closed"
+        }
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setUpdateCategory(null);
+          setEditCategory(null);
         }}
         onSave={handleSave}
-        data={updateCategory || viewCategory}
+        data={editCategory || viewCategory}
         viewOnly={!!viewCategory}
       />
       <div className="flex items-center justify-between mb-8">
@@ -161,7 +163,7 @@ const Categories = () => {
           <button
             className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
             onClick={() => {
-              setUpdateCategory(null);
+              setEditCategory(null);
               setModalOpen(true);
             }}
           >
@@ -195,79 +197,81 @@ const Categories = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-100 px-3">
-        {loading ? (
-          <Loading />
-        ) : error ? (
-          <div className="p-8 text-center text-red-500">{error}</div>
-        ) : (
-          <table className="min-w-full text-left text-sm align-middle">
-            <thead>
-              <tr>
-                <th className="number">No.</th>
-                <th>Name</th>
-                <th>Description</th>
-                {canView || canUpdate || canDelete ? (
-                  <th className="text-center action">Actions</th>
-                ) : null}
-              </tr>
-            </thead>
-            <tbody>
-              {categories.map((category, index) => (
-                <tr key={category._id}>
-                  <td className="number">
-                    {index + 1 + (pagination.page - 1) * pagination.limit}
-                  </td>
-                  <td>{category.name}</td>
-                  <td>{category.description}</td>
-                  <td className="flex items-center gap-1 justify-center">
-                    {canView && (
-                      <button
-                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="View"
-                        onClick={() => handleView(category)}
-                      >
-                        <HiOutlineEye className="text-xl" />
-                      </button>
-                    )}
-                    {canUpdate && (
-                      <button
-                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Update"
-                        onClick={() => {
-                          setUpdateCategory(category);
-                          setViewCategory(null);
-                          setModalOpen(true);
-                        }}
-                      >
-                        <HiOutlinePencil className="text-xl" />
-                      </button>
-                    )}
-                    {canDelete && (
-                      <button
-                        className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Delete"
-                        onClick={() => handleDelete(category._id)}
-                      >
-                        <HiOutlineTrash className="text-xl" />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {categories.length === 0 && (
+      <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+        <div className="table-scroll-container">
+          {loading ? (
+            <Loading />
+          ) : error ? (
+            <div className="p-8 text-center text-red-500">{error}</div>
+          ) : (
+            <table className="min-w-full text-left text-sm align-middle">
+              <thead className="table-sticky-header">
                 <tr>
-                  <td colSpan="4">
-                    <NoDataFound message="No categories found." />
-                  </td>
+                  <th className="number">No.</th>
+                  <th>Name</th>
+                  <th>Description</th>
+                  {canView || canUpdate || canDelete ? (
+                    <th className="text-center action">Actions</th>
+                  ) : null}
                 </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {categories.map((category, index) => (
+                  <tr key={category._id} className="hover:bg-[#f1f5f9]">
+                    <td className="number">
+                      {index + 1 + (pagination.page - 1) * pagination.limit}
+                    </td>
+                    <td>{category.name}</td>
+                    <td>{category.description}</td>
+                    <td className="flex items-center gap-1 justify-center">
+                      {canView && (
+                        <button
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="View"
+                          onClick={() => handleView(category)}
+                        >
+                          <HiOutlineEye className="text-xl" />
+                        </button>
+                      )}
+                      {canUpdate && (
+                        <button
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="Update"
+                          onClick={() => {
+                            setEditCategory(category);
+                            setViewCategory(null);
+                            setModalOpen(true);
+                          }}
+                        >
+                          <HiOutlinePencil className="text-xl" />
+                        </button>
+                      )}
+                      {canDelete && (
+                        <button
+                          className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="Delete"
+                          onClick={() => handleDelete(category._id)}
+                        >
+                          <HiOutlineTrash className="text-xl" />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {categories.length === 0 && (
+                  <tr>
+                    <td colSpan="4">
+                      <NoDataFound message="No categories found." />
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
       {categories.length > 0 && (
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-3">
           <Pagination
             total={pagination.totalItems}
             page={pagination.page}

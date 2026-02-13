@@ -232,7 +232,11 @@ const Sidebar = ({ mini }) => {
       <div
         className={`text-lg font-bold m-3 tracking-tight flex items-center justify-center gap-3 ${mini ? "flex-col" : ""}`}
       >
-        <img src={logo} alt="Logo" className="object-contain h-10 w-10 mb-2" />
+        <img
+          src={logo}
+          alt="Logo"
+          className={`object-contain mb-2 ${mini ? "h-8 w-8" : " h-10 w-10"}`}
+        />
         {!mini && <span>Stockify IMS</span>}
       </div>
       <nav className="flex-1 min-h-0">

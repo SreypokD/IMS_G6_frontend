@@ -406,7 +406,7 @@ export default function Settings() {
                                 key={province.name}
                                 value={province.name}
                                 className={({ selected }) =>
-                                  `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                                  `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                                 }
                               >
                                 {province.name}
@@ -440,7 +440,7 @@ export default function Settings() {
                                   key={district.name}
                                   value={district.name}
                                   className={({ selected }) =>
-                                    `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                                    `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                                   }
                                 >
                                   {district.name}
@@ -477,7 +477,7 @@ export default function Settings() {
                                   key={commune.name}
                                   value={commune.name}
                                   className={({ selected }) =>
-                                    `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                                    `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                                   }
                                 >
                                   {commune.name}
@@ -517,7 +517,7 @@ export default function Settings() {
                                   key={village}
                                   value={village}
                                   className={({ selected }) =>
-                                    `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                                    `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                                   }
                                 >
                                   {village}

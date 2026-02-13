@@ -56,7 +56,7 @@ function UserDropdown({ value, onChange, userOptions = [] }) {
               key={user._id}
               value={user._id}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {user.first_name} {user.last_name}
@@ -85,7 +85,7 @@ function TransactionDropdown({ value, onChange }) {
               key={option.value}
               value={option.value}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option.label}
@@ -117,7 +117,7 @@ function LocationDropdown({ value, onChange }) {
               key={option}
               value={option}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option}
@@ -167,10 +167,13 @@ const Stocks = () => {
 
   // Summary
   const [summary, setSummary] = useState({
-    totalStockIn: 0,
-    totalStockOut: 0,
     currentBalance: 0,
     lowStockItems: 0,
+    trends: {
+      stockIn: 0,
+      stockOut: 0,
+      currentBalance: 0,
+    },
   });
 
   // Permissions
@@ -334,7 +337,7 @@ const Stocks = () => {
   };
 
   return (
-    <div>
+    <div className="h-content-available">
       <StockOutModal
         open={stockOutOpen}
         onClose={() => {
@@ -396,9 +399,17 @@ const Stocks = () => {
         <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiDownload className="text-2xl text-green-600" />
-            <div className="flex items-center gap-2 text-green-600 text-sm">
-              <HiTrendingUp />
-              <span>+12.5%</span>
+            <div
+              className={`flex items-center gap-2 text-sm ${
+                summary.trends?.stockIn >= 0 ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {summary.trends?.stockIn >= 0 ? (
+                <HiTrendingUp />
+              ) : (
+                <HiTrendingDown />
+              )}
+              <span>{Math.abs(summary.trends?.stockIn || 0)}%</span>
             </div>
           </div>
           <div>
@@ -409,9 +420,19 @@ const Stocks = () => {
         <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiLogout className="text-2xl text-red-500 rotate-270" />
-            <div className="flex items-center gap-2 text-green-600 text-sm">
-              <HiTrendingUp />
-              <span>+8.3%</span>
+            <div
+              className={`flex items-center gap-2 text-sm ${
+                summary.trends?.stockOut >= 0
+                  ? "text-green-600"
+                  : "text-red-600"
+              }`}
+            >
+              {summary.trends?.stockOut >= 0 ? (
+                <HiTrendingUp />
+              ) : (
+                <HiTrendingDown />
+              )}
+              <span>{Math.abs(summary.trends?.stockOut || 0)}%</span>
             </div>
           </div>
           <div>
@@ -422,9 +443,19 @@ const Stocks = () => {
         <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiCube className="text-2xl text-black" />
-            <div className="flex items-center gap-2 text-green-600 text-sm">
-              <HiTrendingUp />
-              <span>+5.2%</span>
+            <div
+              className={`flex items-center gap-2 text-sm ${
+                summary.trends?.currentBalance >= 0
+                  ? "text-green-600"
+                  : "text-red-600"
+              }`}
+            >
+              {summary.trends?.currentBalance >= 0 ? (
+                <HiTrendingUp />
+              ) : (
+                <HiTrendingDown />
+              )}
+              <span>{Math.abs(summary.trends?.currentBalance || 0)}%</span>
             </div>
           </div>
           <div>
@@ -435,9 +466,9 @@ const Stocks = () => {
         <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiOutlineExclamation className="text-2xl text-yellow-600" />
-            <div className="flex items-center gap-2 text-red-600 text-sm">
-              <HiTrendingDown />
-              <span>-2 items</span>
+            <div className="flex items-center gap-2 text-gray-400 text-sm">
+              {/* Low Stock Trend omitted for performance */}
+              <span>-</span>
             </div>
           </div>
           <div>
@@ -542,102 +573,105 @@ const Stocks = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-2xl overflow-x-auto border border-gray-100 px-3">
-        {loading ? (
-          <Loading />
-        ) : error ? (
-          <div className="p-8 text-center text-red-500">{error}</div>
-        ) : (
-          <table className="min-w-full text-left text-sm align-middle">
-            <thead>
-              <tr>
-                <th className="number">No.</th>
-                <th>Date & Times</th>
-                <th>Product</th>
-                <th>Type</th>
-                <th>Quantity</th>
-                <th>Balance</th>
-                <th>User</th>
-                <th>Location</th>
-                {canView || canUpdate || canDelete ? (
-                  <th className="action">Actions</th>
-                ) : null}
-              </tr>
-            </thead>
-            <tbody>
-              {stocks.map((stock, index) => (
-                <tr key={stock._id}>
-                  <td className="number">
-                    {index + 1 + (pagination.page - 1) * pagination.limit}
-                  </td>
-                  <td>{formatDate(stock.createdAt, true) || "-"}</td>
-                  <td>{stock.product?.name || stock.product_id || "-"}</td>
-                  <td>
-                    {stock.type === "in" ? (
-                      <span className="text-green-600 flex items-center gap-1">
-                        <HiDownload className="inline-block" /> Stock In
-                      </span>
-                    ) : stock.type === "out" ? (
-                      <span className="text-red-500 flex items-center gap-1">
-                        <HiLogout className="inline-block rotate-270" /> Stock
-                        Out
-                      </span>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                  <td>{stock.quantity}</td>
-                  <td>{stock.balance}</td>
-                  <td>
-                    {stock.user?.first_name
-                      ? `${stock.user.first_name} ${stock.user.last_name}`
-                      : stock.user_id || "-"}
-                  </td>
-                  <td>{stock.location || "-"}</td>
-                  <td className="action flex items-center gap-2">
-                    {canView && (
-                      <button
-                        onClick={() => handleView(stock)}
-                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="View"
-                      >
-                        <HiOutlineEye className="text-xl" />
-                      </button>
-                    )}
-                    {canUpdate && (
-                      <button
-                        onClick={() => handleUpdate(stock)}
-                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Update"
-                      >
-                        <HiOutlinePencil className="text-xl" />
-                      </button>
-                    )}
-                    {canDelete && (
-                      <button
-                        onClick={() => handleDelete(stock._id)}
-                        className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Delete"
-                      >
-                        <HiOutlineTrash className="text-xl" />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {stocks.length === 0 && (
+      <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+        <div className="table-scroll-container">
+          {loading ? (
+            <Loading />
+          ) : error ? (
+            <div className="p-8 text-center text-red-500">{error}</div>
+          ) : (
+            <table className="min-w-full text-left text-sm align-middle">
+              <thead className="table-sticky-header">
                 <tr>
-                  <td colSpan="9">
-                    <NoDataFound message="No stocks found." />
-                  </td>
+                  <th className="number">No.</th>
+                  <th>Date & Times</th>
+                  <th>Product</th>
+                  <th>Type</th>
+                  <th>Quantity</th>
+                  <th>Balance</th>
+                  <th>User</th>
+                  <th>Location</th>
+                  {canView || canUpdate || canDelete ? (
+                    <th className="action">Actions</th>
+                  ) : null}
                 </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {stocks.map((stock, index) => (
+                  <tr key={stock._id} className="hover:bg-[#f1f5f9]">
+                    <td className="number">
+                      {index + 1 + (pagination.page - 1) * pagination.limit}
+                    </td>
+                    <td>{formatDate(stock.createdAt, true) || "-"}</td>
+                    <td>{stock.product?.name || stock.product_id || "-"}</td>
+                    <td>
+                      {stock.type === "in" ? (
+                        <span className="text-green-600 flex items-center gap-1">
+                          <HiDownload className="text-md" />
+                          Stock In
+                        </span>
+                      ) : stock.type === "out" ? (
+                        <span className="text-red-500 flex items-center gap-1">
+                          <HiLogout className="text-md -rotate-90" />
+                          Stock Out
+                        </span>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td>{stock.quantity}</td>
+                    <td>{stock.balance}</td>
+                    <td>
+                      {stock.user?.first_name
+                        ? `${stock.user.first_name} ${stock.user.last_name}`
+                        : stock.user_id || "-"}
+                    </td>
+                    <td>{stock.location || "-"}</td>
+                    <td className="action flex items-center gap-2">
+                      {canView && (
+                        <button
+                          onClick={() => handleView(stock)}
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="View"
+                        >
+                          <HiOutlineEye className="text-xl" />
+                        </button>
+                      )}
+                      {canUpdate && (
+                        <button
+                          onClick={() => handleUpdate(stock)}
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="Update"
+                        >
+                          <HiOutlinePencil className="text-xl" />
+                        </button>
+                      )}
+                      {canDelete && (
+                        <button
+                          onClick={() => handleDelete(stock._id)}
+                          className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="Delete"
+                        >
+                          <HiOutlineTrash className="text-xl" />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {stocks.length === 0 && (
+                  <tr>
+                    <td colSpan="9">
+                      <NoDataFound message="No stocks found." />
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
       {stocks.length > 0 && (
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-3">
           <Pagination
             total={pagination.totalItems}
             page={pagination.page}

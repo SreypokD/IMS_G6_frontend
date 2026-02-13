@@ -47,7 +47,7 @@ function StatusDropdown({ value, onChange }) {
               key={option.value}
               value={option.value}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option.label}
@@ -73,7 +73,8 @@ const OrderRequests = () => {
   // Modal
   const [modalOpen, setModalOpen] = useState(false);
   const [updateOrderRequest, setUpdateOrderRequest] = useState(null);
-
+  // View Order Request
+  const [viewOrderRequest, setViewOrderRequest] = useState(null);
   // Loading and Error
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -152,6 +153,12 @@ const OrderRequests = () => {
     }
   }
 
+  function handleView(orderRequest) {
+    setUpdateOrderRequest(null);
+    setViewOrderRequest(orderRequest);
+    setModalOpen(true);
+  }
+
   async function handleCancelRequest(id) {
     const confirmed = await dialog.ask({
       type: "confirm",
@@ -184,17 +191,20 @@ const OrderRequests = () => {
   };
 
   return (
-    <div>
+    <div className="h-content-available">
       <OrderRequestModal
         open={modalOpen}
-        data={updateOrderRequest}
+        data={updateOrderRequest || viewOrderRequest}
+        viewOnly={!!viewOrderRequest}
         onClose={() => {
           setModalOpen(false);
           setUpdateOrderRequest(null);
+          setViewOrderRequest(null);
         }}
         onSave={() => {
           setModalOpen(false);
           setUpdateOrderRequest(null);
+          setViewOrderRequest(null);
           fetchOrderRequests(pagination.page, pagination.limit, search, status);
         }}
       />
@@ -239,7 +249,9 @@ const OrderRequests = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">From</label>
+            <label className="block text-gray-700 text-sm mb-1">
+              Start Date
+            </label>
             <DatePicker
               selected={startDate}
               onChange={(date) =>
@@ -249,7 +261,7 @@ const OrderRequests = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">To</label>
+            <label className="block text-gray-700 text-sm mb-1">End Date</label>
             <DatePicker
               selected={endDate}
               onChange={(date) =>
@@ -271,143 +283,148 @@ const OrderRequests = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-100 px-3">
-        {loading ? (
-          <Loading />
-        ) : error ? (
-          <div className="p-8 text-center text-red-500">{error}</div>
-        ) : (
-          <table className="min-w-full text-left text-sm align-middle">
-            <thead>
-              <tr>
-                <th className="number">No.</th>
-                <th>Requested By</th>
-                <th>Product(s)</th>
-                <th>Quantity(ies)</th>
-                <th>Notes</th>
-                <th>Requested Date</th>
-                <th>Delivery Date</th>
-                <th>Status</th>
-                {canView || canUpdate || canDelete ? (
-                  <th className="text-center action">Actions</th>
-                ) : null}
-              </tr>
-            </thead>
-            <tbody>
-              {(() => {
-                // Admins and staff see all requests, customers see only their own
-                const isAdminOrStaff =
-                  user?.role === "admin" || user?.role === "staff";
-                const filteredRequests = isAdminOrStaff
-                  ? requests
-                  : requests.filter(
-                      (req) => String(req.requester_id) === String(user._id),
-                    );
-                return filteredRequests.map((request, index) => (
-                  <tr key={request._id}>
-                    <td className="number">
-                      {index + 1 + (pagination.page - 1) * pagination.limit}
-                    </td>
-                    <td>
-                      {request.requester?.first_name +
-                        " " +
-                        request.requester?.last_name || "-"}
-                    </td>
-                    <td>
-                      {Array.isArray(request.items) && request.items.length > 0
-                        ? request.items
-                            .map((item) => item.product?.name)
-                            .join(", ")
-                        : "-"}
-                    </td>
-                    <td>
-                      {Array.isArray(request.items) && request.items.length > 0
-                        ? request.items.map((item) => item.quantity).join(", ")
-                        : "-"}
-                    </td>
-                    <td>{request.notes || "-"}</td>
-                    <td>{formatDate(request.createdAt) || "-"}</td>
-                    <td>{formatDate(request.delivery_date) || "-"}</td>
-                    <td>
-                      <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm ${request.status === "pending" ? "bg-yellow-100 text-yellow-700" : request.status === "approved" ? "bg-green-100 text-green-700" : request.status === "rejected" ? "bg-red-100 text-red-700" : request.status === "completed" ? "bg-blue-100 text-blue-700" : request.status === "on_hold" ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-700"}`}
-                      >
-                        {request.status.charAt(0).toUpperCase() +
-                          request.status.slice(1)}
-                      </span>
-                    </td>
-                    <td className="flex items-center gap-1 justify-center action">
-                      {(user?.role === "admin" ||
-                        user?.role === "staff" ||
-                        String(request.requester_id) === String(user?._id)) && (
-                        <div>
-                          {(user?.permission?.permissions?.includes(
-                            "view_order_request",
-                          ) ||
-                            String(request.requester_id) ===
-                              String(user?._id)) && (
-                            <button
-                              className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                              title="View"
-                              onClick={() => {
-                                setUpdateOrderRequest({
-                                  ...request,
-                                  viewOnly: true,
-                                });
-                                setModalOpen(true);
-                              }}
-                            >
-                              <HiOutlineEye className="text-xl" />
-                            </button>
-                          )}
-                          {request?.status === "pending" &&
-                            (user?.role === "admin" ||
-                              user?.role === "staff" ||
+      <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+        <div className="table-scroll-container">
+          {loading ? (
+            <Loading />
+          ) : error ? (
+            <div className="p-8 text-center text-red-500">{error}</div>
+          ) : (
+            <table className="min-w-full text-left text-sm align-middle">
+              <thead className="table-sticky-header">
+                <tr>
+                  <th className="number">No.</th>
+                  <th>Requested By</th>
+                  <th>Product(s)</th>
+                  <th>Quantity(ies)</th>
+                  <th>Notes</th>
+                  <th>Requested Date</th>
+                  <th>Delivery Date</th>
+                  <th>Status</th>
+                  {canView || canUpdate || canDelete ? (
+                    <th className="text-center action">Actions</th>
+                  ) : null}
+                </tr>
+              </thead>
+              <tbody>
+                {(() => {
+                  // Admins and staff see all requests, customers see only their own
+                  const isAdminOrStaff =
+                    user?.role === "admin" || user?.role === "staff";
+                  const filteredRequests = isAdminOrStaff
+                    ? requests
+                    : requests.filter(
+                        (req) => String(req.requester_id) === String(user._id),
+                      );
+                  return filteredRequests.map((request, index) => (
+                    <tr key={request._id} className="hover:bg-[#f1f5f9]">
+                      <td className="number">
+                        {index + 1 + (pagination.page - 1) * pagination.limit}
+                      </td>
+                      <td>
+                        {request.requester?.first_name +
+                          " " +
+                          request.requester?.last_name || "-"}
+                      </td>
+                      <td>
+                        {Array.isArray(request.items) &&
+                        request.items.length > 0
+                          ? request.items
+                              .map((item) => item.product?.name)
+                              .join(", ")
+                          : "-"}
+                      </td>
+                      <td>
+                        {Array.isArray(request.items) &&
+                        request.items.length > 0
+                          ? request.items
+                              .map((item) => item.quantity)
+                              .join(", ")
+                          : "-"}
+                      </td>
+                      <td>{request.notes || "-"}</td>
+                      <td>{formatDate(request.createdAt) || "-"}</td>
+                      <td>{formatDate(request.delivery_date) || "-"}</td>
+                      <td>
+                        <span
+                          className={`inline-block px-3 py-1 rounded-full text-sm ${request.status === "pending" ? "bg-yellow-100 text-yellow-700" : request.status === "approved" ? "bg-green-100 text-green-700" : request.status === "rejected" ? "bg-red-100 text-red-700" : request.status === "completed" ? "bg-blue-100 text-blue-700" : request.status === "on_hold" ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-700"}`}
+                        >
+                          {request.status.charAt(0).toUpperCase() +
+                            request.status.slice(1)}
+                        </span>
+                      </td>
+                      <td className="flex items-center gap-1 justify-center action">
+                        {(user?.role === "admin" ||
+                          user?.role === "staff" ||
+                          String(request.requester_id) ===
+                            String(user?._id)) && (
+                          <div>
+                            {(user?.permission?.permissions?.includes(
+                              "view_order_request",
+                            ) ||
                               String(request.requester_id) ===
                                 String(user?._id)) && (
                               <button
                                 className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                                title="Update"
+                                title="View"
                                 onClick={() => {
-                                  setUpdateOrderRequest(request);
-                                  setModalOpen(true);
+                                  handleView(request);
                                 }}
                               >
-                                <HiOutlinePencil className="text-xl" />
+                                <HiOutlineEye className="text-xl" />
                               </button>
                             )}
-                          {request?.status === "pending" &&
-                            (user?.role === "admin" ||
-                              user?.role === "staff" ||
-                              String(request.requester_id) ===
-                                String(user?._id)) && (
-                              <button
-                                className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                                title="Cancel"
-                                onClick={() => handleCancelRequest(request._id)}
-                              >
-                                <HiOutlineXCircle className="text-2xl" />
-                              </button>
-                            )}
-                        </div>
-                      )}
+                            {request?.status === "pending" &&
+                              (user?.role === "admin" ||
+                                user?.role === "staff" ||
+                                String(request.requester_id) ===
+                                  String(user?._id)) && (
+                                <button
+                                  className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                                  title="Update"
+                                  onClick={() => {
+                                    setUpdateOrderRequest(request);
+                                    setModalOpen(true);
+                                  }}
+                                >
+                                  <HiOutlinePencil className="text-xl" />
+                                </button>
+                              )}
+                            {request?.status === "pending" &&
+                              (user?.role === "admin" ||
+                                user?.role === "staff" ||
+                                String(request.requester_id) ===
+                                  String(user?._id)) && (
+                                <button
+                                  className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                                  title="Cancel"
+                                  onClick={() =>
+                                    handleCancelRequest(request._id)
+                                  }
+                                >
+                                  <HiOutlineXCircle className="text-2xl" />
+                                </button>
+                              )}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ));
+                })()}
+                {requests.length === 0 && (
+                  <tr>
+                    <td colSpan="9">
+                      <NoDataFound message="No order requests found." />
                     </td>
                   </tr>
-                ));
-              })()}
-              {requests.length === 0 && (
-                <tr>
-                  <td colSpan="9">
-                    <NoDataFound message="No order requests found." />
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
       {requests.length > 0 && (
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-3">
           <Pagination
             total={pagination.totalItems}
             page={pagination.page}

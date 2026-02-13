@@ -20,12 +20,57 @@ body {
   }
 }
 
+/* Custom Scrollbar for Webkit browsers */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Table Scroll Layout Utilities */
+.h-content-available {
+  height: 100%;
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.table-scroll-container {
+  flex: 1;
+  max-height: 100%;
+  padding: 0 12px;
+  border-radius: 0.75rem;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.table-sticky-header th {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 1;
+}
+
 table {
   width: 100%;
   min-width: 900px;
   border-collapse: separate;
   border-spacing: 0 6px;
-  table-layout: fixed;
+  table-layout: fixed !important;
 }
 
 tbody>tr,
@@ -54,11 +99,10 @@ tbody td {
   padding: 0 10px !important;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: ellipsis !important;
 }
 
 tbody tr {
-  background: #ffffff;
   transition:
     background 0.15s ease,
     transform 0.15s ease;

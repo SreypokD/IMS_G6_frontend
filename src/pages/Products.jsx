@@ -58,7 +58,7 @@ function CategoryDropdown({
               key={option._id}
               value={option._id}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option.name}
@@ -97,7 +97,7 @@ function SupplierDropdown({
               key={option._id}
               value={option._id}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option.company_name}
@@ -126,7 +126,7 @@ function StatusDropdown({ selected, setSelected, statusOptions }) {
               key={option.value}
               value={option.value}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option.label}
@@ -334,7 +334,7 @@ const Products = () => {
   };
 
   return (
-    <div>
+    <div className="h-content-available">
       <ProductModal
         key={
           modalOpen
@@ -424,112 +424,114 @@ const Products = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-100 px-3">
-        {loading ? (
-          <Loading />
-        ) : error ? (
-          <div className="p-8 text-center text-red-500">{error}</div>
-        ) : (
-          <table className="min-w-full text-left text-sm align-middle">
-            <thead>
-              <tr>
-                <th className="number">No.</th>
-                <th>Product Code</th>
-                <th>Product Name</th>
-                <th>Category</th>
-                <th>Supplier</th>
-                <th className="text-right">Stock</th>
-                {canCreate || canUpdate || canDelete ? (
-                  <th className="text-right">Cost</th>
-                ) : null}
-                <th className="text-right">Price</th>
-                {canView || canUpdate || canDelete ? (
-                  <th className="text-center action">Actions</th>
-                ) : null}
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((product, index) => (
-                <tr key={product._id}>
-                  <td className="number">
-                    {index + 1 + (pagination.page - 1) * pagination.limit}
-                  </td>
-                  <td>#{product.code}</td>
-                  <td>{product.name}</td>
-                  <td>
-                    <span className="text-blue-500/80">
-                      {product.category?.name || product.category}
-                    </span>
-                  </td>
-                  <td>
-                    <span className="text-blue-500/80">
-                      {typeof product.supplier === "object"
-                        ? product.supplier?.company_name ||
-                          product.supplier?.name
-                        : product.supplier}
-                    </span>
-                  </td>
-                  <td className="text-right">
-                    <span
-                      className={`text-sm ${product.stock === 0 ? "text-red-600" : product.stock < 10 ? "text-orange-600" : "text-green-600"}`}
-                    >
-                      {product.stock} units
-                    </span>
-                  </td>
+      <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+        <div className="table-scroll-container">
+          {loading ? (
+            <Loading />
+          ) : error ? (
+            <div className="p-8 text-center text-red-500">{error}</div>
+          ) : (
+            <table className="min-w-full text-left text-sm align-middle">
+              <thead className="table-sticky-header">
+                <tr>
+                  <th className="number">No.</th>
+                  <th>Product Code</th>
+                  <th>Product Name</th>
+                  <th>Category</th>
+                  <th>Supplier</th>
+                  <th className="text-right">Stock</th>
                   {canCreate || canUpdate || canDelete ? (
-                    <td className="text-right">
-                      <span className="text-gray-500">
-                        ${Number(product.cost_price || 0).toFixed(2)}
+                    <th className="text-right">Cost</th>
+                  ) : null}
+                  <th className="text-right">Price</th>
+                  {canView || canUpdate || canDelete ? (
+                    <th className="text-center action">Actions</th>
+                  ) : null}
+                </tr>
+              </thead>
+              <tbody>
+                {products.map((product, index) => (
+                  <tr key={product._id} className="hover:bg-[#f1f5f9]">
+                    <td className="number">
+                      {index + 1 + (pagination.page - 1) * pagination.limit}
+                    </td>
+                    <td>#{product.code}</td>
+                    <td>{product.name}</td>
+                    <td>
+                      <span className="text-blue-500/80">
+                        {product.category?.name || product.category}
                       </span>
                     </td>
-                  ) : null}
-                  <td className="text-right">
-                    ${Number(product.price).toFixed(2)}
-                  </td>
-                  <td className="flex items-center gap-1 justify-center action">
-                    {canView && (
-                      <button
-                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="View"
-                        onClick={() => handleView(product)}
+                    <td>
+                      <span className="text-blue-500/80">
+                        {typeof product.supplier === "object"
+                          ? product.supplier?.company_name ||
+                            product.supplier?.name
+                          : product.supplier}
+                      </span>
+                    </td>
+                    <td className="text-right">
+                      <span
+                        className={`text-sm ${product.stock === 0 ? "text-red-600" : product.stock < 10 ? "text-orange-600" : "text-green-600"}`}
                       >
-                        <HiOutlineEye className="text-xl" />
-                      </button>
-                    )}
-                    {canUpdate && (
-                      <button
-                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Update"
-                        onClick={() => handleUpdate(product)}
-                      >
-                        <HiOutlinePencil className="text-xl" />
-                      </button>
-                    )}
-                    {canDelete && (
-                      <button
-                        className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Delete"
-                        onClick={() => handleDelete(product._id)}
-                      >
-                        <HiOutlineTrash className="text-xl" />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {products.length === 0 && (
-                <tr>
-                  <td colSpan="9">
-                    <NoDataFound message="No products found." />
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+                        {product.stock} units
+                      </span>
+                    </td>
+                    {canCreate || canUpdate || canDelete ? (
+                      <td className="text-right">
+                        <span className="text-gray-500">
+                          ${Number(product.cost_price || 0).toFixed(2)}
+                        </span>
+                      </td>
+                    ) : null}
+                    <td className="text-right">
+                      ${Number(product.price).toFixed(2)}
+                    </td>
+                    <td className="flex items-center gap-1 justify-center action">
+                      {canView && (
+                        <button
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="View"
+                          onClick={() => handleView(product)}
+                        >
+                          <HiOutlineEye className="text-xl" />
+                        </button>
+                      )}
+                      {canUpdate && (
+                        <button
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="Update"
+                          onClick={() => handleUpdate(product)}
+                        >
+                          <HiOutlinePencil className="text-xl" />
+                        </button>
+                      )}
+                      {canDelete && (
+                        <button
+                          className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="Delete"
+                          onClick={() => handleDelete(product._id)}
+                        >
+                          <HiOutlineTrash className="text-xl" />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {products.length === 0 && (
+                  <tr>
+                    <td colSpan="9">
+                      <NoDataFound message="No products found." />
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
       {products.length > 0 && (
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-3">
           <Pagination
             total={pagination.totalItems}
             page={pagination.page}

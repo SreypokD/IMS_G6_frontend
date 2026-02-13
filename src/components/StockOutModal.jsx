@@ -128,7 +128,7 @@ const StockOutModal = ({ open, onClose, products, data }) => {
                         key={p._id}
                         value={p._id}
                         className={({ selected }) =>
-                          `px-4 py-2 text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""} ${isDisabled ? "opacity-50 cursor-default bg-gray-50 text-gray-400" : "cursor-pointer"}`
+                          `px-3 py-2 text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""} ${isDisabled ? "opacity-50 cursor-default bg-gray-50 text-gray-400" : "cursor-pointer"}`
                         }
                         disabled={isDisabled}
                       >
@@ -217,7 +217,7 @@ const StockOutModal = ({ open, onClose, products, data }) => {
                       key={option}
                       value={option}
                       className={({ selected }) =>
-                        `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                        `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                       }
                     >
                       {option}
@@ -247,7 +247,7 @@ const StockOutModal = ({ open, onClose, products, data }) => {
                       key={loc}
                       value={loc}
                       className={({ selected }) =>
-                        `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                        `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                       }
                     >
                       {loc}

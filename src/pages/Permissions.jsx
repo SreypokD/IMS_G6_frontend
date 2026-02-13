@@ -36,7 +36,7 @@ const Permissions = () => {
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false);
-  const [updatePermission, setUpdatePermission] = useState(null);
+  const [editPermission, setEditPermission] = useState(null);
 
   // Loading and Error
   const [loading, setLoading] = useState(false);
@@ -90,7 +90,7 @@ const Permissions = () => {
   }
 
   function handleView(permission) {
-    setUpdatePermission(null);
+    setEditPermission(null);
     setViewPermission(permission);
     setModalOpen(true);
   }
@@ -100,8 +100,8 @@ const Permissions = () => {
     setLoading(true);
     setError("");
     try {
-      if (updatePermission) {
-        await updatePermission(updatePermission._id, permission);
+      if (editPermission) {
+        await updatePermission(editPermission._id, permission);
         dialog.success("Permission updated successfully");
       } else {
         await createPermission(permission);
@@ -109,7 +109,7 @@ const Permissions = () => {
       }
       fetchPermissions(1, pagination.limit, search);
       setModalOpen(false);
-      setUpdatePermission(null);
+      setEditPermission(null);
     } catch {
       setError("Failed to save permission");
       dialog.error("Failed to save permission");
@@ -149,15 +149,15 @@ const Permissions = () => {
   };
 
   return (
-    <div>
+    <div className="h-content-available">
       <PermissionModal
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setUpdatePermission(null);
+          setEditPermission(null);
         }}
         onSave={handleSave}
-        data={updatePermission || viewPermission}
+        data={editPermission || viewPermission}
         viewOnly={!!viewPermission}
       />
       <div className="flex items-center justify-between mb-8">
@@ -169,7 +169,7 @@ const Permissions = () => {
           <button
             className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
             onClick={() => {
-              setUpdatePermission(null);
+              setEditPermission(null);
               setModalOpen(true);
             }}
           >
@@ -203,81 +203,83 @@ const Permissions = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-100 px-3">
-        {loading ? (
-          <Loading />
-        ) : error ? (
-          <div className="p-8 text-center text-red-500">{error}</div>
-        ) : (
-          <table className="min-w-full text-left text-sm align-middle">
-            <thead>
-              <tr>
-                <th className="number">No.</th>
-                <th>Name</th>
-                <th>Description</th>
-                {canView || canUpdate || canDelete ? (
-                  <th className="text-center action">Actions</th>
-                ) : null}
-              </tr>
-            </thead>
-            <tbody>
-              {permissions.map((permission, index) => (
-                <tr key={permission._id}>
-                  <td className="number">
-                    {index + 1 + (pagination.page - 1) * pagination.limit}
-                  </td>
-                  <td>{permission.name}</td>
-                  <td className="whitespace-nowrap">
-                    {permission.description}
-                  </td>
-                  <td className="flex items-center gap-1 justify-center action">
-                    {canView && (
-                      <button
-                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="View"
-                        onClick={() => handleView(permission)}
-                      >
-                        <HiOutlineEye className="text-xl" />
-                      </button>
-                    )}
-                    {canUpdate && (
-                      <button
-                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Update"
-                        onClick={() => {
-                          setUpdatePermission(permission);
-                          setViewPermission(null);
-                          setModalOpen(true);
-                        }}
-                      >
-                        <HiOutlinePencil className="text-xl" />
-                      </button>
-                    )}
-                    {canDelete && (
-                      <button
-                        className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Delete"
-                        onClick={() => handleDelete(permission._id)}
-                      >
-                        <HiOutlineTrash className="text-xl" />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {permissions.length === 0 && (
+      <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+        <div className="table-scroll-container">
+          {loading ? (
+            <Loading />
+          ) : error ? (
+            <div className="p-8 text-center text-red-500">{error}</div>
+          ) : (
+            <table className="min-w-full text-left text-sm align-middle">
+              <thead className="table-sticky-header">
                 <tr>
-                  <td colSpan="4">
-                    <NoDataFound message="No permissions found." />
-                  </td>
+                  <th className="number">No.</th>
+                  <th>Name</th>
+                  <th>Description</th>
+                  {canView || canUpdate || canDelete ? (
+                    <th className="text-center action">Actions</th>
+                  ) : null}
                 </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {permissions.map((permission, index) => (
+                  <tr key={permission._id} className="hover:bg-[#f1f5f9]">
+                    <td className="number">
+                      {index + 1 + (pagination.page - 1) * pagination.limit}
+                    </td>
+                    <td>{permission.name}</td>
+                    <td className="whitespace-nowrap">
+                      {permission.description}
+                    </td>
+                    <td className="flex items-center gap-1 justify-center action">
+                      {canView && (
+                        <button
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="View"
+                          onClick={() => handleView(permission)}
+                        >
+                          <HiOutlineEye className="text-xl" />
+                        </button>
+                      )}
+                      {canUpdate && (
+                        <button
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="Update"
+                          onClick={() => {
+                            setEditPermission(permission);
+                            setViewPermission(null);
+                            setModalOpen(true);
+                          }}
+                        >
+                          <HiOutlinePencil className="text-xl" />
+                        </button>
+                      )}
+                      {canDelete && (
+                        <button
+                          className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="Delete"
+                          onClick={() => handleDelete(permission._id)}
+                        >
+                          <HiOutlineTrash className="text-xl" />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {permissions.length === 0 && (
+                  <tr>
+                    <td colSpan="4">
+                      <NoDataFound message="No permissions found." />
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
       {permissions.length > 0 && (
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-3">
           <Pagination
             total={pagination.totalItems}
             page={pagination.page}

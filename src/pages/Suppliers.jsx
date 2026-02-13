@@ -47,7 +47,7 @@ function StatusDropdown({ value, onChange }) {
               key={option}
               value={option}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option}
@@ -79,7 +79,7 @@ function LocationDropdown({ value, onChange }) {
               key={option}
               value={option}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option}
@@ -232,7 +232,7 @@ const Suppliers = () => {
   };
 
   return (
-    <div>
+    <div className="h-content-available">
       <SupplierModal
         key={
           modalOpen
@@ -330,108 +330,110 @@ const Suppliers = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-100 px-3">
-        {loading ? (
-          <Loading />
-        ) : error ? (
-          <div className="p-8 text-center text-red-500">{error}</div>
-        ) : (
-          <table className="min-w-full text-left text-sm align-middle">
-            <thead>
-              <tr>
-                <th className="number">No.</th>
-                <th>Company Name</th>
-                <th>Contact Person</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Products</th>
-                <th>Status</th>
-                {canView || canUpdate || canDelete ? (
-                  <th className="text-center action">Actions</th>
-                ) : null}
-              </tr>
-            </thead>
-            <tbody>
-              {suppliers.map((supplier, index) => (
-                <tr key={supplier._id}>
-                  <td className="number">
-                    {index + 1 + (pagination.page - 1) * pagination.limit}
-                  </td>
-                  <td>
-                    <div className="flex items-center gap-2">
-                      <HiOutlineBuildingOffice2 className="text-lg text-blue-700" />
-                      {supplier.company_name}
-                    </div>
-                  </td>
-                  <td className="flex items-center gap-1">
-                    {supplier.contact_person}
-                  </td>
-                  <td>{supplier.contact_email}</td>
-                  <td>{supplier.contact_phone}</td>
-                  <td>
-                    <span className="flex items-center gap-2">
-                      <HiOutlineCube className="text-sm" />
-                      <span>
-                        {typeof supplier.products_count === "number"
-                          ? supplier.products_count
-                          : 0}
-                      </span>
-                    </span>
-                  </td>
-                  <td>
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full text-sm ${supplier.status === "Active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}
-                    >
-                      {supplier.status}
-                    </span>
-                  </td>
-                  <td className="flex items-center gap-1 justify-center action">
-                    {canView && (
-                      <button
-                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="View"
-                        onClick={() => handleView(supplier)}
-                      >
-                        <HiOutlineEye className="text-xl" />
-                      </button>
-                    )}
-                    {canUpdate && (
-                      <button
-                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Update"
-                        onClick={() => {
-                          setUpdateSupplier(supplier);
-                          setModalOpen(true);
-                        }}
-                      >
-                        <HiOutlinePencil className="text-xl" />
-                      </button>
-                    )}
-                    {canDelete && (
-                      <button
-                        className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Delete"
-                        onClick={() => handleDelete(supplier._id)}
-                      >
-                        <HiOutlineTrash className="text-xl" />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {suppliers.length === 0 && (
+      <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+        <div className="table-scroll-container">
+          {loading ? (
+            <Loading />
+          ) : error ? (
+            <div className="p-8 text-center text-red-500">{error}</div>
+          ) : (
+            <table className="min-w-full text-left text-sm align-middle">
+              <thead className="table-sticky-header">
                 <tr>
-                  <td colSpan="7">
-                    <NoDataFound message="No suppliers found." />
-                  </td>
+                  <th className="number">No.</th>
+                  <th>Company Name</th>
+                  <th>Contact Person</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Products</th>
+                  <th>Status</th>
+                  {canView || canUpdate || canDelete ? (
+                    <th className="text-center action">Actions</th>
+                  ) : null}
                 </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {suppliers.map((supplier, index) => (
+                  <tr key={supplier._id} className="hover:bg-[#f1f5f9]">
+                    <td className="number">
+                      {index + 1 + (pagination.page - 1) * pagination.limit}
+                    </td>
+                    <td>
+                      <div className="flex items-center gap-2">
+                        <HiOutlineBuildingOffice2 className="text-lg text-blue-700" />
+                        {supplier.company_name}
+                      </div>
+                    </td>
+                    <td className="flex items-center gap-1">
+                      {supplier.contact_person}
+                    </td>
+                    <td>{supplier.contact_email}</td>
+                    <td>{supplier.contact_phone}</td>
+                    <td>
+                      <span className="flex items-center gap-2">
+                        <HiOutlineCube className="text-sm" />
+                        <span>
+                          {typeof supplier.products_count === "number"
+                            ? supplier.products_count
+                            : 0}
+                        </span>
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-sm ${supplier.status === "Active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}
+                      >
+                        {supplier.status}
+                      </span>
+                    </td>
+                    <td className="flex items-center gap-1 justify-center action">
+                      {canView && (
+                        <button
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="View"
+                          onClick={() => handleView(supplier)}
+                        >
+                          <HiOutlineEye className="text-xl" />
+                        </button>
+                      )}
+                      {canUpdate && (
+                        <button
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="Update"
+                          onClick={() => {
+                            setUpdateSupplier(supplier);
+                            setModalOpen(true);
+                          }}
+                        >
+                          <HiOutlinePencil className="text-xl" />
+                        </button>
+                      )}
+                      {canDelete && (
+                        <button
+                          className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="Delete"
+                          onClick={() => handleDelete(supplier._id)}
+                        >
+                          <HiOutlineTrash className="text-xl" />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {suppliers.length === 0 && (
+                  <tr>
+                    <td colSpan="7">
+                      <NoDataFound message="No suppliers found." />
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
       {suppliers.length > 0 && (
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-3">
           <Pagination
             total={pagination.totalItems}
             page={pagination.page}

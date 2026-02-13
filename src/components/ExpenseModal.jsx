@@ -160,7 +160,7 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                             key={cat._id}
                             value={cat}
                             className={({ selected }) =>
-                              `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                              `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                             }
                           >
                             {({ selected }) => (

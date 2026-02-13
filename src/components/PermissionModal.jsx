@@ -113,13 +113,7 @@ const initialPermission = {
   permissions: [],
 };
 
-const PermissionModal = ({
-  open,
-  onClose,
-  onSave,
-  data,
-  viewOnly = false,
-}) => {
+const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   // Always deep clone the initial permission to avoid reference issues
   function clonePermission(obj) {
     return obj ? JSON.parse(JSON.stringify(obj)) : initialPermission;
@@ -166,16 +160,16 @@ const PermissionModal = ({
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl p-5 w-full max-w-[52%] max-h-[80vh] shadow-xl relative">
-        <h2 className="text-xl font-bold mb-6 text-center">
+      <div className="bg-white rounded-2xl p-5 w-full max-w-[52%] max-h-[90vh] shadow-xl relative flex flex-col">
+        <h2 className="text-xl font-bold mb-6 text-center shrink-0">
           {viewOnly
             ? "Permission Details"
             : data
               ? "Update Permission"
               : "Add Permission"}
         </h2>
-        <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
-          <div className="col-span-2 mb-2">
+        <form className="flex flex-col flex-1 max-h-[50vh] gap-5 px-1">
+          <div className="col-span-2 mb-2 shrink-0">
             <h3 className="flex items-center gap-2 text-base mb-2 text-black">
               <HiOutlineDocumentText className="inline-block text-xl text-black" />
               <span>Basic Information</span>
@@ -216,77 +210,85 @@ const PermissionModal = ({
               </div>
             </div>
           </div>
-          <div className="col-span-2 mb-2">
-            <h3 className="flex items-center gap-2 text-base mb-2 text-black">
+          <div className="col-span-2 mb-2 flex flex-col flex-1 min-h-0">
+            <h3 className="flex items-center gap-2 text-base mb-2 text-black shrink-0">
               <HiOutlineKey className="inline-block text-xl text-black" />
               <span>Permissions</span>
             </h3>
-            <div className="bg-white rounded-xl overflow-x-auto border border-gray-100 px-3">
-              <table className="min-w-full text-center align-middle">
-                <thead>
-                  <tr>
-                    <th className="text-left">Module</th>
-                    <th>Check All</th>
-                    <th>View</th>
-                    <th>Create</th>
-                    <th>Update</th>
-                    <th>Delete</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {permissionTable.map((row) => (
-                    <tr key={row.label} className="border-t border-gray-100">
-                      <td className="text-left">{row.label}</td>
-                      <td>
-                        <input
-                          className="w-5 h-5 mt-2 cursor-pointer accent-[#1e3a5f]"
-                          type="checkbox"
-                          checked={row.actions.every((a) =>
-                            permission.permissions?.includes(a),
-                          )}
-                          onChange={(e) => {
-                            updatePermissionsState((set) => {
-                              if (e.target.checked) {
-                                row.actions.forEach((a) => set.add(a));
-                              } else {
-                                row.actions.forEach((a) => set.delete(a));
-                              }
-                              return set;
-                            });
-                          }}
-                          disabled={viewOnly}
-                        />
-                      </td>
-                      {["view", "create", "update", "delete"].map((action) => {
-                        const actionKey = row.actions.find((a) =>
-                          a.startsWith(action),
-                        );
-                        return (
-                          <td className="text-center" key={action}>
-                            {actionKey ? (
-                              <input
-                                className="w-5 h-5 mt-2 cursor-pointer accent-[#1e3a5f]"
-                                type="checkbox"
-                                value={actionKey}
-                                checked={
-                                  permission.permissions?.includes(actionKey) ||
-                                  false
-                                }
-                                onChange={handlePermissionChange}
-                                disabled={viewOnly}
-                              />
-                            ) : null}
-                          </td>
-                        );
-                      })}
+            <div className="bg-white rounded-xl border border-gray-100 flex-1 flex flex-col min-h-0">
+              <div className="table-scroll-container h-full rounded-xl">
+                <table className="min-w-full text-center text-sm align-middle">
+                  <thead className="table-sticky-header">
+                    <tr>
+                      <th className="text-left">Module</th>
+                      <th>Check All</th>
+                      <th>View</th>
+                      <th>Create</th>
+                      <th>Update</th>
+                      <th>Delete</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {permissionTable.map((row) => (
+                      <tr
+                        key={row.label}
+                        className="border-t border-gray-100 hover:bg-[#f1f5f9] !transform-none !transition-none"
+                      >
+                        <td className="text-left">{row.label}</td>
+                        <td>
+                          <input
+                            className="w-5 h-5 mt-2 cursor-pointer accent-[#1e3a5f]"
+                            type="checkbox"
+                            checked={row.actions.every((a) =>
+                              permission.permissions?.includes(a),
+                            )}
+                            onChange={(e) => {
+                              updatePermissionsState((set) => {
+                                if (e.target.checked) {
+                                  row.actions.forEach((a) => set.add(a));
+                                } else {
+                                  row.actions.forEach((a) => set.delete(a));
+                                }
+                                return set;
+                              });
+                            }}
+                            disabled={viewOnly}
+                          />
+                        </td>
+                        {["view", "create", "update", "delete"].map(
+                          (action) => {
+                            const actionKey = row.actions.find((a) =>
+                              a.startsWith(action),
+                            );
+                            return (
+                              <td className="text-center" key={action}>
+                                {actionKey ? (
+                                  <input
+                                    className={`w-5 h-5 mt-2 accent-[#1e3a5f] ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
+                                    type="checkbox"
+                                    value={actionKey}
+                                    checked={
+                                      permission.permissions?.includes(
+                                        actionKey,
+                                      ) || false
+                                    }
+                                    onChange={handlePermissionChange}
+                                    disabled={viewOnly}
+                                  />
+                                ) : null}
+                              </td>
+                            );
+                          },
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </form>
-        <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
+        <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4 shrink-0">
           <button
             type="button"
             className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-100 flex items-center gap-2 cursor-pointer text-sm"
@@ -308,7 +310,11 @@ const PermissionModal = ({
               }}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />
-           {viewOnly ? "Permission Details" : permission._id ? "Update Permission" : "Add Permission"}
+              {viewOnly
+                ? "Permission Details"
+                : permission._id
+                  ? "Update Permission"
+                  : "Add Permission"}
             </button>
           )}
         </div>

@@ -83,7 +83,7 @@ const ActivityLog = () => {
   };
 
   return (
-    <div>
+    <div className="h-content-available">
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold">Activity Log</h1>
@@ -118,7 +118,9 @@ const ActivityLog = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">From</label>
+            <label className="block text-gray-700 text-sm mb-1">
+              Start Date
+            </label>
             <DatePicker
               selected={startDate}
               onChange={(date) =>
@@ -128,7 +130,7 @@ const ActivityLog = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">To</label>
+            <label className="block text-gray-700 text-sm mb-1">End Date</label>
             <DatePicker
               selected={endDate}
               onChange={(date) =>
@@ -139,56 +141,61 @@ const ActivityLog = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-100 px-3">
-        {loading ? (
-          <Loading />
-        ) : error ? (
-          <div className="p-8 text-center text-red-500">{error}</div>
-        ) : (
-          <table className="min-w-full text-left text-sm align-middle">
-            <thead>
-              <tr>
-                <th className="number">No.</th>
-                <th>User</th>
-                <th>Entity Type</th>
-                <th>Details</th>
-                <th>Timestamp</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {logs.map((log, index) => (
-                <tr key={log._id}>
-                  <td className="number">
-                    {index + 1 + (pagination.page - 1) * pagination.limit}
-                  </td>
-                  <td>
-                    {log.user?.first_name + " " + log.user?.last_name || "-"}
-                  </td>
-                  <td>{log.entity_type || "-"}</td>
-                  <td>{log.details || "-"}</td>
-                  <td>{formatDate(log.createdAt, true)}</td>
-                  <td>
-                    {log.action
-                      ? log.action.replace(/_/g, " ").charAt(0).toUpperCase() +
-                        log.action.replace(/_/g, " ").slice(1)
-                      : "-"}
-                  </td>
-                </tr>
-              ))}
-              {logs.length === 0 && (
+      <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+        <div className="table-scroll-container">
+          {loading ? (
+            <Loading />
+          ) : error ? (
+            <div className="p-8 text-center text-red-500">{error}</div>
+          ) : (
+            <table className="min-w-full text-left text-sm align-middle">
+              <thead className="table-sticky-header">
                 <tr>
-                  <td colSpan="7">
-                    <NoDataFound message="No activity logs found." />
-                  </td>
+                  <th className="number">No.</th>
+                  <th>User</th>
+                  <th>Entity Type</th>
+                  <th>Details</th>
+                  <th>Timestamp</th>
+                  <th>Action</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {logs.map((log, index) => (
+                  <tr key={log._id} className="hover:bg-[#f1f5f9]">
+                    <td className="number">
+                      {index + 1 + (pagination.page - 1) * pagination.limit}
+                    </td>
+                    <td>
+                      {log.user?.first_name + " " + log.user?.last_name || "-"}
+                    </td>
+                    <td>{log.entity_type || "-"}</td>
+                    <td>{log.details || "-"}</td>
+                    <td>{formatDate(log.createdAt, true)}</td>
+                    <td>
+                      {log.action
+                        ? log.action
+                            .replace(/_/g, " ")
+                            .charAt(0)
+                            .toUpperCase() +
+                          log.action.replace(/_/g, " ").slice(1)
+                        : "-"}
+                    </td>
+                  </tr>
+                ))}
+                {logs.length === 0 && (
+                  <tr>
+                    <td colSpan="7">
+                      <NoDataFound message="No activity logs found." />
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
       {logs.length > 0 && pagination && typeof pagination === "object" && (
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-3">
           <Pagination
             total={pagination.totalItems}
             page={pagination.page}

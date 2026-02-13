@@ -27,7 +27,13 @@ const initialOrderRequest = {
   ],
 };
 
-const OrderRequestModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
+const OrderRequestModal = ({
+  open,
+  onClose,
+  onSave,
+  data,
+  viewOnly = false,
+}) => {
   const [products, setProducts] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [order, setOrder] = useState(data || initialOrderRequest);
@@ -222,7 +228,11 @@ const OrderRequestModal = ({ open, onClose, onSave, data, viewOnly = false }) =>
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[65%] max-h-[80vh] shadow-xl relative">
         <h2 className="text-xl font-bold mb-6 text-center">
-          {viewOnly ? "Order Request Details" : data?._id ? "Update Order Request" : "New Order Request"}
+          {viewOnly
+            ? "Order Request Details"
+            : data?._id
+              ? "Update Order Request"
+              : "New Order Request"}
         </h2>
         <form className="space-y-5 overflow-auto max-h-[60vh] px-1">
           <div className="col-span-2 mb-2">
@@ -288,7 +298,7 @@ const OrderRequestModal = ({ open, onClose, onSave, data, viewOnly = false }) =>
                           key={supplier._id}
                           value={supplier}
                           className={({ selected }) =>
-                            `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                            `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                           }
                         >
                           {supplier.company_name}
@@ -392,15 +402,14 @@ const OrderRequestModal = ({ open, onClose, onSave, data, viewOnly = false }) =>
                                   key={product._id}
                                   value={product}
                                   className={({ selected }) =>
-                                    `px-4 py-2 text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""} ${isDisabled ? "opacity-50 cursor-default bg-gray-50 text-gray-400" : "cursor-pointer"}`
+                                    `px-3 py-2 text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""} ${isDisabled ? "opacity-50 cursor-default bg-gray-50 text-gray-400" : "cursor-pointer"}`
                                   }
                                   disabled={isDisabled}
                                 >
                                   {product.name} (Stock:
                                   {product.stock -
                                     (product.reserved_stock || 0)}
-                                  )
-                                  {isSelected ? " - Already added" : ""}
+                                  ){isSelected ? " - Already added" : ""}
                                   {product.stock <= 0 ? " - Out of stock" : ""}
                                 </Listbox.Option>
                               );
@@ -419,7 +428,6 @@ const OrderRequestModal = ({ open, onClose, onSave, data, viewOnly = false }) =>
                       type="number"
                       min={1}
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
-                      placeholder="Qty"
                       value={item.quantity}
                       onChange={(e) => {
                         if (viewOnly) return;

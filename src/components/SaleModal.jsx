@@ -201,7 +201,7 @@ export default function SaleModal({
                           key={u._id}
                           value={u._id}
                           className={({ selected }) =>
-                            `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                            `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                           }
                         >
                           {u.first_name} {u.last_name} ({u.email})
@@ -266,7 +266,7 @@ export default function SaleModal({
                                   key={p._id}
                                   value={p._id}
                                   className={({ selected }) =>
-                                    `px-4 py-2 text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""} ${isDisabled ? "opacity-50 cursor-default bg-gray-50 text-gray-400" : "cursor-pointer "}`
+                                    `px-3 py-2 text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""} ${isDisabled ? "opacity-50 cursor-default bg-gray-50 text-gray-400" : "cursor-pointer "}`
                                   }
                                   disabled={isDisabled}
                                 >
@@ -411,7 +411,7 @@ export default function SaleModal({
                           key={method}
                           value={method}
                           className={({ selected }) =>
-                            `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                            `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                           }
                         >
                           {method}

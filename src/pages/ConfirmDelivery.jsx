@@ -45,7 +45,7 @@ function ApprovalStatusDropdown({ value, onChange }) {
               key={option.value}
               value={option.value}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option.label}
@@ -77,7 +77,7 @@ function DeliveryStatusDropdown({ value, onChange }) {
               key={option.value}
               value={option.value}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {option.label}
@@ -232,7 +232,7 @@ const DeliveryConfirmation = () => {
   };
 
   return (
-    <div>
+    <div className="h-content-available">
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold">Delivery Confirmation</h1>
@@ -266,7 +266,9 @@ const DeliveryConfirmation = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">From</label>
+            <label className="block text-gray-700 text-sm mb-1">
+              Start Date
+            </label>
             <DatePicker
               selected={startDate}
               onChange={(date) =>
@@ -276,7 +278,7 @@ const DeliveryConfirmation = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">To</label>
+            <label className="block text-gray-700 text-sm mb-1">End Date</label>
             <DatePicker
               selected={endDate}
               onChange={(date) =>
@@ -323,106 +325,113 @@ const DeliveryConfirmation = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-100 px-3">
-        {loading ? (
-          <Loading />
-        ) : error ? (
-          <div className="p-8 text-center text-red-500">{error}</div>
-        ) : (
-          <table className="min-w-full text-left text-sm align-middle">
-            <thead>
-              <tr>
-                <th className="number">No.</th>
-                <th>Requested By</th>
-                <th>Product(s)</th>
-                <th>Quantity(ies)</th>
-                <th>Requested Date</th>
-                <th>Delivery Date</th>
-                <th>Approval Status</th>
-                <th>Delivery Status</th>
-                <th className="text-center action">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {confirmDeliveries.map((confirm_delivery, index) => {
-                const approve = confirm_delivery.approve_request;
-                const delivery = confirm_delivery.confirm_delivery;
-                return (
-                  <tr key={confirm_delivery._id}>
-                    <td className="number">
-                      {index + 1 + (pagination.page - 1) * pagination.limit}
-                    </td>
-                    <td>
-                      {confirm_delivery.requester?.first_name}
-                      {confirm_delivery.requester?.last_name}
-                    </td>
-                    <td>
-                      {Array.isArray(confirm_delivery?.items) &&
-                      confirm_delivery?.items.length > 0
-                        ? confirm_delivery?.items
-                            .map((item) => item.product?.name)
-                            .join(", ")
-                        : "-"}
-                    </td>
-                    <td>
-                      {Array.isArray(confirm_delivery?.items) &&
-                      confirm_delivery?.items.length > 0
-                        ? confirm_delivery?.items
-                            .map((item) => item.quantity)
-                            .join(", ")
-                        : "-"}
-                    </td>
-                    <td>{formatDate(confirm_delivery.createdAt) || "-"}</td>
-                    <td>{formatDate(confirm_delivery.delivery_date) || "-"}</td>
-                    <td>
-                      <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm ${approve?.status === "approved" ? "bg-green-100 text-green-700" : approve?.status === "rejected" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}
-                      >
-                        {approve?.status
-                          ? approve.status.charAt(0).toUpperCase() +
-                            approve.status.slice(1)
-                          : "Pending"}
-                      </span>
-                    </td>
-                    <td>
-                      <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm ${delivery?.status === "delivered" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}
-                      >
-                        {delivery?.status === "delivered"
-                          ? "Delivered"
-                          : "Pending"}
-                      </span>
-                    </td>
-                    <td className="text-center action">
-                      {(!delivery || delivery.status !== "delivered") &&
-                        canUpdate && (
-                          <button
-                            className="text-green-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                            title="Confirm Delivery"
-                            onClick={() =>
-                              handleConfirmDelivery(confirm_delivery._id)
-                            }
-                          >
-                            <HiOutlineCheckCircle className="text-2xl" />
-                          </button>
-                        )}
+      <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+        <div className="table-scroll-container">
+          {loading ? (
+            <Loading />
+          ) : error ? (
+            <div className="p-8 text-center text-red-500">{error}</div>
+          ) : (
+            <table className="min-w-full text-left text-sm align-middle">
+              <thead className="table-sticky-header">
+                <tr>
+                  <th className="number">No.</th>
+                  <th>Requested By</th>
+                  <th>Product(s)</th>
+                  <th>Quantity(ies)</th>
+                  <th>Requested Date</th>
+                  <th>Delivery Date</th>
+                  <th>Approval Status</th>
+                  <th>Delivery Status</th>
+                  <th className="text-center action">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {confirmDeliveries.map((confirm_delivery, index) => {
+                  const approve = confirm_delivery.approve_request;
+                  const delivery = confirm_delivery.confirm_delivery;
+                  return (
+                    <tr
+                      key={confirm_delivery._id}
+                      className="hover:bg-[#f1f5f9]"
+                    >
+                      <td className="number">
+                        {index + 1 + (pagination.page - 1) * pagination.limit}
+                      </td>
+                      <td>
+                        {confirm_delivery.requester?.first_name}
+                        {confirm_delivery.requester?.last_name}
+                      </td>
+                      <td>
+                        {Array.isArray(confirm_delivery?.items) &&
+                        confirm_delivery?.items.length > 0
+                          ? confirm_delivery?.items
+                              .map((item) => item.product?.name)
+                              .join(", ")
+                          : "-"}
+                      </td>
+                      <td>
+                        {Array.isArray(confirm_delivery?.items) &&
+                        confirm_delivery?.items.length > 0
+                          ? confirm_delivery?.items
+                              .map((item) => item.quantity)
+                              .join(", ")
+                          : "-"}
+                      </td>
+                      <td>{formatDate(confirm_delivery.createdAt) || "-"}</td>
+                      <td>
+                        {formatDate(confirm_delivery.delivery_date) || "-"}
+                      </td>
+                      <td>
+                        <span
+                          className={`inline-block px-3 py-1 rounded-full text-sm ${approve?.status === "approved" ? "bg-green-100 text-green-700" : approve?.status === "rejected" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}
+                        >
+                          {approve?.status
+                            ? approve.status.charAt(0).toUpperCase() +
+                              approve.status.slice(1)
+                            : "Pending"}
+                        </span>
+                      </td>
+                      <td>
+                        <span
+                          className={`inline-block px-3 py-1 rounded-full text-sm ${delivery?.status === "delivered" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}
+                        >
+                          {delivery?.status === "delivered"
+                            ? "Delivered"
+                            : "Pending"}
+                        </span>
+                      </td>
+                      <td className="text-center action">
+                        {(!delivery || delivery.status !== "delivered") &&
+                          canUpdate && (
+                            <button
+                              className="text-green-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                              title="Confirm Delivery"
+                              onClick={() =>
+                                handleConfirmDelivery(confirm_delivery._id)
+                              }
+                            >
+                              <HiOutlineCheckCircle className="text-2xl" />
+                            </button>
+                          )}
+                      </td>
+                    </tr>
+                  );
+                })}
+                {confirmDeliveries.length === 0 && (
+                  <tr>
+                    <td colSpan="9">
+                      <NoDataFound message="No deliveries found." />
                     </td>
                   </tr>
-                );
-              })}
-              {confirmDeliveries.length === 0 && (
-                <tr>
-                  <td colSpan="9">
-                    <NoDataFound message="No deliveries found." />
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
       {confirmDeliveries.length > 0 && (
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-3">
           <Pagination
             total={pagination.totalItems}
             page={pagination.page}

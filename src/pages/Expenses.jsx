@@ -62,7 +62,7 @@ function CategoryDropdown({ value, onChange }) {
               key={cat}
               value={cat}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {cat}
@@ -90,7 +90,7 @@ const Expenses = () => {
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false);
-  const [updateExpense, setUpdateExpense] = useState(null);
+  const [editExpense, setEditExpense] = useState(null);
 
   // Loading and Error
   const [loading, setLoading] = useState(false);
@@ -151,7 +151,7 @@ const Expenses = () => {
   }
 
   function handleView(expense) {
-    setUpdateExpense(null);
+    setEditExpense(null);
     setViewExpense(expense);
     setModalOpen(true);
   }
@@ -160,8 +160,8 @@ const Expenses = () => {
     setLoading(true);
     setError("");
     try {
-      if (updateExpense) {
-        await updateExpense(updateExpense._id, expenseData);
+      if (editExpense) {
+        await updateExpense(editExpense._id, expenseData);
         dialog.success("Expense updated successfully");
       } else {
         await createExpense(expenseData);
@@ -169,7 +169,7 @@ const Expenses = () => {
       }
       fetchExpenses(1, pagination.limit);
       setModalOpen(false);
-      setUpdateExpense(null);
+      setEditExpense(null);
     } catch (err) {
       const msg =
         err?.response?.data?.error || err?.message || "Failed to save expense";
@@ -212,17 +212,17 @@ const Expenses = () => {
   };
 
   return (
-    <div>
+    <div className="h-content-available">
       <ExpenseModal
-        key={modalOpen ? (updateExpense ? updateExpense._id : "new") : "closed"}
+        key={modalOpen ? (editExpense ? editExpense._id : "new") : "closed"}
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setUpdateExpense(null);
+          setEditExpense(null);
           setViewExpense(null);
         }}
         onSave={handleSave}
-        data={updateExpense || viewExpense}
+        data={editExpense || viewExpense}
         viewOnly={!!viewExpense}
       />
       <div className="flex items-center justify-between mb-8">
@@ -237,7 +237,7 @@ const Expenses = () => {
             className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
             onClick={() => {
               setViewExpense(null);
-              setUpdateExpense(null);
+              setEditExpense(null);
               setModalOpen(true);
             }}
           >
@@ -271,7 +271,9 @@ const Expenses = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">From</label>
+            <label className="block text-gray-700 text-sm mb-1">
+              Start Date
+            </label>
             <DatePicker
               selected={startDate}
               onChange={(date) =>
@@ -281,7 +283,7 @@ const Expenses = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">To</label>
+            <label className="block text-gray-700 text-sm mb-1">End Date</label>
             <DatePicker
               selected={endDate}
               onChange={(date) =>
@@ -296,107 +298,109 @@ const Expenses = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-100 px-3">
-        {loading ? (
-          <Loading />
-        ) : error ? (
-          <div className="p-8 text-center text-red-500">{error}</div>
-        ) : (
-          <table className="min-w-full text-left text-sm align-middle">
-            <thead>
-              <tr>
-                <th className="number">No.</th>
-                <th>Description</th>
-                <th>Category</th>
-                <th>Amount</th>
-                <th>Date</th>
-                <th>Receipt</th>
-                {canView || canUpdate || canDelete ? (
-                  <th className="action">Actions</th>
-                ) : null}
-              </tr>
-            </thead>
-            <tbody>
-              {expenses.map((expense, index) => (
-                <tr key={expense._id}>
-                  <td className="number">
-                    {index + 1 + (pagination.page - 1) * pagination.limit}
-                  </td>
-                  <td>{expense.description}</td>
-                  <td>
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full text-sm ${categoryStyles[expense?.category] || "bg-gray-100 text-gray-700"}`}
-                    >
-                      {expense.category}
-                    </span>
-                  </td>
-
-                  <td className="font-medium text-red-600">
-                    -${Number(expense.amount).toFixed(2)}
-                  </td>
-                  <td>{formatDate(expense.date, true)}</td>
-                  <td>
-                    {expense.receipt_image ? (
-                      <a
-                        href={expense.receipt_image}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline text-xs"
-                      >
-                        View
-                      </a>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                  <td className="flex items-center gap-1 justify-center action">
-                    {canView && (
-                      <button
-                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="View"
-                        onClick={() => handleView(expense)}
-                      >
-                        <HiOutlineEye className="text-xl" />
-                      </button>
-                    )}
-                    {canUpdate && (
-                      <button
-                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Update"
-                        onClick={() => {
-                          setViewExpense(null);
-                          setUpdateExpense(expense);
-                          setModalOpen(true);
-                        }}
-                      >
-                        <HiOutlinePencil className="text-xl" />
-                      </button>
-                    )}
-                    {canDelete && (
-                      <button
-                        className="text-red-500 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Delete"
-                        onClick={() => handleDelete(expense._id)}
-                      >
-                        <HiOutlineTrash className="text-xl" />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {expenses.length === 0 && (
+      <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+        <div className="table-scroll-container">
+          {loading ? (
+            <Loading />
+          ) : error ? (
+            <div className="p-8 text-center text-red-500">{error}</div>
+          ) : (
+            <table className="min-w-full text-left text-sm align-middle">
+              <thead className="table-sticky-header">
                 <tr>
-                  <td colSpan="7">
-                    <NoDataFound message="No expenses found." />
-                  </td>
+                  <th className="number">No.</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Receipt</th>
+                  {canView || canUpdate || canDelete ? (
+                    <th className="action">Actions</th>
+                  ) : null}
                 </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {expenses.map((expense, index) => (
+                  <tr key={expense._id} className="hover:bg-[#f1f5f9]">
+                    <td className="number">
+                      {index + 1 + (pagination.page - 1) * pagination.limit}
+                    </td>
+                    <td>{expense.description}</td>
+                    <td>
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-sm ${categoryStyles[expense?.category] || "bg-gray-100 text-gray-700"}`}
+                      >
+                        {expense.category}
+                      </span>
+                    </td>
+
+                    <td className="font-medium text-red-600">
+                      -${Number(expense.amount).toFixed(2)}
+                    </td>
+                    <td>{formatDate(expense.date, true)}</td>
+                    <td>
+                      {expense.receipt_image ? (
+                        <a
+                          href={expense.receipt_image}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline text-xs"
+                        >
+                          View
+                        </a>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td className="flex items-center gap-1 justify-center action">
+                      {canView && (
+                        <button
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="View"
+                          onClick={() => handleView(expense)}
+                        >
+                          <HiOutlineEye className="text-xl" />
+                        </button>
+                      )}
+                      {canUpdate && (
+                        <button
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="Update"
+                          onClick={() => {
+                            setViewExpense(null);
+                            setEditExpense(expense);
+                            setModalOpen(true);
+                          }}
+                        >
+                          <HiOutlinePencil className="text-xl" />
+                        </button>
+                      )}
+                      {canDelete && (
+                        <button
+                          className="text-red-500 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="Delete"
+                          onClick={() => handleDelete(expense._id)}
+                        >
+                          <HiOutlineTrash className="text-xl" />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {expenses.length === 0 && (
+                  <tr>
+                    <td colSpan="7">
+                      <NoDataFound message="No expenses found." />
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
       {expenses.length > 0 && (
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-3">
           <Pagination
             total={pagination.totalItems}
             page={pagination.page}

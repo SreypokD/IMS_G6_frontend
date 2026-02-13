@@ -144,8 +144,9 @@ export const updateConfirmDelivery = (id, data) =>
 // Sales
 export const getSales = (params = {}) => api.get(sales, { params });
 export const createSale = (data) => api.post(sales, data);
-export const updateSale = (id, data) => api.patch(`${sales}/${id}`, data);
-export const deleteSale = (id) => api.delete(`${sales}/${id}`);
+export const updateSale = (id, data) => api.patch(`/sales/${id}`, data);
+export const deleteSale = (id) => api.delete(`/sales/${id}`);
+export const getSalesSummary = () => api.get("/sales/summary");
 
 // Stocks
 export const getStocks = (params = {}) => api.get(stocks, { params });

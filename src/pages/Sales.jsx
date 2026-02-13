@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { getSales, deleteSale, getUsers, createSale, updateSale } from "../api";
+import {
+  getSales,
+  deleteSale,
+  getUsers,
+  createSale,
+  updateSale,
+  getSalesSummary,
+} from "../api";
 import Pagination from "../components/Pagination";
 import SaleModal from "../components/SaleModal";
 import { useAuth } from "../contexts/auth/useAuth";
@@ -49,7 +56,7 @@ function UserDropdown({ value, onChange, userOptions = [] }) {
               key={user._id}
               value={user._id}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {user.first_name} {user.last_name}
@@ -81,7 +88,7 @@ function StatusDropdown({ value, onChange }) {
               key={status}
               value={status}
               className={({ selected }) =>
-                `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
               }
             >
               {status}
@@ -95,6 +102,17 @@ function StatusDropdown({ value, onChange }) {
 
 const Sales = () => {
   const [sales, setSales] = useState([]);
+  const [summary, setSummary] = useState({
+    totalRevenue: 0,
+    totalSales: 0,
+    avgTransaction: 0,
+    pendingPayments: 0,
+    trends: {
+      revenue: 0,
+      sales: 0,
+      avgTransaction: 0,
+    },
+  });
 
   // View Sale
   const [viewSale, setViewSale] = useState(null);
@@ -140,13 +158,31 @@ const Sales = () => {
   const canUpdate = user?.permission?.permissions?.includes("update_sale");
   const canDelete = user?.permission?.permissions?.includes("delete_sale");
   const canViewUsers = user?.permission?.permissions?.includes("view_user");
+  
+  async function fetchSummary() {
+    try {
+      const res = await getSalesSummary();
+      if (res && res.data) {
+        setSummary(res.data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch sales summary:", err);
+    }
+  }
 
   useEffect(() => {
     if (user) {
       if (canViewUsers) {
-        getUsers().then((res) => setUsers(res.data.data || []));
+        getUsers()
+          .then((res) => {
+            if (res && res.data) {
+              setUsers(res.data.data || []);
+            }
+          })
+          .catch((err) => console.error("Failed to load users", err));
       }
       fetchSales(1, 10);
+      fetchSummary();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
@@ -210,6 +246,7 @@ const Sales = () => {
       fetchSales(1, pagination.limit);
       setModalOpen(false);
       setUpdateSale(null);
+      fetchSummary();
     } catch (err) {
       const msg =
         err?.response?.data?.error || err?.message || "Failed to save sale";
@@ -233,12 +270,15 @@ const Sales = () => {
       try {
         await deleteSale(id);
         await dialog.success("Sale deleted successfully");
+        await dialog.success("Sale deleted successfully");
         fetchSales(pagination.page, pagination.limit);
+        fetchSummary();
       } catch {
         dialog.error("Failed to delete sale");
       } finally {
         setLoading(false);
       }
+      fetchSummary();
     }
   }
 
@@ -252,7 +292,7 @@ const Sales = () => {
   };
 
   return (
-    <div>
+    <div className="h-content-available">
       <SaleModal
         key={modalOpen ? (updateSale ? updateSale._id : "new") : "closed"}
         open={modalOpen}
@@ -289,53 +329,84 @@ const Sales = () => {
         <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <BsCurrencyDollar className="text-2xl text-green-600" />
-            <div className="flex items-center gap-2 text-green-600 text-sm">
-              <HiTrendingUp />
-              <span>12.5%</span>
+            <div
+              className={`flex items-center gap-2 text-sm ${
+                summary.trends?.revenue >= 0 ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {summary.trends?.revenue >= 0 ? (
+                <HiTrendingUp />
+              ) : (
+                <HiTrendingDown />
+              )}
+              <span>{Math.abs(summary.trends?.revenue || 0)}%</span>
             </div>
           </div>
           <div>
             <div className="text-gray-500 text-sm">Total Revenue</div>
-            <div className="text-xl font-bold">$571.87</div>
+            <div className="text-xl font-bold">
+              ${summary.totalRevenue?.toFixed(2)}
+            </div>
           </div>
         </div>
         <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiOutlineShoppingCart className="text-2xl text-gray-700" />
-            <div className="flex items-center gap-2 text-green-600 text-sm">
-              <HiTrendingUp />
-              <span>8.3%</span>
+            <div
+              className={`flex items-center gap-2 text-sm ${
+                summary.trends?.sales >= 0 ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {summary.trends?.sales >= 0 ? (
+                <HiTrendingUp />
+              ) : (
+                <HiTrendingDown />
+              )}
+              <span>{Math.abs(summary.trends?.sales || 0)}%</span>
             </div>
           </div>
           <div>
             <div className="text-gray-500 text-sm">Total Sales</div>
-            <div className="text-xl font-bold">6</div>
+            <div className="text-xl font-bold">{summary.totalSales}</div>
           </div>
         </div>
         <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiTrendingUp className="text-2xl text-yellow-600" />
-            <div className="flex items-center gap-2 text-green-600 text-sm">
-              <HiTrendingUp />
-              <span>5.2%</span>
+            <div
+              className={`flex items-center gap-2 text-sm ${
+                summary.trends?.avgTransaction >= 0
+                  ? "text-green-600"
+                  : "text-red-600"
+              }`}
+            >
+              {summary.trends?.avgTransaction >= 0 ? (
+                <HiTrendingUp />
+              ) : (
+                <HiTrendingDown />
+              )}
+              <span>{Math.abs(summary.trends?.avgTransaction || 0)}%</span>
             </div>
           </div>
           <div>
             <div className="text-gray-500 text-sm">Avg Transaction</div>
-            <div className="text-xl font-bold">$95.31</div>
+            <div className="text-xl font-bold">
+              ${summary.avgTransaction?.toFixed(2)}
+            </div>
           </div>
         </div>
         <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <HiOutlineClock className="text-2xl text-yellow-600" />
-            <div className="flex items-center gap-2 text-red-600 text-sm">
-              <HiTrendingDown />
-              <span>3.1%</span>
+            <div className="flex items-center gap-2 text-gray-400 text-sm">
+              <span>-</span>
             </div>
           </div>
           <div>
             <div className="text-gray-500 text-sm">Pending Payments</div>
-            <div className="text-xl font-bold">$145.96</div>
+            <div className="text-xl font-bold">
+              ${summary.pendingPayments?.toFixed(2)}
+            </div>
           </div>
         </div>
       </div>
@@ -365,7 +436,9 @@ const Sales = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">From</label>
+            <label className="block text-gray-700 text-sm mb-1">
+              Start Date
+            </label>
             <DatePicker
               selected={startDate}
               onChange={(date) =>
@@ -375,7 +448,7 @@ const Sales = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">To</label>
+            <label className="block text-gray-700 text-sm mb-1">End Date</label>
             <DatePicker
               selected={endDate}
               onChange={(date) =>
@@ -402,117 +475,119 @@ const Sales = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-100 px-3">
-        {loading ? (
-          <Loading />
-        ) : error ? (
-          <div className="p-8 text-center text-red-500">{error}</div>
-        ) : (
-          <table className="min-w-full text-left text-sm align-middle">
-            <thead>
-              <tr>
-                <th className="number">No.</th>
-                <th>Customer</th>
-                <th>Total</th>
-                <th>Payment Method</th>
-                <th>Status</th>
-                <th>Date</th>
-                {canView || canUpdate || canDelete ? (
-                  <th className="action">Actions</th>
-                ) : null}
-              </tr>
-            </thead>
-            <tbody>
-              {sales.map((sale, index) => {
-                const totalAmount = (() => {
-                  if (sale.items && sale.items.length > 0) {
-                    return sale.items.reduce((sum, item) => {
-                      const price = Number(item.price) || 0;
-                      const qty = Number(item.quantity) || 0;
-                      const discount = Number(item.discount) || 0;
-                      return sum + price * qty * (1 - discount / 100);
-                    }, 0);
-                  } else {
-                    const price = Number(sale.price) || 0;
-                    const qty = Number(sale.quantity) || 0;
-                    const discount = Number(sale.discount) || 0;
-                    return price * qty * (1 - discount / 100);
-                  }
-                })().toFixed(2);
+      <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+        <div className="table-scroll-container">
+          {loading ? (
+            <Loading />
+          ) : error ? (
+            <div className="p-8 text-center text-red-500">{error}</div>
+          ) : (
+            <table className="min-w-full text-left text-sm align-middle">
+              <thead className="table-sticky-header">
+                <tr>
+                  <th className="number">No.</th>
+                  <th>Customer</th>
+                  <th>Total</th>
+                  <th>Payment Method</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  {canView || canUpdate || canDelete ? (
+                    <th className="action">Actions</th>
+                  ) : null}
+                </tr>
+              </thead>
+              <tbody>
+                {sales.map((sale, index) => {
+                  const totalAmount = (() => {
+                    if (sale.items && sale.items.length > 0) {
+                      return sale.items.reduce((sum, item) => {
+                        const price = Number(item.price) || 0;
+                        const qty = Number(item.quantity) || 0;
+                        const discount = Number(item.discount) || 0;
+                        return sum + price * qty * (1 - discount / 100);
+                      }, 0);
+                    } else {
+                      const price = Number(sale.price) || 0;
+                      const qty = Number(sale.quantity) || 0;
+                      const discount = Number(sale.discount) || 0;
+                      return price * qty * (1 - discount / 100);
+                    }
+                  })().toFixed(2);
 
-                const customer =
-                  sale.customer ||
-                  users.find((u) => u._id === sale.customer_id);
+                  const customer =
+                    sale.customer ||
+                    users.find((u) => u._id === sale.customer_id);
 
-                return (
-                  <tr key={sale._id}>
-                    <td className="number">
-                      {index + 1 + (pagination.page - 1) * pagination.limit}
-                    </td>
-                    <td>
-                      {customer
-                        ? `${customer.first_name || ""} ${customer.last_name || ""}`
-                        : "N/A"}
-                    </td>
-                    <td>${totalAmount}</td>
-                    <td>{sale.payment_method}</td>
-                    <td>
-                      <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm capitalize ${sale.status === "processing" ? "bg-yellow-100 text-yellow-700" : sale.status === "completed" ? "bg-blue-100 text-blue-700" : sale.status === "cancelled" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"}`}
-                      >
-                        {sale.status}
-                      </span>
-                    </td>
-                    <td>{formatDate(sale.completed_at) || "-"}</td>
-                    <td className="flex items-center gap-1 justify-center action">
-                      {canView && (
-                        <button
-                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                          title="View"
-                          onClick={() => handleView(sale)}
+                  return (
+                    <tr key={sale._id} className="hover:bg-[#f1f5f9]">
+                      <td className="number">
+                        {index + 1 + (pagination.page - 1) * pagination.limit}
+                      </td>
+                      <td>
+                        {customer
+                          ? `${customer.first_name || ""} ${customer.last_name || ""}`
+                          : "N/A"}
+                      </td>
+                      <td>${totalAmount}</td>
+                      <td>{sale.payment_method}</td>
+                      <td>
+                        <span
+                          className={`inline-block px-3 py-1 rounded-full text-sm capitalize ${sale.status === "processing" ? "bg-yellow-100 text-yellow-700" : sale.status === "completed" ? "bg-blue-100 text-blue-700" : sale.status === "cancelled" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"}`}
                         >
-                          <HiOutlineEye className="text-xl" />
-                        </button>
-                      )}
-                      {canUpdate && (
-                        <button
-                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                          title="Update"
-                          onClick={() => {
-                            setViewSale(null);
-                            setUpdateSale(sale);
-                            setModalOpen(true);
-                          }}
-                        >
-                          <HiOutlinePencil className="text-xl" />
-                        </button>
-                      )}
-                      {canDelete && (
-                        <button
-                          className="text-red-500 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                          title="Delete"
-                          onClick={() => handleDelete(sale._id)}
-                        >
-                          <HiOutlineTrash className="text-xl" />
-                        </button>
-                      )}
+                          {sale.status}
+                        </span>
+                      </td>
+                      <td>{formatDate(sale.completed_at) || "-"}</td>
+                      <td className="flex items-center gap-1 justify-center action">
+                        {canView && (
+                          <button
+                            className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                            title="View"
+                            onClick={() => handleView(sale)}
+                          >
+                            <HiOutlineEye className="text-xl" />
+                          </button>
+                        )}
+                        {canUpdate && (
+                          <button
+                            className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                            title="Update"
+                            onClick={() => {
+                              setViewSale(null);
+                              setUpdateSale(sale);
+                              setModalOpen(true);
+                            }}
+                          >
+                            <HiOutlinePencil className="text-xl" />
+                          </button>
+                        )}
+                        {canDelete && (
+                          <button
+                            className="text-red-500 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                            title="Delete"
+                            onClick={() => handleDelete(sale._id)}
+                          >
+                            <HiOutlineTrash className="text-xl" />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+                {sales.length === 0 && (
+                  <tr>
+                    <td colSpan="7">
+                      <NoDataFound message="No sales found." />
                     </td>
                   </tr>
-                );
-              })}
-              {sales.length === 0 && (
-                <tr>
-                  <td colSpan="7">
-                    <NoDataFound message="No sales found." />
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
       {sales.length > 0 && (
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-3">
           <Pagination
             total={pagination.totalItems}
             page={pagination.page}

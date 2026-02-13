@@ -30,9 +30,15 @@ export default function Pagination({
     }
   }, [total, page, limit, last]);
 
+  const scrollToTop = () => {
+    const container = document.querySelector(".table-scroll-container");
+    if (container) container.scrollTop = 0;
+  };
+
   const handleGoTo = (p) => {
     if (p < 1 || p > last || p === page) return;
     onChange && onChange({ page: p, limit });
+    scrollToTop();
   };
 
   return (
@@ -110,20 +116,23 @@ export default function Pagination({
       <span className="text-sm text-[#64748b]">Rows per page:</span>
       <Listbox
         value={limit}
-        onChange={(val) => onChange && onChange({ page: 1, limit: val })}
+        onChange={(val) => {
+          onChange && onChange({ page: 1, limit: val });
+          scrollToTop();
+        }}
       >
         <div className="relative w-20">
-          <Listbox.Button className="cursor-pointer w-full bg-white border border-gray-200 rounded-lg h-9 px-2 text-left text-gray-800 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-400">
+          <Listbox.Button className="cursor-pointer w-full bg-white border border-gray-200 rounded-lg h-9 px-2 text-left text-gray-800 flex items-center justify-between">
             <span>{limit}</span>
             <HiOutlineSelector className="w-5 h-5 text-gray-400 ml-2" />
           </Listbox.Button>
-          <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          <Listbox.Options className="absolute z-10 bottom-full mb-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-65 overflow-auto focus:outline-none">
             {pageOptions.map((opt) => (
               <Listbox.Option
                 key={opt}
                 value={opt}
                 className={({ selected }) =>
-                  `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                  `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                 }
               >
                 {opt}

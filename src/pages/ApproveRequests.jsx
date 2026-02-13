@@ -172,7 +172,7 @@ const OrderRequestApproval = () => {
   };
 
   return (
-    <div>
+    <div className="h-content-available">
       <OrderRequestModal
         open={viewDialog.open}
         initial={
@@ -241,7 +241,9 @@ const OrderRequestApproval = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">From</label>
+            <label className="block text-gray-700 text-sm mb-1">
+              Start Date
+            </label>
             <DatePicker
               selected={startDate}
               onChange={(date) =>
@@ -251,7 +253,7 @@ const OrderRequestApproval = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">To</label>
+            <label className="block text-gray-700 text-sm mb-1">End Date</label>
             <DatePicker
               selected={endDate}
               onChange={(date) =>
@@ -262,110 +264,114 @@ const OrderRequestApproval = () => {
           </div>
         </div>
       </div>
-      <div className="bg-white rounded-xl overflow-x-auto border border-gray-100 px-3">
-        {loading ? (
-          <Loading />
-        ) : error ? (
-          <div className="p-8 text-center text-red-500">{error}</div>
-        ) : (
-          <table className="min-w-full text-left text-sm align-middle">
-            <thead>
-              <tr>
-                <th className="number">No.</th>
-                <th>Requested By</th>
-                <th>Product(s)</th>
-                <th>Quantity(ies)</th>
-                <th>Requested Date</th>
-                <th>Delivery Date</th>
-                <th>Notes</th>
-                {canUpdate ? (
-                  <th className="text-center action">Actions</th>
-                ) : null}
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order, index) => (
-                <tr key={order._id}>
-                  <td className="number">
-                    {index + 1 + (pagination.page - 1) * pagination.limit}
-                  </td>
-                  <td>
-                    {order.requester?.first_name +
-                      " " +
-                      order.requester?.last_name || "-"}
-                  </td>
-                  <td>
-                    {Array.isArray(order.items) && order.items.length > 0
-                      ? order.items
-                          .map((item) => item.product?.name || item.product_id)
-                          .join(", ")
-                      : "-"}
-                  </td>
-                  <td>
-                    {Array.isArray(order.items) && order.items.length > 0
-                      ? order.items.map((item) => item.quantity).join(", ")
-                      : "-"}
-                  </td>
-                  <td>
-                    {order.createdAt
-                      ? new Date(order.createdAt).toLocaleDateString()
-                      : "-"}
-                  </td>
-                  <td>
-                    {order.delivery_date
-                      ? new Date(order.delivery_date).toLocaleDateString()
-                      : "-"}
-                  </td>
-                  <td>{order.notes || "-"}</td>
-                  <td className="flex items-center gap-1 justify-center action">
-                    {canView && (
-                      <button
-                        className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="View"
-                        onClick={() => handleView(order)}
-                      >
-                        <HiOutlineEye className="text-2xl" />
-                      </button>
-                    )}
-                    {canUpdate && (
-                      <button
-                        className="text-green-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Approve"
-                        disabled={actionId === order._id}
-                        onClick={() => handleApprove(order._id)}
-                      >
-                        <HiOutlineCheckCircle className="text-2xl" />
-                      </button>
-                    )}
-                    {canUpdate && (
-                      <button
-                        className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                        title="Reject"
-                        disabled={actionId === order._id}
-                        onClick={() => {
-                          setRejectDialog({ open: true, id: order._id });
-                          setRejectionReason("");
-                        }}
-                      >
-                        <HiOutlineXCircle className="text-2xl" />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {orders.length === 0 && (
+      <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+        <div className="table-scroll-container">
+          {loading ? (
+            <Loading />
+          ) : error ? (
+            <div className="p-8 text-center text-red-500">{error}</div>
+          ) : (
+            <table className="min-w-full text-left text-sm align-middle">
+              <thead className="table-sticky-header">
                 <tr>
-                  <td colSpan="8">
-                    <NoDataFound message="No approve requests found." />
-                  </td>
+                  <th className="number">No.</th>
+                  <th>Requested By</th>
+                  <th>Product(s)</th>
+                  <th>Quantity(ies)</th>
+                  <th>Requested Date</th>
+                  <th>Delivery Date</th>
+                  <th>Notes</th>
+                  {canUpdate ? (
+                    <th className="text-center action">Actions</th>
+                  ) : null}
                 </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {orders.map((order, index) => (
+                  <tr key={order._id} className="hover:bg-[#f1f5f9]">
+                    <td className="number">
+                      {index + 1 + (pagination.page - 1) * pagination.limit}
+                    </td>
+                    <td>
+                      {order.requester?.first_name +
+                        " " +
+                        order.requester?.last_name || "-"}
+                    </td>
+                    <td>
+                      {Array.isArray(order.items) && order.items.length > 0
+                        ? order.items
+                            .map(
+                              (item) => item.product?.name || item.product_id,
+                            )
+                            .join(", ")
+                        : "-"}
+                    </td>
+                    <td>
+                      {Array.isArray(order.items) && order.items.length > 0
+                        ? order.items.map((item) => item.quantity).join(", ")
+                        : "-"}
+                    </td>
+                    <td>
+                      {order.createdAt
+                        ? new Date(order.createdAt).toLocaleDateString()
+                        : "-"}
+                    </td>
+                    <td>
+                      {order.delivery_date
+                        ? new Date(order.delivery_date).toLocaleDateString()
+                        : "-"}
+                    </td>
+                    <td>{order.notes || "-"}</td>
+                    <td className="flex items-center gap-1 justify-center action">
+                      {canView && (
+                        <button
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="View"
+                          onClick={() => handleView(order)}
+                        >
+                          <HiOutlineEye className="text-2xl" />
+                        </button>
+                      )}
+                      {canUpdate && (
+                        <button
+                          className="text-green-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="Approve"
+                          disabled={actionId === order._id}
+                          onClick={() => handleApprove(order._id)}
+                        >
+                          <HiOutlineCheckCircle className="text-2xl" />
+                        </button>
+                      )}
+                      {canUpdate && (
+                        <button
+                          className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          title="Reject"
+                          disabled={actionId === order._id}
+                          onClick={() => {
+                            setRejectDialog({ open: true, id: order._id });
+                            setRejectionReason("");
+                          }}
+                        >
+                          <HiOutlineXCircle className="text-2xl" />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {orders.length === 0 && (
+                  <tr>
+                    <td colSpan="8">
+                      <NoDataFound message="No approve requests found." />
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
       {orders.length > 0 && (
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end mt-3">
           <Pagination
             total={pagination.totalItems}
             page={pagination.page}

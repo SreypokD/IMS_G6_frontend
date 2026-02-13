@@ -174,7 +174,7 @@ const Register = () => {
             >
               {loading ? "Registering..." : "Register"}
               {!loading && (
-                <HiOutlineDownload className="inline-block ml-1 text-lg rotate-270" />
+                <HiOutlineDownload className="inline-block ml-1 text-lg -rotate-90" />
               )}
             </button>
             <span

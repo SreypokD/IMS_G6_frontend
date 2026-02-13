@@ -134,7 +134,7 @@ const Login = () => {
             >
               {loading ? "Signing In..." : "Sign In"}
               {!loading && (
-                <HiOutlineDownload className="inline-block ml-1 text-lg rotate-270" />
+                <HiOutlineDownload className="inline-block ml-1 text-lg -rotate-90" />
               )}
             </button>
             <span

@@ -301,7 +301,7 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                           key={province.name}
                           value={province.name}
                           className={({ selected }) =>
-                            `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                            `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                           }
                         >
                           {province.name}
@@ -336,7 +336,7 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                             key={district.name}
                             value={district.name}
                             className={({ selected }) =>
-                              `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                              `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                             }
                           >
                             {district.name}
@@ -374,7 +374,7 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                             key={commune.name}
                             value={commune.name}
                             className={({ selected }) =>
-                              `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                              `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                             }
                           >
                             {commune.name}
@@ -415,7 +415,7 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                             key={village}
                             value={village}
                             className={({ selected }) =>
-                              `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                              `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                             }
                           >
                             {village}
@@ -517,7 +517,7 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                           key={pt._id}
                           value={pt}
                           className={({ selected }) =>
-                            `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                            `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                           }
                         >
                           {pt.name}
@@ -569,7 +569,7 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                           key={st._id}
                           value={st}
                           className={({ selected }) =>
-                            `px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                            `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
                           }
                         >
                           {st.name}
