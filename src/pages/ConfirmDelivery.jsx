@@ -4,6 +4,7 @@ import {
   HiOutlineFilter,
   HiSelector,
   HiOutlineRefresh,
+  HiOutlineEye,
 } from "react-icons/hi";
 import { useAuth } from "../contexts/auth/useAuth";
 import { getConfirmDeliveries, updateConfirmDelivery } from "../api";
@@ -14,6 +15,7 @@ import { Listbox } from "@headlessui/react";
 import { useDialog } from "../contexts/dialog/useDialog";
 import Loading from "../components/Loading";
 import DatePicker from "../components/DatePicker";
+import OrderRequestModal from "../components/OrderRequestModal";
 
 const deliveryStatusOptions = [
   { value: "Pending", label: "Pending" },
@@ -107,6 +109,7 @@ const DeliveryConfirmation = () => {
   // Dialog
   const { user } = useAuth();
   const dialog = useDialog();
+  const [viewDialog, setViewDialog] = useState({ open: false, order: null });
 
   // Filters
   const [search, setSearch] = useState("");
@@ -122,6 +125,9 @@ const DeliveryConfirmation = () => {
   const [delivery_status, setDeliveryStatus] = useState("");
 
   // Permissions
+  const canViewOrder = user?.permission?.permissions?.includes(
+    "view_approve_request",
+  );
   const canUpdate = user?.permission?.permissions?.includes(
     "update_confirm_delivery",
   );
@@ -223,6 +229,10 @@ const DeliveryConfirmation = () => {
     }
   }
 
+  function handleView(order) {
+    setViewDialog({ open: true, order });
+  }
+
   const handleReset = () => {
     setSearch("");
     setApproveStatus("");
@@ -233,6 +243,12 @@ const DeliveryConfirmation = () => {
 
   return (
     <div className="h-content-available">
+      <OrderRequestModal
+        open={viewDialog.open}
+        data={viewDialog.order}
+        viewOnly={true}
+        onClose={() => setViewDialog({ open: false, order: null })}
+      />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold">Delivery Confirmation</h1>
@@ -401,7 +417,16 @@ const DeliveryConfirmation = () => {
                             : "Pending"}
                         </span>
                       </td>
-                      <td className="text-center action">
+                      <td className="flex items-center gap-1 justify-center action">
+                        {canViewOrder && (
+                          <button
+                            className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                            title="View"
+                            onClick={() => handleView(confirm_delivery)}
+                          >
+                            <HiOutlineEye className="text-2xl" />
+                          </button>
+                        )}
                         {(!delivery || delivery.status !== "delivered") &&
                           canUpdate && (
                             <button

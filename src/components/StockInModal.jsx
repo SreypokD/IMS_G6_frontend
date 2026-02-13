@@ -124,7 +124,7 @@ const StockInModal = ({ open, onClose, products, data }) => {
                 >
                   <span className="truncate">
                     {products.find((p) => p._id === productId)
-                      ? `${products.find((p) => p._id === productId).name} (Stock: ${products.find((p) => p._id === productId).stock - (products.find((p) => p._id === productId).reserved_stock || 0)})`
+                      ? products.find((p) => p._id === productId).name
                       : "Select product"}
                   </span>
                   <HiSelector className="w-5 h-5 text-gray-400 ml-2" />

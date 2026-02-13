@@ -362,7 +362,8 @@ const OrderRequestModal = ({
                           <span>
                             {products.find((p) => p._id === item.product_id)
                               ?.name
-                              ? `${products.find((p) => p._id === item.product_id)?.name} (Stock: ${products.find((p) => p._id === item.product_id)?.stock - (products.find((p) => p._id === item.product_id)?.reserved_stock || 0)})`
+                              ? products.find((p) => p._id === item.product_id)
+                                  ?.name
                               : order.supplier_id
                                 ? "Select product"
                                 : "Select supplier first"}

@@ -7,7 +7,6 @@ import {
   HiOutlineDocumentText,
   HiExclamationCircle,
   HiOutlineUpload,
-  HiCheck,
 } from "react-icons/hi";
 
 import { createStock, updateStock } from "../api";
@@ -115,7 +114,7 @@ const StockOutModal = ({ open, onClose, products, data }) => {
                 >
                   <span className="truncate">
                     {products.find((p) => p._id === productId)
-                      ? `${products.find((p) => p._id === productId).name} (Stock: ${products.find((p) => p._id === productId).stock - (products.find((p) => p._id === productId).reserved_stock || 0)})`
+                      ? products.find((p) => p._id === productId).name
                       : "Select product"}
                   </span>
                   <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
@@ -141,14 +140,6 @@ const StockOutModal = ({ open, onClose, products, data }) => {
                               {p.stock - (p.reserved_stock || 0)})
                               {isDisabled ? " - Out of stock" : ""}
                             </span>
-                            {selected ? (
-                              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[#1e3a5f]">
-                                <HiCheck
-                                  className="h-5 w-5"
-                                  aria-hidden="true"
-                                />
-                              </span>
-                            ) : null}
                           </>
                         )}
                       </Listbox.Option>

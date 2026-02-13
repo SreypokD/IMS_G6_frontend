@@ -37,8 +37,10 @@ const OrderRequestApproval = () => {
 
   // Dialog
   const [rejectDialog, setRejectDialog] = useState({ open: false, id: null });
+  const [approveDialog, setApproveDialog] = useState({ open: false, id: null });
   const [viewDialog, setViewDialog] = useState({ open: false, order: null });
   const [rejectionReason, setRejectionReason] = useState("");
+  const [approveRemarks, setApproveRemarks] = useState("");
 
   // Auth
   const { user } = useAuth();
@@ -103,26 +105,22 @@ const OrderRequestApproval = () => {
     }
   }
 
-  async function handleApprove(id) {
-    const confirmed = await dialog.ask({
-      type: "confirm",
-      title: "Approve Order Request",
-      message: "Are you sure you want to approve this order request?",
-      confirmText: "Approve",
-      cancelText: "Cancel",
-    });
-    if (!confirmed) return;
+  function handleApprove(id) {
+    setApproveDialog({ open: true, id });
+    setApproveRemarks("");
+  }
+
+  async function handleConfirmApprove() {
+    const id = approveDialog.id;
     setActionId(id);
     try {
       await updateApproveRequests(id, {
         status: "approved",
-        admin_remarks: remarks[id] || "",
+        admin_remarks: approveRemarks || "",
       });
       await dialog.success("Order request approved.");
-      // Reset all relevant state after approve
-      setRemarks({});
-      setRejectionReason({});
-      // setShowReject({});
+      setApproveDialog({ open: false, id: null });
+      setApproveRemarks("");
       setPagination((prev) => ({ ...prev, page: 1 }));
       fetchApproveRequests(1, pagination.limit, search, startDate, endDate);
     } catch (err) {
@@ -175,9 +173,8 @@ const OrderRequestApproval = () => {
     <div className="h-content-available">
       <OrderRequestModal
         open={viewDialog.open}
-        initial={
-          viewDialog.order ? { ...viewDialog.order, viewOnly: true } : null
-        }
+        data={viewDialog.order}
+        viewOnly={true}
         onClose={() => setViewDialog({ open: false, order: null })}
       />
       <Dialog
@@ -205,6 +202,31 @@ const OrderRequestApproval = () => {
             onChange={(e) => setRejectionReason(e.target.value)}
             disabled={actionId === rejectDialog.id}
             autoFocus
+          />
+        </div>
+      </Dialog>
+      <Dialog
+        open={approveDialog.open}
+        type="confirm"
+        title="Approve Order Request"
+        cancelText="Cancel"
+        confirmText="Approve"
+        showActions
+        onClose={() => setApproveDialog({ open: false, id: null })}
+        onConfirm={handleConfirmApprove}
+        confirmDisabled={actionId === approveDialog.id}
+      >
+        <div className="mb-3 w-full">
+          <label className="block text-gray-700 text-sm mb-2 font-medium">
+            Admin Remarks (Optional):
+          </label>
+          <textarea
+            className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
+            placeholder="Enter optional remarks..."
+            value={approveRemarks}
+            onChange={(e) => setApproveRemarks(e.target.value)}
+            disabled={actionId === approveDialog.id}
+            rows={3}
           />
         </div>
       </Dialog>
