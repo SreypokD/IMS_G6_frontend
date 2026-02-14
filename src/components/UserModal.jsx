@@ -11,6 +11,8 @@ import {
   HiOutlineUpload,
   HiEye,
   HiEyeOff,
+  HiOutlineBriefcase,
+  HiOutlineIdentification,
 } from "react-icons/hi";
 import { locations } from "../data/locations";
 
@@ -31,6 +33,19 @@ const initial = {
     province: "",
   },
   profile: "",
+  username: "",
+  customer_type: "individual",
+  company_name: "",
+  position: "",
+  company_registration_no: "",
+  request_purpose: "",
+  expected_order_volume: "",
+  order_frequency: "",
+  product_categories: [],
+  id_card_or_business_license: "",
+  shop_photo: "",
+  location_photo: "",
+  note_from_customer: "",
 };
 
 const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
@@ -56,6 +71,11 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       });
     }
   }, [open]);
+
+  // Update local state when data changes (e.g. when opening "View" for a different user)
+  useEffect(() => {
+    setUser(data || initial);
+  }, [data]);
 
   async function handleImageChange(e) {
     if (e.target.files && e.target.files[0]) {
@@ -116,30 +136,52 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
     }));
   };
 
+  const renderBadge = (text) => (
+    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-2 mb-1">
+      {text}
+    </span>
+  );
+
+  const renderImagePreview = (url, label) => {
+    if (!url) return null;
+    return (
+      <div className="flex flex-col items-center">
+        <span className="text-xs text-gray-500 mb-1">{label}</span>
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          <img
+            src={url}
+            alt={label}
+            className="h-20 w-20 object-cover rounded border border-gray-200 hover:border-blue-500 transition"
+          />
+        </a>
+      </div>
+    );
+  };
+
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] max-h-[80vh] shadow-xl relative">
-        <h2 className="text-xl font-bold mb-6 text-center">
+      <div className="bg-white rounded-2xl p-5 w-full max-w-[60%] max-h-[90vh] shadow-xl relative flex flex-col">
+        <h2 className="text-xl font-bold mb-4 text-center shrink-0">
           {viewOnly ? "User Details" : data ? "Update User" : "Add User"}
         </h2>
         <form
           key={data ? data._id : "new"}
-          className="space-y-5 overflow-auto max-h-[50vh] px-1"
+          className="space-y-6 overflow-y-auto px-4 grow custom-scrollbar"
         >
-          <div className="col-span-2 mb-2">
-            <h3 className="flex items-center gap-2 text-base mb-2 text-black">
-              <HiOutlineDocumentText className="inline-block text-xl text-black" />
+          {/* Basic Info */}
+          <div className="col-span-2">
+            <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+              <HiOutlineDocumentText className="inline-block text-xl" />
               <span>Basic Information</span>
             </h3>
-            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
+            <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-700">
-                  First Name
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
+                <label className="text-sm font-medium text-gray-700 block mb-1">
+                  First Name {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.first_name && (touched.first_name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 outline-none focus:ring-1 focus:ring-blue-500 ${!user.first_name && (touched.first_name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   value={user.first_name}
                   onChange={(e) =>
                     setUser({ ...user, first_name: e.target.value })
@@ -152,12 +194,11 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Last Name
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
+                <label className="text-sm font-medium text-gray-700 block mb-1">
+                  Last Name {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.last_name && (touched.last_name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 outline-none focus:ring-1 focus:ring-blue-500 ${!user.last_name && (touched.last_name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   value={user.last_name}
                   onChange={(e) =>
                     setUser({ ...user, last_name: e.target.value })
@@ -170,12 +211,24 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Email
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
+                <label className="text-sm font-medium text-gray-700 block mb-1">
+                  Username
                 </label>
                 <input
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.email && (touched.email || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 outline-none focus:ring-1 focus:ring-blue-500 border-gray-200"
+                  value={user.username || ""}
+                  onChange={(e) =>
+                    setUser({ ...user, username: e.target.value })
+                  }
+                  disabled={viewOnly}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 block mb-1">
+                  Email {!viewOnly && <sup className="text-red-500">*</sup>}
+                </label>
+                <input
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 outline-none focus:ring-1 focus:ring-blue-500 ${!user.email && (touched.email || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   type="email"
                   value={user.email}
                   onChange={(e) => setUser({ ...user, email: e.target.value })}
@@ -188,13 +241,12 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               </div>
               {!data && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700">
-                    Password
-                    {!viewOnly && <sup className="text-red-500">*</sup>}
+                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                    Password {!viewOnly && <sup className="text-red-500">*</sup>}
                   </label>
                   <div className="relative">
                     <input
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.password && !data && (touched.password || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 outline-none focus:ring-1 focus:ring-blue-500 ${!user.password && !data && (touched.password || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                       type={showPassword ? "text" : "password"}
                       value={user.password || ""}
                       onChange={(e) =>
@@ -223,16 +275,17 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               )}
             </div>
           </div>
-          <div className="col-span-2 mb-2">
-            <h3 className="flex items-center gap-2 text-base mb-2 text-black">
-              <HiOutlineKey className="inline-block text-xl text-black" />
+
+          {/* Contact & Role */}
+          <div className="col-span-2">
+            <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+              <HiOutlineKey className="inline-block text-xl" />
               <span>Contact & Role</span>
             </h3>
-            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
+            <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Role
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
+                <label className="text-sm font-medium text-gray-700 block mb-1">
+                  Role {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <Listbox
                   value={roles.find((role) => role.name === user.role) || null}
@@ -247,7 +300,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-100 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-200 outline-none focus:ring-1 focus:ring-blue-500 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span>
                         {roles.find((role) => role.name === user.role)?.name ||
@@ -256,9 +309,6 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
-                      {roles.length === 0 && (
-                        <div className="px-4 py-2 text-gray-400">No roles</div>
-                      )}
                       {roles.map((role) => (
                         <Listbox.Option
                           key={role._id || role.id}
@@ -275,12 +325,11 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Phone
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
+                <label className="text-sm font-medium text-gray-700 block mb-1">
+                  Phone {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.phone && (touched.phone || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 outline-none focus:ring-1 focus:ring-blue-500 ${!user.phone && (touched.phone || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   value={user.phone}
                   onChange={(e) => setUser({ ...user, phone: e.target.value })}
                   onBlur={() =>
@@ -290,13 +339,12 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Status
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
+                <label className="text-sm font-medium text-gray-700 block mb-1">
+                  Status {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <div className="relative">
                   <select
-                    className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100 cursor-pointer appearance-none pr-8"
+                    className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-200 cursor-pointer appearance-none pr-8 outline-none focus:ring-1 focus:ring-blue-500"
                     value={user.status}
                     onChange={(e) =>
                       setUser({ ...user, status: e.target.value })
@@ -305,22 +353,24 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
+                    <option value="pending">Pending</option>
                   </select>
                   <HiSelector className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
             </div>
           </div>
-          <div className="col-span-2 mb-2">
-            <h3 className="flex items-center gap-2 text-base mb-2 text-black">
-              <HiOutlineLocationMarker className="inline-block text-xl text-black" />
+
+          {/* Address */}
+          <div className="col-span-2">
+            <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+              <HiOutlineLocationMarker className="inline-block text-xl" />
               <span>Address</span>
             </h3>
-            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
+            <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-gray-700 block mb-1">
                   City/Province
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <Listbox
                   value={user.address.province}
@@ -329,9 +379,9 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!user.address.province && (touched.province || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-200 outline-none focus:ring-1 focus:ring-blue-500 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
-                      <span>{user.address.province}</span>
+                      <span>{user.address.province || "Select Province"}</span>
                       <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
@@ -351,9 +401,8 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-gray-700 block mb-1">
                   District
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <Listbox
                   value={user.address.district}
@@ -362,9 +411,9 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!user.address.district && (touched.district || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-200 outline-none focus:ring-1 focus:ring-blue-500 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
-                      <span>{user.address.district}</span>
+                      <span>{user.address.district || "Select District"}</span>
                       <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
@@ -386,9 +435,8 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-gray-700 block mb-1">
                   Commune
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <Listbox
                   value={user.address.commune}
@@ -397,9 +445,9 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-100 ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!user.role && (touched.role || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-200 outline-none focus:ring-1 focus:ring-blue-500 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
-                      <span>{user.address.commune}</span>
+                      <span>{user.address.commune || "Select Commune"}</span>
                       <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
@@ -424,9 +472,8 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-gray-700 block mb-1">
                   Village
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <Listbox
                   value={user.address.village}
@@ -435,9 +482,9 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!user.address.village && (touched.village || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-200 outline-none focus:ring-1 focus:ring-blue-500 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
-                      <span>{user.address.village}</span>
+                      <span>{user.address.village || "Select Village"}</span>
                       <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
@@ -463,12 +510,12 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-gray-700 block mb-1">
                   House
                 </label>
                 <input
                   type="text"
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none focus:ring-1 focus:ring-blue-500"
                   value={user.address.house}
                   onChange={(e) =>
                     setUser({
@@ -480,11 +527,11 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-medium text-gray-700 block mb-1">
                   Street
                 </label>
                 <input
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none focus:ring-1 focus:ring-blue-500"
                   value={user.address.street}
                   onChange={(e) =>
                     setUser({
@@ -497,16 +544,141 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               </div>
             </div>
           </div>
+
+          {/* Partner Information Section */}
+          {(user.customer_type || user.request_purpose) && (
+            <div className="col-span-2">
+              <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+                <HiOutlineBriefcase className="inline-block text-xl" />
+                <span>Partner Information</span>
+              </h3>
+              <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                    Customer Type
+                  </label>
+                  <input
+                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
+                    value={user.customer_type || ""}
+                    readOnly
+                    disabled
+                  />
+                </div>
+                {user.customer_type === "business" && (
+                  <>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 block mb-1">
+                        Company Name
+                      </label>
+                      <input
+                        className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
+                        value={user.company_name || ""}
+                        readOnly
+                        disabled
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 block mb-1">
+                        Position
+                      </label>
+                      <input
+                        className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
+                        value={user.position || ""}
+                        readOnly
+                        disabled
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 block mb-1">
+                        Reg No.
+                      </label>
+                      <input
+                        className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
+                        value={user.company_registration_no || ""}
+                        readOnly
+                        disabled
+                      />
+                    </div>
+                  </>
+                )}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                    Request Purpose
+                  </label>
+                  <input
+                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
+                    value={user.request_purpose || ""}
+                    readOnly
+                    disabled
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                    Expected Volume
+                  </label>
+                  <input
+                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
+                    value={user.expected_order_volume || ""}
+                    readOnly
+                    disabled
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                    Order Frequency
+                  </label>
+                  <input
+                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
+                    value={user.order_frequency || ""}
+                    readOnly
+                    disabled
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                    Product Categories
+                  </label>
+                  <div className="flex flex-wrap">
+                    {Array.isArray(user.product_categories) &&
+                    user.product_categories.length > 0 ? (
+                      user.product_categories.map((cat, idx) => (
+                        <span key={idx} className="mr-2">
+                          {renderBadge(cat)}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-sm text-gray-500">None</span>
+                    )}
+                  </div>
+                </div>
+                <div className="md:col-span-3">
+                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                    Customer Note
+                  </label>
+                  <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-200">
+                    {user.note_from_customer || "No notes."}
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                {renderImagePreview(
+                  user.id_card_or_business_license,
+                  "ID/License",
+                )}
+                {renderImagePreview(user.shop_photo, "Shop Photo")}
+                {renderImagePreview(user.location_photo, "Location Photo")}
+              </div>
+            </div>
+          )}
+
+          {/* Profile Image (Existing) */}
           {(!viewOnly || user.profile) && (
             <div className="col-span-2 mb-2">
-              <h3 className="flex items-center gap-2 text-base mb-2 text-black">
-                <HiOutlineCamera className="inline-block text-xl text-black" />
-                <span>Profile</span>
+              <h3 className="flex items-center gap-2 text-base mb-2 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+                <HiOutlineCamera className="inline-block text-xl" />
+                <span>Profile Image</span>
               </h3>
               <div className="mb-3">
-                <label className="block text-gray-700 text-sm mb-1">
-                  Profile Image
-                </label>
                 {viewOnly ? (
                   <div className="mt-2 flex items-center justify-center border border-gray-200 rounded-lg p-4 bg-gray-50">
                     <img
@@ -560,10 +732,10 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </div>
           )}
         </form>
-        <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
+        <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4 shrink-0 pt-4 border-t border-gray-100">
           <button
             type="button"
-            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-100 flex items-center gap-2 cursor-pointer text-sm"
+            className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-100 flex items-center gap-2 cursor-pointer text-sm font-medium"
             onClick={onClose}
           >
             <HiXCircle className="inline-block text-xl" />
@@ -572,7 +744,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
           {!viewOnly && (
             <button
               type="button"
-              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm font-medium"
               onClick={() => {
                 setValidateOnSave(true);
                 setTouched({

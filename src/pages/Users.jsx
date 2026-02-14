@@ -269,7 +269,7 @@ const Users = () => {
       </div>
       <div className="bg-white rounded-xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-base mb-2 text-black">
+          <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
             <HiOutlineFilter className="inline-block text-sm text-black" />
             <span>Filters</span>
           </h3>
@@ -338,7 +338,13 @@ const Users = () => {
                     <td className="capitalize">{u.role}</td>
                     <td>
                       <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm ${u.status === "active" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+                        className={`inline-block px-3 py-1 rounded-full text-sm ${
+                          u.status === "active"
+                            ? "bg-green-100 text-green-700"
+                            : u.status === "pending"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
                       >
                         {u.status
                           ? u.status.charAt(0).toUpperCase() + u.status.slice(1)

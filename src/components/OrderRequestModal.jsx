@@ -236,7 +236,7 @@ const OrderRequestModal = ({
         </h2>
         <form className="space-y-5 overflow-auto max-h-[60vh] px-1">
           <div className="col-span-2 mb-2">
-            <h3 className="flex items-center gap-2 text-base mb-2 text-black">
+            <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
               <HiOutlineDocumentText className="inline-block text-xl text-black" />
               <span>Basic Information</span>
             </h3>
@@ -329,7 +329,7 @@ const OrderRequestModal = ({
             </div>
           </div>
           <div className="col-span-2 mb-2">
-            <h3 className="flex items-center gap-2 text-base mb-2 text-black">
+            <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
               <HiCube className="inline-block text-xl text-black" />
               <span>Products</span>
             </h3>

@@ -247,7 +247,7 @@ const Expenses = () => {
       </div>
       <div className="bg-white rounded-2xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-base mb-2 text-black">
+          <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
             <HiOutlineFilter className="inline-block text-sm text-black" />
             <span>Filters</span>
           </h3>
