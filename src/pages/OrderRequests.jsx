@@ -24,6 +24,7 @@ const statusOptions = [
   { value: "Approved", label: "Approved" },
   { value: "Rejected", label: "Rejected" },
   { value: "Completed", label: "Completed" },
+  { value: "Cancelled", label: "Cancelled" },
   { value: "On Hold", label: "On Hold" },
 ];
 
@@ -347,7 +348,7 @@ const OrderRequests = () => {
                       <td>{formatDate(request.delivery_date) || "-"}</td>
                       <td>
                         <span
-                          className={`inline-block px-3 py-1 rounded-full text-sm ${request.status === "pending" ? "bg-yellow-100 text-yellow-700" : request.status === "approved" ? "bg-green-100 text-green-700" : request.status === "rejected" ? "bg-red-100 text-red-700" : request.status === "completed" ? "bg-blue-100 text-blue-700" : request.status === "on_hold" ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-700"}`}
+                          className={`inline-block w-[90px] text-center py-1.5 rounded-full text-sm ${request.status === "pending" ? "bg-yellow-100 text-yellow-700" : request.status === "approved" ? "bg-green-100 text-green-700" : request.status === "rejected" ? "bg-red-100 text-red-700" : request.status === "completed" ? "bg-blue-100 text-blue-700" :request.status === "cancelled" ? "bg-red-100 text-red-700" :  request.status === "on_hold" ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-700"}`}
                         >
                           {request.status.charAt(0).toUpperCase() +
                             request.status.slice(1)}

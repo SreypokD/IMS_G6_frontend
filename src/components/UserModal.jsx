@@ -21,6 +21,7 @@ const initial = {
   password: "",
   role: "",
   phone: "",
+  status: "active",
   address: {
     street: "",
     house: "",
@@ -287,6 +288,26 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   }
                   disabled={viewOnly}
                 />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Status
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
+                </label>
+                <div className="relative">
+                  <select
+                    className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100 cursor-pointer appearance-none pr-8"
+                    value={user.status}
+                    onChange={(e) =>
+                      setUser({ ...user, status: e.target.value })
+                    }
+                    disabled={viewOnly}
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                  <HiSelector className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
               </div>
             </div>
           </div>

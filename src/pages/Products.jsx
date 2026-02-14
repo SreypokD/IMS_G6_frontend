@@ -474,7 +474,7 @@ const Products = () => {
                       <span
                         className={`text-sm ${product.stock === 0 ? "text-red-600" : product.stock < 10 ? "text-orange-600" : "text-green-600"}`}
                       >
-                        {product.stock} units
+                        {product.stock} {product.stock > 1 ? "units" : "unit"}
                       </span>
                     </td>
                     {canCreate || canUpdate || canDelete ? (

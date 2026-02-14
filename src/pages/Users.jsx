@@ -318,6 +318,7 @@ const Users = () => {
                   <th>Email</th>
                   <th>Phone</th>
                   <th>Role</th>
+                  <th>Status</th>
                   {canView || canUpdate || canDelete ? (
                     <th className="text-center action">Actions</th>
                   ) : null}
@@ -333,8 +334,17 @@ const Users = () => {
                       {u.first_name} {u.last_name}
                     </td>
                     <td>{u.email}</td>
-                    <td>{u.phone}</td>
+                    <td>{u.phone || "-"}</td>
                     <td className="capitalize">{u.role}</td>
+                    <td>
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-sm ${u.status === "active" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+                      >
+                        {u.status
+                          ? u.status.charAt(0).toUpperCase() + u.status.slice(1)
+                          : "Active"}
+                      </span>
+                    </td>
                     <td className="flex items-center gap-1 justify-center action">
                       {canView && (
                         <button

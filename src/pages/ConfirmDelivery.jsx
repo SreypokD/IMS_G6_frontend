@@ -400,7 +400,7 @@ const DeliveryConfirmation = () => {
                       </td>
                       <td>
                         <span
-                          className={`inline-block px-3 py-1 rounded-full text-sm ${approve?.status === "approved" ? "bg-green-100 text-green-700" : approve?.status === "rejected" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}
+                          className={`inline-block w-[90px] text-center py-1.5 rounded-full text-sm ${approve?.status === "approved" ? "bg-green-100 text-green-700" : approve?.status === "rejected" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"}`}
                         >
                           {approve?.status
                             ? approve.status.charAt(0).toUpperCase() +
@@ -410,7 +410,7 @@ const DeliveryConfirmation = () => {
                       </td>
                       <td>
                         <span
-                          className={`inline-block px-3 py-1 rounded-full text-sm ${delivery?.status === "delivered" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}
+                          className={`inline-block w-[90px] text-center py-1.5 rounded-full text-sm ${delivery?.status === "delivered" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}
                         >
                           {delivery?.status === "delivered"
                             ? "Delivered"

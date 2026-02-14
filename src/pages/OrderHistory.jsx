@@ -14,6 +14,7 @@ const statusOptions = [
   { value: "approved", label: "Approved" },
   { value: "rejected", label: "Rejected" },
   { value: "completed", label: "Completed" },
+  { value: "cancelled", label: "Cancelled" },
   { value: "on_hold", label: "On Hold" },
 ];
 
@@ -255,7 +256,7 @@ const OrderHistory = () => {
                     <td>{formatDate(order.delivery_date) || "-"}</td>
                     <td>
                       <span
-                        className={`inline-block px-3 py-1.5 rounded-full text-sm ${order.status === "approved" ? "bg-green-100 text-green-700" : order.status === "rejected" ? "bg-red-100 text-red-700" : order.status === "completed" ? "bg-blue-100 text-blue-700" : "bg-yellow-100 text-yellow-700"}`}
+                        className={`inline-block w-[90px] text-center py-1.5 rounded-full text-sm ${order.status === "approved" ? "bg-green-100 text-green-700" : order.status === "rejected" ? "bg-red-100 text-red-700" : order.status === "completed" ? "bg-blue-100 text-blue-700" : "bg-yellow-100 text-yellow-700"}`}
                       >
                         {order.status
                           ? order.status.charAt(0).toUpperCase() +

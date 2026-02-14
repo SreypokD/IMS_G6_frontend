@@ -36,6 +36,7 @@ export default function Settings() {
     first_name: "",
     last_name: "",
     phone: "",
+    email: "",
     profile: "",
     address: {
       street: "",
@@ -70,6 +71,7 @@ export default function Settings() {
         first_name: user.first_name || "",
         last_name: user.last_name || "",
         phone: user.phone || "",
+        email: user.email || "",
         profile: user.profile || "",
         address: {
           street: user.address?.street || "",
@@ -319,7 +321,7 @@ export default function Settings() {
                         type="button"
                         disabled={uploading}
                         onClick={() => fileInputRef.current?.click()}
-                        className="absolute bottom-0 right-0 bg-[#1e3a5f] text-white p-2 rounded-full shadow-lg hover:bg-[#1e3a5f] transition transform hover:scale-105"
+                        className="absolute bottom-0 right-0 bg-[#1e3a5f] text-white p-2 rounded-full shadow-lg hover:bg-[#1e3a5f] transition transform hover:scale-105 cursor-pointer"
                       >
                         <HiCamera className="text-lg" />
                       </button>
@@ -378,12 +380,25 @@ export default function Settings() {
                         placeholder="+855 12 345 678"
                       />
                     </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={profileData.email}
+                        onChange={handleProfileChange}
+                        className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
+                        placeholder="example@gmail.com"
+                      />
+                    </div>
                   </div>
                 </div>
                 <hr className="border-gray-100" />
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <HiOutlineLocationMarker className="text-gray-400" />
+                  <h3 className="text-gray-900 mb-3 flex items-center gap-2">
+                    <HiOutlineLocationMarker className="text-xl text-gray-400" />
                     Address Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -577,8 +592,8 @@ export default function Settings() {
                 className="space-y-6 animate-fade-in-up"
               >
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <HiOutlineKey className="text-gray-400" />
+                  <h3 className="text-gray-900 mb-3 flex items-center gap-2">
+                    <HiOutlineKey className="text-xl text-gray-400" />
                     Change Password
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

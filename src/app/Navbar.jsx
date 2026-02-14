@@ -55,10 +55,37 @@ const Header = ({ onBellClick }) => {
   // Notification click handler with navigation
   const handleNotificationClick = async (n) => {
     await markAsRead(n._id);
-    if (n.entity_type === "OrderRequest" && n.entity_id) {
-      navigate(`/order-requests?open=${n.entity_id}`);
+    
+    // Redirect based on notification type
+    if (n.type === "new_order_request") {
+      if (user?.permission?.permissions?.includes("view_approve_request")) {
+        navigate("/approve-requests");
+      } else {
+        navigate("/order-requests");
+      }
+    } else if (n.type === "pending_delivery") {
+      if (user?.permission?.permissions?.includes("view_confirm_delivery")) {
+        navigate("/confirm-delivery");
+      } else {
+        navigate("/order-requests");
+      }
+    } else if (
+      [
+        "order_approved",
+        "order_rejected",
+        "order_completed",
+        "order_on_hold",
+        "order_cancelled",
+        "order_delivered",
+      ].includes(n.type)
+    ) {
+      navigate("/order-requests");
+    } else if (
+      n.entity_type === "Order Request" ||
+      n.entity_type === "OrderRequest"
+    ) {
+      navigate("/order-requests");
     }
-    // Add more entity_type navigation as needed
   };
 
   return (
@@ -94,7 +121,7 @@ const Header = ({ onBellClick }) => {
                   No notifications
                 </div>
               ) : (
-                <ul>
+                <ul className="max-h-[300px] overflow-y-auto">
                   {notifications.map((n) => (
                     <li
                       key={n._id}

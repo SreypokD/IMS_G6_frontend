@@ -160,7 +160,7 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl p-5 w-full max-w-[52%] max-h-[90vh] shadow-xl relative flex flex-col">
+      <div className="bg-white rounded-2xl p-5 w-full max-w-[60%] max-h-[90vh] shadow-xl relative flex flex-col">
         <h2 className="text-xl font-bold mb-6 text-center shrink-0">
           {viewOnly
             ? "Permission Details"
