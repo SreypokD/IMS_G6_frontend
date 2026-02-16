@@ -58,7 +58,7 @@ const Register = () => {
   useEffect(() => {
     async function fetchCats() {
       try {
-        const res = await getCategories();
+        const res = await getCategories({ limit: 1000 });
         if (res.data.success) {
           setCategoriesList(res.data.data);
         }
@@ -212,7 +212,7 @@ const Register = () => {
                       value={formData.first_name}
                       onChange={handleChange}
                       required
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-2 focus:ring-[#1e3a5f] outline-none"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-sm"
                     />
                   </div>
                   <div>
@@ -224,7 +224,7 @@ const Register = () => {
                       value={formData.last_name}
                       onChange={handleChange}
                       required
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-2 focus:ring-[#1e3a5f] outline-none"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-sm"
                     />
                   </div>
 
@@ -238,7 +238,7 @@ const Register = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-2 focus:ring-[#1e3a5f] outline-none"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-sm"
                     />
                   </div>
                   <div>
@@ -250,7 +250,7 @@ const Register = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       required
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-2 focus:ring-[#1e3a5f] outline-none"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-sm"
                     />
                   </div>
                   <div className="relative">
@@ -263,12 +263,12 @@ const Register = () => {
                       value={formData.password}
                       onChange={handleChange}
                       required
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-2 focus:ring-[#1e3a5f] outline-none pr-10"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-sm pr-10"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-8 text-gray-500"
+                      className="absolute right-3 top-8.5 text-gray-500"
                     >
                       {showPassword ? <HiEyeOff /> : <HiEye />}
                     </button>
@@ -283,7 +283,7 @@ const Register = () => {
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       required
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-2 focus:ring-[#1e3a5f] outline-none"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-sm"
                     />
                   </div>
                 </div>
@@ -304,7 +304,7 @@ const Register = () => {
                       value={formData.company_name}
                       onChange={handleChange}
                       required
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-2 focus:ring-[#1e3a5f] outline-none"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-sm"
                     />
                   </div>
 
@@ -316,7 +316,7 @@ const Register = () => {
                       name="company_registration_no"
                       value={formData.company_registration_no}
                       onChange={handleChange}
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-2 focus:ring-[#1e3a5f] outline-none"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-sm"
                     />
                   </div>
                 </div>
@@ -342,7 +342,7 @@ const Register = () => {
                       }}
                     >
                       <div className="relative">
-                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between outline-none focus:ring-2 focus:ring-[#1e3a5f]">
+                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer">
                           <span>
                             {formData.address.province || "Select Province"}
                           </span>
@@ -381,10 +381,10 @@ const Register = () => {
                     >
                       <div className="relative">
                         <Listbox.Button
-                          className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between outline-none focus:ring-2 focus:ring-[#1e3a5f] ${
+                          className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between bg-gray-50 ${
                             !formData.address.province
-                              ? "bg-gray-100 cursor-not-allowed"
-                              : "bg-gray-50"
+                              ? "cursor-default"
+                              : "cursor-pointer"
                           }`}
                         >
                           <span>
@@ -424,10 +424,10 @@ const Register = () => {
                     >
                       <div className="relative">
                         <Listbox.Button
-                          className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between outline-none focus:ring-2 focus:ring-[#1e3a5f] ${
+                          className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between bg-gray-50 ${
                             !formData.address.district
-                              ? "bg-gray-100 cursor-not-allowed"
-                              : "bg-gray-50"
+                              ? "cursor-default"
+                              : "cursor-pointer"
                           }`}
                         >
                           <span>
@@ -453,7 +453,7 @@ const Register = () => {
                       </div>
                     </Listbox>
                   </div>
-                  <div className="z-10">
+                  <div>
                     <label className="block text-gray-700 text-sm font-medium mb-1">
                       Village <sup className="text-red-500">*</sup>
                     </label>
@@ -464,10 +464,10 @@ const Register = () => {
                     >
                       <div className="relative">
                         <Listbox.Button
-                          className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between outline-none focus:ring-2 focus:ring-[#1e3a5f] ${
+                          className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between bg-gray-50 ${
                             !formData.address.commune
-                              ? "bg-gray-100 cursor-not-allowed"
-                              : "bg-gray-50"
+                              ? "cursor-default"
+                              : "cursor-pointer"
                           }`}
                         >
                           <span>
@@ -503,7 +503,7 @@ const Register = () => {
                         handleAddressChange("house_no", e.target.value)
                       }
                       required
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-2 focus:ring-[#1e3a5f] outline-none"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-sm"
                     />
                   </div>
                   <div>
@@ -516,7 +516,7 @@ const Register = () => {
                         handleAddressChange("street", e.target.value)
                       }
                       required
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-2 focus:ring-[#1e3a5f] outline-none"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-sm"
                     />
                   </div>
                 </div>
@@ -537,7 +537,7 @@ const Register = () => {
                       value={formData.request_purpose}
                       onChange={handleChange}
                       placeholder="e.g. Retail resale"
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-2 focus:ring-[#1e3a5f] outline-none"
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-sm"
                     />
                   </div>
                   <div className="z-30">
@@ -554,7 +554,7 @@ const Register = () => {
                       }
                     >
                       <div className="relative">
-                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between outline-none focus:ring-2 focus:ring-[#1e3a5f]">
+                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between">
                           <span className="capitalize">
                             {formData.expected_order_volume}
                           </span>
@@ -592,7 +592,7 @@ const Register = () => {
                       }
                     >
                       <div className="relative">
-                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between outline-none focus:ring-2 focus:ring-[#1e3a5f]">
+                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between">
                           <span className="capitalize">
                             {formData.order_frequency}
                           </span>
@@ -619,29 +619,52 @@ const Register = () => {
                   <div>
                     <label className="block text-gray-700 text-sm font-medium mb-1">
                       Product Categories
+                      <span className="text-gray-400 font-normal ml-2 text-xs">
+                        (Select all that apply)
+                      </span>
                     </label>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {categoriesList.length > 0 ? (
-                        categoriesList.map((cat) => (
-                          <button
-                            key={cat._id}
-                            type="button"
-                            onClick={() => handleCategoryToggle(cat.name)}
-                            className={`px-3 py-1 rounded-full text-xs border ${
-                              formData.product_categories.includes(cat.name)
-                                ? "bg-[#1e3a5f] text-white border-[#1e3a5f]"
-                                : "bg-white text-gray-600 border-gray-300"
-                            }`}
-                          >
-                            {cat.name}
-                          </button>
-                        ))
-                      ) : (
-                        <span className="text-gray-400 text-xs">
-                          No categories found.
-                        </span>
-                      )}
-                    </div>
+                    <Listbox
+                      value={formData.product_categories}
+                      onChange={(cats) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          product_categories: cats,
+                        }))
+                      }
+                      multiple
+                    >
+                      <div className="relative mt-1">
+                        <Listbox.Button  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between">
+                          <span className="block truncate">
+                            {formData.product_categories.length > 0
+                              ? formData.product_categories.join(", ")
+                              : "Select Product Categories"}
+                          </span>
+                          <HiSelector className="w-5 h-5 text-gray-400" />
+                        </Listbox.Button>
+                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                          {categoriesList.length === 0 ? (
+                            <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
+                              No categories found.
+                            </div>
+                          ) : (
+                            categoriesList.map((cat) => (
+                              <Listbox.Option
+                                key={cat._id}
+                                value={cat.name}
+                                className={({ active }) =>
+                                  `px-3 py-2 cursor-pointer text-black text-sm capitalize ${
+                                    active ? "bg-blue-50" : ""
+                                  }`
+                                }
+                              >
+                                {cat.name}
+                              </Listbox.Option>
+                            ))
+                          )}
+                        </Listbox.Options>
+                      </div>
+                    </Listbox>
                   </div>
                 </div>
               </section>
@@ -747,7 +770,7 @@ const Register = () => {
                         </div>
                       ) : (
                         <>
-                          <div className="w-12 h-12 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <div className="w-12 h-12 text-gray-600 rounded-full flex items-center justify-center mx-auto mb-2">
                             <HiOutlineUpload />
                           </div>
                           <span className="text-xs text-gray-500">
@@ -776,7 +799,7 @@ const Register = () => {
                     name="note_from_customer"
                     value={formData.note_from_customer}
                     onChange={handleChange}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 focus:ring-2 focus:ring-[#1e3a5f] outline-none"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-sm"
                     rows="3"
                     placeholder="Anything else you'd like to tell us?"
                   ></textarea>

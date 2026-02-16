@@ -87,7 +87,7 @@ const Login = () => {
               </label>
               <input
                 type="email"
-                className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] bg-gray-50 text-gray-800 placeholder-gray-400"
+                className="w-full border border-gray-100 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-800 placeholder-gray-400"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -101,7 +101,7 @@ const Login = () => {
               </label>
               <input
                 type={showPassword ? "text" : "password"}
-                className="w-full border border-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a5f] bg-gray-50 text-gray-800 placeholder-gray-400 pr-10"
+                className="w-full border border-gray-100 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-800 placeholder-gray-400 pr-10"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -110,7 +110,7 @@ const Login = () => {
 
               <button
                 type="button"
-                className="absolute right-3 top-12 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none z-0"
+                className="absolute right-3 top-11 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none z-0"
                 tabIndex={-1}
                 onClick={() => setShowPassword((prev) => !prev)}
                 aria-label={showPassword ? "Hide password" : "Show password"}

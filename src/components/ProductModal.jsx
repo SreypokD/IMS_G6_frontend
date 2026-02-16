@@ -55,8 +55,9 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       setSelectedImage(file);
       try {
         const res = await uploadFile(file);
-        if (res.data && res.data.url) {
-          setProduct((prev) => ({ ...prev, image: res.data.url }));
+        const url = res.data?.url || res.data?.file?.url;
+        if (url) {
+          setProduct((prev) => ({ ...prev, image: url }));
         }
       } catch (err) {
         console.error("Image upload failed", err);
@@ -289,45 +290,42 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     />
                   </div>
                 ) : (
-                  <div className="border-2 border-dashed border-gray-100 rounded-lg p-6 flex flex-col items-center justify-center transition-colors">
+                  <label className="cursor-pointer block relative group h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-lg p-6 hover:bg-gray-50 transition w-full">
+                    {product.image ? (
+                      <div className="relative w-40 h-40">
+                        <img
+                          src={product.image}
+                          alt="Product"
+                          className="w-full h-full object-cover rounded-md"
+                        />
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
+                          <span className="text-xs font-medium">
+                            Click to Change
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center">
+                        <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
+                        <span className="text-gray-600">
+                          Drag and drop your image here, or
+                          <span className="text-blue-600 underline ml-1">
+                            browse files
+                          </span>
+                        </span>
+                        <span className="text-sm text-gray-400 mt-1">
+                          Supported formats: JPG, PNG, GIF (Max 5MB)
+                        </span>
+                      </div>
+                    )}
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/gif"
                       className="hidden"
-                      id="image-upload"
                       onChange={handleImageChange}
                       disabled={viewOnly}
                     />
-                    <label
-                      htmlFor="image-upload"
-                      className={`flex flex-col items-center w-full h-full ${viewOnly ? "cursor-default opacity-60" : "cursor-pointer"}`}
-                      style={viewOnly ? { pointerEvents: "none" } : {}}
-                    >
-                      <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
-                      <span className="text-gray-600">
-                        Drag and drop your image here, or
-                        <span className="text-blue-600 underline ml-1">
-                          browse files
-                        </span>
-                      </span>
-                      <span className="text-sm text-gray-400 mt-1">
-                        Supported formats: JPG, PNG, GIF (Max 5MB)
-                      </span>
-                    </label>
-                    {(selectedImage || product.image) && (
-                      <div className="mt-2 flex items-center">
-                        <img
-                          src={
-                            selectedImage
-                              ? URL.createObjectURL(selectedImage)
-                              : product.image
-                          }
-                          alt="Preview"
-                          className="h-40 w-40 object-cover rounded mr-2"
-                        />
-                      </div>
-                    )}
-                  </div>
+                  </label>
                 )}
               </div>
             </div>
