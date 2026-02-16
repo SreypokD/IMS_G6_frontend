@@ -9,6 +9,7 @@ const CustomDatePicker = ({
   onChange,
   placeholder = "Select date",
   className,
+  viewOnly = false,
 }) => {
   return (
     <div className={`relative w-full ${className}`}>
@@ -20,10 +21,13 @@ const CustomDatePicker = ({
         className={`w-full border rounded-lg px-3 py-2 text-gray-800 border-gray-100 text-sm ${className ? "bg-white" : "bg-gray-50"}`}
         wrapperClassName="w-full"
         showPopperArrow={false}
+        disabled={viewOnly}
       />
-      <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none z-10">
-        <HiOutlineCalendar className="h-5 w-5 text-gray-500" />
-      </div>
+      {!viewOnly && (
+        <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none z-10">
+          <HiOutlineCalendar className="h-5 w-5 text-gray-500" />
+        </div>
+      )}
     </div>
   );
 };

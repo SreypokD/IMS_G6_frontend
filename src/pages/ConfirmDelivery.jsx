@@ -6,9 +6,11 @@ import {
   HiOutlineRefresh,
   HiOutlineEye,
   HiDotsVertical,
+  HiOutlineArchive,
+  HiOutlineXCircle,
 } from "react-icons/hi";
 import { useAuth } from "../contexts/auth/useAuth";
-import { getConfirmDeliveries, updateConfirmDelivery } from "../api";
+import { getConfirmDeliveries, confirmDeliveryAction } from "../api";
 import { formatDate } from "../utils/dateFormat";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
@@ -178,14 +180,10 @@ const DeliveryConfirmation = () => {
       // deliveryStatus maps to confirm_delivery.status
       if (delivery_status) params["confirm_delivery"] = delivery_status;
       const res = await getConfirmDeliveries(params);
-      // Only show orders that are approved and not yet delivered
-      setConfirmDeliveries(
-        res.data.data.filter(
-          (o) =>
-            o.status === "approved" &&
-            (!o.confirm_delivery || o.confirm_delivery.status !== "delivered"),
-        ),
-      );
+
+      // Remove client-side filtering to allow all statuses to be viewed/filtered by user
+      setConfirmDeliveries(res.data.data);
+
       setPagination((prev) => ({
         ...prev,
         ...res.data.pagination,
@@ -209,7 +207,7 @@ const DeliveryConfirmation = () => {
     });
     if (!confirmed) return;
     try {
-      await updateConfirmDelivery(id, {});
+      await confirmDeliveryAction(id);
       await dialog.success("Delivery confirmed.");
       fetchConfirmDeliveries(
         pagination.page,
@@ -242,6 +240,122 @@ const DeliveryConfirmation = () => {
     fetchConfirmDeliveries(1, pagination.limit, "", "", "", "", "");
   };
 
+  // Selection
+  const [selectedIds, setSelectedIds] = useState([]);
+
+  function handleSelectAll(e) {
+    if (e.target.checked) {
+      const newIds = confirmDeliveries.map((o) => o._id);
+      setSelectedIds((prev) => [...new Set([...prev, ...newIds])]);
+    } else {
+      const pageIds = confirmDeliveries.map((o) => o._id);
+      setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
+      setSelectAllMatches(false);
+    }
+  }
+
+  const [selectAllMatches, setSelectAllMatches] = useState(false);
+
+  async function handleSelectAllGlobal() {
+    setLoading(true);
+    try {
+      const params = {
+        limit: -1,
+        search,
+        startDate,
+        endDate,
+      };
+      if (approve_status) params["approve_request"] = approve_status;
+      if (delivery_status) params["confirm_delivery"] = delivery_status;
+
+      const res = await getConfirmDeliveries(params);
+      const allIds = res.data.data.map((o) => o._id);
+      setSelectedIds(allIds);
+      setSelectAllMatches(true);
+    } catch (err) {
+      console.error(err);
+      dialog.error("Failed to select all deliveries.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleSelectOne(e, id) {
+    if (e.target.checked) {
+      setSelectedIds((prev) => [...prev, id]);
+    } else {
+      setSelectedIds((prev) => prev.filter((i) => i !== id));
+    }
+  }
+
+  const [actionId, setActionId] = useState(null);
+
+  async function handleBulkActive(isActive) {
+    if (selectedIds.length === 0) return;
+    setActionId("bulk");
+    try {
+      const { updateConfirmDelivery } = await import("../api");
+      await Promise.all(
+        selectedIds.map((id) =>
+          updateConfirmDelivery(id, { is_active: isActive }),
+        ),
+      );
+      dialog.success(
+        `Deliveries marked as ${isActive ? "Active" : "Archived"} successfully.`,
+      );
+      fetchConfirmDeliveries(
+        pagination.page,
+        pagination.limit,
+        search,
+        startDate,
+        endDate,
+        approve_status,
+        delivery_status,
+      );
+      setSelectedIds([]);
+      setSelectAllMatches(false);
+    } catch (err) {
+      console.error(err);
+      dialog.error("Failed to update deliveries.");
+    } finally {
+      setActionId(null);
+    }
+  }
+
+  async function handleBulkDelete() {
+    if (selectedIds.length === 0) return;
+    const confirmed = await dialog.ask({
+      type: "confirm",
+      title: "Delete Deliveries",
+      message: `Are you sure you want to delete ${selectedIds.length} records?`,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+    if (!confirmed) return;
+
+    setActionId("bulk");
+    try {
+      const { deleteConfirmDelivery } = await import("../api");
+      await Promise.all(selectedIds.map((id) => deleteConfirmDelivery(id)));
+      dialog.success("Deliveries deleted successfully.");
+      fetchConfirmDeliveries(
+        pagination.page,
+        pagination.limit,
+        search,
+        startDate,
+        endDate,
+        approve_status,
+        delivery_status,
+      );
+      setSelectedIds([]);
+      setSelectAllMatches(false);
+    } catch {
+      dialog.error("Failed to delete deliveries.");
+    } finally {
+      setActionId(null);
+    }
+  }
+
   return (
     <div className="h-content-available">
       <OrderRequestModal
@@ -257,6 +371,60 @@ const DeliveryConfirmation = () => {
             Manage and confirm deliveries
           </span>
         </div>
+        {canUpdate && (
+          <Menu as="div" className="relative inline-block text-left ml-2">
+            <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+              <HiDotsVertical className="text-xl" />
+            </Menu.Button>
+            <Menu.Items
+              anchor="bottom end"
+              className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
+            >
+              <Menu.Item>
+                {() => (
+                  <button
+                    onClick={() => handleBulkActive(true)}
+                    className={`w-full flex items-center px-2 py-3 text-[#64748b] transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:text-black hover:bg-[#f1f5f9]"}`}
+                  >
+                    <HiOutlineCheckCircle
+                      className="mr-2 h-5 w-5"
+                      aria-hidden="true"
+                    />
+                    Active Requests
+                  </button>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {() => (
+                  <button
+                    onClick={() => handleBulkActive(false)}
+                    className={`w-full flex items-center px-2 py-3 text-[#64748b] transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:text-black hover:bg-[#f1f5f9]"}`}
+                  >
+                    <HiOutlineArchive
+                      className="mr-2 h-5 w-5"
+                      aria-hidden="true"
+                    />
+                    Archive Requests
+                  </button>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {() => (
+                  <button
+                    onClick={handleBulkDelete}
+                    className={`w-full flex items-center px-2 py-3 text-red-500 transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:bg-red-50"}`}
+                  >
+                    <HiOutlineXCircle
+                      className="text-red-500 mr-2 h-5 w-5"
+                      aria-hidden="true"
+                    />
+                    Delete Requests
+                  </button>
+                )}
+              </Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )}
       </div>
       <div className="bg-white rounded-xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
@@ -343,6 +511,39 @@ const DeliveryConfirmation = () => {
         </div>
       </div>
       <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+        {
+          /* Select All Banner */
+          selectedIds.length > 0 &&
+            !selectAllMatches &&
+            pagination.totalItems > selectedIds.length && (
+              <div className="bg-blue-50 px-4 py-2 text-sm text-blue-700 flex justify-center items-center gap-2">
+                <span>
+                  All {selectedIds.length} items on this page are selected.
+                </span>
+                <button
+                  onClick={handleSelectAllGlobal}
+                  className="font-semibold underline hover:text-blue-800 cursor-pointer"
+                >
+                  Select all {pagination.totalItems} items matching search
+                </button>
+              </div>
+            )
+        }
+        {selectAllMatches && (
+          <div className="bg-blue-50 px-4 py-2 text-sm text-blue-700 flex justify-center items-center gap-2">
+            <span>All {selectedIds.length} items are selected.</span>
+            <button
+              onClick={() => {
+                setSelectedIds([]);
+                setSelectAllMatches(false);
+              }}
+              className="font-semibold underline hover:text-blue-800 cursor-pointer"
+            >
+              Clear selection
+            </button>
+          </div>
+        )}
+
         <div className="table-scroll-container">
           {loading ? (
             <Loading />
@@ -352,6 +553,21 @@ const DeliveryConfirmation = () => {
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">
                 <tr>
+                  {canUpdate && (
+                    <th className="w-12 text-center">
+                      <input
+                        type="checkbox"
+                        className="cursor-pointer"
+                        checked={
+                          confirmDeliveries.length > 0 &&
+                          confirmDeliveries.every((o) =>
+                            selectedIds.includes(o._id),
+                          )
+                        }
+                        onChange={handleSelectAll}
+                      />
+                    </th>
+                  )}
                   <th className="number">No.</th>
                   <th>Requested By</th>
                   <th>Product(s)</th>
@@ -367,11 +583,24 @@ const DeliveryConfirmation = () => {
                 {confirmDeliveries.map((confirm_delivery, index) => {
                   const approve = confirm_delivery.approve_request;
                   const delivery = confirm_delivery.confirm_delivery;
+                  const isArchived = confirm_delivery.is_active === false;
                   return (
                     <tr
                       key={confirm_delivery._id}
-                      className="hover:bg-[#f1f5f9]"
+                      className={`hover:bg-[#f1f5f9] ${isArchived ? "opacity-50 grayscale bg-gray-50" : ""}`}
                     >
+                      {canUpdate && (
+                        <td className="text-center">
+                          <input
+                            type="checkbox"
+                            className="cursor-pointer"
+                            checked={selectedIds.includes(confirm_delivery._id)}
+                            onChange={(e) =>
+                              handleSelectOne(e, confirm_delivery._id)
+                            }
+                          />
+                        </td>
+                      )}
                       <td className="number">
                         {index + 1 + (pagination.page - 1) * pagination.limit}
                       </td>
@@ -468,7 +697,7 @@ const DeliveryConfirmation = () => {
                 })}
                 {confirmDeliveries.length === 0 && (
                   <tr>
-                    <td colSpan="9">
+                    <td colSpan="11">
                       <NoDataFound message="No deliveries found." />
                     </td>
                   </tr>

@@ -161,19 +161,13 @@ export default function Settings() {
       error("Please select an image file", "Invalid File");
       return;
     }
-
     try {
       setUploading(true);
       const res = await uploadFile(file);
       if (res.data && res.data.url) {
         setProfileData((prev) => ({ ...prev, profile: res.data.url }));
-        // Optionally save immediately
-        // await updateSelfProfile({ profile: res.data.url });
-        // refreshProfile();
-        // success("Profile picture updated", "Success");
       }
     } catch (err) {
-      console.error(err);
       error("Failed to upload image", "Upload Error");
     } finally {
       setUploading(false);
@@ -184,20 +178,16 @@ export default function Settings() {
     e.preventDefault();
     setLoading(true);
     try {
-      // Clean up empty address fields if needed, or backend handles it
       const payload = {
         ...profileData,
-        // Ensure address is object
         address: profileData.address,
       };
-
       const res = await updateSelfProfile(payload);
       if (res.data.success) {
         await refreshProfile();
         success("Profile updated successfully", "Success");
       }
     } catch (err) {
-      console.error(err);
       error(err.response?.data?.error || "Failed to update profile", "Error");
     } finally {
       setLoading(false);
@@ -225,7 +215,6 @@ export default function Settings() {
         success("Password updated successfully", "Success");
       }
     } catch (err) {
-      console.error(err);
       error(err.response?.data?.error || "Failed to update password", "Error");
     } finally {
       setLoading(false);

@@ -57,7 +57,9 @@ const Header = ({ onBellClick }) => {
     await markAsRead(n._id);
     
     // Redirect based on notification type
-    if (n.type === "new_order_request") {
+    if (n.type === "register_request") {
+      navigate("/users");
+    } else if (n.type === "new_order_request") {
       if (user?.permission?.permissions?.includes("view_approve_request")) {
         navigate("/approve-requests");
       } else {

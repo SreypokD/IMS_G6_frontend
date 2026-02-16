@@ -67,6 +67,7 @@ const StockOutModal = ({ open, onClose, products, data }) => {
         type: "out",
         user_id: user?._id,
         completed_at: new Date(),
+        status: "active",
       };
       if (data) {
         await updateStock(data._id, payload);

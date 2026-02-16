@@ -37,7 +37,7 @@ function PermissionDropdown({
         <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
           <span>
             {permissions.find((p) => p._id === selected)?.name ||
-              "All Permissions"}
+              "All Roles"}
           </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
@@ -46,7 +46,7 @@ function PermissionDropdown({
             className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
             value=""
           >
-            <span>All Permissions</span>
+            <span>All Roles</span>
           </Listbox.Option>
           {permissions.map((option) => (
             <Listbox.Option
@@ -141,7 +141,7 @@ const Users = () => {
   const canDelete = user?.permission?.permissions?.includes("delete_user");
 
   useEffect(() => {
-    getPermissions().then((res) => {
+    getPermissions({ limit: -1 }).then((res) => {
       if (Array.isArray(res.data)) {
         setPermissions(res.data);
       } else if (Array.isArray(res.data?.data)) {
@@ -203,7 +203,7 @@ const Users = () => {
     setLoading(true);
     setError("");
     try {
-      if (editUser) {
+      if (editUser && editUser._id) {
         await updateUser(editUser._id, user);
         dialog.success("User updated successfully");
       } else {
@@ -305,18 +305,20 @@ const Users = () => {
           <h1 className="text-xl font-semibold">Users</h1>
           <span className="text-gray-500 text-sm">Manage users</span>
         </div>
-        {canCreate && (
-          <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
-            onClick={() => {
-              setEditUser(null);
-              setViewUser(null);
-              setModalOpen(true);
-            }}
-          >
-            <HiOutlinePlus className="text-md" /> Add User
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {canCreate && (
+            <button
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+              onClick={() => {
+                setEditUser(null);
+                setViewUser(null);
+                setModalOpen(true);
+              }}
+            >
+              <HiOutlinePlus className="text-md" /> Add User
+            </button>
+          )}
+        </div>
       </div>
       <div className="bg-white rounded-xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
@@ -344,7 +346,7 @@ const Users = () => {
           </div>
           <div>
             <label className="block text-gray-700 text-sm mb-1">
-              Permission
+              Role
             </label>
             <PermissionDropdown
               selected={permission}

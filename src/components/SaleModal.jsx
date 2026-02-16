@@ -34,8 +34,10 @@ export default function SaleModal({
 
   useEffect(() => {
     if (open) {
-      getProducts().then((res) => setProducts(res.data.data || []));
-      getUsers().then((res) => setUsers(res.data.data || []));
+      getProducts({ limit: -1 }).then((res) =>
+        setProducts(res.data.data || []),
+      );
+      getUsers({ limit: -1 }).then((res) => setUsers(res.data.data || []));
 
       if (data) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -193,7 +195,9 @@ export default function SaleModal({
                             })()
                           : "Select customer"}
                       </span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {users.map((u) => (
@@ -251,7 +255,9 @@ export default function SaleModal({
                                   })()
                                 : "Select an option"}
                             </span>
-                            <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                            {!viewOnly && (
+                              <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                            )}
                           </Listbox.Button>
                           <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                             {products.map((p) => {
@@ -288,7 +294,7 @@ export default function SaleModal({
                       </label>
                       <div className="relative">
                         <input
-                          type="number"
+                          type={viewOnly ? "text" : "number"}
                           className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                           value={item.quantity}
                           onChange={(e) => {
@@ -313,7 +319,7 @@ export default function SaleModal({
                         {!viewOnly && <sup className="text-red-500">*</sup>}
                       </label>
                       <input
-                        type="number"
+                        type={viewOnly ? "text" : "number"}
                         min="0"
                         className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                         value={item.price}
@@ -329,7 +335,7 @@ export default function SaleModal({
                         Discount (%)
                       </label>
                       <input
-                        type="number"
+                        type={viewOnly ? "text" : "number"}
                         min="0"
                         max="100"
                         className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
@@ -403,7 +409,9 @@ export default function SaleModal({
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-100 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span>{sale.payment_method}</span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {paymentMethods.map((method) => (

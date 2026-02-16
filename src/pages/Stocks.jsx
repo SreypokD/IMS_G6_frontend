@@ -12,6 +12,9 @@ import {
   HiTrendingUp,
   HiTrendingDown,
   HiOutlineExclamation,
+  HiOutlineCheckCircle,
+  HiOutlineXCircle,
+  HiOutlineArchive,
 } from "react-icons/hi";
 import Pagination from "../components/Pagination";
 import { useAuth } from "../contexts/auth/useAuth";
@@ -200,7 +203,6 @@ const Stocks = () => {
         filterLocation,
       );
       fetchProducts();
-      fetchProducts();
       if (canViewUsers) {
         fetchUsersList();
       }
@@ -239,7 +241,7 @@ const Stocks = () => {
 
   async function fetchProducts() {
     try {
-      const res = await getProducts();
+      const res = await getProducts({ limit: -1 });
       setProducts(res.data.data || []);
     } catch {
       setProducts([]);
@@ -248,7 +250,7 @@ const Stocks = () => {
 
   async function fetchUsersList() {
     try {
-      const res = await getUsers();
+      const res = await getUsers({ limit: -1 });
       setUserOptions(res.data.data || []);
     } catch {
       setUserOptions([]);
@@ -332,15 +334,118 @@ const Stocks = () => {
     }
   }
 
-  const handleReset = () => {
+  // Selection
+  const [selectedIds, setSelectedIds] = useState([]);
+
+  function handleSelectAll(e) {
+    if (e.target.checked) {
+      const newIds = stocks.map((s) => s._id);
+      setSelectedIds((prev) => [...new Set([...prev, ...newIds])]);
+    } else {
+      const pageIds = stocks.map((s) => s._id);
+      setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
+    }
+  }
+
+  function handleSelectOne(e, id) {
+    if (e.target.checked) {
+      setSelectedIds((prev) => [...prev, id]);
+    } else {
+      setSelectedIds((prev) => prev.filter((i) => i !== id));
+    }
+  }
+
+  async function handleBulkStatus(status) {
+    if (selectedIds.length === 0) return;
+    setLoading(true);
+    try {
+      await Promise.all(
+        selectedIds.map((id) => {
+          return updateStock(id, { status });
+        }),
+      );
+
+      dialog.success(`Stocks marked as ${status} successfully.`);
+      fetchStocks(pagination.page, pagination.limit);
+      setSelectedIds([]);
+      setSelectAllMatches(false);
+    } catch (err) {
+      console.error(err);
+      dialog.error("Failed to update stocks.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleBulkDelete() {
+    if (selectedIds.length === 0) return;
+    const confirmed = await dialog.ask({
+      type: "confirm",
+      title: "Delete Stocks",
+      message: `Are you sure you want to delete ${selectedIds.length} stock records?`,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+    if (!confirmed) return;
+
+    setLoading(true);
+    try {
+      await Promise.all(selectedIds.map((id) => deleteStock(id)));
+      dialog.success("Stocks deleted successfully.");
+      fetchStocks(pagination.page, pagination.limit);
+      setSelectedIds([]);
+      setSelectAllMatches(false);
+    } catch {
+      dialog.error("Failed to delete stocks.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // "Select All" Logic
+  const [selectAllMatches, setSelectAllMatches] = useState(false);
+
+  async function handleSelectAll(e) {
+    if (e.target.checked) {
+      // Select current page first
+      const newIds = stocks.map((s) => s._id);
+      setSelectedIds((prev) => [...new Set([...prev, ...newIds])]);
+    } else {
+      // Deselect current page
+      const pageIds = stocks.map((s) => s._id);
+      setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
+      setSelectAllMatches(false);
+    }
+  }
+
+  async function handleSelectAllGlobal() {
+    setLoading(true);
+    try {
+      // Fetch all IDs matching current filters
+      const params = {
+        limit: -1,
+        search,
+        type: filterType,
+        user: filterUser,
+        location: filterLocation,
+      };
+      const res = await getStocks(params);
+      const allIds = res.data.data.map((s) => s._id);
+      setSelectedIds(allIds);
+      setSelectAllMatches(true);
+    } catch (err) {
+      console.error(err);
+      dialog.error("Failed to select all stocks.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleReset() {
     setSearch("");
-    setFilterType("");
-    setFilterUser("");
-    setFilterLocation("");
-    setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchStocks(1, pagination.limit, "", "", "", "");
-    fetchSummary("", "", "", "");
-  };
+    setFilters({});
+    fetchStocks(1, pagination.limit);
+  }
 
   return (
     <div className="h-content-available">
@@ -384,22 +489,78 @@ const Stocks = () => {
             Track and manage inventory movements with real-time updates
           </span>
         </div>
-        {canCreate && (
-          <div className="flex items-center gap-3">
-            <button
-              className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
-              onClick={() => setStockOutOpen(true)}
-            >
-              <HiLogout className="text-md rotate-270" /> Stock Out
-            </button>
-            <button
-              className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
-              onClick={() => setStockInOpen(true)}
-            >
-              <HiDownload className="text-md" /> Stock In
-            </button>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {canCreate && (
+            <div className="flex items-center gap-3">
+              <button
+                className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+                onClick={() => setStockOutOpen(true)}
+              >
+                <HiLogout className="text-md rotate-270" /> Stock Out
+              </button>
+              <button
+                className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+                onClick={() => setStockInOpen(true)}
+              >
+                <HiDownload className="text-md" /> Stock In
+              </button>
+            </div>
+          )}
+          {(canUpdate || canDelete) && (
+            <Menu as="div" className="relative inline-block text-left">
+              <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                <HiDotsVertical className="text-xl" />
+              </Menu.Button>
+              <Menu.Items
+                anchor="bottom end"
+                className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
+              >
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={() => handleBulkStatus("active")}
+                      className={`w-full flex items-center px-2 py-3 text-[#64748b] transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:text-black hover:bg-[#f1f5f9]"}`}
+                    >
+                      <HiOutlineCheckCircle
+                        className="mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                      Active Stocks
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={() => handleBulkStatus("inactive")}
+                      className={`w-full flex items-center px-2 py-3 text-[#64748b] transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:text-black hover:bg-[#f1f5f9]"}`}
+                    >
+                      <HiOutlineArchive
+                        className="mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                      Archive Stocks
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={handleBulkDelete}
+                      className={`w-full flex items-center px-2 py-3 text-red-500 transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:bg-red-50"}`}
+                    >
+                      <HiOutlineTrash
+                        className="text-red-500 mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                      Delete Stocks
+                    </button>
+                  )}
+                </Menu.Item>
+              </Menu.Items>
+            </Menu>
+          )}
+        </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-3">
         <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
@@ -580,6 +741,39 @@ const Stocks = () => {
         </div>
       </div>
       <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+        {
+          /* Select All Banner */
+          selectedIds.length > 0 &&
+            !selectAllMatches &&
+            pagination.totalItems > selectedIds.length && (
+              <div className="bg-blue-50 px-4 py-2 text-sm text-blue-700 flex justify-center items-center gap-2">
+                <span>
+                  All {selectedIds.length} items on this page are selected.
+                </span>
+                <button
+                  onClick={handleSelectAllGlobal}
+                  className="font-semibold underline hover:text-blue-800 cursor-pointer"
+                >
+                  Select all {pagination.totalItems} items matching search
+                </button>
+              </div>
+            )
+        }
+        {selectAllMatches && (
+          <div className="bg-blue-50 px-4 py-2 text-sm text-blue-700 flex justify-center items-center gap-2">
+            <span>All {selectedIds.length} items are selected.</span>
+            <button
+              onClick={() => {
+                setSelectedIds([]);
+                setSelectAllMatches(false);
+              }}
+              className="font-semibold underline hover:text-blue-800 cursor-pointer"
+            >
+              Clear selection
+            </button>
+          </div>
+        )}
+
         <div className="table-scroll-container">
           {loading ? (
             <Loading />
@@ -589,6 +783,21 @@ const Stocks = () => {
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">
                 <tr>
+                  {(canUpdate || canDelete) && (
+                    <th className="w-15">
+                      <input
+                        type="checkbox"
+                        name="selectAll"
+                        id="selectAll"
+                        className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
+                        checked={
+                          stocks.length > 0 &&
+                          stocks.every((s) => selectedIds.includes(s._id))
+                        }
+                        onChange={handleSelectAll}
+                      />
+                    </th>
+                  )}
                   <th className="number">No.</th>
                   <th>Date & Times</th>
                   <th>Product</th>
@@ -597,6 +806,7 @@ const Stocks = () => {
                   <th>Balance</th>
                   <th>User</th>
                   <th>Location</th>
+                  <th>Status</th>
                   {canView || canUpdate || canDelete ? (
                     <th className="text-center action">Actions</th>
                   ) : null}
@@ -605,6 +815,18 @@ const Stocks = () => {
               <tbody>
                 {stocks.map((stock, index) => (
                   <tr key={stock._id} className="hover:bg-[#f1f5f9]">
+                    {(canUpdate || canDelete) && (
+                      <td className="w-15">
+                        <input
+                          type="checkbox"
+                          name="select"
+                          id="select"
+                          className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
+                          checked={selectedIds.includes(stock._id)}
+                          onChange={(e) => handleSelectOne(e, stock._id)}
+                        />
+                      </td>
+                    )}
                     <td className="number">
                       {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>
@@ -633,6 +855,13 @@ const Stocks = () => {
                         : stock.user_id || "-"}
                     </td>
                     <td>{stock.location || "-"}</td>
+                    <td>
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-sm capitalize ${stock.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}
+                      >
+                        {stock.status}
+                      </span>
+                    </td>
                     <td className="action flex items-center justify-center gap-2">
                       {canView && (
                         <button
@@ -695,7 +924,7 @@ const Stocks = () => {
                 ))}
                 {stocks.length === 0 && (
                   <tr>
-                    <td colSpan="9">
+                    <td colSpan="10">
                       <NoDataFound message="No stocks found." />
                     </td>
                   </tr>

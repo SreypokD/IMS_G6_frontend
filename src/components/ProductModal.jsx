@@ -15,6 +15,7 @@ const initialProduct = {
   price: "",
   stock: "",
   image: "",
+  status: "active",
 };
 
 import { getCategories, getSuppliers, uploadFile } from "../api";
@@ -40,10 +41,10 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
         setTouched({});
         setValidateOnSave(false);
       }
-      getCategories().then((res) => {
+      getCategories({ limit: -1 }).then((res) => {
         setCategories(res.data.data || []);
       });
-      getSuppliers().then((res) => {
+      getSuppliers({ limit: -1 }).then((res) => {
         setSuppliers(res.data.data || []);
       });
     }
@@ -145,7 +146,9 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                         {categories.find((cat) => cat._id === product.category)
                           ?.name || "Select category"}
                       </span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {categories.length === 0 && (
@@ -198,7 +201,9 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                         {suppliers.find((sup) => sup._id === product.supplier)
                           ?.company_name || "Select supplier"}
                       </span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {suppliers.length === 0 && (
@@ -235,7 +240,7 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   onBlur={() =>
                     setTouched((prev) => ({ ...prev, price: true }))
                   }
-                  type="number"
+                  type={viewOnly ? "text" : "number"}
                   step="0.01"
                   placeholder="Price"
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.price || isNaN(product.price)) && !data && (touched.price || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
@@ -258,8 +263,10 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   onBlur={() =>
                     setTouched((prev) => ({ ...prev, stock: true }))
                   }
-                  type="number"
-                  placeholder={product._id ? "Current Stock" : "Initial Quantity"}
+                  type={viewOnly ? "text" : "number"}
+                  placeholder={
+                    product._id ? "Current Stock" : "Initial Quantity"
+                  }
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.stock || isNaN(product.stock)) && !data && (touched.stock || validateOnSave) ? "border-red-500" : "border-gray-100"} ${product._id ? "cursor-default" : ""}`}
                   disabled={viewOnly || !!product._id}
                 />
@@ -268,6 +275,23 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     To adjust stock, use "Stock In" or "Stock Out".
                   </p>
                 )}
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Status <sup className="text-red-500">*</sup>
+                </label>
+                <select
+                  name="status"
+                  value={product.status}
+                  onChange={(e) =>
+                    setProduct({ ...product, status: e.target.value })
+                  }
+                  className="w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-sm text-gray-800"
+                  disabled={viewOnly}
+                >
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
               </div>
             </div>
           </div>

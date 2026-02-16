@@ -134,12 +134,18 @@ export const getApproveRequests = (params) =>
   api.get(approveRequests, { params });
 export const updateApproveRequests = (id, data) =>
   api.patch(`${approveRequests}/${id}`, data);
+export const deleteApproveRequest = (id) =>
+  api.delete(`${orderRequests}/${id}`);
 
 // Confirm delivery
 export const getConfirmDeliveries = (params) =>
   api.get(confirmDeliveries, { params });
 export const updateConfirmDelivery = (id, data) =>
   api.patch(`${confirmDeliveries}/${id}`, data);
+export const confirmDeliveryAction = (id) =>
+  api.post(`${confirmDeliveries}/${id}/confirm`);
+export const deleteConfirmDelivery = (id) =>
+  api.delete(`${confirmDeliveries}/${id}`);
 
 // Sales
 export const getSales = (params = {}) => api.get(sales, { params });

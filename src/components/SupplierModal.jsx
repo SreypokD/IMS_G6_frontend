@@ -293,7 +293,9 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.address.province && !data && (touched.province || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     >
                       <span>{supplier.address.province}</span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {locations.map((province) => (
@@ -326,7 +328,9 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.address.district && !data && (touched.district || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     >
                       <span>{supplier.address.district}</span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {locations
@@ -361,7 +365,9 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.address.commune && !data && (touched.commune || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     >
                       <span>{supplier.address.commune}</span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {locations
@@ -399,7 +405,9 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.address.village && !data && (touched.village || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     >
                       <span>{supplier.address.village}</span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {locations
@@ -504,7 +512,9 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                           (pt) => pt.name === supplier.payment_term,
                         )?.name || "Select Payment Term"}
                       </span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {paymentTerms.length === 0 && (
@@ -556,7 +566,9 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                         {statuses.find((st) => st.name === supplier.status)
                           ?.name || "Select status"}
                       </span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {statuses.length === 0 && (

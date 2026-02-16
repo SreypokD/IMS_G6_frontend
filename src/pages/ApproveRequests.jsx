@@ -8,6 +8,7 @@ import {
   HiOutlineEye,
   HiOutlineRefresh,
   HiDotsVertical,
+  HiOutlineArchive,
 } from "react-icons/hi";
 import { getApproveRequests, updateApproveRequests } from "../api";
 import Pagination from "../components/Pagination";
@@ -82,6 +83,7 @@ const OrderRequestApproval = () => {
     search,
     startDate,
     endDate,
+    statusFilter = status, // Use current status state if not passed
   ) {
     setLoading(true);
     setError("");
@@ -92,8 +94,18 @@ const OrderRequestApproval = () => {
         search,
         startDate,
         endDate,
+        status: statusFilter, // Pass status to API
       });
-      setOrders(res.data.data.filter((o) => o.status === "pending"));
+
+      let data = res.data.data;
+      if (statusFilter && statusFilter !== "") {
+        const hasMixed = data.some((d) => d.status !== statusFilter);
+        if (hasMixed) {
+          data = data.filter((d) => d.status === statusFilter);
+        }
+      }
+
+      setOrders(data);
       setPagination((prev) => ({
         ...prev,
         ...res.data.pagination,
@@ -163,12 +175,125 @@ const OrderRequestApproval = () => {
     setViewDialog({ open: true, order });
   }
 
+  const [status, setStatus] = useState("pending");
+
+  // Selection
+  const [selectedIds, setSelectedIds] = useState([]);
+
+  function handleSelectAll(e) {
+    if (e.target.checked) {
+      const newIds = orders.map((o) => o._id);
+      setSelectedIds((prev) => [...new Set([...prev, ...newIds])]);
+    } else {
+      const pageIds = orders.map((o) => o._id);
+      setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
+      setSelectAllMatches(false);
+    }
+  }
+
+  const [selectAllMatches, setSelectAllMatches] = useState(false);
+
+  async function handleSelectAllGlobal() {
+    setLoading(true);
+    try {
+      const res = await getApproveRequests({
+        limit: -1,
+        search,
+        startDate,
+        endDate,
+        status: status, // status state from line 179
+      });
+
+      const allIds = res.data.data.map((o) => o._id);
+      setSelectedIds(allIds);
+      setSelectAllMatches(true);
+    } catch (err) {
+      console.error(err);
+      dialog.error("Failed to select all requests.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleSelectOne(e, id) {
+    if (e.target.checked) {
+      setSelectedIds((prev) => [...prev, id]);
+    } else {
+      setSelectedIds((prev) => prev.filter((i) => i !== id));
+    }
+  }
+
+  async function handleBulkActive(isActive) {
+    if (selectedIds.length === 0) return;
+    setActionId("bulk");
+    try {
+      const { updateApproveRequests } = await import("../api");
+      await Promise.all(
+        selectedIds.map((id) =>
+          updateApproveRequests(id, { is_active: isActive }),
+        ),
+      );
+      dialog.success(
+        `Requests marked as ${isActive ? "Active" : "Archived"} successfully.`,
+      );
+      fetchApproveRequests(
+        pagination.page,
+        pagination.limit,
+        search,
+        startDate,
+        endDate,
+        status,
+      );
+      setSelectedIds([]);
+      setSelectAllMatches(false);
+    } catch (err) {
+      console.error(err);
+      dialog.error("Failed to update requests.");
+    } finally {
+      setActionId(null);
+    }
+  }
+
+  async function handleBulkDelete() {
+    if (selectedIds.length === 0) return;
+    const confirmed = await dialog.ask({
+      type: "confirm",
+      title: "Delete Requests",
+      message: `Are you sure you want to delete ${selectedIds.length} requests?`,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+    if (!confirmed) return;
+
+    setActionId("bulk");
+    try {
+      const { deleteApproveRequest } = await import("../api");
+      await Promise.all(selectedIds.map((id) => deleteApproveRequest(id)));
+      dialog.success("Requests deleted successfully.");
+      fetchApproveRequests(
+        pagination.page,
+        pagination.limit,
+        search,
+        startDate,
+        endDate,
+        status,
+      );
+      setSelectedIds([]);
+      setSelectAllMatches(false);
+    } catch {
+      dialog.error("Failed to delete requests.");
+    } finally {
+      setActionId(null);
+    }
+  }
+
   const handleReset = () => {
     setSearch("");
     setStartDate("");
     setEndDate("");
+    setStatus("pending"); // Reset to default "pending"
     setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchApproveRequests(1, pagination.limit, "", "", "");
+    fetchApproveRequests(1, pagination.limit, "", "", "", "pending");
   };
 
   return (
@@ -239,6 +364,61 @@ const OrderRequestApproval = () => {
             Review and manage order request approvals
           </span>
         </div>
+
+        {canUpdate && (
+          <Menu as="div" className="relative inline-block text-left ml-2">
+            <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+              <HiDotsVertical className="text-xl" />
+            </Menu.Button>
+            <Menu.Items
+              anchor="bottom end"
+              className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
+            >
+              <Menu.Item>
+                {() => (
+                  <button
+                    onClick={() => handleBulkActive(true)}
+                    className={`w-full flex items-center px-2 py-3 text-[#64748b] transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:text-black hover:bg-[#f1f5f9]"}`}
+                  >
+                    <HiOutlineCheckCircle
+                      className="mr-2 h-5 w-5"
+                      aria-hidden="true"
+                    />
+                    Active Requests
+                  </button>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {() => (
+                  <button
+                    onClick={() => handleBulkActive(false)}
+                    className={`w-full flex items-center px-2 py-3 text-[#64748b] transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:text-black hover:bg-[#f1f5f9]"}`}
+                  >
+                    <HiOutlineArchive
+                      className="mr-2 h-5 w-5"
+                      aria-hidden="true"
+                    />
+                    Archive Requests
+                  </button>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {() => (
+                  <button
+                    onClick={handleBulkDelete}
+                    className={`w-full flex items-center px-2 py-3 text-red-500 transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:bg-red-50"}`}
+                  >
+                    <HiOutlineXCircle
+                      className="text-red-500 mr-2 h-5 w-5"
+                      aria-hidden="true"
+                    />
+                    Delete Requests
+                  </button>
+                )}
+              </Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )}
       </div>
       <div className="bg-white rounded-xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
@@ -289,6 +469,39 @@ const OrderRequestApproval = () => {
         </div>
       </div>
       <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+        {
+          /* Select All Banner */
+          selectedIds.length > 0 &&
+            !selectAllMatches &&
+            pagination.totalItems > selectedIds.length && (
+              <div className="bg-blue-50 px-4 py-2 text-sm text-blue-700 flex justify-center items-center gap-2">
+                <span>
+                  All {selectedIds.length} items on this page are selected.
+                </span>
+                <button
+                  onClick={handleSelectAllGlobal}
+                  className="font-semibold underline hover:text-blue-800 cursor-pointer"
+                >
+                  Select all {pagination.totalItems} items matching search
+                </button>
+              </div>
+            )
+        }
+        {selectAllMatches && (
+          <div className="bg-blue-50 px-4 py-2 text-sm text-blue-700 flex justify-center items-center gap-2">
+            <span>All {selectedIds.length} items are selected.</span>
+            <button
+              onClick={() => {
+                setSelectedIds([]);
+                setSelectAllMatches(false);
+              }}
+              className="font-semibold underline hover:text-blue-800 cursor-pointer"
+            >
+              Clear selection
+            </button>
+          </div>
+        )}
+
         <div className="table-scroll-container">
           {loading ? (
             <Loading />
@@ -298,6 +511,21 @@ const OrderRequestApproval = () => {
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">
                 <tr>
+                  {canUpdate && (
+                    <th className="w-15">
+                      <input
+                        type="checkbox"
+                        name="selectAll"
+                        id="selectAll"
+                        className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
+                        checked={
+                          orders.length > 0 &&
+                          orders.every((o) => selectedIds.includes(o._id))
+                        }
+                        onChange={handleSelectAll}
+                      />
+                    </th>
+                  )}
                   <th className="number">No.</th>
                   <th>Requested By</th>
                   <th>Product(s)</th>
@@ -312,7 +540,22 @@ const OrderRequestApproval = () => {
               </thead>
               <tbody>
                 {orders.map((order, index) => (
-                  <tr key={order._id} className="hover:bg-[#f1f5f9]">
+                  <tr
+                    key={order._id}
+                    className={`hover:bg-[#f1f5f9] ${order.is_active === false ? "opacity-50 grayscale" : ""}`}
+                  >
+                    {canUpdate && (
+                      <td className="w-15">
+                        <input
+                          type="checkbox"
+                          name="select"
+                          id="select"
+                          className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
+                          checked={selectedIds.includes(order._id)}
+                          onChange={(e) => handleSelectOne(e, order._id)}
+                        />
+                      </td>
+                    )}
                     <td className="number">
                       {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>
@@ -412,7 +655,7 @@ const OrderRequestApproval = () => {
                 ))}
                 {orders.length === 0 && (
                   <tr>
-                    <td colSpan="8">
+                    <td colSpan="9">
                       <NoDataFound message="No approve requests found." />
                     </td>
                   </tr>

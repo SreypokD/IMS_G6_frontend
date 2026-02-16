@@ -44,8 +44,12 @@ const OrderRequestModal = ({
 
   useEffect(() => {
     if (open) {
-      getProducts().then((res) => setProducts(res.data.data || []));
-      getSuppliers().then((res) => setSuppliers(res.data.data || []));
+      getProducts({ limit: -1 }).then((res) =>
+        setProducts(res.data.data || []),
+      );
+      getSuppliers({ limit: -1 }).then((res) =>
+        setSuppliers(res.data.data || []),
+      );
       if (data) {
         // Convert delivery_date to yyyy-MM-dd for input value
         let deliveryDateValue = data.delivery_date || "";
@@ -285,7 +289,9 @@ const OrderRequestModal = ({
                           (s) => s._id === (order.supplier_id || ""),
                         )?.company_name || "Select supplier"}
                       </span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {suppliers.length === 0 && (
@@ -323,6 +329,7 @@ const OrderRequestModal = ({
                         : "",
                     }))
                   }
+                  viewOnly={viewOnly}
                   placeholder="Delivery Date"
                 />
               </div>
@@ -368,7 +375,9 @@ const OrderRequestModal = ({
                                 ? "Select product"
                                 : "Select supplier first"}
                           </span>
-                          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                          {!viewOnly && (
+                            <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                          )}
                         </Listbox.Button>
                         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {(() => {
@@ -426,7 +435,7 @@ const OrderRequestModal = ({
                       {!viewOnly ? <sup className="text-red-500">*</sup> : null}
                     </label>
                     <input
-                      type="number"
+                      type={viewOnly ? "text" : "number"}
                       min={1}
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                       value={item.quantity}
@@ -442,7 +451,7 @@ const OrderRequestModal = ({
                       Unit Price
                     </label>
                     <input
-                      type="number"
+                      type={viewOnly ? "text" : "number"}
                       min={0}
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                       placeholder="Unit Price"

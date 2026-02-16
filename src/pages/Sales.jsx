@@ -28,6 +28,8 @@ import {
   HiOutlineTrash,
   HiOutlineEye,
   HiDotsVertical,
+  HiOutlineArchive,
+  HiOutlineCheckCircle,
 } from "react-icons/hi";
 import { useDialog } from "../contexts/dialog/useDialog";
 import { Listbox, Menu } from "@headlessui/react";
@@ -178,7 +180,7 @@ const Sales = () => {
   useEffect(() => {
     if (user) {
       if (canViewUsers) {
-        getUsers()
+        getUsers({ limit: -1 })
           .then((res) => {
             if (res && res.data) {
               setUsers(res.data.data || []);
@@ -296,6 +298,104 @@ const Sales = () => {
     fetchSales(1, pagination.limit);
   };
 
+  // Selection
+  const [selectedIds, setSelectedIds] = useState([]);
+
+  function handleSelectAll(e) {
+    if (e.target.checked) {
+      const newIds = sales.map((s) => s._id);
+      setSelectedIds((prev) => [...new Set([...prev, ...newIds])]);
+    } else {
+      const pageIds = sales.map((s) => s._id);
+      setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
+      setSelectAllMatches(false);
+    }
+  }
+
+  const [selectAllMatches, setSelectAllMatches] = useState(false);
+
+  async function handleSelectAllGlobal() {
+    setLoading(true);
+    try {
+      const params = {
+        limit: -1,
+        search,
+        startDate,
+        endDate,
+      };
+      if (customer !== "All Customers") params.customer = customer;
+      if (status !== "All Status") params.status = status;
+
+      const res = await getSales(params);
+      const allIds = res.data.data.map((s) => s._id);
+      setSelectedIds(allIds);
+      setSelectAllMatches(true);
+    } catch (err) {
+      console.error(err);
+      dialog.error("Failed to select all sales.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleSelectOne(e, id) {
+    if (e.target.checked) {
+      setSelectedIds((prev) => [...prev, id]);
+    } else {
+      setSelectedIds((prev) => prev.filter((i) => i !== id));
+    }
+  }
+
+  const [actionId, setActionId] = useState(null);
+
+  async function handleBulkActive(isActive) {
+    if (selectedIds.length === 0) return;
+    setActionId("bulk");
+    try {
+      // Assuming updateSale works for partial updates
+      await Promise.all(
+        selectedIds.map((id) => updateSale(id, { is_active: isActive })),
+      );
+      dialog.success(
+        `Sales marked as ${isActive ? "Active" : "Archived"} successfully.`,
+      );
+      fetchSales(pagination.page, pagination.limit);
+      setSelectedIds([]);
+      setSelectAllMatches(false);
+    } catch (err) {
+      console.error(err);
+      dialog.error("Failed to update sales.");
+    } finally {
+      setActionId(null);
+    }
+  }
+
+  async function handleBulkDelete() {
+    if (selectedIds.length === 0) return;
+    const confirmed = await dialog.ask({
+      type: "confirm",
+      title: "Delete Sales",
+      message: `Are you sure you want to delete ${selectedIds.length} sales records?`,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+    if (!confirmed) return;
+
+    setActionId("bulk");
+    try {
+      await Promise.all(selectedIds.map((id) => deleteSale(id)));
+      dialog.success("Sales deleted successfully.");
+      fetchSales(pagination.page, pagination.limit);
+      fetchSummary();
+      setSelectedIds([]);
+      setSelectAllMatches(false);
+    } catch {
+      dialog.error("Failed to delete sales.");
+    } finally {
+      setActionId(null);
+    }
+  }
+
   return (
     <div className="h-content-available">
       <SaleModal
@@ -317,18 +417,74 @@ const Sales = () => {
             Record and track all sales transactions with customer information
           </span>
         </div>
-        {canCreate && (
-          <button
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
-            onClick={() => {
-              setViewSale(null);
-              setUpdateSale(null);
-              setModalOpen(true);
-            }}
-          >
-            <HiOutlinePlus className="text-md" /> Record Sale
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {canCreate && (
+            <button
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+              onClick={() => {
+                setViewSale(null);
+                setUpdateSale(null);
+                setModalOpen(true);
+              }}
+            >
+              <HiOutlinePlus className="text-md" /> Record Sale
+            </button>
+          )}
+          {(canUpdate || canDelete) && (
+            <Menu as="div" className="relative inline-block text-left">
+              <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                <HiDotsVertical className="text-xl" />
+              </Menu.Button>
+              <Menu.Items
+                anchor="bottom end"
+                className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
+              >
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={() => handleBulkActive(true)}
+                      className={`w-full flex items-center px-2 py-3 text-[#64748b] transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:text-black hover:bg-[#f1f5f9]"}`}
+                    >
+                      <HiOutlineCheckCircle
+                        className="mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                      Active Sales
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={() => handleBulkActive(false)}
+                      className={`w-full flex items-center px-2 py-3 text-[#64748b] transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:text-black hover:bg-[#f1f5f9]"}`}
+                    >
+                      <HiOutlineArchive
+                        className="mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                      Archive Sales
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={handleBulkDelete}
+                      className={`w-full flex items-center px-2 py-3 text-red-500 transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:bg-red-50"}`}
+                    >
+                      <HiOutlineTrash
+                        className="text-red-500 mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                      Delete Sales
+                    </button>
+                  )}
+                </Menu.Item>
+              </Menu.Items>
+            </Menu>
+          )}
+        </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-3">
         <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
@@ -481,6 +637,39 @@ const Sales = () => {
         </div>
       </div>
       <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+        {
+          /* Select All Banner */
+          selectedIds.length > 0 &&
+            !selectAllMatches &&
+            pagination.totalItems > selectedIds.length && (
+              <div className="bg-blue-50 px-4 py-2 text-sm text-blue-700 flex justify-center items-center gap-2">
+                <span>
+                  All {selectedIds.length} items on this page are selected.
+                </span>
+                <button
+                  onClick={handleSelectAllGlobal}
+                  className="font-semibold underline hover:text-blue-800 cursor-pointer"
+                >
+                  Select all {pagination.totalItems} items matching search
+                </button>
+              </div>
+            )
+        }
+        {selectAllMatches && (
+          <div className="bg-blue-50 px-4 py-2 text-sm text-blue-700 flex justify-center items-center gap-2">
+            <span>All {selectedIds.length} items are selected.</span>
+            <button
+              onClick={() => {
+                setSelectedIds([]);
+                setSelectAllMatches(false);
+              }}
+              className="font-semibold underline hover:text-blue-800 cursor-pointer"
+            >
+              Clear selection
+            </button>
+          </div>
+        )}
+
         <div className="table-scroll-container">
           {loading ? (
             <Loading />
@@ -490,12 +679,27 @@ const Sales = () => {
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">
                 <tr>
+                  {(canUpdate || canDelete) && (
+                    <th className="w-15">
+                      <input
+                        type="checkbox"
+                        name="selectAll"
+                        id="selectAll"
+                        className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
+                        checked={
+                          sales.length > 0 &&
+                          sales.every((s) => selectedIds.includes(s._id))
+                        }
+                        onChange={handleSelectAll}
+                      />
+                    </th>
+                  )}
                   <th className="number">No.</th>
                   <th>Customer</th>
                   <th>Total</th>
                   <th>Payment Method</th>
-                  <th>Status</th>
                   <th>Date</th>
+                  <th>Status</th>
                   {canView || canUpdate || canDelete ? (
                     <th className="text-center action">Actions</th>
                   ) : null}
@@ -524,7 +728,22 @@ const Sales = () => {
                     users.find((u) => u._id === sale.customer_id);
 
                   return (
-                    <tr key={sale._id} className="hover:bg-[#f1f5f9]">
+                    <tr
+                      key={sale._id}
+                      className={`hover:bg-[#f1f5f9] ${sale.is_active === false ? "opacity-50 grayscale" : ""}`}
+                    >
+                      {(canUpdate || canDelete) && (
+                        <td className="w-15">
+                          <input
+                            type="checkbox"
+                            name="select"
+                            id="select"
+                            className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
+                            checked={selectedIds.includes(sale._id)}
+                            onChange={(e) => handleSelectOne(e, sale._id)}
+                          />
+                        </td>
+                      )}
                       <td className="number">
                         {index + 1 + (pagination.page - 1) * pagination.limit}
                       </td>
@@ -535,6 +754,7 @@ const Sales = () => {
                       </td>
                       <td>${totalAmount}</td>
                       <td>{sale.payment_method}</td>
+                      <td>{formatDate(sale.completed_at) || "-"}</td>
                       <td>
                         <span
                           className={`inline-block px-3 py-1 rounded-full text-sm capitalize ${sale.status === "processing" ? "bg-yellow-100 text-yellow-700" : sale.status === "completed" ? "bg-blue-100 text-blue-700" : sale.status === "cancelled" ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700"}`}
@@ -542,38 +762,100 @@ const Sales = () => {
                           {sale.status}
                         </span>
                       </td>
-                      <td>{formatDate(sale.completed_at) || "-"}</td>
                       <td className="flex items-center gap-1 justify-center action">
-                        {canView && (
-                          <button
-                            className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
-                            title="View"
-                            onClick={() => handleView(sale)}
-                          >
-                            <HiOutlineEye className="text-xl" />
-                          </button>
-                        )}
-                        {canUpdate && (
-                          <button
-                            className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
-                            title="Update"
-                            onClick={() => {
-                              setViewSale(null);
-                              setUpdateSale(sale);
-                              setModalOpen(true);
-                            }}
-                          >
-                            <HiOutlinePencil className="text-xl" />
-                          </button>
-                        )}
-                        {canDelete && (
-                          <button
-                            className="text-red-500 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                            title="Delete"
-                            onClick={() => handleDelete(sale._id)}
-                          >
-                            <HiOutlineTrash className="text-xl" />
-                          </button>
+                        {(canView || canUpdate || canDelete) && (
+                          <div className="flex items-center gap-1 justify-center">
+                            {canView && (
+                              <button
+                                className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
+                                title="View"
+                                onClick={() => handleView(sale)}
+                              >
+                                <HiOutlineEye className="text-xl" />
+                              </button>
+                            )}
+                            {(canUpdate || canDelete) && (
+                              <Menu
+                                as="div"
+                                className="relative inline-block text-left"
+                              >
+                                <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                                  <HiDotsVertical className="text-xl" />
+                                </Menu.Button>
+                                <Menu.Items
+                                  anchor="bottom end"
+                                  className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
+                                >
+                                  {canUpdate && (
+                                    <>
+                                      <Menu.Item>
+                                        {() => (
+                                          <button
+                                            onClick={() =>
+                                              handleBulkActive(!sale.is_active)
+                                            }
+                                            className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                          >
+                                            {sale.is_active === false ? (
+                                              <>
+                                                <HiOutlineCheckCircle
+                                                  className="mr-2 h-5 w-5"
+                                                  aria-hidden="true"
+                                                />
+                                                Activate
+                                              </>
+                                            ) : (
+                                              <>
+                                                <HiOutlineArchive
+                                                  className="mr-2 h-5 w-5"
+                                                  aria-hidden="true"
+                                                />
+                                                Archive
+                                              </>
+                                            )}
+                                          </button>
+                                        )}
+                                      </Menu.Item>
+                                      <Menu.Item>
+                                        {() => (
+                                          <button
+                                            onClick={() => {
+                                              setViewSale(null);
+                                              setUpdateSale(sale);
+                                              setModalOpen(true);
+                                            }}
+                                            className="w-full flex items-center px-2 py-3 text-blue-600 hover:bg-blue-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                          >
+                                            <HiOutlinePencil
+                                              className="text-blue-600 mr-2 h-5 w-5"
+                                              aria-hidden="true"
+                                            />
+                                            Update
+                                          </button>
+                                        )}
+                                      </Menu.Item>
+                                    </>
+                                  )}
+                                  {canDelete && (
+                                    <Menu.Item>
+                                      {() => (
+                                        <button
+                                          onClick={() => handleDelete(sale._id)}
+                                          className="w-full flex items-center px-2 py-3 text-red-600 hover:bg-red-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                        >
+                                          <HiOutlineTrash
+                                            className="text-red-600 mr-2 h-5 w-5"
+                                            aria-hidden="true"
+                                          />
+                                          Delete
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                  )}
+                                </Menu.Items>
+                              </Menu>
+                            )}
+                          </div>
                         )}
                       </td>
                     </tr>
@@ -581,7 +863,7 @@ const Sales = () => {
                 })}
                 {sales.length === 0 && (
                   <tr>
-                    <td colSpan="7">
+                    <td colSpan="8">
                       <NoDataFound message="No sales found." />
                     </td>
                   </tr>

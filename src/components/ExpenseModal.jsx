@@ -15,7 +15,9 @@ const initialExpense = {
   amount: "",
   category: "Other",
   date: new Date().toISOString().split("T")[0],
+  date: new Date().toISOString().split("T")[0],
   receipt_image: "",
+  status: "active",
 };
 
 const categories = [
@@ -67,7 +69,11 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] max-h-[80vh] shadow-xl relative">
         <h2 className="text-xl font-bold mb-6 text-center">
-          {viewOnly ? "Expense Details" : expense._id ? "Update Expense" : "Add Expense"}
+          {viewOnly
+            ? "Expense Details"
+            : expense._id
+              ? "Update Expense"
+              : "Add Expense"}
         </h2>
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
           <div className="col-span-2 mb-2">
@@ -113,7 +119,7 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       onBlur={() =>
                         setTouched((prev) => ({ ...prev, amount: true }))
                       }
-                      type="number"
+                      type={viewOnly ? "text" : "number"}
                       step="0.01"
                       placeholder="0.00"
                       className={`w-full bg-gray-50 border rounded-lg pl-7 pr-3 py-2 text-sm text-gray-800 ${(!expense.amount || isNaN(expense.amount)) && !data && (touched.amount || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
@@ -147,7 +153,9 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                         disabled={viewOnly}
                       >
                         <span>{expense.category || "Select category"}</span>
-                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                        {!viewOnly && (
+                          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                        )}
                       </Listbox.Button>
                       <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                         {categories.length === 0 && (
@@ -191,51 +199,93 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       date: date ? date.toISOString().split("T")[0] : "",
                     }))
                   }
-                  disabled={viewOnly}
+                  viewOnly={viewOnly}
                   placeholder="Date"
                 />
               </div>
-            </div>
-          </div>
-          <div className="col-span-2 mb-2">
-            <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
-              <HiOutlineCamera className="inline-block text-xl text-black" />
-              <span>Receipt</span>
-            </h3>
-            <div className="mb-3">
-              <div className="border-2 border-dashed border-gray-100 rounded-lg p-6 flex flex-col items-center justify-center transition-colors">
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/gif,application/pdf"
-                  className="hidden"
-                  id="receipt-upload"
-                  onChange={handleImageChange}
-                  disabled={viewOnly}
-                />
-                <label
-                  htmlFor="receipt-upload"
-                  className={`flex flex-col items-center w-full h-full ${viewOnly ? "cursor-default opacity-60" : "cursor-pointer"}`}
-                  style={viewOnly ? { pointerEvents: "none" } : {}}
-                >
-                  <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
-                  <span className="text-gray-600">Upload Receipt</span>
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Status
                 </label>
-                {(selectedImage || expense.receipt_image) && (
-                  <div className="mt-2 flex items-center">
-                    <img
-                      src={
-                        selectedImage
-                          ? URL.createObjectURL(selectedImage)
-                          : expense.receipt_image
-                      }
-                      alt="Receipt Preview"
-                      className="h-40 w-auto object-contain rounded mr-2"
-                    />
+                <Listbox
+                  value={expense.status}
+                  onChange={(status) => setExpense({ ...expense, status })}
+                  disabled={viewOnly}
+                >
+                  <div className="relative">
+                    <Listbox.Button
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-100 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
+                    >
+                      <span className="capitalize">{expense.status}</span>
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
+                    </Listbox.Button>
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                      {["active", "inactive"].map((status) => (
+                        <Listbox.Option
+                          key={status}
+                          value={status}
+                          className={({ selected }) =>
+                            `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                          }
+                        >
+                          {({ selected }) => (
+                            <span
+                              className={`block truncate capitalize ${selected ? "font-medium" : "font-normal"}`}
+                            >
+                              {status}
+                            </span>
+                          )}
+                        </Listbox.Option>
+                      ))}
+                    </Listbox.Options>
                   </div>
-                )}
+                </Listbox>
               </div>
             </div>
           </div>
+          {(!viewOnly || expense.receipt_image) && (
+            <div className="col-span-2 mb-2">
+              <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+                <HiOutlineCamera className="inline-block text-xl text-black" />
+                <span>Receipt</span>
+              </h3>
+              <div className="mb-3">
+                <div className="border-2 border-dashed border-gray-100 rounded-lg p-6 flex flex-col items-center justify-center transition-colors">
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/gif,application/pdf"
+                    className="hidden"
+                    id="receipt-upload"
+                    onChange={handleImageChange}
+                    disabled={viewOnly}
+                  />
+                  <label
+                    htmlFor="receipt-upload"
+                    className={`flex flex-col items-center w-full h-full ${viewOnly ? "cursor-default opacity-60" : "cursor-pointer"}`}
+                    style={viewOnly ? { pointerEvents: "none" } : {}}
+                  >
+                    <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
+                    <span className="text-gray-600">Upload Receipt</span>
+                  </label>
+                  {(selectedImage || expense.receipt_image) && (
+                    <div className="mt-2 flex items-center">
+                      <img
+                        src={
+                          selectedImage
+                            ? URL.createObjectURL(selectedImage)
+                            : expense.receipt_image
+                        }
+                        alt="Receipt Preview"
+                        className="h-40 w-auto object-contain rounded mr-2"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </form>
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button

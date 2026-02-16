@@ -70,7 +70,7 @@ table {
   min-width: 900px;
   border-collapse: separate;
   border-spacing: 0 6px;
-  table-layout: fixed !important;
+  table-layout: auto !important;
 }
 
 tbody>tr,

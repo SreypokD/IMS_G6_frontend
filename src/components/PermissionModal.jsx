@@ -111,6 +111,7 @@ const initialPermission = {
   name: "",
   description: "",
   permissions: [],
+  status: "active",
 };
 
 const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {

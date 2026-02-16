@@ -76,6 +76,7 @@ const StockInModal = ({ open, onClose, products, data }) => {
         user_id: user?._id,
         completed_at: new Date(),
         cost_price: unitPrice ? Number(unitPrice) : undefined,
+        status: "active",
       };
 
       if (data) {

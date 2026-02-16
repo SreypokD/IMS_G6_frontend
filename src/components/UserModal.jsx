@@ -48,7 +48,12 @@ const initial = {
 };
 
 const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
-  const computedInitialUser = React.useMemo(() => data || initial, [data]);
+  const computedInitialUser = React.useMemo(() => {
+    if (data && !data._id) {
+      return { ...initial, ...data };
+    }
+    return data || initial;
+  }, [data]);
   const [user, setUser] = useState(() => computedInitialUser);
   const [selectedImage, setSelectedImage] = useState(null);
   const [touched, setTouched] = useState({});
@@ -56,10 +61,12 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   const [roles, setRoles] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
 
+  const isPartner = user.agree_terms == true;
+
   // Fetch roles when modal opens
   useEffect(() => {
     if (open) {
-      getPermissions().then((res) => {
+      getPermissions({ limit: -1 }).then((res) => {
         if (Array.isArray(res.data)) {
           setRoles(res.data);
         } else if (Array.isArray(res.data?.data)) {
@@ -73,7 +80,11 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
 
   // Update local state when data changes (e.g. when opening "View" for a different user)
   useEffect(() => {
-    setUser(data || initial);
+    if (data && !data._id) {
+      setUser({ ...initial, ...data });
+    } else {
+      setUser(data || initial);
+    }
   }, [data]);
 
   async function handleImageChange(e) {
@@ -91,6 +102,21 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       }
     }
   }
+
+  const handleFileUpload = async (e, field) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const res = await uploadFile(file);
+        const url = res.data?.url || res.data?.file?.url;
+        if (url) {
+          setUser((prev) => ({ ...prev, [field]: url }));
+        }
+      } catch (error) {
+        console.error("File upload failed", error);
+      }
+    }
+  };
 
   const handleProvinceChange = (provinceName) => {
     setUser((prev) => ({
@@ -146,12 +172,12 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
     if (!url) return null;
     return (
       <div className="flex flex-col items-center">
-        <span className="text-xs text-gray-500 mb-1">{label}</span>
+        <span className="text-sm text-gray-500 mb-1">{label}</span>
         <a href={url} target="_blank" rel="noopener noreferrer">
           <img
             src={url}
             alt={label}
-            className="h-20 w-20 object-cover rounded border border-gray-200 hover:border-blue-500 transition"
+            className="h-40 w-40 object-cover rounded border border-gray-200 hover:border-blue-500 transition"
           />
         </a>
       </div>
@@ -163,7 +189,11 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[50vw] max-h-[90vh] shadow-xl relative flex flex-col">
         <h2 className="text-xl font-bold mb-4 text-center shrink-0">
-          {viewOnly ? "User Details" : data ? "Update User" : "Add User"}
+          {viewOnly
+            ? "User Details"
+            : data && data._id
+              ? "Update User"
+              : "Add User"}
         </h2>
         <form
           key={data ? data._id : "new"}
@@ -295,7 +325,9 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                         {roles.find((role) => role.name === user.role)?.name ||
                           "Select role"}
                       </span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {roles.map((role) => (
@@ -341,7 +373,9 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span className="capitalize">{user.status}</span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {["active", "inactive", "pending"].map((status) => (
@@ -382,8 +416,10 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     <Listbox.Button
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
-                      <span>{user.address.province || "Select Province"}</span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      <span>{user.address.province}</span>
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {locations.map((province) => (
@@ -414,8 +450,10 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     <Listbox.Button
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
-                      <span>{user.address.district || "Select District"}</span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      <span>{user.address.district}</span>
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {locations
@@ -448,8 +486,10 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     <Listbox.Button
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
-                      <span>{user.address.commune || "Select Commune"}</span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      <span>{user.address.commune}</span>
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {locations
@@ -485,8 +525,10 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     <Listbox.Button
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
-                      <span>{user.address.village || "Select Village"}</span>
-                      <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      <span>{user.address.village}</span>
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {locations
@@ -547,7 +589,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
           </div>
 
           {/* Partner Information Section */}
-          {(user.customer_type || user.request_purpose) && (
+          {isPartner && (
             <div className="col-span-2">
               <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
                 <HiOutlineBriefcase className="inline-block text-xl" />
@@ -572,17 +614,6 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   <input
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.company_name || ""}
-                    readOnly
-                    disabled
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
-                    Position
-                  </label>
-                  <input
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
-                    value={user.position || ""}
                     readOnly
                     disabled
                   />
@@ -635,11 +666,11 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   <label className="text-sm font-medium text-gray-700 block mb-1">
                     Product Categories
                   </label>
-                  <div className="flex flex-wrap">
+                  <div className="w-full flex flex-wrap">
                     {Array.isArray(user.product_categories) &&
                     user.product_categories.length > 0 ? (
                       user.product_categories.map((cat, idx) => (
-                        <span key={idx} className="mr-2">
+                        <span key={idx} className="mr-2 text-sm p-2">
                           {renderBadge(cat)}
                         </span>
                       ))
@@ -648,25 +679,40 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     )}
                   </div>
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
-                    Customer Note
-                  </label>
-                  <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-200">
-                    {user.note_from_customer || "-"}
-                  </p>
-                </div>
               </div>
               <div>
-                {renderImagePreview(
-                  user.id_card_or_business_license,
-                  "ID/License",
-                )}
-                {renderImagePreview(user.shop_photo, "Shop Photo")}
-                {renderImagePreview(user.location_photo, "Location Photo")}
+                <label className="text-sm font-medium text-gray-700 block mb-1">
+                  Customer Note
+                </label>
+                <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-200">
+                  {user.note_from_customer || "-"}
+                </p>
               </div>
             </div>
           )}
+
+          {/* Verification Documents Section */}
+          {isPartner &&
+            (user.id_card_or_business_license ||
+              user.shop_photo ||
+              user.location_photo) && (
+              <div className="col-span-2">
+                <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+                  <HiOutlineIdentification className="inline-block text-xl" />
+                  <span>Verification Documents</span>
+                </h3>
+                {viewOnly && (
+                  <div className="flex flex-wrap gap-6">
+                    {renderImagePreview(
+                      user.id_card_or_business_license,
+                      "ID/License",
+                    )}
+                    {renderImagePreview(user.shop_photo, "Shop Photo")}
+                    {renderImagePreview(user.location_photo, "Location Photo")}
+                  </div>
+                )}
+              </div>
+            )}
 
           {/* Profile Image (Existing) */}
           {(!viewOnly || user.profile) && (
@@ -757,7 +803,13 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               }}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />
-              {data ? "Update User" : "Add User"}
+              {data && data._id
+                ? "Update User"
+                : user.isCustomerCreate
+                  ? "Add Customer"
+                  : user.isStaffCreate
+                    ? "Add Staff"
+                    : "Add User"}
             </button>
           )}
         </div>

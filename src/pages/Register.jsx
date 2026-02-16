@@ -38,7 +38,7 @@ const Register = () => {
       commune: "",
       village: "",
       street: "",
-      house_no: "",
+      house: "",
     },
     request_purpose: "",
     expected_order_volume: "small", // small | medium | large
@@ -58,7 +58,7 @@ const Register = () => {
   useEffect(() => {
     async function fetchCats() {
       try {
-        const res = await getCategories({ limit: 1000 });
+        const res = await getCategories({ limit: -1 });
         if (res.data.success) {
           setCategoriesList(res.data.data);
         }
@@ -84,20 +84,6 @@ const Register = () => {
       ...prev,
       address: { ...prev.address, [field]: value },
     }));
-  };
-
-  const handleCategoryToggle = (catName) => {
-    setFormData((prev) => {
-      const current = prev.product_categories || [];
-      if (current.includes(catName)) {
-        return {
-          ...prev,
-          product_categories: current.filter((c) => c !== catName),
-        };
-      } else {
-        return { ...prev, product_categories: [...current, catName] };
-      }
-    });
   };
 
   const handleFileUpload = async (e, fieldName) => {
@@ -187,11 +173,10 @@ const Register = () => {
           <span className="block mb-6 text-sm text-center text-gray-400">
             Apply to become a partner and access our inventory
           </span>
-
           {success ? (
             <div className="bg-green-50 text-green-700 p-4 rounded-lg text-center mb-6 border border-green-200">
               <HiCheckCircle className="inline-block text-2xl mb-2" />
-              <p className="font-semibold text-lg">Request Submitted!</p>
+              <p className="text-lg">Request Submitted!</p>
               <p>{success}</p>
               <p className="text-sm mt-2">Redirecting to login...</p>
             </div>
@@ -343,9 +328,7 @@ const Register = () => {
                     >
                       <div className="relative">
                         <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer">
-                          <span>
-                            {formData.address.province || "Select Province"}
-                          </span>
+                          <span>{formData.address.province}</span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
                         </Listbox.Button>
                         <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
@@ -387,9 +370,7 @@ const Register = () => {
                               : "cursor-pointer"
                           }`}
                         >
-                          <span>
-                            {formData.address.district || "Select District"}
-                          </span>
+                          <span>{formData.address.district}</span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
                         </Listbox.Button>
                         <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
@@ -430,9 +411,7 @@ const Register = () => {
                               : "cursor-pointer"
                           }`}
                         >
-                          <span>
-                            {formData.address.commune || "Select Commune"}
-                          </span>
+                          <span>{formData.address.commune}</span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
                         </Listbox.Button>
                         <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
@@ -470,9 +449,7 @@ const Register = () => {
                               : "cursor-pointer"
                           }`}
                         >
-                          <span>
-                            {formData.address.village || "Select Village"}
-                          </span>
+                          <span>{formData.address.village}</span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
                         </Listbox.Button>
                         <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
@@ -498,11 +475,10 @@ const Register = () => {
                       House No.
                     </label>
                     <input
-                      value={formData.address.house_no}
+                      value={formData.address.house}
                       onChange={(e) =>
-                        handleAddressChange("house_no", e.target.value)
+                        handleAddressChange("house", e.target.value)
                       }
-                      required
                       className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-sm"
                     />
                   </div>
@@ -515,7 +491,6 @@ const Register = () => {
                       onChange={(e) =>
                         handleAddressChange("street", e.target.value)
                       }
-                      required
                       className="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-50 text-sm"
                     />
                   </div>
@@ -638,7 +613,7 @@ const Register = () => {
                           <span className="block truncate">
                             {formData.product_categories.length > 0
                               ? formData.product_categories.join(", ")
-                              : "Select Product Categories"}
+                              : ""}
                           </span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
                         </Listbox.Button>
@@ -811,12 +786,15 @@ const Register = () => {
                     checked={formData.agree_terms}
                     onChange={handleChange}
                     id="agree"
-                    className="mt-1"
+                    className="w-4 h-4 accent-[#1e3a5f] mt-0.5 cursor-pointer"
                     required
                   />
-                  <label htmlFor="agree" className="text-sm text-gray-600">
+                  <label
+                    htmlFor="agree"
+                    className="text-sm text-gray-600 cursor-pointer"
+                  >
                     I agree to the
-                    <span className="text-[#1e3a5f] font-medium cursor-pointer">
+                    <span className="text-[#1e3a5f] font-medium">
                       Terms and Conditions
                     </span>
                     and confirm that the information provided is accurate.
@@ -839,20 +817,18 @@ const Register = () => {
                     <HiOutlineDownload className="inline-block ml-2 text-xl -rotate-90" />
                   )}
                 </button>
-                <button
-                  type="button"
+                <span
+                  className="block text-sm text-[#1e3a5f] hover:underline text-center cursor-pointer mb-2"
                   onClick={() => navigate("/login")}
-                  className="w-full bg-white text-[#1e3a5f] border border-gray-200 hover:bg-gray-50 py-2.5 rounded-xl transition font-medium cursor-pointer"
                 >
-                  Back to Login
-                </button>
+                  Already have an account?
+                </span>
               </div>
             </form>
           )}
-
-          <div className="text-center mt-8 text-sm text-gray-400">
-            © 2026 IMS. All rights reserved.
-          </div>
+        </div>
+        <div className="text-center mt-8 text-sm text-gray-400">
+          © 2026 IMS. All rights reserved.
         </div>
       </div>
     </div>

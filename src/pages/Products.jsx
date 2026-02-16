@@ -9,6 +9,9 @@ import {
   HiOutlineFilter,
   HiOutlineRefresh,
   HiDotsVertical,
+  HiOutlineCheckCircle,
+  HiOutlineXCircle,
+  HiOutlineArchive,
 } from "react-icons/hi";
 import ProductModal from "../components/ProductModal.jsx";
 import {
@@ -178,8 +181,12 @@ const Products = () => {
   const canDelete = user?.permission?.permissions?.includes("delete_product");
 
   useEffect(() => {
-    getCategories().then((res) => setCategories(res.data.data || []));
-    getSuppliers().then((res) => setSuppliers(res.data.data || []));
+    getCategories({ limit: -1 }).then((res) =>
+      setCategories(res.data.data || []),
+    );
+    getSuppliers({ limit: -1 }).then((res) =>
+      setSuppliers(res.data.data || []),
+    );
   }, []);
 
   useEffect(() => {
@@ -334,6 +341,91 @@ const Products = () => {
     fetchProducts(1, pagination.limit, "", "", "", "");
   };
 
+  // Selection
+  const [selectedIds, setSelectedIds] = useState([]);
+
+  function handleSelectAll(e) {
+    if (e.target.checked) {
+      setSelectedIds(products.map((p) => p._id));
+    } else {
+      setSelectedIds([]);
+      setSelectAllMatches(false);
+    }
+  }
+
+  const [selectAllMatches, setSelectAllMatches] = useState(false);
+
+  async function handleSelectAllGlobal() {
+    setLoading(true);
+    try {
+      const params = {
+        limit: -1,
+        search,
+        category,
+        supplier,
+        status,
+      };
+      const res = await getProducts(params);
+      const allIds = res.data.data.map((p) => p._id);
+      setSelectedIds(allIds);
+      setSelectAllMatches(true);
+    } catch (err) {
+      console.error(err);
+      dialog.error("Failed to select all products.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleSelectOne(e, id) {
+    if (e.target.checked) {
+      setSelectedIds((prev) => [...prev, id]);
+    } else {
+      setSelectedIds((prev) => prev.filter((i) => i !== id));
+    }
+  }
+
+  async function handleBulkStatus(status) {
+    if (selectedIds.length === 0) return;
+    setLoading(true);
+    try {
+      await Promise.all(selectedIds.map((id) => updateProduct(id, { status })));
+      await dialog.success(`Products marked as ${status} successfully.`);
+      fetchProducts(pagination.page, pagination.limit);
+      setSelectedIds([]);
+      setSelectAllMatches(false);
+    } catch {
+      await dialog.error("Failed to update products.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleBulkDelete() {
+    if (selectedIds.length === 0) return;
+    const confirmed = await dialog.ask({
+      type: "confirm",
+      title: "Delete Products",
+      message: `Are you sure you want to delete ${selectedIds.length} products?`,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+    if (!confirmed) return;
+
+    setLoading(true);
+    try {
+      await Promise.all(selectedIds.map((id) => deleteProduct(id)));
+      await dialog.success("Products deleted successfully.");
+      fetchProducts(pagination.page, pagination.limit);
+      setSelectedIds([]);
+      setSelectAllMatches(false);
+    } catch {
+      await dialog.error("Failed to delete products.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="h-content-available">
       <ProductModal
@@ -363,15 +455,71 @@ const Products = () => {
             Manage your product catalog and inventory
           </span>
         </div>
-        {canCreate && (
-          <button
-            onClick={handleAdd}
-            disabled={loading}
-            className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
-          >
-            <HiOutlinePlus className="text-md" /> Add Product
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {canCreate && (
+            <button
+              onClick={handleAdd}
+              disabled={loading}
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+            >
+              <HiOutlinePlus className="text-md" /> Add Product
+            </button>
+          )}
+          {(canUpdate || canDelete) && (
+            <Menu as="div" className="relative inline-block text-left">
+              <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                <HiDotsVertical className="text-xl" />
+              </Menu.Button>
+              <Menu.Items
+                anchor="bottom end"
+                className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
+              >
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={() => handleBulkStatus("active")}
+                      className={`w-full flex items-center px-2 py-3 text-[#64748b] transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:text-black hover:bg-[#f1f5f9]"}`}
+                    >
+                      <HiOutlineCheckCircle
+                        className="mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                      Active Products
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={() => handleBulkStatus("inactive")}
+                      className={`w-full flex items-center px-2 py-3 text-[#64748b] transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:text-black hover:bg-[#f1f5f9]"}`}
+                    >
+                      <HiOutlineArchive
+                        className="mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                      Archive Products
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={handleBulkDelete}
+                      className={`w-full flex items-center px-2 py-3 text-red-500 transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:bg-red-50"}`}
+                    >
+                      <HiOutlineTrash
+                        className="text-red-500 mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                      Delete Products
+                    </button>
+                  )}
+                </Menu.Item>
+              </Menu.Items>
+            </Menu>
+          )}
+        </div>
       </div>
       <div className="bg-white rounded-xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
@@ -426,6 +574,39 @@ const Products = () => {
         </div>
       </div>
       <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+        {
+          /* Select All Banner */
+          selectedIds.length > 0 &&
+            !selectAllMatches &&
+            pagination.totalItems > selectedIds.length && (
+              <div className="bg-blue-50 px-4 py-2 text-sm text-blue-700 flex justify-center items-center gap-2">
+                <span>
+                  All {selectedIds.length} items on this page are selected.
+                </span>
+                <button
+                  onClick={handleSelectAllGlobal}
+                  className="font-semibold underline hover:text-blue-800 cursor-pointer"
+                >
+                  Select all {pagination.totalItems} items matching search
+                </button>
+              </div>
+            )
+        }
+        {selectAllMatches && (
+          <div className="bg-blue-50 px-4 py-2 text-sm text-blue-700 flex justify-center items-center gap-2">
+            <span>All {selectedIds.length} items are selected.</span>
+            <button
+              onClick={() => {
+                setSelectedIds([]);
+                setSelectAllMatches(false);
+              }}
+              className="font-semibold underline hover:text-blue-800 cursor-pointer"
+            >
+              Clear selection
+            </button>
+          </div>
+        )}
+
         <div className="table-scroll-container">
           {loading ? (
             <Loading />
@@ -435,11 +616,27 @@ const Products = () => {
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">
                 <tr>
+                  {(canUpdate || canDelete) && (
+                    <th className="w-15">
+                      <input
+                        type="checkbox"
+                        name="selectAll"
+                        id="selectAll"
+                        className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
+                        checked={
+                          products.length > 0 &&
+                          selectedIds.length === products.length
+                        }
+                        onChange={handleSelectAll}
+                      />
+                    </th>
+                  )}
                   <th className="number">No.</th>
                   <th>Product Code</th>
                   <th>Product Name</th>
                   <th>Category</th>
                   <th>Supplier</th>
+                  <th>Status</th>
                   <th className="text-right">Stock</th>
                   {canCreate || canUpdate || canDelete ? (
                     <th className="text-right">Cost</th>
@@ -453,6 +650,18 @@ const Products = () => {
               <tbody>
                 {products.map((product, index) => (
                   <tr key={product._id} className="hover:bg-[#f1f5f9]">
+                    {(canUpdate || canDelete) && (
+                      <td className="w-15">
+                        <input
+                          type="checkbox"
+                          name="select"
+                          id="select"
+                          className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
+                          checked={selectedIds.includes(product._id)}
+                          onChange={(e) => handleSelectOne(e, product._id)}
+                        />
+                      </td>
+                    )}
                     <td className="number">
                       {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>
@@ -469,6 +678,13 @@ const Products = () => {
                           ? product.supplier?.company_name ||
                             product.supplier?.name
                           : product.supplier}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-sm capitalize ${product.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}
+                      >
+                        {product.status}
                       </span>
                     </td>
                     <td className="text-right">
@@ -550,7 +766,7 @@ const Products = () => {
                 ))}
                 {products.length === 0 && (
                   <tr>
-                    <td colSpan="9">
+                    <td colSpan="10">
                       <NoDataFound message="No products found." />
                     </td>
                   </tr>
