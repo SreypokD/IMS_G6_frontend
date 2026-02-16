@@ -7,6 +7,7 @@ import {
   HiOutlineFilter,
   HiOutlineEye,
   HiOutlineRefresh,
+  HiDotsVertical,
 } from "react-icons/hi";
 import { useAuth } from "../contexts/auth/useAuth.js";
 import { useDialog } from "../contexts/dialog/useDialog.js";
@@ -16,7 +17,7 @@ import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 import Loading from "../components/Loading";
 import { formatDate } from "../utils/dateFormat";
-import { Listbox } from "@headlessui/react";
+import { Listbox, Menu } from "@headlessui/react";
 import DatePicker from "../components/DatePicker";
 
 const statusOptions = [
@@ -348,7 +349,7 @@ const OrderRequests = () => {
                       <td>{formatDate(request.delivery_date) || "-"}</td>
                       <td>
                         <span
-                          className={`inline-block w-[90px] text-center py-1.5 rounded-full text-sm ${request.status === "pending" ? "bg-yellow-100 text-yellow-700" : request.status === "approved" ? "bg-green-100 text-green-700" : request.status === "rejected" ? "bg-red-100 text-red-700" : request.status === "completed" ? "bg-blue-100 text-blue-700" :request.status === "cancelled" ? "bg-red-100 text-red-700" :  request.status === "on_hold" ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-700"}`}
+                          className={`inline-block w-[90px] text-center py-1.5 rounded-full text-sm ${request.status === "pending" ? "bg-yellow-100 text-yellow-700" : request.status === "approved" ? "bg-green-100 text-green-700" : request.status === "rejected" ? "bg-red-100 text-red-700" : request.status === "completed" ? "bg-blue-100 text-blue-700" : request.status === "cancelled" ? "bg-red-100 text-red-700" : request.status === "on_hold" ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-700"}`}
                         >
                           {request.status.charAt(0).toUpperCase() +
                             request.status.slice(1)}
@@ -359,14 +360,14 @@ const OrderRequests = () => {
                           user?.role === "staff" ||
                           String(request.requester_id) ===
                             String(user?._id)) && (
-                          <div>
+                          <div className="flex items-center gap-1">
                             {(user?.permission?.permissions?.includes(
                               "view_order_request",
                             ) ||
                               String(request.requester_id) ===
                                 String(user?._id)) && (
                               <button
-                                className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                                className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
                                 title="View"
                                 onClick={() => {
                                   handleView(request);
@@ -380,31 +381,52 @@ const OrderRequests = () => {
                                 user?.role === "staff" ||
                                 String(request.requester_id) ===
                                   String(user?._id)) && (
-                                <button
-                                  className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                                  title="Update"
-                                  onClick={() => {
-                                    setUpdateOrderRequest(request);
-                                    setModalOpen(true);
-                                  }}
+                                <Menu
+                                  as="div"
+                                  className="relative inline-block text-left"
                                 >
-                                  <HiOutlinePencil className="text-xl" />
-                                </button>
-                              )}
-                            {request?.status === "pending" &&
-                              (user?.role === "admin" ||
-                                user?.role === "staff" ||
-                                String(request.requester_id) ===
-                                  String(user?._id)) && (
-                                <button
-                                  className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                                  title="Cancel"
-                                  onClick={() =>
-                                    handleCancelRequest(request._id)
-                                  }
-                                >
-                                  <HiOutlineXCircle className="text-2xl" />
-                                </button>
+                                  <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                                    <HiDotsVertical className="text-xl" />
+                                  </Menu.Button>
+                                  <Menu.Items
+                                    anchor="bottom end"
+                                    className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
+                                  >
+                                    <Menu.Item>
+                                      {() => (
+                                        <button
+                                          onClick={() => {
+                                            setUpdateOrderRequest(request);
+                                            setModalOpen(true);
+                                          }}
+                                          className="w-full flex items-center px-2 py-3 text-blue-600 hover:bg-blue-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                        >
+                                          <HiOutlinePencil
+                                            className="text-blue-600 mr-2 h-5 w-5"
+                                            aria-hidden="true"
+                                          />
+                                          Update
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                    <Menu.Item>
+                                      {() => (
+                                        <button
+                                          onClick={() =>
+                                            handleCancelRequest(request._id)
+                                          }
+                                          className="w-full flex items-center px-2 py-3 text-red-600 hover:bg-red-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                        >
+                                          <HiOutlineXCircle
+                                            className="text-red-600 mr-2 h-5 w-5"
+                                            aria-hidden="true"
+                                          />
+                                          Cancel
+                                        </button>
+                                      )}
+                                    </Menu.Item>
+                                  </Menu.Items>
+                                </Menu>
                               )}
                           </div>
                         )}

@@ -634,7 +634,7 @@ const Register = () => {
                       multiple
                     >
                       <div className="relative mt-1">
-                        <Listbox.Button  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between">
+                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between">
                           <span className="block truncate">
                             {formData.product_categories.length > 0
                               ? formData.product_categories.join(", ")
@@ -815,25 +815,23 @@ const Register = () => {
                     required
                   />
                   <label htmlFor="agree" className="text-sm text-gray-600">
-                    I agree to the{" "}
+                    I agree to the
                     <span className="text-[#1e3a5f] font-medium cursor-pointer">
                       Terms and Conditions
-                    </span>{" "}
+                    </span>
                     and confirm that the information provided is accurate.
                   </label>
                 </div>
               </section>
-
               {error && (
                 <div className="text-red-500 text-center text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-100">
                   {error}
                 </div>
               )}
-
               <div className="flex flex-col gap-3">
                 <button
                   type="submit"
-                  className="w-full bg-[#1e3a5f] text-white hover:bg-[#16375b] py-3 rounded-xl transition disabled:opacity-50 font-semibold shadow-lg shadow-blue-900/10 cursor-pointer"
+                  className="w-full bg-[#1e3a5f] text-white hover:bg-[#1e3a5f] py-2.5 rounded-xl transition disabled:opacity-50 mt-2 cursor-pointer mb-2"
                   disabled={loading}
                 >
                   {loading ? "Submitting Request..." : "Submit Partner Request"}
@@ -844,7 +842,7 @@ const Register = () => {
                 <button
                   type="button"
                   onClick={() => navigate("/login")}
-                  className="w-full bg-white text-[#1e3a5f] border border-gray-200 hover:bg-gray-50 py-3 rounded-xl transition font-medium cursor-pointer"
+                  className="w-full bg-white text-[#1e3a5f] border border-gray-200 hover:bg-gray-50 py-2.5 rounded-xl transition font-medium cursor-pointer"
                 >
                   Back to Login
                 </button>

@@ -223,7 +223,7 @@ const Header = ({ onBellClick }) => {
                   e.preventDefault();
                   handleLogout();
                 }}
-                className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-100 transition text-sm space-x-2 rounded-xl cursor-pointer"
+                className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
               >
                 <HiOutlineLogout className="text-red-500 text-xl" />
                 <span>Logout</span>

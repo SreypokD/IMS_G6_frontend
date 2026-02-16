@@ -136,7 +136,7 @@ const StockOutModal = ({ open, onClose, products, data }) => {
                             <span
                               className={`block truncate ${selected ? "font-medium" : "font-normal"}`}
                             >
-                              {p.name} (Stock:{" "}
+                              {p.name} (Stock:
                               {p.stock - (p.reserved_stock || 0)})
                               {isDisabled ? " - Out of stock" : ""}
                             </span>

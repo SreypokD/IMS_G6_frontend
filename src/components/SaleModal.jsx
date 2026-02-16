@@ -387,7 +387,7 @@ export default function SaleModal({
             <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Payment Method{" "}
+                  Payment Method
                   {!viewOnly && <span className="text-red-500">*</span>}
                 </label>
                 <Listbox

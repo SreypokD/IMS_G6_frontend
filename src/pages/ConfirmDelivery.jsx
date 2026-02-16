@@ -5,13 +5,14 @@ import {
   HiSelector,
   HiOutlineRefresh,
   HiOutlineEye,
+  HiDotsVertical,
 } from "react-icons/hi";
 import { useAuth } from "../contexts/auth/useAuth";
 import { getConfirmDeliveries, updateConfirmDelivery } from "../api";
 import { formatDate } from "../utils/dateFormat";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
-import { Listbox } from "@headlessui/react";
+import { Listbox, Menu } from "@headlessui/react";
 import { useDialog } from "../contexts/dialog/useDialog";
 import Loading from "../components/Loading";
 import DatePicker from "../components/DatePicker";
@@ -420,7 +421,7 @@ const DeliveryConfirmation = () => {
                       <td className="flex items-center gap-1 justify-center action">
                         {canViewOrder && (
                           <button
-                            className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                            className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
                             title="View"
                             onClick={() => handleView(confirm_delivery)}
                           >
@@ -429,15 +430,37 @@ const DeliveryConfirmation = () => {
                         )}
                         {(!delivery || delivery.status !== "delivered") &&
                           canUpdate && (
-                            <button
-                              className="text-green-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                              title="Confirm Delivery"
-                              onClick={() =>
-                                handleConfirmDelivery(confirm_delivery._id)
-                              }
+                            <Menu
+                              as="div"
+                              className="relative inline-block text-left"
                             >
-                              <HiOutlineCheckCircle className="text-2xl" />
-                            </button>
+                              <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                                <HiDotsVertical className="text-xl" />
+                              </Menu.Button>
+                              <Menu.Items
+                                anchor="bottom end"
+                                className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
+                              >
+                                <Menu.Item>
+                                  {() => (
+                                    <button
+                                      onClick={() =>
+                                        handleConfirmDelivery(
+                                          confirm_delivery._id,
+                                        )
+                                      }
+                                      className="w-full flex items-center px-2 py-3 text-green-600 hover:bg-green-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                    >
+                                      <HiOutlineCheckCircle
+                                        className="text-green-600 mr-2 h-5 w-5"
+                                        aria-hidden="true"
+                                      />
+                                      Confirm
+                                    </button>
+                                  )}
+                                </Menu.Item>
+                              </Menu.Items>
+                            </Menu>
                           )}
                       </td>
                     </tr>

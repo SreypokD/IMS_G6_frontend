@@ -18,9 +18,10 @@ import {
   HiOutlineTrash,
   HiOutlineEye,
   HiSelector,
+  HiDotsVertical,
 } from "react-icons/hi";
 import { useDialog } from "../contexts/dialog/useDialog";
-import { Listbox } from "@headlessui/react";
+import { Listbox, Menu } from "@headlessui/react";
 import { formatDate } from "../utils/dateFormat";
 import DatePicker from "../components/DatePicker";
 
@@ -315,7 +316,7 @@ const Expenses = () => {
                   <th>Date</th>
                   <th>Receipt</th>
                   {canView || canUpdate || canDelete ? (
-                    <th className="action">Actions</th>
+                    <th className="text-center action">Actions</th>
                   ) : null}
                 </tr>
               </thead>
@@ -355,34 +356,63 @@ const Expenses = () => {
                     <td className="flex items-center gap-1 justify-center action">
                       {canView && (
                         <button
-                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
                           title="View"
                           onClick={() => handleView(expense)}
                         >
                           <HiOutlineEye className="text-xl" />
                         </button>
                       )}
-                      {canUpdate && (
-                        <button
-                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                          title="Update"
-                          onClick={() => {
-                            setViewExpense(null);
-                            setEditExpense(expense);
-                            setModalOpen(true);
-                          }}
+                      {(canUpdate || canDelete) && (
+                        <Menu
+                          as="div"
+                          className="relative inline-block text-left"
                         >
-                          <HiOutlinePencil className="text-xl" />
-                        </button>
-                      )}
-                      {canDelete && (
-                        <button
-                          className="text-red-500 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                          title="Delete"
-                          onClick={() => handleDelete(expense._id)}
-                        >
-                          <HiOutlineTrash className="text-xl" />
-                        </button>
+                          <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                            <HiDotsVertical className="text-xl" />
+                          </Menu.Button>
+                          <Menu.Items
+                            anchor="bottom end"
+                            className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
+                          >
+                            {canUpdate && (
+                              <Menu.Item>
+                                {() => (
+                                  <button
+                                    onClick={() => {
+                                      setViewExpense(null);
+                                      setEditExpense(expense);
+                                      setModalOpen(true);
+                                    }}
+                                    className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                  >
+                                    <HiOutlinePencil
+                                      className="mr-2 h-5 w-5"
+                                      aria-hidden="true"
+                                    />
+                                    Update
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            )}
+                            {canDelete && (
+                              <Menu.Item>
+                                {() => (
+                                  <button
+                                    onClick={() => handleDelete(expense._id)}
+                                    className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                  >
+                                    <HiOutlineTrash
+                                      className="text-red-500 mr-2 h-5 w-5"
+                                      aria-hidden="true"
+                                    />
+                                    Delete
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            )}
+                          </Menu.Items>
+                        </Menu>
                       )}
                     </td>
                   </tr>

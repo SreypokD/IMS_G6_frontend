@@ -178,7 +178,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
               <div>
                 <label className="text-sm font-medium text-gray-700 block mb-1">
-                  First Name{" "}
+                  First Name
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
@@ -230,7 +230,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               {!data && (
                 <div>
                   <label className="text-sm font-medium text-gray-700 block mb-1">
-                    Password{" "}
+                    Password
                     {!viewOnly && <sup className="text-red-500">*</sup>}
                   </label>
                   <div className="relative">

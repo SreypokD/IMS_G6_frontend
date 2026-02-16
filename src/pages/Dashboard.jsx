@@ -260,7 +260,7 @@ const Dashboard = () => {
                     new Date(dateRange.endDate) - new Date(dateRange.startDate),
                   ) /
                     (1000 * 60 * 60 * 24),
-                ) + 1}{" "}
+                ) + 1}
                 Days)
               </h2>
               <div className="h-80 w-full">

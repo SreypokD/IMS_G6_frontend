@@ -8,6 +8,7 @@ import {
   HiOutlineTrash,
   HiOutlineEye,
   HiOutlineKey,
+  HiDotsVertical,
 } from "react-icons/hi";
 import {
   getUsers,
@@ -22,7 +23,7 @@ import { useAuth } from "../contexts/auth/useAuth";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 import Loading from "../components/Loading";
-import { Listbox } from "@headlessui/react";
+import { Listbox, Menu } from "@headlessui/react";
 import { useDialog } from "../contexts/dialog/useDialog";
 
 function PermissionDropdown({
@@ -64,6 +65,41 @@ function PermissionDropdown({
   );
 }
 
+function StatusDropdown({ selected, setSelected }) {
+  const statuses = ["active", "inactive", "pending"];
+  return (
+    <Listbox value={selected} onChange={setSelected}>
+      <div className="relative">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+          <span className="capitalize">
+            {selected ? selected : "All Status"}
+          </span>
+          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+        </Listbox.Button>
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          <Listbox.Option
+            className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
+            value=""
+          >
+            <span>All Status</span>
+          </Listbox.Option>
+          {statuses.map((s) => (
+            <Listbox.Option
+              key={s}
+              value={s}
+              className={({ selected }) =>
+                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] capitalize ${selected ? "bg-blue-50" : ""}`
+              }
+            >
+              {s}
+            </Listbox.Option>
+          ))}
+        </Listbox.Options>
+      </div>
+    </Listbox>
+  );
+}
+
 const Users = () => {
   const [users, setUsers] = useState([]);
 
@@ -96,6 +132,7 @@ const Users = () => {
   // Filters
   const [search, setSearch] = useState("");
   const [permission, setPermission] = useState("");
+  const [status, setStatus] = useState("");
 
   // Permissions
   const canView = user?.permission?.permissions?.includes("view_user");
@@ -118,21 +155,28 @@ const Users = () => {
   useEffect(() => {
     if (user) {
       const delayDebounceFn = setTimeout(() => {
-        fetchUsers(1, pagination.limit, search, permission);
+        fetchUsers(1, pagination.limit, search, permission, status);
         setPagination((prev) => ({ ...prev, page: 1 }));
       }, 500);
       return () => clearTimeout(delayDebounceFn);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, search, permission]);
+  }, [user, search, permission, status]);
 
   // Fetch users from API
-  async function fetchUsers(page = 1, limit = 10, search, permission_id) {
+  async function fetchUsers(
+    page = 1,
+    limit = 10,
+    search,
+    permission_id,
+    status,
+  ) {
     setLoading(true);
     setError("");
     try {
       const params = { page, limit, search };
       if (permission_id) params.permission_id = permission_id;
+      if (status) params.status = status;
       const res = await getUsers(params);
       setUsers(res.data.data);
       setPagination((prev) => ({
@@ -166,7 +210,7 @@ const Users = () => {
         await createUser(user);
         dialog.success("User created successfully");
       }
-      fetchUsers(1, pagination.limit, search, permission);
+      fetchUsers(1, pagination.limit, search, permission, status);
       setModalOpen(false);
       setEditUser(null);
     } catch {
@@ -191,7 +235,13 @@ const Users = () => {
       try {
         await deleteUser(id);
         dialog.success("User deleted successfully");
-        fetchUsers(pagination.page, pagination.limit, search, permission);
+        fetchUsers(
+          pagination.page,
+          pagination.limit,
+          search,
+          permission,
+          status,
+        );
       } catch {
         setError("Failed to delete user");
         dialog.error("Failed to delete user");
@@ -231,8 +281,9 @@ const Users = () => {
   const handleReset = () => {
     setSearch("");
     setPermission("");
+    setStatus("");
     setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchUsers(1, pagination.limit, "", "");
+    fetchUsers(1, pagination.limit, "", "", "");
   };
 
   return (
@@ -301,6 +352,10 @@ const Users = () => {
               permissionOptions={permissions}
             />
           </div>
+          <div>
+            <label className="block text-gray-700 text-sm mb-1">Status</label>
+            <StatusDropdown selected={status} setSelected={setStatus} />
+          </div>
         </div>
       </div>
       <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
@@ -342,8 +397,8 @@ const Users = () => {
                           u.status === "active"
                             ? "bg-green-100 text-green-700"
                             : u.status === "pending"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-red-100 text-red-700"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : "bg-red-100 text-red-700"
                         }`}
                       >
                         {u.status
@@ -354,50 +409,87 @@ const Users = () => {
                     <td className="flex items-center gap-1 justify-center action">
                       {canView && (
                         <button
-                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
                           title="View"
                           onClick={() => handleView(u)}
                         >
                           <HiOutlineEye className="text-xl" />
                         </button>
                       )}
-                      {canUpdate && (
-                        <button
-                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                          title="Update"
-                          onClick={() => {
-                            setEditUser(u);
-                            setViewUser(null);
-                            setModalOpen(true);
-                          }}
+                      {(canUpdate || canDelete) && (
+                        <Menu
+                          as="div"
+                          className="relative inline-block text-left"
                         >
-                          <HiOutlinePencil className="text-xl" />
-                        </button>
-                      )}
-                      {canUpdate && (
-                        <button
-                          className="text-yellow-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                          title="Reset Password"
-                          onClick={() => handleResetPassword(u._id)}
-                        >
-                          <HiOutlineKey className="text-xl" />
-                        </button>
-                      )}
-                      {canDelete && (
-                        <button
-                          className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                          title="Delete"
-                          onClick={() => handleDelete(u._id)}
-                        >
-                          <HiOutlineTrash className="text-xl" />
-                        </button>
+                          <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                            <HiDotsVertical className="text-xl" />
+                          </Menu.Button>
+                          <Menu.Items
+                            anchor="bottom end"
+                            className="bg-white rounded-2xl shadow-lg p-2 w-45 z-50 animate-fade-in-up border border-gray-100"
+                          >
+                            {canUpdate && (
+                              <Menu.Item>
+                                {() => (
+                                  <button
+                                    onClick={() => {
+                                      setEditUser(u);
+                                      setViewUser(null);
+                                      setModalOpen(true);
+                                    }}
+                                    className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                  >
+                                    <HiOutlinePencil
+                                      className="mr-2 h-5 w-5"
+                                      aria-hidden="true"
+                                    />
+                                    Update
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            )}
+                            {canDelete && (
+                              <Menu.Item>
+                                {() => (
+                                  <button
+                                    onClick={() => handleDelete(u._id)}
+                                    className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                  >
+                                    <HiOutlineTrash
+                                      className="text-red-500 mr-2 h-5 w-5"
+                                      aria-hidden="true"
+                                    />
+                                    Delete
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            )}
+                            <hr className="my-1 border-gray-100" />
+                            {canUpdate && (
+                              <Menu.Item>
+                                {() => (
+                                  <button
+                                    onClick={() => handleResetPassword(u._id)}
+                                    className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                  >
+                                    <HiOutlineKey
+                                      className="mr-2 h-5 w-5"
+                                      aria-hidden="true"
+                                    />
+                                    Reset Password
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            )}
+                          </Menu.Items>
+                        </Menu>
                       )}
                     </td>
                   </tr>
                 ))}
                 {users.length === 0 && (
                   <tr>
-                    <td colSpan="6">
+                    <td colSpan="7">
                       <NoDataFound message="No users found." />
                     </td>
                   </tr>
@@ -415,7 +507,7 @@ const Users = () => {
             limit={pagination.limit}
             onChange={({ page, limit }) => {
               setPagination((prev) => ({ ...prev, page, limit }));
-              fetchUsers(page, limit);
+              fetchUsers(page, limit, search, permission, status);
             }}
           />
         </div>

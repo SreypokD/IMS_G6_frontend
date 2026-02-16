@@ -6,7 +6,9 @@ import {
   HiOutlineFilter,
   HiOutlineRefresh,
   HiOutlineEye,
+  HiDotsVertical,
 } from "react-icons/hi";
+import { Menu } from "@headlessui/react";
 import CategoryModal from "../components/CategoryModal";
 import {
   getCategories,
@@ -140,9 +142,7 @@ const Categories = () => {
   return (
     <div className="h-content-available">
       <CategoryModal
-        key={
-          modalOpen ? (editCategory ? editCategory._id : "new") : "closed"
-        }
+        key={modalOpen ? (editCategory ? editCategory._id : "new") : "closed"}
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
@@ -226,34 +226,63 @@ const Categories = () => {
                     <td className="flex items-center gap-1 justify-center">
                       {canView && (
                         <button
-                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
                           title="View"
                           onClick={() => handleView(category)}
                         >
                           <HiOutlineEye className="text-xl" />
                         </button>
                       )}
-                      {canUpdate && (
-                        <button
-                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                          title="Update"
-                          onClick={() => {
-                            setEditCategory(category);
-                            setViewCategory(null);
-                            setModalOpen(true);
-                          }}
+                      {(canUpdate || canDelete) && (
+                        <Menu
+                          as="div"
+                          className="relative inline-block text-left"
                         >
-                          <HiOutlinePencil className="text-xl" />
-                        </button>
-                      )}
-                      {canDelete && (
-                        <button
-                          className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                          title="Delete"
-                          onClick={() => handleDelete(category._id)}
-                        >
-                          <HiOutlineTrash className="text-xl" />
-                        </button>
+                          <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                            <HiDotsVertical className="text-xl" />
+                          </Menu.Button>
+                          <Menu.Items
+                            anchor="bottom end"
+                            className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
+                          >
+                            {canUpdate && (
+                              <Menu.Item>
+                                {() => (
+                                  <button
+                                    onClick={() => {
+                                      setEditCategory(category);
+                                      setViewCategory(null);
+                                      setModalOpen(true);
+                                    }}
+                                    className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                  >
+                                    <HiOutlinePencil
+                                      className="mr-2 h-5 w-5"
+                                      aria-hidden="true"
+                                    />
+                                    Update
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            )}
+                            {canDelete && (
+                              <Menu.Item>
+                                {() => (
+                                  <button
+                                    onClick={() => handleDelete(category._id)}
+                                    className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                  >
+                                    <HiOutlineTrash
+                                      className="text-red-500 mr-2 h-5 w-5"
+                                      aria-hidden="true"
+                                    />
+                                    Delete
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            )}
+                          </Menu.Items>
+                        </Menu>
                       )}
                     </td>
                   </tr>

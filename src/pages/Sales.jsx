@@ -23,9 +23,14 @@ import {
   HiSelector,
 } from "react-icons/hi";
 import { BsCurrencyDollar } from "react-icons/bs";
-import { HiOutlinePencil, HiOutlineTrash, HiOutlineEye } from "react-icons/hi";
+import {
+  HiOutlinePencil,
+  HiOutlineTrash,
+  HiOutlineEye,
+  HiDotsVertical,
+} from "react-icons/hi";
 import { useDialog } from "../contexts/dialog/useDialog";
-import { Listbox } from "@headlessui/react";
+import { Listbox, Menu } from "@headlessui/react";
 import { formatDate } from "../utils/dateFormat";
 import { useNotification } from "../contexts/notification/useNotification";
 import DatePicker from "../components/DatePicker";
@@ -158,7 +163,7 @@ const Sales = () => {
   const canUpdate = user?.permission?.permissions?.includes("update_sale");
   const canDelete = user?.permission?.permissions?.includes("delete_sale");
   const canViewUsers = user?.permission?.permissions?.includes("view_user");
-  
+
   async function fetchSummary() {
     try {
       const res = await getSalesSummary();
@@ -492,7 +497,7 @@ const Sales = () => {
                   <th>Status</th>
                   <th>Date</th>
                   {canView || canUpdate || canDelete ? (
-                    <th className="action">Actions</th>
+                    <th className="text-center action">Actions</th>
                   ) : null}
                 </tr>
               </thead>
@@ -541,7 +546,7 @@ const Sales = () => {
                       <td className="flex items-center gap-1 justify-center action">
                         {canView && (
                           <button
-                            className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                            className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
                             title="View"
                             onClick={() => handleView(sale)}
                           >
@@ -550,7 +555,7 @@ const Sales = () => {
                         )}
                         {canUpdate && (
                           <button
-                            className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                            className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
                             title="Update"
                             onClick={() => {
                               setViewSale(null);

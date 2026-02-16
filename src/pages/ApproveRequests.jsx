@@ -7,6 +7,7 @@ import {
   HiOutlineFilter,
   HiOutlineEye,
   HiOutlineRefresh,
+  HiDotsVertical,
 } from "react-icons/hi";
 import { getApproveRequests, updateApproveRequests } from "../api";
 import Pagination from "../components/Pagination";
@@ -15,6 +16,7 @@ import Loading from "../components/Loading";
 import Dialog from "../components/Dialog";
 import OrderRequestModal from "../components/OrderRequestModal";
 import DatePicker from "../components/DatePicker";
+import { Menu } from "@headlessui/react";
 
 const OrderRequestApproval = () => {
   const [orders, setOrders] = useState([]);
@@ -347,7 +349,7 @@ const OrderRequestApproval = () => {
                     <td className="flex items-center gap-1 justify-center action">
                       {canView && (
                         <button
-                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
+                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
                           title="View"
                           onClick={() => handleView(order)}
                         >
@@ -355,27 +357,55 @@ const OrderRequestApproval = () => {
                         </button>
                       )}
                       {canUpdate && (
-                        <button
-                          className="text-green-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                          title="Approve"
-                          disabled={actionId === order._id}
-                          onClick={() => handleApprove(order._id)}
+                        <Menu
+                          as="div"
+                          className="relative inline-block text-left"
                         >
-                          <HiOutlineCheckCircle className="text-2xl" />
-                        </button>
-                      )}
-                      {canUpdate && (
-                        <button
-                          className="text-red-600 font-semibold cursor-pointer p-2 rounded-full hover:bg-[#f1f5f9]"
-                          title="Reject"
-                          disabled={actionId === order._id}
-                          onClick={() => {
-                            setRejectDialog({ open: true, id: order._id });
-                            setRejectionReason("");
-                          }}
-                        >
-                          <HiOutlineXCircle className="text-2xl" />
-                        </button>
+                          <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                            <HiDotsVertical className="text-xl" />
+                          </Menu.Button>
+                          <Menu.Items
+                            anchor="bottom end"
+                            className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
+                          >
+                            <Menu.Item>
+                              {() => (
+                                <button
+                                  className="w-full flex items-center px-2 py-3 text-green-600 hover:bg-green-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                  disabled={actionId === order._id}
+                                  onClick={() => handleApprove(order._id)}
+                                >
+                                  <HiOutlineCheckCircle
+                                    className="text-green-600 mr-2 h-5 w-5"
+                                    aria-hidden="true"
+                                  />
+                                  Approve
+                                </button>
+                              )}
+                            </Menu.Item>
+                            <Menu.Item>
+                              {() => (
+                                <button
+                                  className="w-full flex items-center px-2 py-3 text-red-600 hover:bg-red-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                  disabled={actionId === order._id}
+                                  onClick={() => {
+                                    setRejectDialog({
+                                      open: true,
+                                      id: order._id,
+                                    });
+                                    setRejectionReason("");
+                                  }}
+                                >
+                                  <HiOutlineXCircle
+                                    className="text-red-600 mr-2 h-5 w-5"
+                                    aria-hidden="true"
+                                  />
+                                  Reject
+                                </button>
+                              )}
+                            </Menu.Item>
+                          </Menu.Items>
+                        </Menu>
                       )}
                     </td>
                   </tr>

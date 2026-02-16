@@ -92,7 +92,6 @@ const Login = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="you@email.com"
-                autoFocus
               />
             </div>
             <div className="relative">
@@ -123,13 +122,13 @@ const Login = () => {
               </button>
             </div>
             {error && (
-              <div className="my-4 text-red-500 text-center text-sm font-medium">
+              <div className="my-2 text-red-500 text-center text-sm font-medium">
                 {error}
               </div>
             )}
             <button
               type="submit"
-              className="w-full bg-[#1e3a5f] text-white hover:bg-[#1e3a5f] py-2.5 rounded-xl transition disabled:opacity-50 mt-2 cursor-pointer"
+              className="w-full bg-[#1e3a5f] text-white hover:bg-[#1e3a5f] py-2.5 rounded-xl transition disabled:opacity-50 mt-2 cursor-pointer mb-2"
               disabled={loading}
             >
               {loading ? "Signing In..." : "Sign In"}
@@ -138,7 +137,7 @@ const Login = () => {
               )}
             </button>
             <span
-              className="block text-sm text-[#1e3a5f] hover:underline text-center cursor-pointer"
+              className="block text-sm text-[#1e3a5f] hover:underline text-center cursor-pointer mb-2"
               onClick={() => navigate("/forgot-password")}
             >
               Forgot password?
