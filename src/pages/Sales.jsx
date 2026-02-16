@@ -637,39 +637,6 @@ const Sales = () => {
         </div>
       </div>
       <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
-        {
-          /* Select All Banner */
-          selectedIds.length > 0 &&
-            !selectAllMatches &&
-            pagination.totalItems > selectedIds.length && (
-              <div className="bg-blue-50 px-4 py-2 text-sm text-blue-700 flex justify-center items-center gap-2">
-                <span>
-                  All {selectedIds.length} items on this page are selected.
-                </span>
-                <button
-                  onClick={handleSelectAllGlobal}
-                  className="font-semibold underline hover:text-blue-800 cursor-pointer"
-                >
-                  Select all {pagination.totalItems} items matching search
-                </button>
-              </div>
-            )
-        }
-        {selectAllMatches && (
-          <div className="bg-blue-50 px-4 py-2 text-sm text-blue-700 flex justify-center items-center gap-2">
-            <span>All {selectedIds.length} items are selected.</span>
-            <button
-              onClick={() => {
-                setSelectedIds([]);
-                setSelectAllMatches(false);
-              }}
-              className="font-semibold underline hover:text-blue-800 cursor-pointer"
-            >
-              Clear selection
-            </button>
-          </div>
-        )}
-
         <div className="table-scroll-container">
           {loading ? (
             <Loading />
