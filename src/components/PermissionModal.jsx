@@ -97,7 +97,7 @@ const permissionTable = [
     actions: ["view_user", "create_user", "update_user", "delete_user"],
   },
   {
-    label: "Permissions",
+    label: "Roles",
     actions: [
       "view_permission",
       "create_permission",
@@ -115,10 +115,7 @@ const initialRole = {
 };
 
 const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
-  // Always deep clone the initial role to avoid reference issues
-  function cloneRole(obj) {
-    return obj ? JSON.parse(JSON.stringify(obj)) : initialRole;
-  }
+  
   const [role, setUpdateRole] = useState(cloneRole(data));
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
@@ -134,6 +131,25 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       setValidateOnSave(false);
     }
   }, [open, data]);
+
+  // Always deep clone the initial role to avoid reference issues
+  function cloneRole(obj) {
+    if (obj) {
+      if (typeof obj.permissions === "string") {
+        try {
+          obj.permissions = JSON.parse(obj.permissions);
+        } catch {
+          obj.permissions = [];
+        }
+      }
+      const cloned = JSON.parse(JSON.stringify(obj));
+      if (!Array.isArray(cloned.permissions)) {
+        cloned.permissions = [];
+      }
+      return cloned;
+    }
+    return initialRole;
+  }
 
   function updatePermissionsState(updater) {
     setUpdateRole((prev) => {
