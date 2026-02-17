@@ -461,13 +461,13 @@ const Stocks = () => {
           {canCreate && (
             <div className="flex items-center gap-3">
               <button
-                className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
                 onClick={() => setStockOutOpen(true)}
               >
                 <HiLogout className="text-md rotate-270" /> Stock Out
               </button>
               <button
-                className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl transition flex items-center gap-2 cursor-pointer"
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
                 onClick={() => setStockInOpen(true)}
               >
                 <HiDownload className="text-md" /> Stock In
