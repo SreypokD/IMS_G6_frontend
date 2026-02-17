@@ -767,7 +767,7 @@ const Stocks = () => {
                     </td>
                     <td>{formatDate(stock.createdAt, true) || "-"}</td>
                     <td>{stock.product?.name || stock.product_id || "-"}</td>
-                    <td>
+                    <td className="-z-2">
                       {stock.type === "in" ? (
                         <span className="text-green-600 flex items-center gap-1">
                           <HiDownload className="text-md" />

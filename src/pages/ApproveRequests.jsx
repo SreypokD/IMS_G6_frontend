@@ -19,6 +19,8 @@ import OrderRequestModal from "../components/OrderRequestModal";
 import DatePicker from "../components/DatePicker";
 import { Menu } from "@headlessui/react";
 
+import { useBadge } from "../contexts/badge/BadgeContext";
+
 const OrderRequestApproval = () => {
   const [orders, setOrders] = useState([]);
 
@@ -48,6 +50,7 @@ const OrderRequestApproval = () => {
   // Auth
   const { user } = useAuth();
   const dialog = useDialog();
+  const { fetchBadge } = useBadge();
 
   // Filters
   const [search, setSearch] = useState("");
@@ -137,6 +140,7 @@ const OrderRequestApproval = () => {
       setApproveRemarks("");
       setPagination((prev) => ({ ...prev, page: 1 }));
       fetchApproveRequests(1, pagination.limit, search, startDate, endDate);
+      fetchBadge(); // Update badge
     } catch (err) {
       const msg =
         err?.response?.data?.error || err?.message || "Failed to approve order";
@@ -161,6 +165,7 @@ const OrderRequestApproval = () => {
       setRejectDialog({ open: false, id: null });
       setPagination((prev) => ({ ...prev, page: 1 }));
       fetchApproveRequests(1, pagination.limit, search, startDate, endDate);
+      fetchBadge();
     } catch (err) {
       const msg =
         err?.response?.data?.error || err?.message || "Failed to approve order";
@@ -236,6 +241,7 @@ const OrderRequestApproval = () => {
       );
       setSelectedIds([]);
       setSelectAllMatches(false);
+      fetchBadge();
     } catch (err) {
       console.error(err);
       dialog.error("Failed to update requests.");
@@ -270,6 +276,7 @@ const OrderRequestApproval = () => {
       );
       setSelectedIds([]);
       setSelectAllMatches(false);
+      fetchBadge();
     } catch {
       dialog.error("Failed to delete requests.");
     } finally {

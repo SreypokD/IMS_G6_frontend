@@ -21,6 +21,7 @@ import Loading from "../components/Loading";
 import { formatDate } from "../utils/dateFormat";
 import { Listbox, Menu } from "@headlessui/react";
 import DatePicker from "../components/DatePicker";
+import { useBadge } from "../contexts/badge/BadgeContext";
 
 const statusOptions = [
   { value: "Pending", label: "Pending" },
@@ -78,6 +79,7 @@ const OrderRequests = () => {
   const [error, setError] = useState("");
   const { user } = useAuth();
   const dialog = useDialog();
+  const { fetchBadge } = useBadge();
 
   // Filters
   const [search, setSearch] = useState("");
@@ -101,6 +103,12 @@ const OrderRequests = () => {
   );
   const canDelete = user?.permission?.permissions?.includes(
     "delete_order_request",
+  );
+  const canViewApprove = user?.permission?.permissions?.includes(
+    "view_approve_request",
+  );
+  const canUpdateApprove = user?.permission?.permissions?.includes(
+    "update_approve_request",
   );
 
   useEffect(() => {
@@ -171,6 +179,7 @@ const OrderRequests = () => {
       await cancelOrderRequest(id);
       await dialog.success("Order request cancelled successfully.");
       fetchOrderRequests(pagination.page, pagination.limit, search, status);
+      fetchBadge(); // Update badge
     } catch {
       setError("Failed to cancel order request");
       dialog.error("Failed to cancel order request");
@@ -249,6 +258,7 @@ const OrderRequests = () => {
       );
       setSelectedIds([]);
       setSelectAllMatches(false);
+      fetchBadge();
     } catch (err) {
       console.error(err);
       dialog.error("Failed to update order requests.");
@@ -285,6 +295,7 @@ const OrderRequests = () => {
       );
       setSelectedIds([]);
       setSelectAllMatches(false);
+      fetchBadge();
     } catch {
       dialog.error("Failed to delete order requests.");
     } finally {
@@ -308,6 +319,7 @@ const OrderRequests = () => {
           setUpdateOrderRequest(null);
           setViewOrderRequest(null);
           fetchOrderRequests(pagination.page, pagination.limit, search, status);
+          fetchBadge();
         }}
       />
       <div className="flex items-center justify-between mb-8">
@@ -483,7 +495,10 @@ const OrderRequests = () => {
                 {(() => {
                   // Admins and staff see all requests, customers see only their own
                   const isAdminOrStaff =
-                    user?.role === "admin" || user?.role === "staff";
+                    user?.role === "admin" ||
+                    user?.role === "staff" ||
+                    canViewApprove ||
+                    canUpdateApprove;
                   const filteredRequests = isAdminOrStaff
                     ? requests
                     : requests.filter(
@@ -542,84 +557,70 @@ const OrderRequests = () => {
                         </span>
                       </td>
                       <td className="flex items-center gap-1 justify-center action">
-                        {(user?.role === "admin" ||
-                          user?.role === "staff" ||
-                          String(request.requester_id) ===
-                            String(user?._id)) && (
-                          <div className="flex items-center gap-1">
-                            {(user?.permission?.permissions?.includes(
-                              "view_order_request",
-                            ) ||
-                              String(request.requester_id) ===
-                                String(user?._id)) && (
-                              <button
-                                className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
-                                title="View"
-                                onClick={() => {
-                                  handleView(request);
-                                }}
-                              >
-                                <HiOutlineEye className="text-xl" />
-                              </button>
-                            )}
-                            {request?.status === "pending" &&
-                              String(request.requester_id) ===
-                                String(user?._id) && (
-                                <Menu
-                                  as="div"
-                                  className="relative inline-block text-left"
-                                >
-                                  <Menu.Button
-                                    className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
-                                    disabled={
-                                      String(request.requester_id) !==
-                                      String(user?._id)
+                        <div className="flex items-center gap-1">
+                          {(user?.permission?.permissions?.includes(
+                            "view_order_request",
+                          ) ||
+                            String(request.requester_id) ===
+                              String(user?._id)) && (
+                            <button
+                              className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
+                              title="View"
+                              onClick={() => {
+                                handleView(request);
+                              }}
+                            >
+                              <HiOutlineEye className="text-xl" />
+                            </button>
+                          )}
+                          <Menu
+                            as="div"
+                            className="relative inline-block text-left"
+                          >
+                            <Menu.Button
+                              className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200 disabled:opacity-50"
+                              disabled={
+                                String(request.requester_id) !==
+                                  String(user?._id) ||
+                                request.status !== "pending"
+                              }
+                            >
+                              <HiDotsVertical className="text-xl" />
+                            </Menu.Button>
+                            <Menu.Items
+                              anchor="bottom end"
+                              className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
+                            >
+                              <Menu.Item>
+                                {() => (
+                                  <button
+                                    onClick={() => {
+                                      setUpdateOrderRequest(request);
+                                      setModalOpen(true);
+                                    }}
+                                    className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                  >
+                                    <HiOutlinePencil className="mr-2 h-5 w-5" />
+                                    Update
+                                  </button>
+                                )}
+                              </Menu.Item>
+                              <Menu.Item>
+                                {() => (
+                                  <button
+                                    onClick={() =>
+                                      handleCancelRequest(request._id)
                                     }
+                                    className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
                                   >
-                                    <HiDotsVertical className="text-xl" />
-                                  </Menu.Button>
-                                  <Menu.Items
-                                    anchor="bottom end"
-                                    className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
-                                  >
-                                    <Menu.Item>
-                                      {() => (
-                                        <button
-                                          onClick={() => {
-                                            setUpdateOrderRequest(request);
-                                            setModalOpen(true);
-                                          }}
-                                          className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"
-                                        >
-                                          <HiOutlinePencil
-                                            className="mr-2 h-5 w-5"
-                                            aria-hidden="true"
-                                          />
-                                          Update
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                    <Menu.Item>
-                                      {() => (
-                                        <button
-                                          onClick={() =>
-                                            handleCancelRequest(request._id)
-                                          }
-                                          className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
-                                        >
-                                          <HiOutlineXCircle
-                                            className="text-red-500 mr-2 h-5 w-5"
-                                            aria-hidden="true"
-                                          />
-                                          Cancel
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  </Menu.Items>
-                                </Menu>
-                              )}
-                          </div>
-                        )}
+                                    <HiOutlineXCircle className="mr-2 h-5 w-5" />
+                                    Cancel
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            </Menu.Items>
+                          </Menu>
+                        </div>
                       </td>
                     </tr>
                   ));

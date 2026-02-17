@@ -6,6 +6,7 @@ import Navbar from "./Navbar.jsx";
 import Loading from "../components/Loading.jsx";
 import { useAuth } from "../contexts/auth/useAuth.js";
 import { DialogProvider } from "../contexts/dialog/DialogContext.jsx";
+import { BadgeProvider } from "../contexts/badge/BadgeContext.jsx";
 import Breadcrumb from "../components/Breadcrumb.jsx";
 
 import Login from "../pages/Login.jsx";
@@ -54,106 +55,108 @@ function App() {
 
   return (
     <DialogProvider>
-      <Router>
-        <Suspense
-          fallback={
-            <div className="h-screen w-screen flex items-center justify-center">
-              <Loading />
-            </div>
-          }
-        >
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route
-              path="*"
-              element={
-                <PrivateRoute>
-                  <div className="h-screen flex overflow-hidden bg-[#f5f5f7]">
-                    <Sidebar mini={sidebarHidden} />
-                    <div className="flex-1 flex flex-col min-w-0 overflow-y-hidden overflow-x-hidden">
-                      <Navbar onBellClick={() => setSidebarHidden((v) => !v)} />
-                      <main className="flex-1 p-3 h-[calc(100vh-64px)] relative overflow-hidden flex flex-col">
-                        <div className="flex-none">
-                          <Breadcrumb />
-                        </div>
-                        <div className="flex-1 min-h-0 relative">
-                          <Suspense
-                            fallback={
-                              <div className="h-full w-full flex items-center justify-center">
-                                <Loading />
-                              </div>
-                            }
-                          >
-                            <Routes>
-                              {[
-                                // Dashboard
-                                { path: "/", element: <Dashboard /> },
+      <BadgeProvider>
+        <Router>
+          <Suspense
+            fallback={
+              <div className="h-screen w-screen flex items-center justify-center">
+                <Loading />
+              </div>
+            }
+          >
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route
+                path="*"
+                element={
+                  <PrivateRoute>
+                    <div className="h-screen flex overflow-hidden bg-[#f5f5f7]">
+                      <Sidebar mini={sidebarHidden} />
+                      <div className="flex-1 flex flex-col min-w-0 overflow-y-hidden overflow-x-hidden">
+                        <Navbar onBellClick={() => setSidebarHidden((v) => !v)} />
+                        <main className="flex-1 p-3 h-[calc(100vh-64px)] relative overflow-hidden flex flex-col">
+                          <div className="flex-none">
+                            <Breadcrumb />
+                          </div>
+                          <div className="flex-1 min-h-0 relative">
+                            <Suspense
+                              fallback={
+                                <div className="h-full w-full flex items-center justify-center">
+                                  <Loading />
+                                </div>
+                              }
+                            >
+                              <Routes>
+                                {[
+                                  // Dashboard
+                                  { path: "/", element: <Dashboard /> },
 
-                                // Master Data
-                                { path: "/categories", element: <Categories /> },
-                                { path: "/products", element: <Products /> },
-                                { path: "/suppliers", element: <Suppliers /> },
+                                  // Master Data
+                                  { path: "/categories", element: <Categories /> },
+                                  { path: "/products", element: <Products /> },
+                                  { path: "/suppliers", element: <Suppliers /> },
 
-                                // Purchasing / Procurement
-                                {
-                                  path: "/order-requests",
-                                  element: <OrderRequests />,
-                                },
-                                {
-                                  path: "/approve-requests",
-                                  element: <ApproveRequests />,
-                                },
-                                {
-                                  path: "/confirm-delivery",
-                                  element: <ConfirmDelivery />,
-                                },
-                                {
-                                  path: "/order-history",
-                                  element: <OrderHistory />,
-                                },
+                                  // Purchasing / Procurement
+                                  {
+                                    path: "/order-requests",
+                                    element: <OrderRequests />,
+                                  },
+                                  {
+                                    path: "/approve-requests",
+                                    element: <ApproveRequests />,
+                                  },
+                                  {
+                                    path: "/confirm-delivery",
+                                    element: <ConfirmDelivery />,
+                                  },
+                                  {
+                                    path: "/order-history",
+                                    element: <OrderHistory />,
+                                  },
 
-                                // Inventory / Stock
-                                { path: "/stocks", element: <Stocks /> },
+                                  // Inventory / Stock
+                                  { path: "/stocks", element: <Stocks /> },
 
-                                // Sales
-                                { path: "/sales", element: <Sales /> },
-                                { path: "/expenses", element: <Expenses /> },
+                                  // Sales
+                                  { path: "/sales", element: <Sales /> },
+                                  { path: "/expenses", element: <Expenses /> },
 
-                                // Reports & Logs
-                                { path: "/reports", element: <Reports /> },
-                                {
-                                  path: "/activity-logs",
-                                  element: <ActivityLog />,
-                                },
+                                  // Reports & Logs
+                                  { path: "/reports", element: <Reports /> },
+                                  {
+                                    path: "/activity-logs",
+                                    element: <ActivityLog />,
+                                  },
 
-                                // System / Security
-                                { path: "/users", element: <Users /> },
-                                {
-                                  path: "/roles",
-                                  element: <Permissions />,
-                                },
-                                { path: "/settings", element: <Settings /> },
-                              ].map((route) => (
-                                <Route
-                                  key={route.path}
-                                  path={route.path}
-                                  element={route.element}
-                                />
-                              ))}
-                            </Routes>
-                          </Suspense>
-                        </div>
-                      </main>
+                                  // System / Security
+                                  { path: "/users", element: <Users /> },
+                                  {
+                                    path: "/roles",
+                                    element: <Permissions />,
+                                  },
+                                  { path: "/settings", element: <Settings /> },
+                                ].map((route) => (
+                                  <Route
+                                    key={route.path}
+                                    path={route.path}
+                                    element={route.element}
+                                  />
+                                ))}
+                              </Routes>
+                            </Suspense>
+                          </div>
+                        </main>
+                      </div>
                     </div>
-                  </div>
-                </PrivateRoute>
-              }
-            />
-          </Routes>
-        </Suspense>
-      </Router>
+                  </PrivateRoute>
+                }
+              />
+            </Routes>
+          </Suspense>
+        </Router>
+      </BadgeProvider>
     </DialogProvider>
   );
 }

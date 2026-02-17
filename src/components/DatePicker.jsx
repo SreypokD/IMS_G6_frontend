@@ -12,7 +12,7 @@ const CustomDatePicker = ({
   viewOnly = false,
 }) => {
   return (
-    <div className={`relative w-full ${className}`}>
+    <div className={`relative w-full z-2 ${className}`}>
       <DatePicker
         selected={selected ? new Date(selected) : null}
         onChange={onChange}

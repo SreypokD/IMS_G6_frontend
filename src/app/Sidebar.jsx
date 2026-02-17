@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { getPendingOrderRequestCount } from "../api/index.js";
-
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/auth/useAuth.js";
+import { useBadge } from "../contexts/badge/BadgeContext";
 import {
   HiClipboardList,
   HiCollection,
@@ -202,28 +201,7 @@ const Sidebar = ({ mini }) => {
   const location = useLocation();
   const links = navLinks(user?.permission?.permissions, location.pathname);
   const [expanded, setExpanded] = useState(null);
-  const [approveBadge, setApproveBadge] = useState(0);
-
-  useEffect(() => {
-    let mounted = true;
-    const fetchBadge = () => {
-      getPendingOrderRequestCount()
-        .then((res) => {
-          if (mounted && res.data && res.data.count >= 0) {
-            setApproveBadge(res.data.count);
-          }
-        })
-        .catch(() => mounted && setApproveBadge(0));
-    };
-
-    fetchBadge();
-    const interval = setInterval(fetchBadge, 15000);
-
-    return () => {
-      mounted = false;
-      clearInterval(interval);
-    };
-  }, []);
+  const { approveBadge } = useBadge();
 
   return (
     <aside
