@@ -337,8 +337,8 @@ const Register = () => {
                               key={p.name}
                               value={p.name}
                               className={({ active }) =>
-                                `px-3 py-2 cursor-pointer text-black text-sm ${
-                                  active ? "bg-blue-50" : ""
+                                `px-3 py-2 cursor-pointer text-black text-sm hover:text-white hover:bg-[#1e3a5f] rounded-lg ${
+                                  active ? "bg-[#1e3a5f] text-white" : ""
                                 }`
                               }
                             >
@@ -364,7 +364,7 @@ const Register = () => {
                     >
                       <div className="relative">
                         <Listbox.Button
-                          className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between bg-gray-50 ${
+                          className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between bg-gray-50 ${
                             !formData.address.province
                               ? "cursor-default"
                               : "cursor-pointer"
@@ -379,8 +379,8 @@ const Register = () => {
                               key={d.name}
                               value={d.name}
                               className={({ active }) =>
-                                `px-3 py-2 cursor-pointer text-black text-sm ${
-                                  active ? "bg-blue-50" : ""
+                                `px-3 py-2 cursor-pointer text-black text-sm hover:text-white hover:bg-[#1e3a5f] rounded-lg ${
+                                  active ? "bg-[#1e3a5f] text-white" : ""
                                 }`
                               }
                             >
@@ -405,7 +405,7 @@ const Register = () => {
                     >
                       <div className="relative">
                         <Listbox.Button
-                          className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between bg-gray-50 ${
+                          className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between bg-gray-50 ${
                             !formData.address.district
                               ? "cursor-default"
                               : "cursor-pointer"
@@ -420,8 +420,8 @@ const Register = () => {
                               key={c.name}
                               value={c.name}
                               className={({ active }) =>
-                                `px-3 py-2 cursor-pointer text-black text-sm ${
-                                  active ? "bg-blue-50" : ""
+                                `px-3 py-2 cursor-pointer text-black text-sm hover:text-white hover:bg-[#1e3a5f] rounded-lg ${
+                                  active ? "bg-[#1e3a5f] text-white" : ""
                                 }`
                               }
                             >
@@ -443,7 +443,7 @@ const Register = () => {
                     >
                       <div className="relative">
                         <Listbox.Button
-                          className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between bg-gray-50 ${
+                          className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between bg-gray-50 ${
                             !formData.address.commune
                               ? "cursor-default"
                               : "cursor-pointer"
@@ -458,8 +458,8 @@ const Register = () => {
                               key={v}
                               value={v}
                               className={({ active }) =>
-                                `px-3 py-2 cursor-pointer text-black text-sm ${
-                                  active ? "bg-blue-50" : ""
+                                `px-3 py-2 cursor-pointer text-black text-sm hover:text-white hover:bg-[#1e3a5f] rounded-lg ${
+                                  active ? "bg-[#1e3a5f] text-white" : ""
                                 }`
                               }
                             >
@@ -529,7 +529,7 @@ const Register = () => {
                       }
                     >
                       <div className="relative">
-                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between">
+                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between">
                           <span className="capitalize">
                             {formData.expected_order_volume}
                           </span>
@@ -541,8 +541,8 @@ const Register = () => {
                               key={vol}
                               value={vol}
                               className={({ active }) =>
-                                `px-3 py-2 cursor-pointer text-black text-sm capitalize ${
-                                  active ? "bg-blue-50" : ""
+                                `px-3 py-2 cursor-pointer text-black text-sm capitalize hover:text-white hover:bg-[#1e3a5f] rounded-lg ${
+                                  active ? "bg-[#1e3a5f] text-white" : ""
                                 }`
                               }
                             >
@@ -567,7 +567,7 @@ const Register = () => {
                       }
                     >
                       <div className="relative">
-                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between">
+                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between">
                           <span className="capitalize">
                             {formData.order_frequency}
                           </span>
@@ -579,8 +579,8 @@ const Register = () => {
                               key={freq}
                               value={freq}
                               className={({ active }) =>
-                                `px-3 py-2 cursor-pointer text-black text-sm capitalize ${
-                                  active ? "bg-blue-50" : ""
+                                `px-3 py-2 cursor-pointer text-black text-sm capitalize hover:text-white hover:bg-[#1e3a5f] rounded-lg ${
+                                  active ? "bg-[#1e3a5f] text-white" : ""
                                 }`
                               }
                             >
@@ -609,7 +609,7 @@ const Register = () => {
                       multiple
                     >
                       <div className="relative mt-1">
-                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between">
+                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between">
                           <span className="block truncate">
                             {formData.product_categories.length > 0
                               ? formData.product_categories.join(", ")
@@ -628,8 +628,8 @@ const Register = () => {
                                 key={cat._id}
                                 value={cat.name}
                                 className={({ active }) =>
-                                  `px-3 py-2 cursor-pointer text-black text-sm capitalize ${
-                                    active ? "bg-blue-50" : ""
+                                  `px-3 py-2 cursor-pointer text-black text-sm capitalize hover:text-white hover:bg-[#1e3a5f] rounded-lg ${
+                                    active ? "bg-[#1e3a5f] text-white" : ""
                                   }`
                                 }
                               >

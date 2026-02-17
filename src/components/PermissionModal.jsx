@@ -221,7 +221,7 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 <table className="min-w-full text-center text-sm align-middle">
                   <thead className="table-sticky-header">
                     <tr>
-                      <th className="text-left">Module</th>
+                      <th className="text-left">Menu</th>
                       <th>Check All</th>
                       <th>View</th>
                       <th>Create</th>

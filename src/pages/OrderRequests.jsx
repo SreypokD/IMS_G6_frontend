@@ -35,13 +35,13 @@ function StatusDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>{value || "All Statuses"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
+            className="px-4 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg"
             value=""
           >
             <span>All Statuses</span>
@@ -51,7 +51,7 @@ function StatusDropdown({ value, onChange }) {
               key={option.value}
               value={option.value}
               className={({ selected }) =>
-                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
               }
             >
               {option.label}
@@ -390,7 +390,7 @@ const OrderRequests = () => {
       </div>
       <div className="bg-white rounded-xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+          <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold">
             <HiOutlineFilter className="inline-block text-sm text-black" />
             <span>Filters</span>
           </h3>
@@ -541,7 +541,7 @@ const OrderRequests = () => {
                       <td>{formatDate(request.delivery_date) || "-"}</td>
                       <td>
                         <span
-                          className={`inline-block w-[90px] text-center py-1.5 rounded-full text-sm ${request.status === "pending" ? "bg-yellow-100 text-yellow-700" : request.status === "approved" ? "bg-green-100 text-green-700" : request.status === "rejected" ? "bg-red-100 text-red-700" : request.status === "completed" ? "bg-blue-100 text-blue-700" : request.status === "cancelled" ? "bg-red-100 text-red-700" : request.status === "on_hold" ? "bg-orange-100 text-orange-700" : "bg-gray-100 text-gray-700"}`}
+                          className={`inline-block w-[90px] text-center py-1.5 rounded-full text-sm text-white ${request.status === "pending" ? "bg-yellow-400" : request.status === "approved" ? "bg-green-400" : request.status === "rejected" ? "bg-red-400" : request.status === "completed" ? "bg-blue-400" : request.status === "cancelled" ? "bg-red-400" : request.status === "on_hold" ? "bg-orange-400" : "bg-gray-400"}`}
                         >
                           {request.status.charAt(0).toUpperCase() +
                             request.status.slice(1)}
@@ -569,15 +569,19 @@ const OrderRequests = () => {
                               </button>
                             )}
                             {request?.status === "pending" &&
-                              (user?.role === "admin" ||
-                                user?.role === "staff" ||
-                                String(request.requester_id) ===
-                                  String(user?._id)) && (
+                              String(request.requester_id) ===
+                                String(user?._id) && (
                                 <Menu
                                   as="div"
                                   className="relative inline-block text-left"
                                 >
-                                  <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                                  <Menu.Button
+                                    className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
+                                    disabled={
+                                      String(request.requester_id) !==
+                                      String(user?._id)
+                                    }
+                                  >
                                     <HiDotsVertical className="text-xl" />
                                   </Menu.Button>
                                   <Menu.Items
@@ -628,7 +632,7 @@ const OrderRequests = () => {
                 })()}
                 {requests.length === 0 && (
                   <tr>
-                    <td colSpan="10">
+                    <td colSpan={canCreate || canUpdate || canDelete ? 10 : 9}>
                       <NoDataFound message="No order requests found." />
                     </td>
                   </tr>

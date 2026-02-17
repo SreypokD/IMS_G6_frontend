@@ -22,13 +22,13 @@ function StatusDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>{value || "All Statuses"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
+            className="px-4 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg"
             value=""
           >
             <span>All Statuses</span>
@@ -38,7 +38,7 @@ function StatusDropdown({ value, onChange }) {
               key={option.value}
               value={option.value}
               className={({ selected }) =>
-                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
               }
             >
               {option.label}
@@ -148,7 +148,7 @@ const OrderHistory = () => {
       </div>
       <div className="bg-white rounded-xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+          <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold">
             <HiOutlineFilter className="inline-block text-sm text-black" />
             <span>Filters</span>
           </h3>
@@ -256,7 +256,7 @@ const OrderHistory = () => {
                     <td>{formatDate(order.delivery_date) || "-"}</td>
                     <td>
                       <span
-                        className={`inline-block w-[90px] text-center py-1.5 rounded-full text-sm ${order.status === "approved" ? "bg-green-100 text-green-700" : order.status === "rejected" ? "bg-red-100 text-red-700" : order.status === "completed" ? "bg-blue-100 text-blue-700" : "bg-yellow-100 text-yellow-700"}`}
+                        className={`inline-block w-[90px] text-center py-1.5 rounded-full text-sm text-white ${order.status === "approved" ? "bg-green-400" : order.status === "rejected" ? "bg-red-400" : order.status === "completed" ? "bg-blue-400" : "bg-yellow-400"}`}
                       >
                         {order.status
                           ? order.status.charAt(0).toUpperCase() +

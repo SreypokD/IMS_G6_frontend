@@ -442,14 +442,7 @@ const Dashboard = () => {
                         </td>
                         <td>
                           <span
-                            className={`px-2 py-1 rounded-full text-xs capitalize
-                                            ${
-                                              order.status === "approved"
-                                                ? "bg-green-100 text-green-700"
-                                                : order.status === "rejected"
-                                                  ? "bg-red-100 text-red-700"
-                                                  : "bg-amber-100 text-amber-700"
-                                            }`}
+                            className={`px-3 py-1.5 rounded-full text-sm capitalize text-white ${ order.status === "approved" ? "bg-green-400" : order.status === "rejected" ? "bg-red-400" : "bg-yellow-400"}`}
                           >
                             {order.status}
                           </span>

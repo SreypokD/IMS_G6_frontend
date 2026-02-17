@@ -121,7 +121,7 @@ const StockInModal = ({ open, onClose, products, data }) => {
             <Listbox value={productId} onChange={setProductId}>
               <div className="relative">
                 <Listbox.Button
-                  className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${!productId && (touched.productId || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${!productId && (touched.productId || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                 >
                   <span className="truncate">
                     {products.find((p) => p._id === productId)
@@ -137,7 +137,7 @@ const StockInModal = ({ open, onClose, products, data }) => {
                         key={p._id}
                         value={p._id}
                         className={({ selected }) =>
-                          `px-3 py-2 text-black text-sm hover:bg-[#f1f5f9] cursor-pointer ${selected ? "bg-blue-50" : ""}`
+                          `px-3 py-2 text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] cursor-pointer rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
                         }
                       >
                         {({ selected }) => (
@@ -206,7 +206,7 @@ const StockInModal = ({ open, onClose, products, data }) => {
             <Listbox value={reason} onChange={setReason}>
               <div className="relative">
                 <Listbox.Button
-                  className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${!reason && (touched.reason || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${!reason && (touched.reason || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                 >
                   <span>{reason || "Select transaction reason"}</span>
                   <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
@@ -218,7 +218,7 @@ const StockInModal = ({ open, onClose, products, data }) => {
                         key={option}
                         value={option}
                         className={({ selected }) =>
-                          `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                          `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
                         }
                       >
                         {option}
@@ -236,7 +236,7 @@ const StockInModal = ({ open, onClose, products, data }) => {
             <Listbox value={warehouse} onChange={setWarehouse}>
               <div className="relative">
                 <Listbox.Button
-                  className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${!warehouse && (touched.warehouse || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${!warehouse && (touched.warehouse || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                 >
                   <span className="truncate">
                     {warehouse || "Select Warehouse"}
@@ -249,7 +249,7 @@ const StockInModal = ({ open, onClose, products, data }) => {
                       key={loc}
                       value={loc}
                       className={({ selected }) =>
-                        `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                        `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
                       }
                     >
                       {loc}

@@ -43,7 +43,7 @@ function CategoryDropdown({
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>
             {categories.find((p) => p._id === selected)?.name ||
               "All Categories"}
@@ -52,7 +52,7 @@ function CategoryDropdown({
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
+            className="px-4 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg"
             value=""
           >
             <span>All Categories</span>
@@ -62,7 +62,7 @@ function CategoryDropdown({
               key={option._id}
               value={option._id}
               className={({ selected }) =>
-                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
               }
             >
               {option.name}
@@ -82,7 +82,7 @@ function SupplierDropdown({
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>
             {suppliers.find((p) => p._id === selected)?.company_name ||
               "All Suppliers"}
@@ -91,7 +91,7 @@ function SupplierDropdown({
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
+            className="px-4 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg"
             value=""
           >
             <span>All Suppliers</span>
@@ -101,7 +101,7 @@ function SupplierDropdown({
               key={option._id}
               value={option._id}
               className={({ selected }) =>
-                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
               }
             >
               {option.company_name}
@@ -117,7 +117,7 @@ function StatusDropdown({ selected, setSelected, statusOptions }) {
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>
             {statusOptions.find((p) => p.value === selected)?.label ||
               "All Statuses"}
@@ -130,7 +130,7 @@ function StatusDropdown({ selected, setSelected, statusOptions }) {
               key={option.value}
               value={option.value}
               className={({ selected }) =>
-                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
               }
             >
               {option.label}
@@ -516,7 +516,7 @@ const Products = () => {
       </div>
       <div className="bg-white rounded-xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+          <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold">
             <HiOutlineFilter className="inline-block text-sm text-black" />
             <span>Filters</span>
           </h3>
@@ -642,7 +642,7 @@ const Products = () => {
                     </td>
                     <td>
                       <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm capitalize ${product.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}
+                        className={`inline-block px-3 py-1 rounded-full text-sm capitalize text-white ${product.status === "active" ? "bg-green-400" : "bg-gray-100"}`}
                       >
                         {product.status}
                       </span>
@@ -726,7 +726,7 @@ const Products = () => {
                 ))}
                 {products.length === 0 && (
                   <tr>
-                    <td colSpan="10">
+                    <td colSpan={canCreate || canUpdate || canDelete ? 11 : 9}>
                       <NoDataFound message="No products found." />
                     </td>
                   </tr>

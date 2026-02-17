@@ -400,7 +400,7 @@ export default function Settings() {
                         onChange={handleProvinceChange}
                       >
                         <div className="relative">
-                          <Listbox.Button className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer border-gray-100">
+                          <Listbox.Button className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between cursor-pointer border-gray-100">
                             <span>{profileData.address.province}</span>
                             <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                           </Listbox.Button>
@@ -409,9 +409,9 @@ export default function Settings() {
                               <Listbox.Option
                                 key={province.name}
                                 value={province.name}
-                                className={({ selected }) =>
-                                  `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
-                                }
+                                  className={({ selected }) =>
+                                    `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] ${selected ? "bg-[#1e3a5f] text-white" : ""}`
+                                  }
                               >
                                 {province.name}
                               </Listbox.Option>
@@ -430,7 +430,7 @@ export default function Settings() {
                         disabled={!profileData.address.province}
                       >
                         <div className="relative">
-                          <Listbox.Button className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer border-gray-100">
+                          <Listbox.Button className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between cursor-pointer border-gray-100">
                             <span>{profileData.address.district}</span>
                             <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                           </Listbox.Button>
@@ -444,7 +444,7 @@ export default function Settings() {
                                   key={district.name}
                                   value={district.name}
                                   className={({ selected }) =>
-                                    `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                                    `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] ${selected ? "bg-[#1e3a5f] text-white" : ""}`
                                   }
                                 >
                                   {district.name}
@@ -464,7 +464,7 @@ export default function Settings() {
                         disabled={!profileData.address.district}
                       >
                         <div className="relative">
-                          <Listbox.Button className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer border-gray-100">
+                          <Listbox.Button className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between cursor-pointer border-gray-100">
                             <span>{profileData.address.commune}</span>
                             <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                           </Listbox.Button>
@@ -481,7 +481,7 @@ export default function Settings() {
                                   key={commune.name}
                                   value={commune.name}
                                   className={({ selected }) =>
-                                    `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                                    `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] ${selected ? "bg-[#1e3a5f] text-white" : ""}`
                                   }
                                 >
                                   {commune.name}
@@ -501,7 +501,7 @@ export default function Settings() {
                         disabled={!profileData.address.commune}
                       >
                         <div className="relative">
-                          <Listbox.Button className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer border-gray-100">
+                          <Listbox.Button className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between cursor-pointer border-gray-100">
                             <span>{profileData.address.village}</span>
                             <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                           </Listbox.Button>
@@ -521,7 +521,7 @@ export default function Settings() {
                                   key={village}
                                   value={village}
                                   className={({ selected }) =>
-                                    `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                                    `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] ${selected ? "bg-[#1e3a5f] text-white" : ""}`
                                   }
                                 >
                                   {village}

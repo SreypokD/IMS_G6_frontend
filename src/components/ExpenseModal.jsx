@@ -148,7 +148,7 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   >
                     <div className="relative">
                       <Listbox.Button
-                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!expense.category && !data && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!expense.category && !data && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                         disabled={viewOnly}
                       >
                         <span>{expense.category || "Select category"}</span>
@@ -167,7 +167,7 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                             key={cat._id}
                             value={cat}
                             className={({ selected }) =>
-                              `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                              `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
                             }
                           >
                             {({ selected }) => (
@@ -202,7 +202,6 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   placeholder="Date"
                 />
               </div>
-
             </div>
           </div>
           {(!viewOnly || expense.receipt_image) && (

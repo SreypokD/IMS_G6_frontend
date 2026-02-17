@@ -9,6 +9,7 @@ import {
   HiOutlineEye,
   HiOutlineKey,
   HiDotsVertical,
+  HiOutlineArchive,
 } from "react-icons/hi";
 import {
   getUsers,
@@ -34,7 +35,7 @@ function PermissionDropdown({
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>
             {permissions.find((p) => p._id === selected)?.name || "All Roles"}
           </span>
@@ -42,7 +43,7 @@ function PermissionDropdown({
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
+            className="px-4 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg"
             value=""
           >
             <span>All Roles</span>
@@ -52,7 +53,7 @@ function PermissionDropdown({
               key={option._id}
               value={option._id}
               className={({ selected }) =>
-                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
               }
             >
               {option.name}
@@ -69,7 +70,7 @@ function StatusDropdown({ selected, setSelected }) {
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span className="capitalize">
             {selected ? selected : "All Status"}
           </span>
@@ -77,7 +78,7 @@ function StatusDropdown({ selected, setSelected }) {
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
+            className="px-4 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg"
             value=""
           >
             <span>All Status</span>
@@ -87,7 +88,7 @@ function StatusDropdown({ selected, setSelected }) {
               key={s}
               value={s}
               className={({ selected }) =>
-                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] capitalize ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg capitalize ${selected ? "bg-[#1e3a5f] text-white" : ""}`
               }
             >
               {s}
@@ -456,7 +457,7 @@ const Users = () => {
       </div>
       <div className="bg-white rounded-xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+          <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold">
             <HiOutlineFilter className="inline-block text-sm text-black" />
             <span>Filters</span>
           </h3>
@@ -554,12 +555,12 @@ const Users = () => {
                     <td className="capitalize">{u.role}</td>
                     <td>
                       <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm ${
+                        className={`inline-block px-3 py-1 rounded-full text-sm text-white ${
                           u.status === "active"
-                            ? "bg-green-100 text-green-700"
+                            ? "bg-green-400"
                             : u.status === "pending"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : "bg-red-100 text-red-700"
+                              ? "bg-yellow-400"
+                              : "bg-red-400"
                         }`}
                       >
                         {u.status
@@ -609,23 +610,6 @@ const Users = () => {
                                 )}
                               </Menu.Item>
                             )}
-                            {canDelete && (
-                              <Menu.Item>
-                                {() => (
-                                  <button
-                                    onClick={() => handleDelete(u._id)}
-                                    className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
-                                  >
-                                    <HiOutlineTrash
-                                      className="text-red-500 mr-2 h-5 w-5"
-                                      aria-hidden="true"
-                                    />
-                                    Delete
-                                  </button>
-                                )}
-                              </Menu.Item>
-                            )}
-                            <hr className="my-1 border-gray-100" />
                             {canUpdate && (
                               <Menu.Item>
                                 {() => (
@@ -642,6 +626,22 @@ const Users = () => {
                                 )}
                               </Menu.Item>
                             )}
+                            {canDelete && (
+                              <Menu.Item>
+                                {() => (
+                                  <button
+                                    onClick={() => handleDelete(u._id)}
+                                    className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                  >
+                                    <HiOutlineTrash
+                                      className="text-red-500 mr-2 h-5 w-5"
+                                      aria-hidden="true"
+                                    />
+                                    Delete
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            )}
                           </Menu.Items>
                         </Menu>
                       )}
@@ -650,7 +650,7 @@ const Users = () => {
                 ))}
                 {users.length === 0 && (
                   <tr>
-                    <td colSpan="7">
+                    <td colSpan={canCreate || canUpdate || canDelete ? 8 : 7}>
                       <NoDataFound message="No users found." />
                     </td>
                   </tr>

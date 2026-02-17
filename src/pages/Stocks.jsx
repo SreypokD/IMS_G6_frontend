@@ -45,7 +45,7 @@ function UserDropdown({ value, onChange, userOptions = [] }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>
             {userOptions.find((u) => u._id === value)
               ? `${userOptions.find((u) => u._id === value).first_name} ${userOptions.find((u) => u._id === value).last_name}`
@@ -55,7 +55,7 @@ function UserDropdown({ value, onChange, userOptions = [] }) {
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
+            className="px-4 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg"
             value=""
           >
             <span>All Users</span>
@@ -65,7 +65,7 @@ function UserDropdown({ value, onChange, userOptions = [] }) {
               key={user._id}
               value={user._id}
               className={({ selected }) =>
-                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
               }
             >
               {user.first_name} {user.last_name}
@@ -81,7 +81,7 @@ function TransactionDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>
             {transactionOptions.find((t) => t.value === value)?.label ||
               "All Transactions"}
@@ -94,7 +94,7 @@ function TransactionDropdown({ value, onChange }) {
               key={option.value}
               value={option.value}
               className={({ selected }) =>
-                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
               }
             >
               {option.label}
@@ -110,13 +110,13 @@ function LocationDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>{value || "All Locations"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9]"
+            className="px-4 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg"
             value=""
           >
             <span>All Locations</span>
@@ -126,7 +126,7 @@ function LocationDropdown({ value, onChange }) {
               key={option}
               value={option}
               className={({ selected }) =>
-                `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
+                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
               }
             >
               {option}
@@ -627,7 +627,7 @@ const Stocks = () => {
       </div>
       <div className="bg-white rounded-2xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
-          <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+          <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold">
             <HiOutlineFilter className="inline-block text-sm text-black" />
             <span>Filters</span>
           </h3>
@@ -805,7 +805,7 @@ const Stocks = () => {
                     <td>{stock.location || "-"}</td>
                     <td>
                       <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm capitalize ${stock.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"}`}
+                        className={`inline-block px-3 py-1 rounded-full text-sm capitalize text-white ${stock.status === "active" ? "bg-green-400" : "bg-gray-100"}`}
                       >
                         {stock.status}
                       </span>
@@ -872,7 +872,7 @@ const Stocks = () => {
                 ))}
                 {stocks.length === 0 && (
                   <tr>
-                    <td colSpan="10">
+                    <td colSpan={canCreate || canUpdate || canDelete ? 11 : 10}>
                       <NoDataFound message="No stocks found." />
                     </td>
                   </tr>
@@ -888,7 +888,10 @@ const Stocks = () => {
             total={pagination.totalItems}
             page={pagination.page}
             limit={pagination.limit}
-            onChange={({ page, limit }) => fetchStocks({ page, limit })}
+            onChange={({ page, limit }) => {
+              setPagination((prev) => ({ ...prev, page, limit }));
+              fetchStocks(page, limit);
+            }}
           />
         </div>
       )}
