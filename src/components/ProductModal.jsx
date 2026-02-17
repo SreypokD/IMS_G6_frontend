@@ -276,23 +276,6 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   </p>
                 )}
               </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Status <sup className="text-red-500">*</sup>
-                </label>
-                <select
-                  name="status"
-                  value={product.status}
-                  onChange={(e) =>
-                    setProduct({ ...product, status: e.target.value })
-                  }
-                  className="w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-sm text-gray-800"
-                  disabled={viewOnly}
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
             </div>
           </div>
           {(!viewOnly || product.image) && (

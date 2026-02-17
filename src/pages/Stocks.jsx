@@ -337,16 +337,6 @@ const Stocks = () => {
   // Selection
   const [selectedIds, setSelectedIds] = useState([]);
 
-  function handleSelectAll(e) {
-    if (e.target.checked) {
-      const newIds = stocks.map((s) => s._id);
-      setSelectedIds((prev) => [...new Set([...prev, ...newIds])]);
-    } else {
-      const pageIds = stocks.map((s) => s._id);
-      setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
-    }
-  }
-
   function handleSelectOne(e, id) {
     if (e.target.checked) {
       setSelectedIds((prev) => [...prev, id]);
@@ -407,37 +397,28 @@ const Stocks = () => {
 
   async function handleSelectAll(e) {
     if (e.target.checked) {
-      // Select current page first
-      const newIds = stocks.map((s) => s._id);
-      setSelectedIds((prev) => [...new Set([...prev, ...newIds])]);
+      setLoading(true);
+      try {
+        const params = {
+          limit: -1,
+          search,
+          type: filterType,
+          user: filterUser,
+          location: filterLocation,
+        };
+        const res = await getStocks(params);
+        const allIds = res.data.data.map((s) => s._id);
+        setSelectedIds(allIds);
+        setSelectAllMatches(true);
+      } catch (err) {
+        console.error(err);
+        setSelectedIds([]);
+      } finally {
+        setLoading(false);
+      }
     } else {
-      // Deselect current page
-      const pageIds = stocks.map((s) => s._id);
-      setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
+      setSelectedIds([]);
       setSelectAllMatches(false);
-    }
-  }
-
-  async function handleSelectAllGlobal() {
-    setLoading(true);
-    try {
-      // Fetch all IDs matching current filters
-      const params = {
-        limit: -1,
-        search,
-        type: filterType,
-        user: filterUser,
-        location: filterLocation,
-      };
-      const res = await getStocks(params);
-      const allIds = res.data.data.map((s) => s._id);
-      setSelectedIds(allIds);
-      setSelectAllMatches(true);
-    } catch (err) {
-      console.error(err);
-      dialog.error("Failed to select all stocks.");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -759,7 +740,7 @@ const Stocks = () => {
                         className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
                         checked={
                           stocks.length > 0 &&
-                          stocks.every((s) => selectedIds.includes(s._id))
+                          selectedIds.length === pagination.totalItems
                         }
                         onChange={handleSelectAll}
                       />

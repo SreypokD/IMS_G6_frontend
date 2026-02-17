@@ -15,7 +15,6 @@ const initialExpense = {
   amount: "",
   category: "Other",
   date: new Date().toISOString().split("T")[0],
-  date: new Date().toISOString().split("T")[0],
   receipt_image: "",
   status: "active",
 };
@@ -203,46 +202,7 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   placeholder="Date"
                 />
               </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Status
-                </label>
-                <Listbox
-                  value={expense.status}
-                  onChange={(status) => setExpense({ ...expense, status })}
-                  disabled={viewOnly}
-                >
-                  <div className="relative">
-                    <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between border-gray-100 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
-                    >
-                      <span className="capitalize">{expense.status}</span>
-                      {!viewOnly && (
-                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-                      )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
-                      {["active", "inactive"].map((status) => (
-                        <Listbox.Option
-                          key={status}
-                          value={status}
-                          className={({ selected }) =>
-                            `px-3 py-2 cursor-pointer text-black text-sm hover:bg-[#f1f5f9] ${selected ? "bg-blue-50" : ""}`
-                          }
-                        >
-                          {({ selected }) => (
-                            <span
-                              className={`block truncate capitalize ${selected ? "font-medium" : "font-normal"}`}
-                            >
-                              {status}
-                            </span>
-                          )}
-                        </Listbox.Option>
-                      ))}
-                    </Listbox.Options>
-                  </div>
-                </Listbox>
-              </div>
+
             </div>
           </div>
           {(!viewOnly || expense.receipt_image) && (

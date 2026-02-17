@@ -197,37 +197,28 @@ const OrderRequests = () => {
   // Selection
   const [selectedIds, setSelectedIds] = useState([]);
 
-  function handleSelectAll(e) {
+  async function handleSelectAll(e) {
     if (e.target.checked) {
-      const newIds = requests.map((r) => r._id);
-      setSelectedIds((prev) => [...new Set([...prev, ...newIds])]);
+      setLoading(true);
+      try {
+        const res = await getOrderRequests({
+          limit: -1,
+          search,
+          startDate,
+          endDate,
+          status,
+        });
+        const allIds = res.data.data.map((r) => r._id);
+        setSelectedIds(allIds);
+        setSelectAllMatches(true);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     } else {
-      const pageIds = requests.map((r) => r._id);
-      setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
+      setSelectedIds([]);
       setSelectAllMatches(false);
-    }
-  }
-
-  const [selectAllMatches, setSelectAllMatches] = useState(false);
-
-  async function handleSelectAllGlobal() {
-    setLoading(true);
-    try {
-      const res = await getOrderRequests({
-        limit: -1,
-        search,
-        startDate,
-        endDate,
-        status,
-      });
-      const allIds = res.data.data.map((r) => r._id);
-      setSelectedIds(allIds);
-      setSelectAllMatches(true);
-    } catch (err) {
-      console.error(err);
-      dialog.error("Failed to select all requests.");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -475,7 +466,7 @@ const OrderRequests = () => {
                         className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
                         checked={
                           requests.length > 0 &&
-                          requests.every((r) => selectedIds.includes(r._id))
+                          selectedIds.length === pagination.totalItems
                         }
                         onChange={handleSelectAll}
                       />

@@ -36,8 +36,7 @@ function PermissionDropdown({
       <div className="relative">
         <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-gray-800 text-sm flex items-center justify-between">
           <span>
-            {permissions.find((p) => p._id === selected)?.name ||
-              "All Roles"}
+            {permissions.find((p) => p._id === selected)?.name || "All Roles"}
           </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
@@ -134,6 +133,9 @@ const Users = () => {
   const [permission, setPermission] = useState("");
   const [status, setStatus] = useState("");
 
+  // Select All
+  const [selectedIds, setSelectedIds] = useState([]);
+
   // Permissions
   const canView = user?.permission?.permissions?.includes("view_user");
   const canCreate = user?.permission?.permissions?.includes("create_user");
@@ -162,6 +164,80 @@ const Users = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, search, permission, status]);
+
+  async function handleSelectAll(e) {
+    if (e.target.checked) {
+      setLoading(true);
+      try {
+        const params = {
+          limit: -1,
+          search,
+        };
+        if (permission) params.permission_id = permission;
+        if (status) params.status = status;
+
+        const res = await getUsers(params);
+        const allIds = res.data.data.map((u) => u._id);
+        setSelectedIds(allIds);
+      } catch (err) {
+        console.error(err);
+        setSelectedIds([]);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setSelectedIds([]);
+    }
+  }
+
+  function handleSelectOne(e, id) {
+    if (e.target.checked) {
+      setSelectedIds((prev) => [...prev, id]);
+    } else {
+      setSelectedIds((prev) => prev.filter((i) => i !== id));
+    }
+  }
+
+  async function handleBulkStatus(newStatus) {
+    if (selectedIds.length === 0) return;
+    setLoading(true);
+    try {
+      await Promise.all(
+        selectedIds.map((id) => updateUser(id, { status: newStatus })),
+      );
+      await dialog.success(`Users marked as ${newStatus} successfully.`);
+      fetchUsers(pagination.page, pagination.limit, search, permission, status);
+      setSelectedIds([]);
+    } catch {
+      await dialog.error("Failed to update users.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleBulkDelete() {
+    if (selectedIds.length === 0) return;
+    const confirmed = await dialog.ask({
+      type: "confirm",
+      title: "Delete Users",
+      message: `Are you sure you want to delete ${selectedIds.length} users?`,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+    });
+    if (!confirmed) return;
+
+    setLoading(true);
+    try {
+      await Promise.all(selectedIds.map((id) => deleteUser(id)));
+      await dialog.success("Users deleted successfully.");
+      fetchUsers(pagination.page, pagination.limit, search, permission, status);
+      setSelectedIds([]);
+    } catch {
+      await dialog.error("Failed to delete users.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   // Fetch users from API
   async function fetchUsers(
@@ -235,16 +311,6 @@ const Users = () => {
       try {
         await deleteUser(id);
         dialog.success("User deleted successfully");
-        fetchUsers(
-          pagination.page,
-          pagination.limit,
-          search,
-          permission,
-          status,
-        );
-      } catch {
-        setError("Failed to delete user");
-        dialog.error("Failed to delete user");
       } finally {
         setLoading(false);
       }
@@ -318,6 +384,74 @@ const Users = () => {
               <HiOutlinePlus className="text-md" /> Add User
             </button>
           )}
+          {(canUpdate || canDelete) && (
+            <Menu as="div" className="relative inline-block text-left ml-2">
+              <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                <HiDotsVertical className="text-xl" />
+              </Menu.Button>
+              <Menu.Items
+                anchor="bottom end"
+                className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
+              >
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={() => handleBulkStatus("active")}
+                      className={`w-full flex items-center px-2 py-3 text-[#64748b] transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:text-black hover:bg-[#f1f5f9]"}`}
+                    >
+                      <HiOutlineRefresh
+                        className="mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                      Activate Users
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={() => handleBulkStatus("pending")}
+                      className={`w-full flex items-center px-2 py-3 text-[#64748b] transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:text-black hover:bg-[#f1f5f9]"}`}
+                    >
+                      <HiOutlineFilter
+                        className="mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                      Mark as Pending
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={() => handleBulkStatus("inactive")}
+                      className={`w-full flex items-center px-2 py-3 text-[#64748b] transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:text-black hover:bg-[#f1f5f9]"}`}
+                    >
+                      <HiOutlineArchive
+                        className="mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                      Deactivate Users
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={handleBulkDelete}
+                      className={`w-full flex items-center px-2 py-3 text-red-500 transition text-sm space-x-2 rounded-xl ${selectedIds.length === 0 ? "opacity-50 cursor-default" : "cursor-pointer hover:bg-red-50"}`}
+                    >
+                      <HiOutlineTrash
+                        className="text-red-500 mr-2 h-5 w-5"
+                        aria-hidden="true"
+                      />
+                      Delete Users
+                    </button>
+                  )}
+                </Menu.Item>
+              </Menu.Items>
+            </Menu>
+          )}
         </div>
       </div>
       <div className="bg-white rounded-xl p-6 mb-3 border border-gray-100">
@@ -345,9 +479,7 @@ const Users = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
-              Role
-            </label>
+            <label className="block text-gray-700 text-sm mb-1">Role</label>
             <PermissionDropdown
               selected={permission}
               setSelected={setPermission}
@@ -370,6 +502,21 @@ const Users = () => {
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">
                 <tr>
+                  {(canUpdate || canDelete) && (
+                    <th className="w-15">
+                      <input
+                        type="checkbox"
+                        name="selectAll"
+                        id="selectAll"
+                        className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
+                        checked={
+                          users.length > 0 &&
+                          selectedIds.length === pagination.totalItems
+                        }
+                        onChange={handleSelectAll}
+                      />
+                    </th>
+                  )}
                   <th className="number">No.</th>
                   <th>Name</th>
                   <th>Email</th>
@@ -384,6 +531,18 @@ const Users = () => {
               <tbody>
                 {users.map((u, index) => (
                   <tr key={u._id} className="hover:bg-[#f1f5f9]">
+                    {(canUpdate || canDelete) && (
+                      <td className="w-15">
+                        <input
+                          type="checkbox"
+                          name="select"
+                          id="select"
+                          className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
+                          checked={selectedIds.includes(u._id)}
+                          onChange={(e) => handleSelectOne(e, u._id)}
+                        />
+                      </td>
+                    )}
                     <td className="number">
                       {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>

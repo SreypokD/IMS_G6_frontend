@@ -180,38 +180,28 @@ const OrderRequestApproval = () => {
   // Selection
   const [selectedIds, setSelectedIds] = useState([]);
 
-  function handleSelectAll(e) {
+  async function handleSelectAll(e) {
     if (e.target.checked) {
-      const newIds = orders.map((o) => o._id);
-      setSelectedIds((prev) => [...new Set([...prev, ...newIds])]);
+      setLoading(true);
+      try {
+        const res = await getApproveRequests({
+          limit: -1,
+          search,
+          startDate,
+          endDate,
+          status: status, // status state from line 179
+        });
+        const allIds = res.data.data.map((o) => o._id);
+        setSelectedIds(allIds);
+        setSelectAllMatches(true);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     } else {
-      const pageIds = orders.map((o) => o._id);
-      setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
+      setSelectedIds([]);
       setSelectAllMatches(false);
-    }
-  }
-
-  const [selectAllMatches, setSelectAllMatches] = useState(false);
-
-  async function handleSelectAllGlobal() {
-    setLoading(true);
-    try {
-      const res = await getApproveRequests({
-        limit: -1,
-        search,
-        startDate,
-        endDate,
-        status: status, // status state from line 179
-      });
-
-      const allIds = res.data.data.map((o) => o._id);
-      setSelectedIds(allIds);
-      setSelectAllMatches(true);
-    } catch (err) {
-      console.error(err);
-      dialog.error("Failed to select all requests.");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -487,7 +477,7 @@ const OrderRequestApproval = () => {
                         className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
                         checked={
                           orders.length > 0 &&
-                          orders.every((o) => selectedIds.includes(o._id))
+                          selectedIds.length === pagination.totalItems
                         }
                         onChange={handleSelectAll}
                       />

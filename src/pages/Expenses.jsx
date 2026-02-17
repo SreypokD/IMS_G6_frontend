@@ -218,38 +218,31 @@ const Expenses = () => {
   // Selection
   const [selectedIds, setSelectedIds] = useState([]);
 
-  function handleSelectAll(e) {
+  async function handleSelectAll(e) {
     if (e.target.checked) {
-      setSelectedIds(expenses.map((ex) => ex._id));
+      setLoading(true);
+      try {
+        const params = {
+          limit: -1,
+          search,
+          category,
+          startDate,
+          endDate,
+        };
+        if (category !== "All Categories") params.category = category;
+
+        const res = await getExpenses(params);
+        const allIds = res.data.data.map((ex) => ex._id);
+        setSelectedIds(allIds);
+        setSelectAllMatches(true);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     } else {
       setSelectedIds([]);
       setSelectAllMatches(false);
-    }
-  }
-
-  const [selectAllMatches, setSelectAllMatches] = useState(false);
-
-  async function handleSelectAllGlobal() {
-    setLoading(true);
-    try {
-      const params = {
-        limit: -1,
-        search,
-        category,
-        startDate,
-        endDate,
-      };
-      if (category !== "All Categories") params.category = category;
-
-      const res = await getExpenses(params);
-      const allIds = res.data.data.map((ex) => ex._id);
-      setSelectedIds(allIds);
-      setSelectAllMatches(true);
-    } catch (err) {
-      console.error(err);
-      dialog.error("Failed to select all expenses.");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -464,7 +457,7 @@ const Expenses = () => {
                         className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
                         checked={
                           expenses.length > 0 &&
-                          selectedIds.length === expenses.length
+                          selectedIds.length === pagination.totalItems
                         }
                         onChange={handleSelectAll}
                       />

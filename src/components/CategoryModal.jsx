@@ -101,22 +101,7 @@ const CategoryModal = ({
               disabled={viewOnly}
             />
           </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700">
-              Status <sup className="text-red-500">*</sup>
-            </label>
-            <select
-              name="status"
-              value={category.status}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className="w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-gray-800"
-              disabled={viewOnly}
-            >
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-          </div>
+
         </form>
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button

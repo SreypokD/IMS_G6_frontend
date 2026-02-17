@@ -144,29 +144,22 @@ const Categories = () => {
     fetchCategories(1, pagination.limit, "");
   };
 
-  function handleSelectAll(e) {
+  async function handleSelectAll(e) {
     if (e.target.checked) {
-      setSelectedIds(categories.map((c) => c._id));
+      setLoading(true);
+      try {
+        const res = await getCategories({ limit: -1, search });
+        const allIds = res.data.data.map((c) => c._id);
+        setSelectedIds(allIds);
+        setSelectAllMatches(true);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     } else {
       setSelectedIds([]);
       setSelectAllMatches(false);
-    }
-  }
-
-  const [selectAllMatches, setSelectAllMatches] = useState(false);
-
-  async function handleSelectAllGlobal() {
-    setLoading(true);
-    try {
-      const res = await getCategories({ limit: -1, search });
-      const allIds = res.data.data.map((c) => c._id);
-      setSelectedIds(allIds);
-      setSelectAllMatches(true);
-    } catch (err) {
-      console.error(err);
-      dialog.error("Failed to select all categories.");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -354,7 +347,7 @@ const Categories = () => {
                         className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
                         checked={
                           categories.length > 0 &&
-                          selectedIds.length === categories.length
+                          selectedIds.length === pagination.totalItems
                         }
                         onChange={handleSelectAll}
                       />

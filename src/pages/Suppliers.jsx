@@ -243,35 +243,28 @@ const Suppliers = () => {
   // Selection
   const [selectedIds, setSelectedIds] = useState([]);
 
-  function handleSelectAll(e) {
+  async function handleSelectAll(e) {
     if (e.target.checked) {
-      setSelectedIds(suppliers.map((s) => s._id));
+      setLoading(true);
+      try {
+        const params = {
+          limit: -1,
+          search,
+          status,
+          location,
+        };
+        const res = await getSuppliers(params);
+        const allIds = res.data.data.map((s) => s._id);
+        setSelectedIds(allIds);
+        setSelectAllMatches(true);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     } else {
       setSelectedIds([]);
       setSelectAllMatches(false);
-    }
-  }
-
-  const [selectAllMatches, setSelectAllMatches] = useState(false);
-
-  async function handleSelectAllGlobal() {
-    setLoading(true);
-    try {
-      const params = {
-        limit: -1,
-        search,
-        status,
-        location,
-      };
-      const res = await getSuppliers(params);
-      const allIds = res.data.data.map((s) => s._id);
-      setSelectedIds(allIds);
-      setSelectAllMatches(true);
-    } catch (err) {
-      console.error(err);
-      dialog.error("Failed to select all suppliers.");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -512,7 +505,7 @@ const Suppliers = () => {
                         className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
                         checked={
                           suppliers.length > 0 &&
-                          selectedIds.length === suppliers.length
+                          selectedIds.length === pagination.totalItems
                         }
                         onChange={handleSelectAll}
                       />
