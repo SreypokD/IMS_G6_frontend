@@ -15,7 +15,6 @@ import {
   HiOutlineFilter,
   HiOutlineRefresh,
   HiOutlineCheckCircle,
-  HiOutlineXCircle,
   HiOutlineArchive,
   HiOutlinePencil,
   HiOutlineTrash,
@@ -35,14 +34,13 @@ const categoryStyles = {
   Inventory: "bg-blue-100 text-blue-700",
   Marketing: "bg-purple-100 text-purple-700",
   Miscellaneous: "bg-pink-100 text-pink-700",
-  Transport: "bg-cyan-100 text-cyan-700",
-  Maintenance: "bg-emerald-100 text-emerald-700",
+  Transport: "bg-amber-100 text-amber-700",
+  Maintenance: "bg-teal-100 text-teal-700",
   Other: "bg-gray-100 text-gray-700",
 };
 
 function CategoryDropdown({ value, onChange }) {
   const categories = [
-    "All Categories",
     "Rent",
     "Utilities",
     "Salary",
@@ -518,7 +516,7 @@ const Expenses = () => {
                       ) : (
                         "-"
                       )}
-                    </td>{" "}
+                    </td>
                     <td>
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-sm capitalize text-white ${expense.status === "active" ? "bg-green-400" : "bg-gray-100"}`}

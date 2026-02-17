@@ -42,12 +42,6 @@ function PermissionDropdown({
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-          <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg"
-            value=""
-          >
-            <span>All Roles</span>
-          </Listbox.Option>
           {permissions.map((option) => (
             <Listbox.Option
               key={option._id}
@@ -77,12 +71,6 @@ function StatusDropdown({ selected, setSelected }) {
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-          <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg"
-            value=""
-          >
-            <span>All Status</span>
-          </Listbox.Option>
           {statuses.map((s) => (
             <Listbox.Option
               key={s}

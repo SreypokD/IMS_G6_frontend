@@ -10,7 +10,6 @@ import {
   HiOutlineRefresh,
   HiDotsVertical,
   HiOutlineCheckCircle,
-  HiOutlineXCircle,
   HiOutlineArchive,
 } from "react-icons/hi";
 import ProductModal from "../components/ProductModal.jsx";
@@ -29,7 +28,6 @@ import NoDataFound from "../components/NoDataFound";
 import Loading from "../components/Loading";
 
 const statusOptions = [
-  { value: "", label: "All Statuses" },
   { value: "in_stock", label: "In Stock" },
   { value: "out_of_stock", label: "Out of Stock" },
   { value: "low_stock", label: "Low Stock" },
@@ -51,12 +49,6 @@ function CategoryDropdown({
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-          <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg"
-            value=""
-          >
-            <span>All Categories</span>
-          </Listbox.Option>
           {categories.map((option) => (
             <Listbox.Option
               key={option._id}
@@ -90,12 +82,6 @@ function SupplierDropdown({
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-          <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg"
-            value=""
-          >
-            <span>All Suppliers</span>
-          </Listbox.Option>
           {suppliers.map((option) => (
             <Listbox.Option
               key={option._id}
@@ -155,7 +141,7 @@ const Products = () => {
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false);
-  const [updateProduct, setUpdateProduct] = useState(null);
+  const [editProduct, setEditProduct] = useState(null);
   const [viewProduct, setViewProduct] = useState(null);
 
   // Filters
@@ -232,7 +218,7 @@ const Products = () => {
   }
 
   function handleAdd() {
-    setUpdateProduct(null);
+    setEditProduct(null);
     setModalOpen(true);
   }
 
@@ -250,7 +236,7 @@ const Products = () => {
     } else if (typeof product.supplier === "string") {
       supplier = product.supplier;
     }
-    setUpdateProduct({ ...product, category: category, supplier: supplier });
+    setEditProduct({ ...product, category: category, supplier: supplier });
     setModalOpen(true);
   }
 
@@ -268,8 +254,8 @@ const Products = () => {
         data = formData;
       }
       let res;
-      if (updateProduct) {
-        res = await updateProduct(updateProduct._id, data);
+      if (editProduct) {
+        res = await updateProduct(editProduct._id, data);
       } else {
         res = await createProduct(data);
       }
@@ -287,7 +273,7 @@ const Products = () => {
         return;
       }
       dialog.success(
-        updateProduct
+        editProduct
           ? "Product updated successfully"
           : "Product created successfully",
       );
@@ -303,7 +289,7 @@ const Products = () => {
 
   function handleView(product) {
     // Always open in view mode (viewOnly) for view action
-    setUpdateProduct(null);
+    setEditProduct(null);
     setViewProduct(product);
     setModalOpen(true);
   }
@@ -382,7 +368,7 @@ const Products = () => {
     if (selectedIds.length === 0) return;
     setLoading(true);
     try {
-      await Promise.all(selectedIds.map((id) => updateProduct(id, { status })));
+      await Promise.all(selectedIds.map((id) => editProduct(id, { status })));
       await dialog.success(`Products marked as ${status} successfully.`);
       fetchProducts(pagination.page, pagination.limit);
       setSelectedIds([]);
@@ -424,8 +410,8 @@ const Products = () => {
       <ProductModal
         key={
           modalOpen
-            ? updateProduct
-              ? updateProduct._id
+            ? editProduct
+              ? editProduct._id
               : viewProduct
                 ? viewProduct._id
                 : "new"
@@ -434,11 +420,11 @@ const Products = () => {
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setUpdateProduct(null);
+          setEditProduct(null);
           setViewProduct(null);
         }}
         onSave={handleSave}
-        data={updateProduct || viewProduct}
+        data={editProduct || viewProduct}
         viewOnly={!!viewProduct}
       />
       <div className="flex items-center justify-between mb-8">

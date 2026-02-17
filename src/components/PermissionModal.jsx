@@ -107,7 +107,7 @@ const permissionTable = [
   },
 ];
 
-const initialPermission = {
+const initialRole = {
   name: "",
   description: "",
   permissions: [],
@@ -115,28 +115,28 @@ const initialPermission = {
 };
 
 const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
-  // Always deep clone the initial permission to avoid reference issues
-  function clonePermission(obj) {
-    return obj ? JSON.parse(JSON.stringify(obj)) : initialPermission;
+  // Always deep clone the initial role to avoid reference issues
+  function cloneRole(obj) {
+    return obj ? JSON.parse(JSON.stringify(obj)) : initialRole;
   }
-  const [permission, setUpdatePermission] = useState(clonePermission(data));
+  const [role, setUpdateRole] = useState(cloneRole(data));
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
 
   React.useEffect(() => {
     if (open && !data) {
-      setUpdatePermission(clonePermission(null));
+      setUpdateRole(cloneRole(null));
       setTouched({});
       setValidateOnSave(false);
     } else if (open && data) {
-      setUpdatePermission(clonePermission(data));
+      setUpdateRole(cloneRole(data));
       setTouched({});
       setValidateOnSave(false);
     }
   }, [open, data]);
 
   function updatePermissionsState(updater) {
-    setUpdatePermission((prev) => {
+    setUpdateRole((prev) => {
       const currentPerms = Array.isArray(prev.permissions)
         ? prev.permissions.filter((p) => typeof p === "string")
         : [];
@@ -145,10 +145,10 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
     });
   }
 
-  function handlePermissionChange(e) {
+  function handleRoleChange(e) {
     const { name, value, checked } = e.target;
     if (name === "name" || name === "description") {
-      setUpdatePermission((f) => ({ ...f, [name]: value }));
+      setUpdateRole((f) => ({ ...f, [name]: value }));
     } else {
       updatePermissionsState((set) => {
         if (checked) set.add(value);
@@ -163,14 +163,10 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[60%] max-h-[90vh] shadow-xl relative flex flex-col">
         <h2 className="text-xl font-bold mb-6 text-center shrink-0">
-          {viewOnly
-            ? "Permission Details"
-            : data
-              ? "Update Permission"
-              : "Add Permission"}
+          {viewOnly ? "Role Details" : data ? "Update Role" : "Add Role"}
         </h2>
         <form className="flex flex-col flex-1 max-h-[50vh] gap-5 px-1">
-          <div className="col-span-2 mb-2 shrink-0">
+          <div className="col-span-2 shrink-0">
             <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
               <HiOutlineDocumentText className="inline-block text-xl text-black" />
               <span>Basic Information</span>
@@ -184,10 +180,10 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 <input
                   type="text"
                   name="name"
-                  value={permission.name}
-                  onChange={handlePermissionChange}
+                  value={role.name}
+                  onChange={handleRoleChange}
                   onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!permission.name && !data && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!role.name && !data && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   required
                   disabled={viewOnly}
                 />
@@ -199,8 +195,8 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 <input
                   type="text"
                   name="description"
-                  value={permission.description}
-                  onChange={handlePermissionChange}
+                  value={role.description}
+                  onChange={handleRoleChange}
                   onBlur={() =>
                     setTouched((prev) => ({ ...prev, description: true }))
                   }
@@ -241,11 +237,12 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                             className="w-5 h-5 mt-2 cursor-pointer accent-[#1e3a5f]"
                             type="checkbox"
                             checked={row.actions.every((a) =>
-                              permission.permissions?.includes(a),
+                              role.permissions?.includes(a),
                             )}
                             onChange={(e) => {
+                              const isChecked = e.target.checked;
                               updatePermissionsState((set) => {
-                                if (e.target.checked) {
+                                if (isChecked) {
                                   row.actions.forEach((a) => set.add(a));
                                 } else {
                                   row.actions.forEach((a) => set.delete(a));
@@ -269,11 +266,17 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                                     type="checkbox"
                                     value={actionKey}
                                     checked={
-                                      permission.permissions?.includes(
-                                        actionKey,
-                                      ) || false
+                                      role.permissions?.includes(actionKey) ||
+                                      false
                                     }
-                                    onChange={handlePermissionChange}
+                                    onChange={(e) => {
+                                      const isChecked = e.target.checked;
+                                      updatePermissionsState((set) => {
+                                        if (isChecked) set.add(actionKey);
+                                        else set.delete(actionKey);
+                                        return set;
+                                      });
+                                    }}
                                     disabled={viewOnly}
                                   />
                                 ) : null}
@@ -307,15 +310,15 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 setTouched({
                   name: true,
                 });
-                onSave(permission);
+                onSave(role);
               }}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />
               {viewOnly
-                ? "Permission Details"
-                : permission._id
-                  ? "Update Permission"
-                  : "Add Permission"}
+                ? "Role Details"
+                : role._id
+                  ? "Update Role"
+                  : "Add Role"}
             </button>
           )}
         </div>

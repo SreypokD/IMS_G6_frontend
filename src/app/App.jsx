@@ -131,7 +131,7 @@ function App() {
                                 // System / Security
                                 { path: "/users", element: <Users /> },
                                 {
-                                  path: "/permissions",
+                                  path: "/roles",
                                   element: <Permissions />,
                                 },
                                 { path: "/settings", element: <Settings /> },

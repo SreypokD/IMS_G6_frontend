@@ -4,14 +4,10 @@ import { DialogContextBase } from "./DialogContextBase";
 
 export function DialogProvider({ children }) {
   const [dialog, setDialog] = useState({ open: false });
-  // Get current path for route check
-  const isLoginRoute =
-    typeof window !== "undefined" && window.location.pathname === "/login";
-
   // Promise-based ask dialog
   const ask = useCallback((options) => {
     return new Promise((resolve) => {
-      if (isLoginRoute) {
+      if (typeof window !== "undefined" && window.location.pathname === "/login") {
         // Suppress dialog on login page
         resolve(false);
         return;
@@ -41,13 +37,12 @@ export function DialogProvider({ children }) {
         },
       });
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Promise-based prompt dialog
   const prompt = useCallback((options) => {
     return new Promise((resolve) => {
-      if (isLoginRoute) {
+      if (typeof window !== "undefined" && window.location.pathname === "/login") {
         resolve(null);
         return;
       }
@@ -76,13 +71,12 @@ export function DialogProvider({ children }) {
         },
       });
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Simple success/info/error dialogs
   const show = useCallback((type, message, title = "", confirmText = "OK") => {
     return new Promise((resolve) => {
-      if (isLoginRoute) {
+      if (typeof window !== "undefined" && window.location.pathname === "/login") {
         // Suppress dialog on login page
         resolve();
         return;
@@ -104,7 +98,6 @@ export function DialogProvider({ children }) {
         },
       });
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const value = {

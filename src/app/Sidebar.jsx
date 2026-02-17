@@ -183,12 +183,12 @@ const navLinks = (permissions = [], activePath = "") =>
           ),
         },
         permissions.includes("view_permission") && {
-          to: "/permissions",
-          label: "Permissions",
+          to: "/roles",
+          label: "Roles",
           icon: (
             <HiKey
               className={
-                activePath === "/permissions" ? "text-white" : "text-yellow-700"
+                activePath === "/roles" ? "text-white" : "text-yellow-700"
               }
             />
           ),

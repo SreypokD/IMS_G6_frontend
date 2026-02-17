@@ -35,7 +35,6 @@ import { useDialog } from "../contexts/dialog/useDialog";
 import { Menu } from "@headlessui/react";
 
 const transactionOptions = [
-  { value: "", label: "All Transactions" },
   { value: "in", label: "Stock In" },
   { value: "out", label: "Stock Out" },
 ];
@@ -54,12 +53,6 @@ function UserDropdown({ value, onChange, userOptions = [] }) {
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-          <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg"
-            value=""
-          >
-            <span>All Users</span>
-          </Listbox.Option>
           {userOptions.map((user) => (
             <Listbox.Option
               key={user._id}
@@ -115,12 +108,6 @@ function LocationDropdown({ value, onChange }) {
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
         </Listbox.Button>
         <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
-          <Listbox.Option
-            className="px-4 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg"
-            value=""
-          >
-            <span>All Locations</span>
-          </Listbox.Option>
           {locationOptions.map((option) => (
             <Listbox.Option
               key={option}

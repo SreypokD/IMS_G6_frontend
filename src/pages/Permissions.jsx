@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import PermissionModal from "../components/PermissionModal";
 import {
   HiOutlineCheckCircle,
-  HiOutlineXCircle,
   HiOutlineArchive,
   HiOutlinePencil,
   HiOutlineTrash,
@@ -26,10 +25,10 @@ import Loading from "../components/Loading";
 import { useDialog } from "../contexts/dialog/useDialog";
 
 const Permissions = () => {
-  const [permissions, setPermissions] = useState([]);
+  const [roles, setRoles] = useState([]);
 
-  // View permission
-  const [viewPermission, setViewPermission] = useState(null);
+  // View role
+  const [viewRole, setViewRole] = useState(null);
 
   // Pagination
   const [pagination, setPagination] = useState({
@@ -41,7 +40,7 @@ const Permissions = () => {
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false);
-  const [editPermission, setEditPermission] = useState(null);
+  const [editRole, setEditRole] = useState(null);
 
   // Loading and Error
   const [loading, setLoading] = useState(false);
@@ -54,7 +53,10 @@ const Permissions = () => {
   // Filters
   const [search, setSearch] = useState("");
 
-  // Permissions
+  // Select All
+  const [selectAllMatches, setSelectAllMatches] = useState(false);
+
+  // Permissions (Access Control)
   const canView = user?.permission?.permissions?.includes("view_permission");
   const canCreate =
     user?.permission?.permissions?.includes("create_permission");
@@ -66,7 +68,7 @@ const Permissions = () => {
   useEffect(() => {
     if (user) {
       const delayDebounceFn = setTimeout(() => {
-        fetchPermissions(1, pagination.limit, search);
+        fetchRoles(1, pagination.limit, search);
         setPagination((prev) => ({ ...prev, page: 1 }));
       }, 500);
       return () => clearTimeout(delayDebounceFn);
@@ -74,13 +76,13 @@ const Permissions = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, search]);
 
-  // Fetch permissions from API
-  async function fetchPermissions(page = 1, limit = 10, search) {
+  // Fetch roles from API
+  async function fetchRoles(page = 1, limit = 10, search) {
     setLoading(true);
     setError("");
     try {
       const res = await getPermissions({ page, limit, search });
-      setPermissions(res.data.data);
+      setRoles(res.data.data);
       setPagination((prev) => ({
         ...prev,
         ...res.data.pagination,
@@ -88,47 +90,47 @@ const Permissions = () => {
         limit,
       }));
     } catch {
-      setError("Failed to load permissions");
+      setError("Failed to load roles");
     } finally {
       setLoading(false);
     }
   }
 
-  function handleView(permission) {
-    setEditPermission(null);
-    setViewPermission(permission);
+  function handleView(role) {
+    setEditRole(null);
+    setViewRole(role);
     setModalOpen(true);
   }
 
-  // Save permission (create or update)
-  async function handleSave(permission) {
+  // Save role (create or update)
+  async function handleSave(role) {
     setLoading(true);
     setError("");
     try {
-      if (editPermission) {
-        await updatePermission(editPermission._id, permission);
-        dialog.success("Permission updated successfully");
+      if (editRole) {
+        await updatePermission(editRole._id, role);
+        dialog.success("Role updated successfully");
       } else {
-        await createPermission(permission);
-        dialog.success("Permission created successfully");
+        await createPermission(role);
+        dialog.success("Role created successfully");
       }
-      fetchPermissions(1, pagination.limit, search);
+      fetchRoles(1, pagination.limit, search);
       setModalOpen(false);
-      setEditPermission(null);
+      setEditRole(null);
     } catch {
-      setError("Failed to save permission");
-      dialog.error("Failed to save permission");
+      setError("Failed to save role");
+      dialog.error("Failed to save role");
     } finally {
       setLoading(false);
     }
   }
 
-  // Delete permission
+  // Delete role
   async function handleDelete(id) {
     const confirmed = await dialog.ask({
       type: "confirm",
-      title: "Delete Permission",
-      message: "Are you sure you want to delete this permission?",
+      title: "Delete Role",
+      message: "Are you sure you want to delete this role?",
       confirmText: "Delete",
       cancelText: "Cancel",
     });
@@ -136,11 +138,11 @@ const Permissions = () => {
       setLoading(true);
       try {
         await deletePermission(id);
-        dialog.success("Permission deleted successfully");
-        fetchPermissions(pagination.page, pagination.limit, search);
+        dialog.success("Role deleted successfully");
+        fetchRoles(pagination.page, pagination.limit, search);
       } catch {
-        setError("Failed to delete permission");
-        dialog.error("Failed to delete permission");
+        setError("Failed to delete role");
+        dialog.error("Failed to delete role");
       } finally {
         setLoading(false);
       }
@@ -150,7 +152,7 @@ const Permissions = () => {
   const handleReset = () => {
     setSearch("");
     setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchPermissions(1, pagination.limit, "");
+    fetchRoles(1, pagination.limit, "");
   };
 
   // Selection
@@ -158,27 +160,10 @@ const Permissions = () => {
 
   function handleSelectAll(e) {
     if (e.target.checked) {
-      setSelectedIds(permissions.map((p) => p._id));
+      setSelectedIds(roles.map((p) => p._id));
     } else {
       setSelectedIds([]);
       setSelectAllMatches(false);
-    }
-  }
-
-  const [selectAllMatches, setSelectAllMatches] = useState(false);
-
-  async function handleSelectAllGlobal() {
-    setLoading(true);
-    try {
-      const res = await getPermissions({ page: 1, limit: -1, search });
-      const allIds = res.data.data.map((p) => p._id);
-      setSelectedIds(allIds);
-      setSelectAllMatches(true);
-    } catch (err) {
-      console.error(err);
-      dialog.error("Failed to select all permissions.");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -197,12 +182,12 @@ const Permissions = () => {
       await Promise.all(
         selectedIds.map((id) => updatePermission(id, { status })),
       );
-      await dialog.success(`Permissions marked as ${status} successfully.`);
-      fetchPermissions(pagination.page, pagination.limit, search);
+      await dialog.success(`Roles marked as ${status} successfully.`);
+      fetchRoles(pagination.page, pagination.limit, search);
       setSelectedIds([]);
       setSelectAllMatches(false);
     } catch {
-      await dialog.error("Failed to update permissions.");
+      await dialog.error("Failed to update roles.");
     } finally {
       setLoading(false);
     }
@@ -212,8 +197,8 @@ const Permissions = () => {
     if (selectedIds.length === 0) return;
     const confirmed = await dialog.ask({
       type: "confirm",
-      title: "Delete Permissions",
-      message: `Are you sure you want to delete ${selectedIds.length} permissions?`,
+      title: "Delete Roles",
+      message: `Are you sure you want to delete ${selectedIds.length} roles?`,
       confirmText: "Delete",
       cancelText: "Cancel",
     });
@@ -222,12 +207,12 @@ const Permissions = () => {
     setLoading(true);
     try {
       await Promise.all(selectedIds.map((id) => deletePermission(id)));
-      await dialog.success("Permissions deleted successfully.");
-      fetchPermissions(pagination.page, pagination.limit, search);
+      await dialog.success("Roles deleted successfully.");
+      fetchRoles(pagination.page, pagination.limit, search);
       setSelectedIds([]);
       setSelectAllMatches(false);
     } catch {
-      await dialog.error("Failed to delete permissions.");
+      await dialog.error("Failed to delete roles.");
     } finally {
       setLoading(false);
     }
@@ -239,27 +224,29 @@ const Permissions = () => {
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setEditPermission(null);
+          setEditRole(null);
+          setViewRole(null);
         }}
         onSave={handleSave}
-        data={editPermission || viewPermission}
-        viewOnly={!!viewPermission}
+        data={editRole || viewRole}
+        viewOnly={!!viewRole}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
-          <h1 className="text-xl font-semibold">Permissions</h1>
-          <span className="text-gray-500 text-sm">Manage permissions</span>
+          <h1 className="text-xl font-semibold">Roles</h1>
+          <span className="text-gray-500 text-sm">Manage roles</span>
         </div>
         <div className="flex items-center gap-2">
           {canCreate && (
             <button
               className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
               onClick={() => {
-                setEditPermission(null);
+                setEditRole(null);
+                setViewRole(null);
                 setModalOpen(true);
               }}
             >
-              <HiOutlinePlus /> Add Permission
+              <HiOutlinePlus /> Add Role
             </button>
           )}
           {(canUpdate || canDelete) && (
@@ -281,7 +268,7 @@ const Permissions = () => {
                         className="mr-2 h-5 w-5"
                         aria-hidden="true"
                       />
-                      Active Permissions
+                      Active Roles
                     </button>
                   )}
                 </Menu.Item>
@@ -295,7 +282,7 @@ const Permissions = () => {
                         className="mr-2 h-5 w-5"
                         aria-hidden="true"
                       />
-                      Archive Permissions
+                      Archive Roles
                     </button>
                   )}
                 </Menu.Item>
@@ -309,7 +296,7 @@ const Permissions = () => {
                         className="text-red-500 mr-2 h-5 w-5"
                         aria-hidden="true"
                       />
-                      Delete Permissions
+                      Delete Roles
                     </button>
                   )}
                 </Menu.Item>
@@ -362,8 +349,8 @@ const Permissions = () => {
                         id="selectAll"
                         className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
                         checked={
-                          permissions.length > 0 &&
-                          selectedIds.length === permissions.length
+                          roles.length > 0 &&
+                          selectedIds.length === roles.length
                         }
                         onChange={handleSelectAll}
                       />
@@ -379,8 +366,8 @@ const Permissions = () => {
                 </tr>
               </thead>
               <tbody>
-                {permissions.map((permission, index) => (
-                  <tr key={permission._id} className="hover:bg-[#f1f5f9]">
+                {roles.map((role, index) => (
+                  <tr key={role._id} className="hover:bg-[#f1f5f9]">
                     {(canUpdate || canDelete) && (
                       <td className="w-15">
                         <input
@@ -388,23 +375,21 @@ const Permissions = () => {
                           name="select"
                           id="select"
                           className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
-                          checked={selectedIds.includes(permission._id)}
-                          onChange={(e) => handleSelectOne(e, permission._id)}
+                          checked={selectedIds.includes(role._id)}
+                          onChange={(e) => handleSelectOne(e, role._id)}
                         />
                       </td>
                     )}
                     <td className="number">
                       {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>
-                    <td>{permission.name}</td>
-                    <td className="whitespace-nowrap">
-                      {permission.description}
-                    </td>
+                    <td>{role.name}</td>
+                    <td className="whitespace-nowrap">{role.description}</td>
                     <td>
                       <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm capitalize text-white ${permission.status === "active" ? "bg-green-400" : "bg-gray-100"}`}
+                        className={`inline-block px-3 py-1 rounded-full text-sm capitalize text-white ${role.status === "active" ? "bg-green-400" : "bg-gray-100"}`}
                       >
-                        {permission.status}
+                        {role.status}
                       </span>
                     </td>
                     <td className="flex items-center gap-1 justify-center action">
@@ -412,7 +397,7 @@ const Permissions = () => {
                         <button
                           className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
                           title="View"
-                          onClick={() => handleView(permission)}
+                          onClick={() => handleView(role)}
                         >
                           <HiOutlineEye className="text-xl" />
                         </button>
@@ -434,8 +419,8 @@ const Permissions = () => {
                                 {() => (
                                   <button
                                     onClick={() => {
-                                      setEditPermission(permission);
-                                      setViewPermission(null);
+                                      setEditRole(role);
+                                      setViewRole(null);
                                       setModalOpen(true);
                                     }}
                                     className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"
@@ -453,7 +438,7 @@ const Permissions = () => {
                               <Menu.Item>
                                 {() => (
                                   <button
-                                    onClick={() => handleDelete(permission._id)}
+                                    onClick={() => handleDelete(role._id)}
                                     className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
                                   >
                                     <HiOutlineTrash
@@ -471,10 +456,10 @@ const Permissions = () => {
                     </td>
                   </tr>
                 ))}
-                {permissions.length === 0 && (
+                {roles.length === 0 && (
                   <tr>
                     <td colSpan={canUpdate || canDelete ? 6 : 5}>
-                      <NoDataFound message="No permissions found." />
+                      <NoDataFound message="No roles found." />
                     </td>
                   </tr>
                 )}
@@ -483,7 +468,7 @@ const Permissions = () => {
           )}
         </div>
       </div>
-      {permissions.length > 0 && (
+      {roles.length > 0 && (
         <div className="flex justify-end mt-3">
           <Pagination
             total={pagination.totalItems}
@@ -491,7 +476,7 @@ const Permissions = () => {
             limit={pagination.limit}
             onChange={({ page, limit }) => {
               setPagination((prev) => ({ ...prev, page, limit }));
-              fetchPermissions(page, limit);
+              fetchRoles(page, limit);
             }}
           />
         </div>
