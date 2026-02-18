@@ -8,7 +8,7 @@ import {
   HiExclamationCircle,
   HiOutlineUpload,
 } from "react-icons/hi";
-
+import PropTypes from "prop-types";
 import { createStock, updateStock } from "../api";
 import { useDialog } from "../contexts/dialog/useDialog";
 
@@ -110,7 +110,7 @@ const StockOutModal = ({ open, onClose, products, data }) => {
             </label>
             <Listbox value={productId} onChange={setProductId}>
               <div className="relative">
-                <Listbox.Button
+                <ListboxButton
                   className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${!productId && (touched.productId || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                 >
                   <span className="truncate">
@@ -119,12 +119,12 @@ const StockOutModal = ({ open, onClose, products, data }) => {
                       : "Select product"}
                   </span>
                   <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-                </Listbox.Button>
-                <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                </ListboxButton>
+                <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                   {products.map((p) => {
                     const isDisabled = p.stock - (p.reserved_stock || 0) <= 0;
                     return (
-                      <Listbox.Option
+                      <ListboxOption
                         key={p._id}
                         value={p._id}
                         className={({ selected }) =>
@@ -143,10 +143,10 @@ const StockOutModal = ({ open, onClose, products, data }) => {
                             </span>
                           </>
                         )}
-                      </Listbox.Option>
+                      </ListboxOption>
                     );
                   })}
-                </Listbox.Options>
+                </ListboxOptions>
               </div>
             </Listbox>
           </div>
@@ -197,15 +197,15 @@ const StockOutModal = ({ open, onClose, products, data }) => {
             </label>
             <Listbox value={reason} onChange={setReason}>
               <div className="relative">
-                <Listbox.Button
+                <ListboxButton
                   className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${!reason && (touched.reason || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                 >
                   <span>{reason || "Select transaction reason"}</span>
                   <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-                </Listbox.Button>
-                <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                </ListboxButton>
+                <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                   {["Sale", "Damage", "Adjustment", "Other"].map((option) => (
-                    <Listbox.Option
+                    <ListboxOption
                       key={option}
                       value={option}
                       className={({ selected }) =>
@@ -213,9 +213,9 @@ const StockOutModal = ({ open, onClose, products, data }) => {
                       }
                     >
                       {option}
-                    </Listbox.Option>
+                    </ListboxOption>
                   ))}
-                </Listbox.Options>
+                </ListboxOptions>
               </div>
             </Listbox>
           </div>
@@ -225,17 +225,17 @@ const StockOutModal = ({ open, onClose, products, data }) => {
             </label>
             <Listbox value={warehouse} onChange={setWarehouse}>
               <div className="relative">
-                <Listbox.Button
+                <ListboxButton
                   className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${!warehouse && (touched.warehouse || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                 >
                   <span className="truncate">
                     {warehouse || "Select Warehouse"}
                   </span>
                   <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-                </Listbox.Button>
-                <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                </ListboxButton>
+                <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                   {["Main Warehouse", "Showroom"].map((loc) => (
-                    <Listbox.Option
+                    <ListboxOption
                       key={loc}
                       value={loc}
                       className={({ selected }) =>
@@ -243,9 +243,9 @@ const StockOutModal = ({ open, onClose, products, data }) => {
                       }
                     >
                       {loc}
-                    </Listbox.Option>
+                    </ListboxOption>
                   ))}
-                </Listbox.Options>
+                </ListboxOptions>
               </div>
             </Listbox>
           </div>
@@ -302,6 +302,13 @@ const StockOutModal = ({ open, onClose, products, data }) => {
       </div>
     </div>
   );
+};
+
+StockOutModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  products: PropTypes.array.isRequired,
+  data: PropTypes.object,
 };
 
 export default StockOutModal;

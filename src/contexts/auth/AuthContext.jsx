@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { AuthContextBase } from "./AuthContextBase";
 import { logout as logoutApi } from "../../api/auth-services";
 import { getProfile } from "../../api";
@@ -73,4 +74,8 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContextBase.Provider>
   );
+};
+
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };

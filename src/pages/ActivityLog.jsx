@@ -45,11 +45,11 @@ const ActivityLog = () => {
   }, [user, search, startDate, endDate]);
 
   async function fetchLogs(
+    search = "",
+    startDate = "",
+    endDate = "",
     page = pagination.page,
     limit = pagination.limit,
-    search = "",
-    startDate,
-    endDate,
   ) {
     setLoading(true);
     setError("");
@@ -108,8 +108,9 @@ const ActivityLog = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <div>
-            <label className="block text-gray-700 text-sm mb-1">Search</label>
+            <label htmlFor="search" className="block text-gray-700 text-sm mb-1">Search</label>
             <input
+              id="search"
               type="text"
               className="w-full bg-gray-50 border border-gray-100 rounded-lg py-2 px-3 text-gray-700 text-sm"
               placeholder="Search description..."
@@ -118,10 +119,11 @@ const ActivityLog = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
+            <label htmlFor="startDate" className="block text-gray-700 text-sm mb-1">
               Start Date
             </label>
             <DatePicker
+              id="startDate"
               selected={startDate}
               onChange={(date) =>
                 setStartDate(date ? date.toISOString().split("T")[0] : "")
@@ -130,8 +132,9 @@ const ActivityLog = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">End Date</label>
+            <label htmlFor="endDate" className="block text-gray-700 text-sm mb-1">End Date</label>
             <DatePicker
+              id="endDate"
               selected={endDate}
               onChange={(date) =>
                 setEndDate(date ? date.toISOString().split("T")[0] : "")

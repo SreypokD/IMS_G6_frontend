@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { Listbox, Menu } from "@headlessui/react";
 import {
   HiSelector,
@@ -41,16 +42,16 @@ function CategoryDropdown({
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>
             {categories.find((p) => p._id === selected)?.name ||
               "All Categories"}
           </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {categories.map((option) => (
-            <Listbox.Option
+            <ListboxOption
               key={option._id}
               value={option._id}
               className={({ selected }) =>
@@ -58,13 +59,19 @@ function CategoryDropdown({
               }
             >
               {option.name}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
+
+CategoryDropdown.propTypes = {
+  selected: PropTypes.string.isRequired,
+  setSelected: PropTypes.func.isRequired,
+  categoryOptions: PropTypes.array.isRequired,
+};
 
 function SupplierDropdown({
   selected,
@@ -74,16 +81,16 @@ function SupplierDropdown({
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>
             {suppliers.find((p) => p._id === selected)?.company_name ||
               "All Suppliers"}
           </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {suppliers.map((option) => (
-            <Listbox.Option
+            <ListboxOption
               key={option._id}
               value={option._id}
               className={({ selected }) =>
@@ -91,28 +98,34 @@ function SupplierDropdown({
               }
             >
               {option.company_name}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
 
+SupplierDropdown.propTypes = {
+  selected: PropTypes.string.isRequired,
+  setSelected: PropTypes.func.isRequired,
+  supplierOptions: PropTypes.array.isRequired,
+};
+
 function StatusDropdown({ selected, setSelected, statusOptions }) {
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>
             {statusOptions.find((p) => p.value === selected)?.label ||
               "All Statuses"}
           </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {statusOptions.map((option) => (
-            <Listbox.Option
+            <ListboxOption
               key={option.value}
               value={option.value}
               className={({ selected }) =>
@@ -120,13 +133,24 @@ function StatusDropdown({ selected, setSelected, statusOptions }) {
               }
             >
               {option.label}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
+
+StatusDropdown.propTypes = {
+  selected: PropTypes.string.isRequired,
+  setSelected: PropTypes.func.isRequired,
+  statusOptions: PropTypes.array.isRequired,
+};
+
+
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -161,10 +185,10 @@ const Products = () => {
   const { user } = useAuth();
 
   // Permissions
-  const canView = user?.permission?.permissions?.includes("view_product");
-  const canCreate = user?.permission?.permissions?.includes("create_product");
-  const canUpdate = user?.permission?.permissions?.includes("update_product");
-  const canDelete = user?.permission?.permissions?.includes("delete_product");
+  const canView = getPermission(user, "view_product");
+  const canCreate = getPermission(user, "create_product");
+  const canUpdate = getPermission(user, "update_product");
+  const canDelete = getPermission(user, "delete_product");
 
   useEffect(() => {
     getCategories({ limit: -1 }).then((res) =>
@@ -344,7 +368,6 @@ const Products = () => {
         const res = await getProducts(params);
         const allIds = res.data.data.map((p) => p._id);
         setSelectedIds(allIds);
-        setSelectAllMatches(true);
       } catch (err) {
         console.error(err);
       } finally {
@@ -352,7 +375,6 @@ const Products = () => {
       }
     } else {
       setSelectedIds([]);
-      setSelectAllMatches(false);
     }
   }
 
@@ -372,7 +394,6 @@ const Products = () => {
       await dialog.success(`Products marked as ${status} successfully.`);
       fetchProducts(pagination.page, pagination.limit);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to update products.");
     } finally {
@@ -397,7 +418,6 @@ const Products = () => {
       await dialog.success("Products deleted successfully.");
       fetchProducts(pagination.page, pagination.limit);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to delete products.");
     } finally {
@@ -446,14 +466,14 @@ const Products = () => {
           )}
           {(canUpdate || canDelete) && (
             <Menu as="div" className="relative inline-block text-left">
-              <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+              <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                 <HiDotsVertical className="text-xl" />
-              </Menu.Button>
-              <Menu.Items
+              </MenuButton>
+              <MenuItems
                 anchor="bottom end"
                 className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
               >
-                <Menu.Item>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkStatus("active")}
@@ -466,8 +486,8 @@ const Products = () => {
                       Active Products
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkStatus("inactive")}
@@ -480,8 +500,8 @@ const Products = () => {
                       Archive Products
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={handleBulkDelete}
@@ -494,8 +514,8 @@ const Products = () => {
                       Delete Products
                     </button>
                   )}
-                </Menu.Item>
-              </Menu.Items>
+                </MenuItem>
+              </MenuItems>
             </Menu>
           )}
         </div>
@@ -665,15 +685,15 @@ const Products = () => {
                           as="div"
                           className="relative inline-block text-left"
                         >
-                          <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                          <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                             <HiDotsVertical className="text-xl" />
-                          </Menu.Button>
-                          <Menu.Items
+                          </MenuButton>
+                          <MenuItems
                             anchor="bottom end"
                             className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
                           >
                             {canUpdate && (
-                              <Menu.Item>
+                              <MenuItem>
                                 {() => (
                                   <button
                                     onClick={() => handleUpdate(product)}
@@ -686,10 +706,10 @@ const Products = () => {
                                     Update
                                   </button>
                                 )}
-                              </Menu.Item>
+                              </MenuItem>
                             )}
                             {canDelete && (
-                              <Menu.Item>
+                              <MenuItem>
                                 {() => (
                                   <button
                                     onClick={() => handleDelete(product._id)}
@@ -702,9 +722,9 @@ const Products = () => {
                                     Delete
                                   </button>
                                 )}
-                              </Menu.Item>
+                              </MenuItem>
                             )}
-                          </Menu.Items>
+                          </MenuItems>
                         </Menu>
                       )}
                     </td>

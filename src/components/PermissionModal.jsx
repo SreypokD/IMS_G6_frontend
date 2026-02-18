@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { HiXCircle, HiOutlineDocumentText, HiOutlineKey } from "react-icons/hi";
+import PropTypes from "prop-types";
 
 const permissionTable = [
   {
@@ -114,9 +115,48 @@ const initialRole = {
   status: "active",
 };
 
+// Always deep clone the initial role to avoid reference issues
+function cloneRole(obj) {
+  if (obj) {
+    // avoid mutating the original object
+    const toClone = { ...obj };
+    if (typeof toClone.permissions === "string") {
+      try {
+        toClone.permissions = JSON.parse(toClone.permissions);
+      } catch {
+        toClone.permissions = [];
+      }
+    }
+    // prefer structuredClone when available, otherwise use a safe recursive clone
+    function recursiveClone(value) {
+      if (value === null || typeof value !== "object") return value;
+      if (value instanceof Date) return new Date(value);
+      if (Array.isArray(value)) return value.map(recursiveClone);
+      // plain object
+      const out = {};
+      for (const k in value) {
+        if (Object.hasOwn(value, k)) {
+          out[k] = recursiveClone(value[k]);
+        }
+      }
+      return out;
+    }
+
+    const cloned =
+      typeof globalThis?.structuredClone === "function"
+        ? globalThis.structuredClone(toClone)
+        : recursiveClone(toClone);
+    if (!Array.isArray(cloned.permissions)) {
+      cloned.permissions = [];
+    }
+    return cloned;
+  }
+  // return a fresh initial role to avoid shared references
+  return { ...initialRole };
+}
+
 const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
-  
-  const [role, setUpdateRole] = useState(cloneRole(data));
+  const [role, setUpdateRole] = useState(() => cloneRole(data));
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
 
@@ -131,25 +171,6 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       setValidateOnSave(false);
     }
   }, [open, data]);
-
-  // Always deep clone the initial role to avoid reference issues
-  function cloneRole(obj) {
-    if (obj) {
-      if (typeof obj.permissions === "string") {
-        try {
-          obj.permissions = JSON.parse(obj.permissions);
-        } catch {
-          obj.permissions = [];
-        }
-      }
-      const cloned = JSON.parse(JSON.stringify(obj));
-      if (!Array.isArray(cloned.permissions)) {
-        cloned.permissions = [];
-      }
-      return cloned;
-    }
-    return initialRole;
-  }
 
   function updatePermissionsState(updater) {
     setUpdateRole((prev) => {
@@ -174,13 +195,18 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
     }
   }
 
+  // Extract header title logic from nested ternary to a clear statement
+  const title = (() => {
+    if (viewOnly) return "Role Details";
+    if (data) return "Update Role";
+    return "Add Role";
+  })();
+
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[60%] max-h-[90vh] shadow-xl relative flex flex-col">
-        <h2 className="text-xl font-bold mb-6 text-center shrink-0">
-          {viewOnly ? "Role Details" : data ? "Update Role" : "Add Role"}
-        </h2>
+        <h2 className="text-xl font-bold mb-6 text-center shrink-0">{title}</h2>
         <form className="flex flex-col flex-1 max-h-[50vh] gap-5 px-1">
           <div className="col-span-2 shrink-0">
             <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
@@ -189,11 +215,12 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
-                <label className="block text-gray-600 mb-1 text-sm font-medium">
+                <label htmlFor="role-name" className="block text-gray-600 mb-1 text-sm font-medium">
                   Name
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="role-name"
                   type="text"
                   name="name"
                   value={role.name}
@@ -205,10 +232,11 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="block text-gray-600 mb-1 text-sm font-medium">
+                <label htmlFor="role-description" className="block text-gray-600 mb-1 text-sm font-medium">
                   Description
                 </label>
                 <input
+                  id="role-description"
                   type="text"
                   name="description"
                   value={role.description}
@@ -245,7 +273,7 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     {permissionTable.map((row) => (
                       <tr
                         key={row.label}
-                        className="border-t border-gray-100 hover:bg-[#f1f5f9] !transform-none !transition-none"
+                        className="border-t border-gray-100 hover:bg-[#f1f5f9] transition-none!"
                       >
                         <td className="text-left">{row.label}</td>
                         <td>
@@ -341,6 +369,14 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       </div>
     </div>
   );
+};
+
+PermissionModal.propTypes = {
+  open: PropTypes.bool,
+  onClose: PropTypes.func,
+  onSave: PropTypes.func,
+  data: PropTypes.object,
+  viewOnly: PropTypes.bool,
 };
 
 export default PermissionModal;

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { Listbox } from "@headlessui/react";
-import { HiSelector } from "react-icons/hi";
 import {
+  HiSelector,
   HiXCircle,
   HiOutlineDocumentText,
   HiOutlineOfficeBuilding,
@@ -283,17 +284,17 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   disabled={viewOnly}
                 >
                   <div className="relative">
-                    <Listbox.Button
+                    <ListboxButton
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.address.province && !data && (touched.province || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     >
                       <span>{supplier.address.province}</span>
                       {!viewOnly && (
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    </ListboxButton>
+                    <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {locations.map((province) => (
-                        <Listbox.Option
+                        <ListboxOption
                           key={province.name}
                           value={province.name}
                           className={({ selected }) =>
@@ -301,9 +302,9 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                           }
                         >
                           {province.name}
-                        </Listbox.Option>
+                        </ListboxOption>
                       ))}
-                    </Listbox.Options>
+                    </ListboxOptions>
                   </div>
                 </Listbox>
               </div>
@@ -318,19 +319,19 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   disabled={viewOnly || !supplier.address.province}
                 >
                   <div className="relative">
-                    <Listbox.Button
+                    <ListboxButton
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.address.district && !data && (touched.district || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     >
                       <span>{supplier.address.district}</span>
                       {!viewOnly && (
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    </ListboxButton>
+                    <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {locations
                         .find((p) => p.name === supplier.address.province)
                         ?.districts.map((district) => (
-                          <Listbox.Option
+                          <ListboxOption
                             key={district.name}
                             value={district.name}
                             className={({ selected }) =>
@@ -338,9 +339,9 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                             }
                           >
                             {district.name}
-                          </Listbox.Option>
+                          </ListboxOption>
                         ))}
-                    </Listbox.Options>
+                    </ListboxOptions>
                   </div>
                 </Listbox>
               </div>
@@ -355,22 +356,22 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   disabled={viewOnly || !supplier.address.district}
                 >
                   <div className="relative">
-                    <Listbox.Button
+                    <ListboxButton
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.address.commune && !data && (touched.commune || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     >
                       <span>{supplier.address.commune}</span>
                       {!viewOnly && (
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    </ListboxButton>
+                    <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {locations
                         .find((p) => p.name === supplier.address.province)
                         ?.districts.find(
                           (d) => d.name === supplier.address.district,
                         )
                         ?.communes.map((commune) => (
-                          <Listbox.Option
+                          <ListboxOption
                             key={commune.name}
                             value={commune.name}
                             className={({ selected }) =>
@@ -378,9 +379,9 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                             }
                           >
                             {commune.name}
-                          </Listbox.Option>
+                          </ListboxOption>
                         ))}
-                    </Listbox.Options>
+                    </ListboxOptions>
                   </div>
                 </Listbox>
               </div>
@@ -395,15 +396,15 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   disabled={viewOnly || !supplier.address.commune}
                 >
                   <div className="relative">
-                    <Listbox.Button
+                    <ListboxButton
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.address.village && !data && (touched.village || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     >
                       <span>{supplier.address.village}</span>
                       {!viewOnly && (
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    </ListboxButton>
+                    <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {locations
                         .find((p) => p.name === supplier.address.province)
                         ?.districts.find(
@@ -413,7 +414,7 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                           (c) => c.name === supplier.address.commune,
                         )
                         ?.villages.map((village) => (
-                          <Listbox.Option
+                          <ListboxOption
                             key={village}
                             value={village}
                             className={({ selected }) =>
@@ -421,9 +422,9 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                             }
                           >
                             {village}
-                          </Listbox.Option>
+                          </ListboxOption>
                         ))}
-                    </Listbox.Options>
+                    </ListboxOptions>
                   </div>
                 </Listbox>
               </div>
@@ -497,7 +498,7 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   disabled={viewOnly}
                 >
                   <div className="relative">
-                    <Listbox.Button
+                    <ListboxButton
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.payment_term && !data && (touched.payment_term || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                       disabled={viewOnly}
                     >
@@ -509,15 +510,15 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       {!viewOnly && (
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    </ListboxButton>
+                    <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {paymentTerms.length === 0 && (
                         <div className="px-4 py-2 text-gray-400">
                           No payment terms
                         </div>
                       )}
                       {paymentTerms.map((pt) => (
-                        <Listbox.Option
+                        <ListboxOption
                           key={pt._id}
                           value={pt}
                           className={({ selected }) =>
@@ -525,9 +526,9 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                           }
                         >
                           {pt.name}
-                        </Listbox.Option>
+                        </ListboxOption>
                       ))}
-                    </Listbox.Options>
+                    </ListboxOptions>
                   </div>
                 </Listbox>
               </div>
@@ -552,7 +553,7 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   disabled={viewOnly}
                 >
                   <div className="relative">
-                    <Listbox.Button
+                    <ListboxButton
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.status && !data && (touched.status || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                       disabled={viewOnly}
                     >
@@ -563,15 +564,15 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       {!viewOnly && (
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    </ListboxButton>
+                    <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {statuses.length === 0 && (
                         <div className="px-4 py-2 text-gray-400">
                           No statuses
                         </div>
                       )}
                       {statuses.map((st) => (
-                        <Listbox.Option
+                        <ListboxOption
                           key={st._id}
                           value={st}
                           className={({ selected }) =>
@@ -579,9 +580,9 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                           }
                         >
                           {st.name}
-                        </Listbox.Option>
+                        </ListboxOption>
                       ))}
-                    </Listbox.Options>
+                    </ListboxOptions>
                   </div>
                 </Listbox>
               </div>
@@ -622,6 +623,14 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       </div>
     </div>
   );
+};
+
+SupplierModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  data: PropTypes.object,
+  viewOnly: PropTypes.bool,
 };
 
 export default SupplierModal;

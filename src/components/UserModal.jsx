@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { Listbox } from "@headlessui/react";
-import { HiSelector } from "react-icons/hi";
 import { getPermissions, uploadFile } from "../api/index";
 import {
   HiXCircle,
@@ -13,6 +13,7 @@ import {
   HiEyeOff,
   HiOutlineBriefcase,
   HiOutlineIdentification,
+  HiSelector,
 } from "react-icons/hi";
 import { locations } from "../data/locations";
 
@@ -55,13 +56,12 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
     return data || initial;
   }, [data]);
   const [user, setUser] = useState(() => computedInitialUser);
-  const [selectedImage, setSelectedImage] = useState(null);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
   const [roles, setRoles] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
 
-  const isPartner = user.agree_terms == true;
+  const isPartner = Boolean(user.agree_terms);
 
   // Fetch roles when modal opens
   useEffect(() => {
@@ -78,19 +78,9 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
     }
   }, [open]);
 
-  // Update local state when data changes (e.g. when opening "View" for a different user)
-  useEffect(() => {
-    if (data && !data._id) {
-      setUser({ ...initial, ...data });
-    } else {
-      setUser(data || initial);
-    }
-  }, [data]);
-
   async function handleImageChange(e) {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files?.[0]) {
       const file = e.target.files[0];
-      setSelectedImage(file);
       try {
         const res = await uploadFile(file);
         const url = res.data?.url || res.data?.file?.url;
@@ -102,21 +92,6 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       }
     }
   }
-
-  const handleFileUpload = async (e, field) => {
-    const file = e.target.files[0];
-    if (file) {
-      try {
-        const res = await uploadFile(file);
-        const url = res.data?.url || res.data?.file?.url;
-        if (url) {
-          setUser((prev) => ({ ...prev, [field]: url }));
-        }
-      } catch (error) {
-        console.error("File upload failed", error);
-      }
-    }
-  };
 
   const handleProvinceChange = (provinceName) => {
     setUser((prev) => ({
@@ -207,11 +182,12 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label htmlFor="first_name" className="text-sm font-medium text-gray-700 block mb-1">
                   First Name
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="first_name"
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.first_name && (touched.first_name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   value={user.first_name}
                   onChange={(e) =>
@@ -225,10 +201,11 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label htmlFor="last_name" className="text-sm font-medium text-gray-700 block mb-1">
                   Last Name {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="last_name"
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.last_name && (touched.last_name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   value={user.last_name}
                   onChange={(e) =>
@@ -242,10 +219,11 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label htmlFor="email" className="text-sm font-medium text-gray-700 block mb-1">
                   Email {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="email"
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.email && (touched.email || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   type="email"
                   value={user.email}
@@ -259,24 +237,25 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               </div>
               {!data && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
-                    Password
-                    {!viewOnly && <sup className="text-red-500">*</sup>}
+                  <label htmlFor="password" className="text-sm font-medium text-gray-700 block mb-1">
+                      Password
+                      {!viewOnly && <sup className="text-red-500">*</sup>}
                   </label>
                   <div className="relative">
                     <input
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.password && !data && (touched.password || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
-                      type={showPassword ? "text" : "password"}
-                      value={user.password || ""}
-                      onChange={(e) =>
-                        setUser({ ...user, password: e.target.value })
-                      }
-                      onBlur={() =>
-                        setTouched((prev) => ({ ...prev, password: true }))
-                      }
-                      required
-                      minLength={8}
-                      disabled={viewOnly}
+                        id="password"
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.password && !data && (touched.password || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
+                        type={showPassword ? "text" : "password"}
+                        value={user.password || ""}
+                        onChange={(e) =>
+                          setUser({ ...user, password: e.target.value })
+                        }
+                        onBlur={() =>
+                          setTouched((prev) => ({ ...prev, password: true }))
+                        }
+                        required
+                        minLength={8}
+                        disabled={viewOnly}
                     />
                     <button
                       type="button"
@@ -303,7 +282,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label htmlFor="role" className="text-sm font-medium text-gray-700 block mb-1">
                   Role {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <Listbox
@@ -318,7 +297,8 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   disabled={viewOnly}
                 >
                   <div className="relative">
-                    <Listbox.Button
+                    <ListboxButton
+                      id="role"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span>
@@ -328,10 +308,10 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       {!viewOnly && (
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    </ListboxButton>
+                    <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {roles.map((role) => (
-                        <Listbox.Option
+                        <ListboxOption
                           key={role._id || role.id}
                           value={role}
                           className={({ selected }) =>
@@ -339,17 +319,18 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                           }
                         >
                           {role.name}
-                        </Listbox.Option>
+                        </ListboxOption>
                       ))}
-                    </Listbox.Options>
+                    </ListboxOptions>
                   </div>
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label htmlFor="phone" className="text-sm font-medium text-gray-700 block mb-1">
                   Phone {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="phone"
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.phone && (touched.phone || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   value={user.phone}
                   onChange={(e) => setUser({ ...user, phone: e.target.value })}
@@ -360,7 +341,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label htmlFor="status" className="text-sm font-medium text-gray-700 block mb-1">
                   Status {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <Listbox
@@ -369,17 +350,18 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   disabled={viewOnly}
                 >
                   <div className="relative">
-                    <Listbox.Button
+                    <ListboxButton
+                      id="status"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span className="capitalize">{user.status}</span>
                       {!viewOnly && (
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    </ListboxButton>
+                    <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {["active", "inactive", "pending"].map((status) => (
-                        <Listbox.Option
+                        <ListboxOption
                           key={status}
                           value={status}
                           className={({ selected }) =>
@@ -387,9 +369,9 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                           }
                         >
                           {status}
-                        </Listbox.Option>
+                        </ListboxOption>
                       ))}
-                    </Listbox.Options>
+                    </ListboxOptions>
                   </div>
                 </Listbox>
               </div>
@@ -404,7 +386,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label htmlFor="province" className="text-sm font-medium text-gray-700 block mb-1">
                   City/Province
                 </label>
                 <Listbox
@@ -413,17 +395,18 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   disabled={viewOnly}
                 >
                   <div className="relative">
-                    <Listbox.Button
+                    <ListboxButton
+                      id="province"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span>{user.address.province}</span>
                       {!viewOnly && (
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    </ListboxButton>
+                    <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {locations.map((province) => (
-                        <Listbox.Option
+                        <ListboxOption
                           key={province.name}
                           value={province.name}
                           className={({ selected }) =>
@@ -431,14 +414,14 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                           }
                         >
                           {province.name}
-                        </Listbox.Option>
+                        </ListboxOption>
                       ))}
-                    </Listbox.Options>
+                    </ListboxOptions>
                   </div>
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label htmlFor="district" className="text-sm font-medium text-gray-700 block mb-1">
                   District
                 </label>
                 <Listbox
@@ -447,19 +430,20 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   disabled={viewOnly || !user.address.province}
                 >
                   <div className="relative">
-                    <Listbox.Button
+                    <ListboxButton
+                      id="district"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span>{user.address.district}</span>
                       {!viewOnly && (
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    </ListboxButton>
+                    <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {locations
                         .find((p) => p.name === user.address.province)
                         ?.districts.map((district) => (
-                          <Listbox.Option
+                          <ListboxOption
                             key={district.name}
                             value={district.name}
                             className={({ selected }) =>
@@ -467,14 +451,14 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                             }
                           >
                             {district.name}
-                          </Listbox.Option>
+                          </ListboxOption>
                         ))}
-                    </Listbox.Options>
+                    </ListboxOptions>
                   </div>
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label htmlFor="commune" className="text-sm font-medium text-gray-700 block mb-1">
                   Commune
                 </label>
                 <Listbox
@@ -483,22 +467,23 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   disabled={viewOnly || !user.address.district}
                 >
                   <div className="relative">
-                    <Listbox.Button
+                    <ListboxButton
+                      id="commune"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span>{user.address.commune}</span>
                       {!viewOnly && (
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    </ListboxButton>
+                    <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {locations
                         .find((p) => p.name === user.address.province)
                         ?.districts.find(
                           (d) => d.name === user.address.district,
                         )
                         ?.communes.map((commune) => (
-                          <Listbox.Option
+                          <ListboxOption
                             key={commune.name}
                             value={commune.name}
                             className={({ selected }) =>
@@ -506,14 +491,14 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                             }
                           >
                             {commune.name}
-                          </Listbox.Option>
+                          </ListboxOption>
                         ))}
-                    </Listbox.Options>
+                    </ListboxOptions>
                   </div>
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label htmlFor="village" className="text-sm font-medium text-gray-700 block mb-1">
                   Village
                 </label>
                 <Listbox
@@ -522,15 +507,16 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   disabled={viewOnly || !user.address.commune}
                 >
                   <div className="relative">
-                    <Listbox.Button
+                    <ListboxButton
+                      id="village"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span>{user.address.village}</span>
                       {!viewOnly && (
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    </ListboxButton>
+                    <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {locations
                         .find((p) => p.name === user.address.province)
                         ?.districts.find(
@@ -538,7 +524,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                         )
                         ?.communes.find((c) => c.name === user.address.commune)
                         ?.villages.map((village) => (
-                          <Listbox.Option
+                          <ListboxOption
                             key={village}
                             value={village}
                             className={({ selected }) =>
@@ -546,17 +532,18 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                             }
                           >
                             {village}
-                          </Listbox.Option>
+                          </ListboxOption>
                         ))}
-                    </Listbox.Options>
+                    </ListboxOptions>
                   </div>
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label htmlFor="house" className="text-sm font-medium text-gray-700 block mb-1">
                   House
                 </label>
                 <input
+                  id="house"
                   type="text"
                   className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800"
                   value={user.address.house}
@@ -570,11 +557,12 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label htmlFor="street" className="text-sm font-medium text-gray-700 block mb-1">
                   Street
                 </label>
                 <input
                   className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800"
+                  id="street"
                   value={user.address.street}
                   onChange={(e) =>
                     setUser({
@@ -597,10 +585,11 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               </h3>
               <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
-                    Customer Type
-                  </label>
-                  <input
+                <label htmlFor="customer_type" className="text-sm font-medium text-gray-700 block mb-1">
+                  Customer Type
+                </label>
+                <input
+                    id="customer_type"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.customer_type || ""}
                     readOnly
@@ -608,10 +597,11 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                  <label htmlFor="company_name" className="text-sm font-medium text-gray-700 block mb-1">
                     Company Name
                   </label>
                   <input
+                    id="company_name"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.company_name || ""}
                     readOnly
@@ -619,10 +609,11 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                  <label htmlFor="company_registration_no" className="text-sm font-medium text-gray-700 block mb-1">
                     Reg No.
                   </label>
                   <input
+                    id="company_registration_no"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.company_registration_no || ""}
                     readOnly
@@ -630,10 +621,11 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                  <label htmlFor="request_purpose" className="text-sm font-medium text-gray-700 block mb-1">
                     Request Purpose
                   </label>
                   <input
+                    id="request_purpose"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.request_purpose || ""}
                     readOnly
@@ -641,10 +633,11 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                  <label htmlFor="expected_order_volume" className="text-sm font-medium text-gray-700 block mb-1">
                     Expected Volume
                   </label>
                   <input
+                    id="expected_order_volume"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.expected_order_volume || ""}
                     readOnly
@@ -652,10 +645,11 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                  <label htmlFor="order_frequency" className="text-sm font-medium text-gray-700 block mb-1">
                     Order Frequency
                   </label>
                   <input
+                    id="order_frequency"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.order_frequency || ""}
                     readOnly
@@ -663,9 +657,9 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                  <div className="text-sm font-medium text-gray-700 block mb-1"> 
                     Product Categories
-                  </label>
+                  </div>
                   <div className="w-full flex flex-wrap">
                     {Array.isArray(user.product_categories) &&
                     user.product_categories.length > 0 ? (
@@ -681,9 +675,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
-                  Customer Note
-                </label>
+                <div className="text-sm font-medium text-gray-700 block mb-1">Customer Note</div>
                 <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-200">
                   {user.note_from_customer || "-"}
                 </p>
@@ -731,7 +723,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     />
                   </div>
                 ) : (
-                  <label className="cursor-pointer block relative group h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-lg p-6 hover:bg-gray-50 transition w-full">
+                  <label className="cursor-pointer relative group h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-lg p-6 hover:bg-gray-50 transition w-full">
                     {user.profile ? (
                       <div className="relative w-40 h-40">
                         <img
@@ -749,8 +741,8 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       <div className="flex flex-col items-center">
                         <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
                         <span className="text-gray-600">
-                          Drag and drop your image here, or
-                          <span className="text-blue-600 underline ml-1">
+                          Drag and drop your image here, or{" "}
+                          <span className="text-blue-600 underline">
                             browse files
                           </span>
                         </span>
@@ -816,6 +808,14 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       </div>
     </div>
   );
+};
+
+UserModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  data: PropTypes.object,
+  viewOnly: PropTypes.bool,
 };
 
 export default UserModal;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { getProducts, getUsers } from "../api";
 import {
   HiXCircle,
@@ -8,25 +9,30 @@ import {
   HiOutlineTrash,
   HiOutlinePlus,
 } from "react-icons/hi";
-import { Listbox } from "@headlessui/react";
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
+} from "@headlessui/react";
 import { useDialog } from "../contexts/dialog/useDialog";
+
+// Generate unique IDs for items
+const generateId = () =>
+  `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 
 const defaultSale = {
   customer: "",
-  items: [{ product: "", quantity: 1, price: 0, discount: 0 }],
+  items: [
+    { id: generateId(), product: "", quantity: 1, price: 0, discount: 0 },
+  ],
   payment_method: "Cash",
   notes: "",
 };
 
 const paymentMethods = ["Cash", "Card", "Bank Transfer", "Other"];
 
-export default function SaleModal({
-  open,
-  onClose,
-  onSave,
-  data,
-  viewOnly = false,
-}) {
+const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   const [sale, setSale] = useState(defaultSale);
   const [products, setProducts] = useState([]);
   const [users, setUsers] = useState([]);
@@ -48,6 +54,7 @@ export default function SaleModal({
             data.items && data.items.length > 0
               ? data.items.map((item) => ({
                   ...item,
+                  id: item.id || generateId(),
                   product:
                     typeof item.product === "object"
                       ? item.product._id
@@ -55,6 +62,7 @@ export default function SaleModal({
                 }))
               : [
                   {
+                    id: generateId(),
                     product: data.product?._id || data.product_id || "",
                     quantity: data.quantity || 1,
                     price: data.price || 0,
@@ -83,7 +91,7 @@ export default function SaleModal({
       ...prev,
       items: [
         ...prev.items,
-        { product: "", quantity: 1, price: 0, discount: 0 },
+        { id: generateId(), product: "", quantity: 1, price: 0, discount: 0 },
       ],
     }));
   };
@@ -104,7 +112,7 @@ export default function SaleModal({
 
   const calcTotal = () => {
     return sale.items
-      .reduce((sum, item) => sum + parseFloat(calcLineTotal(item)), 0)
+      .reduce((sum, item) => sum + Number.parseFloat(calcLineTotal(item)), 0)
       .toFixed(2);
   };
 
@@ -153,12 +161,18 @@ export default function SaleModal({
 
   if (!open) return null;
 
+  // Determine modal title based on mode
+  let modalTitle = "New Sale";
+  if (viewOnly) {
+    modalTitle = "Sale Details";
+  } else if (sale._id) {
+    modalTitle = "Update Sale";
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[70%] max-h-[80vh] shadow-xl relative">
-        <h2 className="text-xl font-bold mb-6 text-center">
-          {viewOnly ? "Sale Details" : sale._id ? "Update Sale" : "New Sale"}
-        </h2>
+        <h2 className="text-xl font-bold mb-6 text-center">{modalTitle}</h2>
         <form className="space-y-5 overflow-auto max-h-[60vh] px-1">
           <div className="col-span-2 mb-2">
             <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
@@ -180,7 +194,7 @@ export default function SaleModal({
                   disabled={viewOnly}
                 >
                   <div className="relative">
-                    <Listbox.Button
+                    <ListboxButton
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-100 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span className={sale.customer ? "" : "text-gray-400"}>
@@ -198,10 +212,10 @@ export default function SaleModal({
                       {!viewOnly && (
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    </ListboxButton>
+                    <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {users.map((u) => (
-                        <Listbox.Option
+                        <ListboxOption
                           key={u._id}
                           value={u._id}
                           className={({ selected }) =>
@@ -209,9 +223,9 @@ export default function SaleModal({
                           }
                         >
                           {u.first_name} {u.last_name} ({u.email})
-                        </Listbox.Option>
+                        </ListboxOption>
                       ))}
-                    </Listbox.Options>
+                    </ListboxOptions>
                   </div>
                 </Listbox>
               </div>
@@ -224,7 +238,7 @@ export default function SaleModal({
             </h3>
             {sale.items.map((item, idx) => {
               return (
-                <div key={idx} className="w-full flex items-center">
+                <div key={item.id} className="w-full flex items-center">
                   <div className="w-full mb-3 grid lg:grid-cols-5 md:grid-cols-2 grid-cols-1 gap-3">
                     <div>
                       <label className="text-sm font-medium text-gray-700">
@@ -240,7 +254,7 @@ export default function SaleModal({
                         disabled={viewOnly}
                       >
                         <div className="relative">
-                          <Listbox.Button
+                          <ListboxButton
                             className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-100 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                           >
                             <span
@@ -258,8 +272,8 @@ export default function SaleModal({
                             {!viewOnly && (
                               <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                             )}
-                          </Listbox.Button>
-                          <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                          </ListboxButton>
+                          <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                             {products.map((p) => {
                               const isSelected = sale.items.some(
                                 (saleItem, saleIdx) =>
@@ -268,7 +282,7 @@ export default function SaleModal({
                               const isDisabled = p.stock <= 0 || isSelected;
 
                               return (
-                                <Listbox.Option
+                                <ListboxOption
                                   key={p._id}
                                   value={p._id}
                                   className={({ selected }) =>
@@ -280,10 +294,10 @@ export default function SaleModal({
                                   {p.stock - (p.reserved_stock || 0)})
                                   {isSelected ? " - Already added" : ""}
                                   {p.stock <= 0 ? " - Out of stock" : ""}
-                                </Listbox.Option>
+                                </ListboxOption>
                               );
                             })}
-                          </Listbox.Options>
+                          </ListboxOptions>
                         </div>
                       </Listbox>
                     </div>
@@ -331,10 +345,14 @@ export default function SaleModal({
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor={`discount-${item.id}`}
+                        className="text-sm font-medium text-gray-700"
+                      >
                         Discount (%)
                       </label>
                       <input
+                        id={`discount-${item.id}`}
                         type={viewOnly ? "text" : "number"}
                         min="0"
                         max="100"
@@ -347,10 +365,14 @@ export default function SaleModal({
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor={`line-total-${item.id}`}
+                        className="text-sm font-medium text-gray-700"
+                      >
                         Line Total
                       </label>
                       <input
+                        id={`line-total-${item.id}`}
                         className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                         value={calcLineTotal(item)}
                         disabled
@@ -405,17 +427,17 @@ export default function SaleModal({
                   disabled={viewOnly}
                 >
                   <div className="relative">
-                    <Listbox.Button
+                    <ListboxButton
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-100 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span>{sale.payment_method}</span>
                       {!viewOnly && (
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    </ListboxButton>
+                    <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {paymentMethods.map((method) => (
-                        <Listbox.Option
+                        <ListboxOption
                           key={method}
                           value={method}
                           className={({ selected }) =>
@@ -423,17 +445,21 @@ export default function SaleModal({
                           }
                         >
                           {method}
-                        </Listbox.Option>
+                        </ListboxOption>
                       ))}
-                    </Listbox.Options>
+                    </ListboxOptions>
                   </div>
                 </Listbox>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="total-amount"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Total Amount
                 </label>
                 <input
+                  id="total-amount"
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                   value={calcTotal()}
                   disabled
@@ -442,10 +468,14 @@ export default function SaleModal({
             </div>
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="sale-notes"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Notes (Optional)
             </label>
             <textarea
+              id="sale-notes"
               className="w-full border border-gray-100 rounded-lg px-3 py-2 bg-gray-50 text-gray-800"
               rows={3}
               value={sale.notes}
@@ -480,4 +510,14 @@ export default function SaleModal({
       </div>
     </div>
   );
-}
+};
+
+SaleModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  data: PropTypes.object,
+  viewOnly: PropTypes.bool,
+};
+
+export default SaleModal;

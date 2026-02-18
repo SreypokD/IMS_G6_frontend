@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
-import { Listbox } from "@headlessui/react";
+import PropTypes from "prop-types";
+import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from "@headlessui/react";
 import {
   MdChevronLeft,
   MdChevronRight,
@@ -37,7 +38,7 @@ export default function Pagination({
 
   const handleGoTo = (p) => {
     if (p < 1 || p > last || p === page) return;
-    onChange && onChange({ page: p, limit });
+    onChange?.({ page: p, limit });
     scrollToTop();
   };
 
@@ -67,10 +68,10 @@ export default function Pagination({
           className={`${page === 1 ? "text-gray-200" : "text-gray-500"}`}
         />
       </button>
-      {pageList.map((i, idx) =>
+      {pageList.map((i) =>
         i === -1 ? (
           <button
-            key={idx}
+            key={`ellipsis-${i}`}
             type="button"
             className={`ellipsis w-9 h-9 bg-transparent border-none text-gray-200 cursor-default text-lg`}
             disabled
@@ -79,7 +80,7 @@ export default function Pagination({
           </button>
         ) : (
           <button
-            key={idx}
+            key={`page-${i}`}
             type="button"
             className={`w-9 h-9 rounded-lg border flex items-center justify-center ${i === page ? "bg-[#1e3a5f] border-[#1e3a5f] text-white" : "bg-white border-gray-200"} ${i === page ? "pointer-events-none" : "cursor-pointer"}`}
             disabled={i === page}
@@ -117,18 +118,18 @@ export default function Pagination({
       <Listbox
         value={limit}
         onChange={(val) => {
-          onChange && onChange({ page: 1, limit: val });
+          onChange?.({ page: 1, limit: val });
           scrollToTop();
         }}
       >
         <div className="relative w-20">
-          <Listbox.Button className="cursor-pointer w-full bg-white border border-gray-200 rounded-lg h-9 px-2 text-left text-black flex items-center justify-between">
+          <ListboxButton className="cursor-pointer w-full bg-white border border-gray-200 rounded-lg h-9 px-2 text-left text-black flex items-center justify-between">
             <span>{limit}</span>
             <HiOutlineSelector className="w-5 h-5 text-gray-400 ml-2" />
-          </Listbox.Button>
-          <Listbox.Options className="absolute z-10 bottom-full mb-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-65 overflow-auto focus:outline-none">
+          </ListboxButton>
+          <ListboxOptions className="absolute z-10 bottom-full mb-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-65 overflow-auto focus:outline-none">
             {pageOptions.map((opt) => (
-              <Listbox.Option
+              <ListboxOption
                 key={opt}
                 value={opt}
                 className={({ selected }) =>
@@ -136,11 +137,19 @@ export default function Pagination({
                 }
               >
                 {opt}
-              </Listbox.Option>
+              </ListboxOption>
             ))}
-          </Listbox.Options>
+          </ListboxOptions>
         </div>
       </Listbox>
     </div>
   );
 }
+
+Pagination.propTypes = {
+  total: PropTypes.number,
+  page: PropTypes.number,
+  limit: PropTypes.number,
+  onChange: PropTypes.func,
+  pageOptions: PropTypes.arrayOf(PropTypes.number),
+};

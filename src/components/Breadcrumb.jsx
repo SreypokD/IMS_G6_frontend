@@ -59,7 +59,7 @@ const Breadcrumb = () => {
             let path = "/" + segments.slice(0, i + 1).join("/");
             const isLast = i === segments.length - 1;
             return (
-              <React.Fragment key={i}>
+              <React.Fragment key={path}>
                 {i !== 0 && (
                   <HiChevronRight className="text-xl text-[#1e3a5f]" />
                 )}

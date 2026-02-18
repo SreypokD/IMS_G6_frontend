@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import {
   HiSelector,
   HiOutlinePlus,
@@ -36,13 +37,13 @@ function StatusDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>{value || "All Statuses"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {statusOptions.map((option) => (
-            <Listbox.Option
+            <ListboxOption
               key={option.value}
               value={option.value}
               className={({ selected }) =>
@@ -50,13 +51,22 @@ function StatusDropdown({ value, onChange }) {
               }
             >
               {option.label}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
+
+StatusDropdown.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
 
 const OrderRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -94,22 +104,12 @@ const OrderRequests = () => {
   const [status, setStatus] = useState("");
 
   // Permissions
-  const canView = user?.permission?.permissions?.includes("view_order_request");
-  const canCreate = user?.permission?.permissions?.includes(
-    "create_order_request",
-  );
-  const canUpdate = user?.permission?.permissions?.includes(
-    "update_order_request",
-  );
-  const canDelete = user?.permission?.permissions?.includes(
-    "delete_order_request",
-  );
-  const canViewApprove = user?.permission?.permissions?.includes(
-    "view_approve_request",
-  );
-  const canUpdateApprove = user?.permission?.permissions?.includes(
-    "update_approve_request",
-  );
+  const canView = getPermission(user, "view_order_request");
+  const canCreate = getPermission(user, "create_order_request");
+  const canUpdate = getPermission(user, "update_order_request");
+  const canDelete = getPermission(user, "delete_order_request");
+  const canViewApprove = getPermission(user, "view_approve_request");
+  const canUpdateApprove = getPermission(user, "update_approve_request");
 
   useEffect(() => {
     if (user) {
@@ -213,7 +213,6 @@ const OrderRequests = () => {
         });
         const allIds = res.data.data.map((r) => r._id);
         setSelectedIds(allIds);
-        setSelectAllMatches(true);
       } catch (err) {
         console.error(err);
       } finally {
@@ -221,7 +220,6 @@ const OrderRequests = () => {
       }
     } else {
       setSelectedIds([]);
-      setSelectAllMatches(false);
     }
   }
 
@@ -257,7 +255,6 @@ const OrderRequests = () => {
         status,
       );
       setSelectedIds([]);
-      setSelectAllMatches(false);
       fetchBadge();
     } catch (err) {
       console.error(err);
@@ -294,7 +291,6 @@ const OrderRequests = () => {
         status,
       );
       setSelectedIds([]);
-      setSelectAllMatches(false);
       fetchBadge();
     } catch {
       dialog.error("Failed to delete order requests.");
@@ -340,14 +336,14 @@ const OrderRequests = () => {
           )}
           {(canUpdate || canDelete) && (
             <Menu as="div" className="relative inline-block text-left ml-2">
-              <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+              <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                 <HiDotsVertical className="text-xl" />
-              </Menu.Button>
-              <Menu.Items
+              </MenuButton>
+              <MenuItems
                 anchor="bottom end"
                 className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
               >
-                <Menu.Item>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkActive(true)}
@@ -360,8 +356,8 @@ const OrderRequests = () => {
                       Active Requests
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkActive(false)}
@@ -374,8 +370,8 @@ const OrderRequests = () => {
                       Archive Requests
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={handleBulkDelete}
@@ -388,8 +384,8 @@ const OrderRequests = () => {
                       Delete Requests
                     </button>
                   )}
-                </Menu.Item>
-              </Menu.Items>
+                </MenuItem>
+              </MenuItems>
             </Menu>
           )}
         </div>
@@ -550,7 +546,7 @@ const OrderRequests = () => {
                       <td>{formatDate(request.delivery_date) || "-"}</td>
                       <td>
                         <span
-                          className={`inline-block w-[90px] text-center py-1.5 rounded-full text-sm text-white ${request.status === "pending" ? "bg-yellow-400" : request.status === "approved" ? "bg-green-400" : request.status === "rejected" ? "bg-red-400" : request.status === "completed" ? "bg-blue-400" : request.status === "cancelled" ? "bg-red-400" : request.status === "on_hold" ? "bg-orange-400" : "bg-gray-400"}`}
+                          className={`inline-block w-22.5 text-center py-1.5 rounded-full text-sm text-white ${request.status === "pending" ? "bg-yellow-400" : request.status === "approved" ? "bg-green-400" : request.status === "rejected" ? "bg-red-400" : request.status === "completed" ? "bg-blue-400" : request.status === "cancelled" ? "bg-red-400" : request.status === "on_hold" ? "bg-orange-400" : "bg-gray-400"}`}
                         >
                           {request.status.charAt(0).toUpperCase() +
                             request.status.slice(1)}
@@ -577,7 +573,7 @@ const OrderRequests = () => {
                             as="div"
                             className="relative inline-block text-left"
                           >
-                            <Menu.Button
+                            <MenuButton
                               className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200 disabled:opacity-50"
                               disabled={
                                 String(request.requester_id) !==
@@ -586,12 +582,12 @@ const OrderRequests = () => {
                               }
                             >
                               <HiDotsVertical className="text-xl" />
-                            </Menu.Button>
-                            <Menu.Items
+                            </MenuButton>
+                            <MenuItems
                               anchor="bottom end"
                               className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
                             >
-                              <Menu.Item>
+                              <MenuItem>
                                 {() => (
                                   <button
                                     onClick={() => {
@@ -604,8 +600,8 @@ const OrderRequests = () => {
                                     Update
                                   </button>
                                 )}
-                              </Menu.Item>
-                              <Menu.Item>
+                              </MenuItem>
+                              <MenuItem>
                                 {() => (
                                   <button
                                     onClick={() =>
@@ -617,8 +613,8 @@ const OrderRequests = () => {
                                     Cancel
                                   </button>
                                 )}
-                              </Menu.Item>
-                            </Menu.Items>
+                              </MenuItem>
+                            </MenuItems>
                           </Menu>
                         </div>
                       </td>

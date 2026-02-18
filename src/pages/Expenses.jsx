@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import {
   getExpenses,
   deleteExpense,
@@ -54,13 +55,13 @@ function CategoryDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>{value || "All Categories"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {categories.map((cat) => (
-            <Listbox.Option
+            <ListboxOption
               key={cat}
               value={cat}
               className={({ selected }) =>
@@ -68,13 +69,22 @@ function CategoryDropdown({ value, onChange }) {
               }
             >
               {cat}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
+
+CategoryDropdown.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState([]);
@@ -105,10 +115,10 @@ const Expenses = () => {
   const { user } = useAuth();
 
   // Permissions
-  const canView = user?.permission?.permissions?.includes("view_expense");
-  const canCreate = user?.permission?.permissions?.includes("create_expense");
-  const canUpdate = user?.permission?.permissions?.includes("update_expense");
-  const canDelete = user?.permission?.permissions?.includes("delete_expense");
+  const canView = getPermission(user, "view_expense");
+  const canCreate = getPermission(user, "create_expense");
+  const canUpdate = getPermission(user, "update_expense");
+  const canDelete = getPermission(user, "delete_expense");
 
   // Filters
   const [category, setCategory] = useState("All Categories");
@@ -232,7 +242,6 @@ const Expenses = () => {
         const res = await getExpenses(params);
         const allIds = res.data.data.map((ex) => ex._id);
         setSelectedIds(allIds);
-        setSelectAllMatches(true);
       } catch (err) {
         console.error(err);
       } finally {
@@ -240,7 +249,6 @@ const Expenses = () => {
       }
     } else {
       setSelectedIds([]);
-      setSelectAllMatches(false);
     }
   }
 
@@ -260,7 +268,6 @@ const Expenses = () => {
       await dialog.success(`Expenses marked as ${status} successfully.`);
       fetchExpenses(pagination.page, pagination.limit);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to update expenses.");
     } finally {
@@ -285,7 +292,6 @@ const Expenses = () => {
       await dialog.success("Expenses deleted successfully.");
       fetchExpenses(pagination.page, pagination.limit);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to delete expenses.");
     } finally {
@@ -329,14 +335,14 @@ const Expenses = () => {
           )}
           {(canUpdate || canDelete) && (
             <Menu as="div" className="relative inline-block text-left ml-2">
-              <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+              <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                 <HiDotsVertical className="text-xl" />
-              </Menu.Button>
-              <Menu.Items
+              </MenuButton>
+              <MenuItems
                 anchor="bottom end"
                 className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
               >
-                <Menu.Item>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkStatus("active")}
@@ -349,8 +355,8 @@ const Expenses = () => {
                       Active Expenses
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkStatus("inactive")}
@@ -363,8 +369,8 @@ const Expenses = () => {
                       Archive Expenses
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={handleBulkDelete}
@@ -377,8 +383,8 @@ const Expenses = () => {
                       Delete Expenses
                     </button>
                   )}
-                </Menu.Item>
-              </Menu.Items>
+                </MenuItem>
+              </MenuItems>
             </Menu>
           )}
         </div>
@@ -539,15 +545,15 @@ const Expenses = () => {
                           as="div"
                           className="relative inline-block text-left"
                         >
-                          <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                          <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                             <HiDotsVertical className="text-xl" />
-                          </Menu.Button>
-                          <Menu.Items
+                          </MenuButton>
+                          <MenuItems
                             anchor="bottom end"
                             className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
                           >
                             {canUpdate && (
-                              <Menu.Item>
+                              <MenuItem>
                                 {() => (
                                   <button
                                     onClick={() => {
@@ -564,10 +570,10 @@ const Expenses = () => {
                                     Update
                                   </button>
                                 )}
-                              </Menu.Item>
+                              </MenuItem>
                             )}
                             {canDelete && (
-                              <Menu.Item>
+                              <MenuItem>
                                 {() => (
                                   <button
                                     onClick={() => handleDelete(expense._id)}
@@ -580,9 +586,9 @@ const Expenses = () => {
                                     Delete
                                   </button>
                                 )}
-                              </Menu.Item>
+                              </MenuItem>
                             )}
-                          </Menu.Items>
+                          </MenuItems>
                         </Menu>
                       )}
                     </td>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import {
   HiOutlineCheckCircle,
   HiOutlineFilter,
@@ -34,13 +35,13 @@ function ApprovalStatusDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>{value || "All Statuses"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {deliveryStatusOptions.map((option) => (
-            <Listbox.Option
+            <ListboxOption
               key={option.value}
               value={option.value}
               className={({ selected }) =>
@@ -48,25 +49,30 @@ function ApprovalStatusDropdown({ value, onChange }) {
               }
             >
               {option.label}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
 
+ApprovalStatusDropdown.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
 function DeliveryStatusDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>{value || "All Statuses"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {approvalStatusOptions.map((option) => (
-            <Listbox.Option
+            <ListboxOption
               key={option.value}
               value={option.value}
               className={({ selected }) =>
@@ -74,13 +80,22 @@ function DeliveryStatusDropdown({ value, onChange }) {
               }
             >
               {option.label}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
+
+DeliveryStatusDropdown.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
 
 const DeliveryConfirmation = () => {
   const [confirmDeliveries, setConfirmDeliveries] = useState([]);
@@ -116,12 +131,8 @@ const DeliveryConfirmation = () => {
   const [delivery_status, setDeliveryStatus] = useState("");
 
   // Permissions
-  const canViewOrder = user?.permission?.permissions?.includes(
-    "view_approve_request",
-  );
-  const canUpdate = user?.permission?.permissions?.includes(
-    "update_confirm_delivery",
-  );
+  const canViewOrder = getPermission(user, "view_approve_request");
+  const canUpdate = getPermission(user, "update_confirm_delivery");
 
   useEffect(() => {
     if (user) {
@@ -238,33 +249,6 @@ const DeliveryConfirmation = () => {
     } else {
       const pageIds = confirmDeliveries.map((o) => o._id);
       setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
-      setSelectAllMatches(false);
-    }
-  }
-
-  const [selectAllMatches, setSelectAllMatches] = useState(false);
-
-  async function handleSelectAllGlobal() {
-    setLoading(true);
-    try {
-      const params = {
-        limit: -1,
-        search,
-        startDate,
-        endDate,
-      };
-      if (approve_status) params["approve_request"] = approve_status;
-      if (delivery_status) params["confirm_delivery"] = delivery_status;
-
-      const res = await getConfirmDeliveries(params);
-      const allIds = res.data.data.map((o) => o._id);
-      setSelectedIds(allIds);
-      setSelectAllMatches(true);
-    } catch (err) {
-      console.error(err);
-      dialog.error("Failed to select all deliveries.");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -276,11 +260,9 @@ const DeliveryConfirmation = () => {
     }
   }
 
-  const [actionId, setActionId] = useState(null);
-
   async function handleBulkActive(isActive) {
     if (selectedIds.length === 0) return;
-    setActionId("bulk");
+    setLoading(true);
     try {
       const { updateConfirmDelivery } = await import("../api");
       await Promise.all(
@@ -301,12 +283,11 @@ const DeliveryConfirmation = () => {
         delivery_status,
       );
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch (err) {
       console.error(err);
       dialog.error("Failed to update deliveries.");
     } finally {
-      setActionId(null);
+      setLoading(false);
     }
   }
 
@@ -320,8 +301,7 @@ const DeliveryConfirmation = () => {
       cancelText: "Cancel",
     });
     if (!confirmed) return;
-
-    setActionId("bulk");
+    setLoading(true);
     try {
       const { deleteConfirmDelivery } = await import("../api");
       await Promise.all(selectedIds.map((id) => deleteConfirmDelivery(id)));
@@ -336,11 +316,10 @@ const DeliveryConfirmation = () => {
         delivery_status,
       );
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       dialog.error("Failed to delete deliveries.");
     } finally {
-      setActionId(null);
+      setLoading(false);
     }
   }
 
@@ -361,14 +340,14 @@ const DeliveryConfirmation = () => {
         </div>
         {canUpdate && (
           <Menu as="div" className="relative inline-block text-left ml-2">
-            <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+            <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
               <HiDotsVertical className="text-xl" />
-            </Menu.Button>
-            <Menu.Items
+            </MenuButton>
+            <MenuItems
               anchor="bottom end"
               className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
             >
-              <Menu.Item>
+              <MenuItem>
                 {() => (
                   <button
                     onClick={() => handleBulkActive(true)}
@@ -381,8 +360,8 @@ const DeliveryConfirmation = () => {
                     Active Requests
                   </button>
                 )}
-              </Menu.Item>
-              <Menu.Item>
+              </MenuItem>
+              <MenuItem>
                 {() => (
                   <button
                     onClick={() => handleBulkActive(false)}
@@ -395,8 +374,8 @@ const DeliveryConfirmation = () => {
                     Archive Requests
                   </button>
                 )}
-              </Menu.Item>
-              <Menu.Item>
+              </MenuItem>
+              <MenuItem>
                 {() => (
                   <button
                     onClick={handleBulkDelete}
@@ -409,8 +388,8 @@ const DeliveryConfirmation = () => {
                     Delete Requests
                   </button>
                 )}
-              </Menu.Item>
-            </Menu.Items>
+              </MenuItem>
+            </MenuItems>
           </Menu>
         )}
       </div>
@@ -585,7 +564,7 @@ const DeliveryConfirmation = () => {
                       </td>
                       <td>
                         <span
-                          className={`inline-block w-[90px] text-center py-1.5 rounded-full text-sm text-white ${approve?.status === "approved" ? "bg-green-400" : approve?.status === "rejected" ? "bg-red-400" : "bg-yellow-400"}`}
+                          className={`inline-block w-22.5 text-center py-1.5 rounded-full text-sm text-white ${approve?.status === "approved" ? "bg-green-400" : approve?.status === "rejected" ? "bg-red-400" : "bg-yellow-400"}`}
                         >
                           {approve?.status
                             ? approve.status.charAt(0).toUpperCase() +
@@ -595,7 +574,7 @@ const DeliveryConfirmation = () => {
                       </td>
                       <td>
                         <span
-                          className={`inline-block w-[90px] text-center py-1.5 rounded-full text-sm text-white ${delivery?.status === "delivered" ? "bg-green-400" : "bg-yellow-400"}`}
+                          className={`inline-block w-22.5 text-center py-1.5 rounded-full text-sm text-white ${delivery?.status === "delivered" ? "bg-green-400" : "bg-yellow-400"}`}
                         >
                           {delivery?.status === "delivered"
                             ? "Delivered"
@@ -618,14 +597,14 @@ const DeliveryConfirmation = () => {
                               as="div"
                               className="relative inline-block text-left"
                             >
-                              <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                              <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                                 <HiDotsVertical className="text-xl" />
-                              </Menu.Button>
-                              <Menu.Items
+                              </MenuButton>
+                              <MenuItems
                                 anchor="bottom end"
                                 className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
                               >
-                                <Menu.Item>
+                                <MenuItem>
                                   {() => (
                                     <button
                                       onClick={() =>
@@ -642,8 +621,8 @@ const DeliveryConfirmation = () => {
                                       Confirm
                                     </button>
                                   )}
-                                </Menu.Item>
-                              </Menu.Items>
+                                </MenuItem>
+                              </MenuItems>
                             </Menu>
                           )}
                       </td>

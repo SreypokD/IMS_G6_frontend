@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import {
   HiXCircle,
   HiOutlineDocumentText,
   HiOutlineCamera,
   HiOutlineUpload,
+  HiSelector,
 } from "react-icons/hi";
 import { uploadFile } from "../api";
 import { Listbox } from "@headlessui/react";
-import { HiSelector } from "react-icons/hi";
 import DatePicker from "../components/DatePicker";
 
 const initialExpense = {
@@ -147,7 +148,7 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     disabled={viewOnly}
                   >
                     <div className="relative">
-                      <Listbox.Button
+                      <ListboxButton
                         className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!expense.category && !data && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                         disabled={viewOnly}
                       >
@@ -155,15 +156,15 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                         {!viewOnly && (
                           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                         )}
-                      </Listbox.Button>
-                      <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                      </ListboxButton>
+                      <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                         {categories.length === 0 && (
                           <div className="px-4 py-2 text-gray-400">
                             No categories
                           </div>
                         )}
                         {categories.map((cat) => (
-                          <Listbox.Option
+                          <ListboxOption
                             key={cat._id}
                             value={cat}
                             className={({ selected }) =>
@@ -179,9 +180,9 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                                 </span>
                               </>
                             )}
-                          </Listbox.Option>
+                          </ListboxOption>
                         ))}
-                      </Listbox.Options>
+                      </ListboxOptions>
                     </div>
                   </Listbox>
                 </div>
@@ -275,6 +276,14 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       </div>
     </div>
   );
+};
+
+ExpenseModal.propTypes = {
+  open: PropTypes.bool,
+  onClose: PropTypes.func,
+  onSave: PropTypes.func,
+  data: PropTypes.object,
+  viewOnly: PropTypes.bool,
 };
 
 export default ExpenseModal;

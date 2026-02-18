@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { Listbox } from "@headlessui/react";
-import { HiSelector } from "react-icons/hi";
 import {
+  HiSelector,
   HiXCircle,
   HiOutlineDocumentText,
   HiCube,
@@ -18,13 +19,112 @@ import { BsCurrencyDollar } from "react-icons/bs";
 import { useDialog } from "../contexts/dialog/useDialog";
 import DatePicker from "../components/DatePicker";
 
+const generateId = () =>
+  `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
+
+const createEmptyOrderItem = () => ({
+  id: generateId(),
+  product_id: "",
+  quantity: 1,
+  unit_price: null,
+  subtotal: null,
+});
+
+// Default initial order request used for new forms / resetting state
 const initialOrderRequest = {
+  _id: null,
   supplier_id: "",
-  delivery_date: new Date().toISOString().slice(0, 10),
+  delivery_date: "",
   notes: "",
-  orderItems: [
-    { product_id: "", quantity: 1, unit_price: null, subtotal: null },
-  ],
+  orderItems: [createEmptyOrderItem()],
+};
+
+// Helper function to extract order items from data object
+const getOrderItemsFromData = (data) => {
+  // If data has orderItems and it's a valid array, use it and ensure each has an id
+  if (
+    data.orderItems &&
+    Array.isArray(data.orderItems) &&
+    data.orderItems.length > 0
+  ) {
+    return data.orderItems.map((item) => ({
+      id: item.id || generateId(),
+      product_id: item.product_id,
+      quantity: item.quantity,
+      unit_price: item.unit_price,
+      subtotal: item.subtotal,
+    }));
+  }
+
+  // Otherwise, check if data has items array
+  if (data.items && Array.isArray(data.items) && data.items.length > 0) {
+    return data.items.map((item) => ({
+      id: item.id || generateId(),
+      product_id: item.product_id,
+      quantity: item.quantity,
+      unit_price: item.unit_price,
+      subtotal: item.subtotal,
+    }));
+  }
+
+  // Default fallback: return a single empty item
+  return [createEmptyOrderItem()];
+};
+
+// Helper function to update product selection
+const updateProductSelection = (item, value, products) => {
+  const newItem = { ...item, product_id: value };
+  const product = products.find((p) => p._id === value);
+  newItem.unit_price = product ? product.price : 0;
+  if (!item.quantity) newItem.quantity = 1;
+  return newItem;
+};
+
+// Helper function to update quantity with stock validation
+const updateQuantity = (item, value, products) => {
+  const product = products.find((p) => p._id === item.product_id);
+  const maxStock = product
+    ? product.stock - (product.reserved_stock || 0)
+    : null;
+  const constrainedValue =
+    maxStock !== null && Number(value) > maxStock ? maxStock : value;
+  return { ...item, quantity: Number(constrainedValue) };
+};
+
+// Helper function to update unit price
+const updateUnitPrice = (item, value) => {
+  return { ...item, unit_price: Number(value) };
+};
+
+// Helper function to calculate subtotal
+const calculateSubtotal = (item) => {
+  return (item.unit_price ?? 0) * (item.quantity ?? 0);
+};
+
+// Component to render supplier options to reduce nesting in main component
+const SupplierOptions = ({ suppliers }) => (
+  <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+    {suppliers.length === 0 && (
+      <div className="px-4 py-2 text-gray-400">No suppliers</div>
+    )}
+    {suppliers.map((supplier) => (
+      <ListboxOption
+        key={supplier._id}
+        value={supplier}
+        className={({ selected }) =>
+          `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${
+            selected ? "bg-[#1e3a5f] text-white" : ""
+          }`
+        }
+      >
+        {supplier.company_name}
+      </ListboxOption>
+    ))}
+  </ListboxOptions>
+);
+
+SupplierOptions.propTypes = {
+  suppliers: PropTypes.array,
 };
 
 const OrderRequestModal = ({
@@ -55,7 +155,7 @@ const OrderRequestModal = ({
         let deliveryDateValue = data.delivery_date || "";
         if (deliveryDateValue) {
           const d = new Date(deliveryDateValue);
-          if (!isNaN(d)) {
+          if (!Number.isNaN(d.getTime())) {
             deliveryDateValue = d.toISOString().slice(0, 10);
           }
         }
@@ -69,26 +169,7 @@ const OrderRequestModal = ({
             "",
           delivery_date: deliveryDateValue,
           notes: data.notes || "",
-          orderItems:
-            data.orderItems &&
-            Array.isArray(data.orderItems) &&
-            data.orderItems.length > 0
-              ? data.orderItems
-              : data.items && Array.isArray(data.items)
-                ? data.items.map((item) => ({
-                    product_id: item.product_id,
-                    quantity: item.quantity,
-                    unit_price: item.unit_price,
-                    subtotal: item.subtotal,
-                  }))
-                : [
-                    {
-                      product_id: "",
-                      quantity: 1,
-                      unit_price: null,
-                      subtotal: null,
-                    },
-                  ],
+          orderItems: getOrderItemsFromData(data),
         });
       } else {
         setOrder(initialOrderRequest);
@@ -97,6 +178,81 @@ const OrderRequestModal = ({
       setValidateOnSave(false);
     }
   }, [open, data]);
+
+// Component to render supplier options to reduce nesting in main component
+const SupplierOptions = ({ suppliers }) => (
+  <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+    {suppliers.length === 0 && (
+      <div className="px-4 py-2 text-gray-400">No suppliers</div>
+    )}
+    {suppliers.map((supplier) => (
+      <ListboxOption
+        key={supplier._id}
+        value={supplier}
+        className={({ selected }) =>
+          `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${
+            selected ? "bg-[#1e3a5f] text-white" : ""
+          }`
+        }
+      >
+        {supplier.company_name}
+      </ListboxOption>
+    ))}
+  </ListboxOptions>
+);
+
+SupplierOptions.propTypes = {
+  suppliers: PropTypes.array,
+};
+
+// Component to render product options for a specific order item
+const ProductOptions = ({ products, supplierId, orderItems, idx }) => {
+  const filteredProducts = supplierId
+    ? products.filter(
+        (p) => p.supplier_id === supplierId || p.supplier?._id === supplierId,
+      )
+    : [];
+
+  return (
+    <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+      {filteredProducts.length === 0 ? (
+        <div className="px-4 py-2 text-gray-400">
+          {supplierId ? "No products for this supplier" : "Select a supplier first"}
+        </div>
+      ) : (
+        filteredProducts.map((product) => {
+          const isSelected = orderItems.some(
+            (orderItem, orderIdx) => orderItem.product_id === product._id && orderIdx !== idx,
+          );
+          const isDisabled = product.stock <= 0 || isSelected;
+          return (
+            <ListboxOption
+              key={product._id}
+              value={product}
+              className={({ selected }) =>
+                `px-3 py-2 text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${
+                  selected ? "bg-[#1e3a5f] text-white" : ""
+                } ${isDisabled ? "opacity-50 cursor-default bg-gray-50 text-gray-400" : "cursor-pointer"}`
+              }
+              disabled={isDisabled}
+            >
+              {product.name} (Stock: {product.stock - (product.reserved_stock || 0)})
+              {isSelected ? " - Already added" : ""}
+              {product.stock <= 0 ? " - Out of stock" : ""}
+            </ListboxOption>
+          );
+        })
+      )}
+    </ListboxOptions>
+  );
+};
+
+ProductOptions.propTypes = {
+  products: PropTypes.array,
+  supplierId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  orderItems: PropTypes.array,
+  idx: PropTypes.number,
+};
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -109,34 +265,19 @@ const OrderRequestModal = ({
   function handleOrderItemChange(idx, field, value) {
     setOrder((prev) => {
       const items = prev.orderItems.map((item, i) => {
-        if (i === idx) {
-          let newItem = { ...item };
-          if (field === "product_id") {
-            newItem.product_id = value;
-            // Set unit price from selected product
-            const product = products.find((p) => p._id === value);
-            newItem.unit_price = product ? product.price : 0;
-            // Optionally reset quantity
-            if (!item.quantity) newItem.quantity = 1;
-          } else if (field === "quantity") {
-            const product = products.find((p) => p._id === item.product_id);
-            const maxStock = product
-              ? product.stock - (product.reserved_stock || 0)
-              : null;
-            let newValue = value;
-            if (maxStock !== null && Number(value) > maxStock) {
-              newValue = maxStock;
-            }
-            newItem.quantity = Number(newValue);
-          } else if (field === "unit_price") {
-            newItem.unit_price = Number(value);
-          }
-          // Always update subtotal
-          newItem.subtotal =
-            (newItem.unit_price ?? 0) * (newItem.quantity ?? 0);
-          return newItem;
+        if (i !== idx) return item;
+
+        let newItem = item;
+        if (field === "product_id") {
+          newItem = updateProductSelection(item, value, products);
+        } else if (field === "quantity") {
+          newItem = updateQuantity(item, value, products);
+        } else if (field === "unit_price") {
+          newItem = updateUnitPrice(item, value);
         }
-        return item;
+
+        newItem.subtotal = calculateSubtotal(newItem);
+        return newItem;
       });
       return { ...prev, orderItems: items };
     });
@@ -228,15 +369,27 @@ const OrderRequestModal = ({
   }
 
   if (!open) return null;
+
+  const getModalTitle = () => {
+    if (viewOnly) return "Order Request Details";
+    if (data?._id) return "Update Order Request";
+    return "New Order Request";
+  };
+
+  let submitButtonText;
+  if (loading) {
+    submitButtonText = "Submitting...";
+  } else if (data) {
+    submitButtonText = "Update";
+  } else {
+    submitButtonText = "Submit";
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[65%] max-h-[80vh] shadow-xl relative">
         <h2 className="text-xl font-bold mb-6 text-center">
-          {viewOnly
-            ? "Order Request Details"
-            : data?._id
-              ? "Update Order Request"
-              : "New Order Request"}
+          {getModalTitle()}
         </h2>
         <form className="space-y-5 overflow-auto max-h-[60vh] px-1">
           <div className="col-span-2 mb-2">
@@ -248,7 +401,7 @@ const OrderRequestModal = ({
               <div>
                 <label className="text-sm font-medium text-gray-700">
                   Supplier
-                  {!viewOnly ? <sup className="text-red-500">*</sup> : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <Listbox
                   value={
@@ -257,7 +410,12 @@ const OrderRequestModal = ({
                   onChange={(supplier) => {
                     if (viewOnly) return;
                     // If supplier changes, reset items to avoid mismatch
-                    if (order.supplier_id !== (supplier ? supplier._id : "")) {
+                    if (order.supplier_id === (supplier ? supplier._id : "")) {
+                      setOrder((prev) => ({
+                        ...prev,
+                        supplier_id: supplier ? supplier._id : "",
+                      }));
+                    } else {
                       setOrder((prev) => ({
                         ...prev,
                         supplier_id: supplier ? supplier._id : "",
@@ -270,18 +428,13 @@ const OrderRequestModal = ({
                           },
                         ],
                       }));
-                    } else {
-                      setOrder((prev) => ({
-                        ...prev,
-                        supplier_id: supplier ? supplier._id : "",
-                      }));
                     }
                     setTouched((prev) => ({ ...prev, supplier_id: true }));
                   }}
                   disabled={viewOnly}
                 >
                   <div className="relative">
-                    <Listbox.Button
+                    <Listbox.Trigger
                       className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${!order.supplier_id && (touched.supplier_id || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     >
                       <span>
@@ -292,15 +445,15 @@ const OrderRequestModal = ({
                       {!viewOnly && (
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                    </Listbox.Trigger>
+                    <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                       {suppliers.length === 0 && (
                         <div className="px-4 py-2 text-gray-400">
                           No suppliers
                         </div>
                       )}
                       {suppliers.map((supplier) => (
-                        <Listbox.Option
+                        <ListboxOption
                           key={supplier._id}
                           value={supplier}
                           className={({ selected }) =>
@@ -308,16 +461,16 @@ const OrderRequestModal = ({
                           }
                         >
                           {supplier.company_name}
-                        </Listbox.Option>
+                        </ListboxOption>
                       ))}
-                    </Listbox.Options>
+                    </ListboxOptions>
                   </div>
                 </Listbox>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-700">
                   Delivery Date
-                  {!viewOnly ? <sup className="text-red-500">*</sup> : null}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <DatePicker
                   selected={order.delivery_date}
@@ -346,7 +499,7 @@ const OrderRequestModal = ({
                   <div>
                     <label className="text-sm font-medium text-gray-700">
                       Product
-                      {!viewOnly ? <sup className="text-red-500">*</sup> : null}
+                      {!viewOnly && <sup className="text-red-500">*</sup>}
                     </label>
                     <Listbox
                       value={
@@ -363,7 +516,7 @@ const OrderRequestModal = ({
                       disabled={viewOnly || !order.supplier_id}
                     >
                       <div className="relative">
-                        <Listbox.Button
+                        <ListboxButton
                           className={`${viewOnly || !order.supplier_id ? "cursor-default" : "cursor-pointer"} bg-gray-50 w-full border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${!item.product_id && validateOnSave ? "border-red-500" : "border-gray-100"}`}
                         >
                           <span>
@@ -378,8 +531,8 @@ const OrderRequestModal = ({
                           {!viewOnly && (
                             <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                           )}
-                        </Listbox.Button>
-                        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        </ListboxButton>
+                        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {(() => {
                             const filteredProducts = order.supplier_id
                               ? products.filter(
@@ -408,7 +561,7 @@ const OrderRequestModal = ({
                               const isDisabled =
                                 product.stock <= 0 || isSelected;
                               return (
-                                <Listbox.Option
+                                <ListboxOption
                                   key={product._id}
                                   value={product}
                                   className={({ selected }) =>
@@ -421,18 +574,18 @@ const OrderRequestModal = ({
                                     (product.reserved_stock || 0)}
                                   ){isSelected ? " - Already added" : ""}
                                   {product.stock <= 0 ? " - Out of stock" : ""}
-                                </Listbox.Option>
+                                </ListboxOption>
                               );
                             });
                           })()}
-                        </Listbox.Options>
+                        </ListboxOptions>
                       </div>
                     </Listbox>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-700">
                       Quantity
-                      {!viewOnly ? <sup className="text-red-500">*</sup> : null}
+                      {!viewOnly && <sup className="text-red-500">*</sup>}
                     </label>
                     <input
                       type={viewOnly ? "text" : "number"}
@@ -554,13 +707,22 @@ const OrderRequestModal = ({
               onClick={handleSubmit}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />
-              {loading ? "Submitting..." : data ? "Update" : "Submit"}
+              {submitButtonText}
             </button>
           )}
         </div>
       </div>
     </div>
   );
+};
+
+OrderRequestModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func,
+  suppliers: PropTypes.array,
+  data: PropTypes.object,
+  viewOnly: PropTypes.bool,
 };
 
 export default OrderRequestModal;

@@ -21,6 +21,10 @@ import { Menu } from "@headlessui/react";
 
 import { useBadge } from "../contexts/badge/BadgeContext";
 
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
+
 const OrderRequestApproval = () => {
   const [orders, setOrders] = useState([]);
 
@@ -63,13 +67,14 @@ const OrderRequestApproval = () => {
     new Date().toISOString().split("T")[0],
   );
 
+  const [status, setStatus] = useState("pending");
+
+  // Selection
+  const [selectedIds, setSelectedIds] = useState([]);
+
   // Permissions
-  const canView = user?.permission?.permissions?.includes(
-    "view_approve_request",
-  );
-  const canUpdate = user?.permission?.permissions?.includes(
-    "update_approve_request",
-  );
+  const canView = getPermission(user, "view_approve_request");
+  const canUpdate = getPermission(user, "update_approve_request");
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -180,11 +185,6 @@ const OrderRequestApproval = () => {
     setViewDialog({ open: true, order });
   }
 
-  const [status, setStatus] = useState("pending");
-
-  // Selection
-  const [selectedIds, setSelectedIds] = useState([]);
-
   async function handleSelectAll(e) {
     if (e.target.checked) {
       setLoading(true);
@@ -198,7 +198,6 @@ const OrderRequestApproval = () => {
         });
         const allIds = res.data.data.map((o) => o._id);
         setSelectedIds(allIds);
-        setSelectAllMatches(true);
       } catch (err) {
         console.error(err);
       } finally {
@@ -206,7 +205,6 @@ const OrderRequestApproval = () => {
       }
     } else {
       setSelectedIds([]);
-      setSelectAllMatches(false);
     }
   }
 
@@ -240,7 +238,6 @@ const OrderRequestApproval = () => {
         status,
       );
       setSelectedIds([]);
-      setSelectAllMatches(false);
       fetchBadge();
     } catch (err) {
       console.error(err);
@@ -275,7 +272,6 @@ const OrderRequestApproval = () => {
         status,
       );
       setSelectedIds([]);
-      setSelectAllMatches(false);
       fetchBadge();
     } catch {
       dialog.error("Failed to delete requests.");
@@ -364,14 +360,14 @@ const OrderRequestApproval = () => {
 
         {canUpdate && (
           <Menu as="div" className="relative inline-block text-left ml-2">
-            <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+            <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
               <HiDotsVertical className="text-xl" />
-            </Menu.Button>
-            <Menu.Items
+            </MenuButton>
+            <MenuItems
               anchor="bottom end"
               className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
             >
-              <Menu.Item>
+              <MenuItem>
                 {() => (
                   <button
                     onClick={() => handleBulkActive(true)}
@@ -384,8 +380,8 @@ const OrderRequestApproval = () => {
                     Active Requests
                   </button>
                 )}
-              </Menu.Item>
-              <Menu.Item>
+              </MenuItem>
+              <MenuItem>
                 {() => (
                   <button
                     onClick={() => handleBulkActive(false)}
@@ -398,8 +394,8 @@ const OrderRequestApproval = () => {
                     Archive Requests
                   </button>
                 )}
-              </Menu.Item>
-              <Menu.Item>
+              </MenuItem>
+              <MenuItem>
                 {() => (
                   <button
                     onClick={handleBulkDelete}
@@ -412,8 +408,8 @@ const OrderRequestApproval = () => {
                     Delete Requests
                   </button>
                 )}
-              </Menu.Item>
-            </Menu.Items>
+              </MenuItem>
+            </MenuItems>
           </Menu>
         )}
       </div>
@@ -568,14 +564,14 @@ const OrderRequestApproval = () => {
                           as="div"
                           className="relative inline-block text-left"
                         >
-                          <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                          <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                             <HiDotsVertical className="text-xl" />
-                          </Menu.Button>
-                          <Menu.Items
+                          </MenuButton>
+                          <MenuItems
                             anchor="bottom end"
                             className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
                           >
-                            <Menu.Item>
+                            <MenuItem>
                               {() => (
                                 <button
                                   className="w-full flex items-center px-2 py-3 text-green-600 hover:bg-green-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
@@ -589,8 +585,8 @@ const OrderRequestApproval = () => {
                                   Approve
                                 </button>
                               )}
-                            </Menu.Item>
-                            <Menu.Item>
+                            </MenuItem>
+                            <MenuItem>
                               {() => (
                                 <button
                                   className="w-full flex items-center px-2 py-3 text-red-600 hover:bg-red-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
@@ -610,8 +606,8 @@ const OrderRequestApproval = () => {
                                   Reject
                                 </button>
                               )}
-                            </Menu.Item>
-                          </Menu.Items>
+                            </MenuItem>
+                          </MenuItems>
                         </Menu>
                       )}
                     </td>

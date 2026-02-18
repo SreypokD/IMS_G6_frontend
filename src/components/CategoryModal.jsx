@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { HiXCircle, HiOutlineDocumentText } from "react-icons/hi";
 
 const initialCategory = {
@@ -59,23 +60,38 @@ const CategoryModal = ({
     handleClose();
   }
 
+  let modalTitle;
+  if (viewOnly) {
+    modalTitle = "Category Details";
+  } else if (data) {
+    modalTitle = "Update Category";
+  } else {
+    modalTitle = "Add Category";
+  }
+
+  let submitButtonLabel;
+  if (viewOnly) {
+    submitButtonLabel = "Category Details";
+  } else if (category._id) {
+    submitButtonLabel = "Update Category";
+  } else {
+    submitButtonLabel = "Add Category";
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[30%] max-h-[80vh] shadow-xl relative">
         <h2 className="text-xl font-bold mb-6 text-center">
-          {viewOnly
-            ? "Category Details"
-            : data
-              ? "Update Category"
-              : "Add Category"}
+          {modalTitle}
         </h2>
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
           <div>
-            <label className="text-sm font-medium text-gray-700">
+            <label htmlFor="name" className="text-sm font-medium text-gray-700">
               Name
               {!viewOnly && <sup className="text-red-500">*</sup>}
             </label>
             <input
+              id="name"
               name="name"
               value={category.name}
               onChange={handleChange}
@@ -87,10 +103,11 @@ const CategoryModal = ({
             />
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700">
+            <label htmlFor="description" className="text-sm font-medium text-gray-700">
               Description
             </label>
             <textarea
+              id="description"
               name="description"
               value={category.description}
               onChange={handleChange}
@@ -119,13 +136,21 @@ const CategoryModal = ({
               onClick={handleSubmit}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />
-           {viewOnly ? "Category Details" : category._id ? "Update Category" : "Add Category"}
+              {submitButtonLabel}
             </button>
           )}
         </div>
       </div>
     </div>
   );
+};
+
+CategoryModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  data: PropTypes.object,
+  viewOnly: PropTypes.bool,
 };
 
 export default CategoryModal;

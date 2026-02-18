@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Listbox } from "@headlessui/react";
-import { locations } from "../data/locations";
-import { getStocks, getProducts, getStockSummary, getUsers } from "../api";
+import PropTypes from "prop-types";
+import { Listbox, Menu } from "@headlessui/react";
+import {
+  getStocks,
+  getProducts,
+  getStockSummary,
+  getUsers,
+  updateStock,
+  deleteStock,
+} from "../api";
 import {
   HiSelector,
   HiOutlineFilter,
@@ -13,8 +20,11 @@ import {
   HiTrendingDown,
   HiOutlineExclamation,
   HiOutlineCheckCircle,
-  HiOutlineXCircle,
   HiOutlineArchive,
+  HiOutlinePencil,
+  HiOutlineTrash,
+  HiOutlineEye,
+  HiDotsVertical,
 } from "react-icons/hi";
 import Pagination from "../components/Pagination";
 import { useAuth } from "../contexts/auth/useAuth";
@@ -24,15 +34,7 @@ import { formatDate } from "../utils/dateFormat";
 import StockOutModal from "../components/StockOutModal";
 import StockInModal from "../components/StockInModal";
 import StockViewModal from "../components/StockViewModal";
-import { deleteStock } from "../api";
-import {
-  HiOutlinePencil,
-  HiOutlineTrash,
-  HiOutlineEye,
-  HiDotsVertical,
-} from "react-icons/hi";
 import { useDialog } from "../contexts/dialog/useDialog";
-import { Menu } from "@headlessui/react";
 
 const transactionOptions = [
   { value: "in", label: "Stock In" },
@@ -44,17 +46,17 @@ function UserDropdown({ value, onChange, userOptions = [] }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>
             {userOptions.find((u) => u._id === value)
               ? `${userOptions.find((u) => u._id === value).first_name} ${userOptions.find((u) => u._id === value).last_name}`
               : "All Users"}
           </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {userOptions.map((user) => (
-            <Listbox.Option
+            <ListboxOption
               key={user._id}
               value={user._id}
               className={({ selected }) =>
@@ -62,28 +64,40 @@ function UserDropdown({ value, onChange, userOptions = [] }) {
               }
             >
               {user.first_name} {user.last_name}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
 
+UserDropdown.propTypes = {
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  userOptions: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      first_name: PropTypes.string.isRequired,
+      last_name: PropTypes.string.isRequired,
+    }),
+  ),
+};
+
 function TransactionDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>
             {transactionOptions.find((t) => t.value === value)?.label ||
               "All Transactions"}
           </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {transactionOptions.map((option) => (
-            <Listbox.Option
+            <ListboxOption
               key={option.value}
               value={option.value}
               className={({ selected }) =>
@@ -91,25 +105,30 @@ function TransactionDropdown({ value, onChange }) {
               }
             >
               {option.label}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
 
+TransactionDropdown.propTypes = {
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+};
+
 function LocationDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>{value || "All Locations"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {locationOptions.map((option) => (
-            <Listbox.Option
+            <ListboxOption
               key={option}
               value={option}
               className={({ selected }) =>
@@ -117,13 +136,22 @@ function LocationDropdown({ value, onChange }) {
               }
             >
               {option}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
+
+LocationDropdown.propTypes = {
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+};
+
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
 
 const Stocks = () => {
   const [stocks, setStocks] = useState([]);
@@ -173,11 +201,11 @@ const Stocks = () => {
   });
 
   // Permissions
-  const canView = user?.permission?.permissions?.includes("view_stock");
-  const canCreate = user?.permission?.permissions?.includes("create_stock");
-  const canUpdate = user?.permission?.permissions?.includes("update_stock");
-  const canDelete = user?.permission?.permissions?.includes("delete_stock");
-  const canViewUsers = user?.permission?.permissions?.includes("view_user");
+  const canView = getPermission(user, "view_stock");
+  const canCreate = getPermission(user, "create_stock");
+  const canUpdate = getPermission(user, "update_stock");
+  const canDelete = getPermission(user, "delete_stock");
+  const canViewUsers = getPermission(user, "view_user");
 
   useEffect(() => {
     if (user) {
@@ -345,7 +373,6 @@ const Stocks = () => {
       dialog.success(`Stocks marked as ${status} successfully.`);
       fetchStocks(pagination.page, pagination.limit);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch (err) {
       console.error(err);
       dialog.error("Failed to update stocks.");
@@ -371,16 +398,12 @@ const Stocks = () => {
       dialog.success("Stocks deleted successfully.");
       fetchStocks(pagination.page, pagination.limit);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       dialog.error("Failed to delete stocks.");
     } finally {
       setLoading(false);
     }
   }
-
-  // "Select All" Logic
-  const [selectAllMatches, setSelectAllMatches] = useState(false);
 
   async function handleSelectAll(e) {
     if (e.target.checked) {
@@ -396,7 +419,6 @@ const Stocks = () => {
         const res = await getStocks(params);
         const allIds = res.data.data.map((s) => s._id);
         setSelectedIds(allIds);
-        setSelectAllMatches(true);
       } catch (err) {
         console.error(err);
         setSelectedIds([]);
@@ -405,13 +427,14 @@ const Stocks = () => {
       }
     } else {
       setSelectedIds([]);
-      setSelectAllMatches(false);
     }
   }
 
   function handleReset() {
     setSearch("");
-    setFilters({});
+    setFilterType(null);
+    setFilterUser(null);
+    setFilterLocation(null);
     fetchStocks(1, pagination.limit);
   }
 
@@ -476,14 +499,14 @@ const Stocks = () => {
           )}
           {(canUpdate || canDelete) && (
             <Menu as="div" className="relative inline-block text-left">
-              <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+              <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                 <HiDotsVertical className="text-xl" />
-              </Menu.Button>
-              <Menu.Items
+              </MenuButton>
+              <MenuItems
                 anchor="bottom end"
                 className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
               >
-                <Menu.Item>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkStatus("active")}
@@ -496,8 +519,8 @@ const Stocks = () => {
                       Active Stocks
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkStatus("inactive")}
@@ -510,8 +533,8 @@ const Stocks = () => {
                       Archive Stocks
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={handleBulkDelete}
@@ -524,8 +547,8 @@ const Stocks = () => {
                       Delete Stocks
                     </button>
                   )}
-                </Menu.Item>
-              </Menu.Items>
+                </MenuItem>
+              </MenuItems>
             </Menu>
           )}
         </div>
@@ -628,8 +651,14 @@ const Stocks = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <div>
-            <label className="block text-gray-700 text-sm mb-1">Search</label>
+            <label
+              htmlFor="search-input"
+              className="block text-gray-700 text-sm mb-1"
+            >
+              Search
+            </label>
             <input
+              id="search-input"
               className="bg-gray-50 border border-gray-100 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
               placeholder="Search..."
               value={search}
@@ -648,63 +677,82 @@ const Stocks = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
+            <label
+              htmlFor="transaction-dropdown"
+              className="block text-gray-700 text-sm mb-1"
+            >
               Transaction Type
             </label>
-            <TransactionDropdown
-              value={filterType}
-              onChange={(val) => {
-                setFilterType(val);
-                fetchStocks(
-                  1,
-                  pagination.limit,
-                  search,
-                  val,
-                  filterUser,
-                  filterLocation,
-                );
-                setPagination((prev) => ({ ...prev, page: 1 }));
-              }}
-            />
+            <div id="transaction-dropdown">
+              <TransactionDropdown
+                value={filterType}
+                onChange={(val) => {
+                  setFilterType(val);
+                  fetchStocks(
+                    1,
+                    pagination.limit,
+                    search,
+                    val,
+                    filterUser,
+                    filterLocation,
+                  );
+                  setPagination((prev) => ({ ...prev, page: 1 }));
+                }}
+              />
+            </div>
           </div>
           {canViewUsers && (
             <div>
-              <label className="block text-gray-700 text-sm mb-1">User</label>
-              <UserDropdown
-                value={filterUser}
+              <label
+                htmlFor="user-dropdown"
+                className="block text-gray-700 text-sm mb-1"
+              >
+                User
+              </label>
+              <div id="user-dropdown">
+                <UserDropdown
+                  value={filterUser}
+                  onChange={(val) => {
+                    setFilterUser(val);
+                    fetchStocks(
+                      1,
+                      pagination.limit,
+                      search,
+                      filterType,
+                      val,
+                      filterLocation,
+                    );
+                    setPagination((prev) => ({ ...prev, page: 1 }));
+                  }}
+                  userOptions={userOptions}
+                />
+              </div>
+            </div>
+          )}
+          <div>
+            <label
+              htmlFor="location-dropdown"
+              className="block text-gray-700 text-sm mb-1"
+            >
+              Location
+            </label>
+            <div id="location-dropdown">
+              <LocationDropdown
+                value={filterLocation}
                 onChange={(val) => {
-                  setFilterUser(val);
+                  setFilterLocation(val);
                   fetchStocks(
                     1,
                     pagination.limit,
                     search,
                     filterType,
+                    filterUser,
                     val,
-                    filterLocation,
                   );
                   setPagination((prev) => ({ ...prev, page: 1 }));
                 }}
-                userOptions={userOptions}
               />
             </div>
-          )}
-          <div>
-            <label className="block text-gray-700 text-sm mb-1">Location</label>
-            <LocationDropdown
-              value={filterLocation}
-              onChange={(val) => {
-                setFilterLocation(val);
-                fetchStocks(
-                  1,
-                  pagination.limit,
-                  search,
-                  filterType,
-                  filterUser,
-                  val,
-                );
-                setPagination((prev) => ({ ...prev, page: 1 }));
-              }}
-            />
           </div>
         </div>
       </div>
@@ -812,15 +860,15 @@ const Stocks = () => {
                           as="div"
                           className="relative inline-block text-left"
                         >
-                          <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                          <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                             <HiDotsVertical className="text-xl" />
-                          </Menu.Button>
-                          <Menu.Items
+                          </MenuButton>
+                          <MenuItems
                             anchor="bottom end"
                             className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
                           >
                             {canUpdate && (
-                              <Menu.Item>
+                              <MenuItem>
                                 {() => (
                                   <button
                                     onClick={() => handleUpdate(stock)}
@@ -833,10 +881,10 @@ const Stocks = () => {
                                     Update
                                   </button>
                                 )}
-                              </Menu.Item>
+                              </MenuItem>
                             )}
                             {canDelete && (
-                              <Menu.Item>
+                              <MenuItem>
                                 {() => (
                                   <button
                                     onClick={() => handleDelete(stock._id)}
@@ -849,9 +897,9 @@ const Stocks = () => {
                                     Delete
                                   </button>
                                 )}
-                              </Menu.Item>
+                              </MenuItem>
                             )}
-                          </Menu.Items>
+                          </MenuItems>
                         </Menu>
                       )}
                     </td>

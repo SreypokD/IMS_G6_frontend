@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import {
   HiXCircle,
   HiOutlineDocumentText,
   HiOutlineCamera,
-  HiOutlineUpload,
 } from "react-icons/hi";
+import { getCategories, getSuppliers, uploadFile } from "../api";
+import FormField from "./ProductModal/FormField";
+import SelectField from "./ProductModal/SelectField";
+import ImageUpload from "./ProductModal/ImageUpload";
+import SectionHeader from "./ProductModal/SectionHeader";
+import { shouldShowError } from "./ProductModal/validation";
 
 const initialProduct = {
   code: "",
@@ -18,321 +24,223 @@ const initialProduct = {
   status: "active",
 };
 
-import { getCategories, getSuppliers, uploadFile } from "../api";
-import { Listbox } from "@headlessui/react";
-import { HiSelector } from "react-icons/hi";
+const getModalTitle = (viewOnly, productId) => {
+  if (viewOnly) return "Product Details";
+  return productId ? "Update Product" : "Add Product";
+};
+
+const getStockLabel = (productId) => {
+  return productId ? "Current Stock" : "Initial Stock";
+};
+
+const getStockPlaceholder = (productId) => {
+  return productId ? "Current Stock" : "Initial Quantity";
+};
 
 const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   const [product, setProduct] = useState(data || initialProduct);
-  const [selectedImage, setSelectedImage] = useState(null);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
   const [categories, setCategories] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
 
   useEffect(() => {
-    if (open) {
-      if (!data) {
-        setProduct(initialProduct);
-        setTouched({});
-        setValidateOnSave(false);
-      } else {
-        setProduct(data);
-        setTouched({});
-        setValidateOnSave(false);
-      }
-      getCategories({ limit: -1 }).then((res) => {
-        setCategories(res.data.data || []);
-      });
-      getSuppliers({ limit: -1 }).then((res) => {
-        setSuppliers(res.data.data || []);
-      });
-    }
+    if (!open) return;
+
+    setProduct(data || initialProduct);
+    setTouched({});
+    setValidateOnSave(false);
+
+    getCategories({ limit: -1 }).then((res) => {
+      setCategories(res.data.data || []);
+    });
+    getSuppliers({ limit: -1 }).then((res) => {
+      setSuppliers(res.data.data || []);
+    });
   }, [open, data]);
 
+  const handleFieldChange = (fieldName, value) => {
+    setProduct((prev) => ({ ...prev, [fieldName]: value }));
+  };
+
+  const handleFieldBlur = (fieldName) => {
+    setTouched((prev) => ({ ...prev, [fieldName]: true }));
+  };
+
+  const handleCategoryChange = (category) => {
+    handleFieldChange("category", category ? category._id : "");
+  };
+
+  const handleSupplierChange = (supplier) => {
+    handleFieldChange("supplier", supplier ? supplier._id : "");
+  };
+
   async function handleImageChange(e) {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setSelectedImage(file);
-      try {
-        const res = await uploadFile(file);
-        const url = res.data?.url || res.data?.file?.url;
-        if (url) {
-          setProduct((prev) => ({ ...prev, image: url }));
-        }
-      } catch (err) {
-        console.error("Image upload failed", err);
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const res = await uploadFile(file);
+      const url = res.data?.url || res.data?.file?.url;
+      if (url) {
+        handleFieldChange("image", url);
       }
+    } catch (err) {
+      console.error("Image upload failed", err);
     }
   }
 
+  const handleSave = () => {
+    setValidateOnSave(true);
+    setTouched({
+      code: true,
+      name: true,
+      category: true,
+      supplier: true,
+      price: true,
+      stock: true,
+      image: true,
+    });
+    onSave(product);
+  };
+
+  const showImageSection = !viewOnly || product.image;
+  const isStockDisabled = viewOnly || !!product._id;
+  const showStockHelpText = !!product._id && !viewOnly;
+
   if (!open) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] max-h-[80vh] shadow-xl relative">
         <h2 className="text-xl font-bold mb-6 text-center">
-          {viewOnly
-            ? "Product Details"
-            : product._id
-              ? "Update Product"
-              : "Add Product"}
+          {getModalTitle(viewOnly, product._id)}
         </h2>
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
           <div className="col-span-2 mb-2">
-            <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
-              <HiOutlineDocumentText className="inline-block text-xl text-black" />
-              <span>Basic Information</span>
-            </h3>
+            <SectionHeader
+              icon={HiOutlineDocumentText}
+              title="Basic Information"
+            />
             <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Product Code
-                </label>
-                <input
-                  name="code"
-                  value={product.code}
-                  disabled
-                  onChange={(e) =>
-                    setProduct({ ...product, code: e.target.value })
-                  }
-                  placeholder="Product Code"
-                  className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Name
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
-                </label>
-                <input
-                  name="name"
-                  value={product.name}
-                  onChange={(e) =>
-                    setProduct({ ...product, name: e.target.value })
-                  }
-                  onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
-                  placeholder="Product Name"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!product.name && !data && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                  disabled={viewOnly}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Category
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
-                </label>
-                <Listbox
-                  value={
-                    categories.find((cat) => cat._id === product.category) ||
-                    null
-                  }
-                  onChange={
-                    viewOnly
-                      ? () => {}
-                      : (cat) =>
-                          setProduct({
-                            ...product,
-                            category: cat ? cat._id : "",
-                          })
-                  }
-                  disabled={viewOnly}
-                >
-                  <div className="relative">
-                    <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!product.category && !data && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                      disabled={viewOnly}
-                    >
-                      <span>
-                        {categories.find((cat) => cat._id === product.category)
-                          ?.name || "Select category"}
-                      </span>
-                      {!viewOnly && (
-                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-                      )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
-                      {categories.length === 0 && (
-                        <div className="px-4 py-2 text-gray-400">
-                          No categories
-                        </div>
-                      )}
-                      {categories.map((cat) => (
-                        <Listbox.Option
-                          key={cat._id}
-                          value={cat}
-                          className={({ selected }) =>
-                            `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
-                          }
-                        >
-                          {cat.name}
-                        </Listbox.Option>
-                      ))}
-                    </Listbox.Options>
-                  </div>
-                </Listbox>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Supplier
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
-                </label>
-                <Listbox
-                  value={
-                    suppliers.find((sup) => sup._id === product.supplier) ||
-                    null
-                  }
-                  onChange={
-                    viewOnly
-                      ? () => {}
-                      : (sup) =>
-                          setProduct({
-                            ...product,
-                            supplier: sup ? sup._id : "",
-                          })
-                  }
-                  disabled={viewOnly}
-                >
-                  <div className="relative">
-                    <Listbox.Button
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!product.supplier && !data && (touched.supplier || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                      disabled={viewOnly}
-                    >
-                      <span>
-                        {suppliers.find((sup) => sup._id === product.supplier)
-                          ?.company_name || "Select supplier"}
-                      </span>
-                      {!viewOnly && (
-                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-                      )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
-                      {suppliers.length === 0 && (
-                        <div className="px-4 py-2 text-gray-400">
-                          No suppliers
-                        </div>
-                      )}
-                      {suppliers.map((sup) => (
-                        <Listbox.Option
-                          key={sup._id}
-                          value={sup}
-                          className={({ selected }) =>
-                            `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
-                          }
-                        >
-                          {sup.company_name}
-                        </Listbox.Option>
-                      ))}
-                    </Listbox.Options>
-                  </div>
-                </Listbox>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  Price
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
-                </label>
-                <input
-                  name="price"
-                  value={product.price}
-                  onChange={(e) =>
-                    setProduct({ ...product, price: e.target.value })
-                  }
-                  onBlur={() =>
-                    setTouched((prev) => ({ ...prev, price: true }))
-                  }
-                  type={viewOnly ? "text" : "number"}
-                  step="0.01"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.price || isNaN(product.price)) && !data && (touched.price || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                  disabled={viewOnly}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700">
-                  {product._id ? "Current Stock" : "Initial Stock"}
-                  {!viewOnly && !product._id && (
-                    <sup className="text-red-500">*</sup>
-                  )}
-                </label>
-                <input
-                  name="stock"
-                  value={product.stock}
-                  onChange={(e) =>
-                    setProduct({ ...product, stock: e.target.value })
-                  }
-                  onBlur={() =>
-                    setTouched((prev) => ({ ...prev, stock: true }))
-                  }
-                  type={viewOnly ? "text" : "number"}
-                  placeholder={
-                    product._id ? "Current Stock" : "Initial Quantity"
-                  }
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.stock || isNaN(product.stock)) && !data && (touched.stock || validateOnSave) ? "border-red-500" : "border-gray-100"} ${product._id ? "cursor-default" : ""}`}
-                  disabled={viewOnly || !!product._id}
-                />
-                {!!product._id && !viewOnly && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    To adjust stock, use "Stock In" or "Stock Out".
-                  </p>
+              <FormField
+                label="Product Code"
+                name="code"
+                value={product.code}
+                onChange={(e) => handleFieldChange("code", e.target.value)}
+                placeholder="Product Code"
+                disabled={true}
+              />
+              <FormField
+                label="Name"
+                name="name"
+                value={product.name}
+                onChange={(e) => handleFieldChange("name", e.target.value)}
+                onBlur={() => handleFieldBlur("name")}
+                placeholder="Product Name"
+                disabled={viewOnly}
+                required={!viewOnly}
+                hasError={shouldShowError(
+                  "name",
+                  product,
+                  data,
+                  touched,
+                  validateOnSave,
                 )}
-              </div>
+              />
+              <SelectField
+                label="Category"
+                value={product.category}
+                onChange={handleCategoryChange}
+                options={categories}
+                getOptionLabel={(cat) => cat.name}
+                getOptionValue={(cat) => cat._id}
+                placeholder="Select category"
+                disabled={viewOnly}
+                required={!viewOnly}
+                hasError={shouldShowError(
+                  "category",
+                  product,
+                  data,
+                  touched,
+                  validateOnSave,
+                )}
+                emptyMessage="No categories"
+              />
+              <SelectField
+                label="Supplier"
+                value={product.supplier}
+                onChange={handleSupplierChange}
+                options={suppliers}
+                getOptionLabel={(sup) => sup.company_name}
+                getOptionValue={(sup) => sup._id}
+                placeholder="Select supplier"
+                disabled={viewOnly}
+                required={!viewOnly}
+                hasError={shouldShowError(
+                  "supplier",
+                  product,
+                  data,
+                  touched,
+                  validateOnSave,
+                )}
+                emptyMessage="No suppliers"
+              />
+              <FormField
+                label="Price"
+                name="price"
+                value={product.price}
+                onChange={(e) => handleFieldChange("price", e.target.value)}
+                onBlur={() => handleFieldBlur("price")}
+                type={viewOnly ? "text" : "number"}
+                step="0.01"
+                disabled={viewOnly}
+                required={!viewOnly}
+                hasError={shouldShowError(
+                  "price",
+                  product,
+                  data,
+                  touched,
+                  validateOnSave,
+                )}
+              />
+              <FormField
+                label={getStockLabel(product._id)}
+                name="stock"
+                value={product.stock}
+                onChange={(e) => handleFieldChange("stock", e.target.value)}
+                onBlur={() => handleFieldBlur("stock")}
+                type={viewOnly ? "text" : "number"}
+                placeholder={getStockPlaceholder(product._id)}
+                disabled={isStockDisabled}
+                required={!viewOnly && !product._id}
+                hasError={shouldShowError(
+                  "stock",
+                  product,
+                  data,
+                  touched,
+                  validateOnSave,
+                )}
+                helpText={
+                  showStockHelpText
+                    ? 'To adjust stock, use "Stock In" or "Stock Out".'
+                    : undefined
+                }
+              />
             </div>
           </div>
-          {(!viewOnly || product.image) && (
+          {showImageSection && (
             <div className="col-span-2 mb-2">
-              <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
-                <HiOutlineCamera className="inline-block text-xl text-black" />
-                <span>Image</span>
-              </h3>
+              <SectionHeader icon={HiOutlineCamera} title="Image" />
               <div className="mb-3">
-                <label className="block text-gray-700 text-sm mb-1">
+                <div className="block text-gray-700 text-sm mb-1">
                   Product Image
-                </label>
-                {viewOnly ? (
-                  <div className="mt-2 flex items-center justify-center border border-gray-200 rounded-lg p-4 bg-gray-50">
-                    <img
-                      src={product.image}
-                      alt="Product"
-                      className="h-40 w-40 object-cover rounded"
-                    />
-                  </div>
-                ) : (
-                  <label className="cursor-pointer block relative group h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-lg p-6 hover:bg-gray-50 transition w-full">
-                    {product.image ? (
-                      <div className="relative w-40 h-40">
-                        <img
-                          src={product.image}
-                          alt="Product"
-                          className="w-full h-full object-cover rounded-md"
-                        />
-                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
-                          <span className="text-xs font-medium">
-                            Click to Change
-                          </span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center">
-                        <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
-                        <span className="text-gray-600">
-                          Drag and drop your image here, or
-                          <span className="text-blue-600 underline ml-1">
-                            browse files
-                          </span>
-                        </span>
-                        <span className="text-sm text-gray-400 mt-1">
-                          Supported formats: JPG, PNG, GIF (Max 5MB)
-                        </span>
-                      </div>
-                    )}
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/png,image/gif"
-                      className="hidden"
-                      onChange={handleImageChange}
-                      disabled={viewOnly}
-                    />
-                  </label>
-                )}
+                </div>
+                <ImageUpload
+                  image={product.image}
+                  onChange={handleImageChange}
+                  disabled={viewOnly}
+                />
               </div>
             </div>
           )}
@@ -350,19 +258,7 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             <button
               type="button"
               className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
-              onClick={() => {
-                setValidateOnSave(true);
-                setTouched({
-                  code: true,
-                  name: true,
-                  category: true,
-                  supplier: true,
-                  price: true,
-                  stock: true,
-                  image: true,
-                });
-                onSave(product);
-              }}
+              onClick={handleSave}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />
               {product._id ? "Update Product" : "Add Product"}
@@ -372,6 +268,14 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       </div>
     </div>
   );
+};
+
+ProductModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  data: PropTypes.object,
+  viewOnly: PropTypes.bool,
 };
 
 export default ProductModal;

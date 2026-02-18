@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import PropTypes from "prop-types";
 import {
   getNotifications,
   markNotificationRead,
@@ -53,18 +54,25 @@ export const NotificationProvider = ({ children }) => {
     fetchUnreadCount();
   };
 
+  const contextValue = useMemo(
+    () => ({
+      notifications,
+      unreadCount,
+      loading,
+      fetchNotifications,
+      fetchUnreadCount,
+      markAsRead,
+    }),
+    [notifications, unreadCount, loading, fetchNotifications, fetchUnreadCount],
+  );
+
   return (
-    <NotificationContextBase.Provider
-      value={{
-        notifications,
-        unreadCount,
-        loading,
-        fetchNotifications,
-        fetchUnreadCount,
-        markAsRead,
-      }}
-    >
+    <NotificationContextBase.Provider value={contextValue}>
       {children}
     </NotificationContextBase.Provider>
   );
+};
+
+NotificationProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { useAuth } from "../contexts/auth/useAuth";
 import { getOrderRequests } from "../api";
 import Pagination from "../components/Pagination";
@@ -8,7 +9,6 @@ import { formatDate } from "../utils/dateFormat";
 import { HiSelector, HiOutlineFilter, HiOutlineRefresh } from "react-icons/hi";
 import { Listbox } from "@headlessui/react";
 import DatePicker from "../components/DatePicker";
-
 const statusOptions = [
   { value: "pending", label: "Pending" },
   { value: "approved", label: "Approved" },
@@ -19,30 +19,41 @@ const statusOptions = [
 ];
 
 function StatusDropdown({ value, onChange }) {
+  const selectedLabel =
+    statusOptions.find((opt) => opt.value === value)?.label || "All Statuses";
+
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
-          <span>{value || "All Statuses"}</span>
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+          <span>{selectedLabel}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {statusOptions.map((option) => (
-            <Listbox.Option
+            <ListboxOption
               key={option.value}
               value={option.value}
               className={({ selected }) =>
-                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
+                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${
+                  selected ? "bg-[#1e3a5f] text-white" : ""
+                }`
               }
             >
               {option.label}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
+
+StatusDropdown.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
@@ -250,7 +261,7 @@ const OrderHistory = () => {
                     <td>{formatDate(order.delivery_date) || "-"}</td>
                     <td>
                       <span
-                        className={`inline-block w-[90px] text-center py-1.5 rounded-full text-sm text-white ${order.status === "approved" ? "bg-green-400" : order.status === "rejected" ? "bg-red-400" : order.status === "completed" ? "bg-blue-400" : "bg-yellow-400"}`}
+                        className={`inline-block w-22.5 text-center py-1.5 rounded-full text-sm text-white ${order.status === "approved" ? "bg-green-400" : order.status === "rejected" ? "bg-red-400" : order.status === "completed" ? "bg-blue-400" : "bg-yellow-400"}`}
                       >
                         {order.status
                           ? order.status.charAt(0).toUpperCase() +

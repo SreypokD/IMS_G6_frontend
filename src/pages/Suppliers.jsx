@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Listbox } from "@headlessui/react";
+import { Listbox, Menu } from "@headlessui/react";
+import PropTypes from "prop-types";
 import {
   HiOutlinePlus,
   HiOutlinePencil,
@@ -10,14 +11,12 @@ import {
 } from "react-icons/hi2";
 import {
   HiOutlineCheckCircle,
-  HiOutlineXCircle,
   HiOutlineArchive,
   HiSelector,
   HiOutlineFilter,
   HiOutlineRefresh,
   HiDotsVertical,
 } from "react-icons/hi";
-import { Menu } from "@headlessui/react";
 import {
   getSuppliers,
   createSupplier,
@@ -40,13 +39,13 @@ function StatusDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>{value || "All Statuses"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {statusOptions.map((option) => (
-            <Listbox.Option
+            <ListboxOption
               key={option}
               value={option}
               className={({ selected }) =>
@@ -54,25 +53,30 @@ function StatusDropdown({ value, onChange }) {
               }
             >
               {option}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
 
+StatusDropdown.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
 function LocationDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>{value || "All Locations"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {locationOptions.map((option) => (
-            <Listbox.Option
+            <ListboxOption
               key={option}
               value={option}
               className={({ selected }) =>
@@ -80,13 +84,22 @@ function LocationDropdown({ value, onChange }) {
               }
             >
               {option}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
+
+LocationDropdown.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
 
 const Suppliers = () => {
   const [suppliers, setSuppliers] = useState([]);
@@ -104,7 +117,7 @@ const Suppliers = () => {
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false);
-  const [updateSupplier, setUpdateSupplier] = useState(null);
+  const [editSupplier, setEditSupplier] = useState(null);
 
   // Loading and Error
   const [loading, setLoading] = useState(false);
@@ -118,10 +131,10 @@ const Suppliers = () => {
   // Permissions
   const dialog = useDialog();
   const { user } = useAuth();
-  const canView = user?.permission?.permissions?.includes("view_supplier");
-  const canCreate = user?.permission?.permissions?.includes("create_supplier");
-  const canUpdate = user?.permission?.permissions?.includes("update_supplier");
-  const canDelete = user?.permission?.permissions?.includes("delete_supplier");
+  const canView = getPermission(user, "view_supplier");
+  const canCreate = getPermission(user, "create_supplier");
+  const canUpdate = getPermission(user, "update_supplier");
+  const canDelete = getPermission(user, "delete_supplier");
 
   useEffect(() => {
     if (user) {
@@ -168,7 +181,7 @@ const Suppliers = () => {
 
   function handleView(supplier) {
     // Always open in view mode (viewOnly) for view action
-    setUpdateSupplier(null);
+    setEditSupplier(null);
     setViewSupplier(supplier);
     setModalOpen(true);
   }
@@ -178,8 +191,8 @@ const Suppliers = () => {
     setLoading(true);
     setError("");
     try {
-      if (updateSupplier) {
-        await updateSupplier(updateSupplier._id, supplier);
+      if (editSupplier) {
+        await updateSupplier(editSupplier._id, supplier);
         dialog.success("Supplier updated successfully");
       } else {
         await createSupplier(supplier);
@@ -187,7 +200,7 @@ const Suppliers = () => {
       }
       fetchSuppliers(pagination.page, pagination.limit);
       setModalOpen(false);
-      setUpdateSupplier(null);
+      setEditSupplier(null);
     } catch {
       setError("Failed to save supplier");
       dialog.error("Failed to save supplier");
@@ -244,7 +257,6 @@ const Suppliers = () => {
         const res = await getSuppliers(params);
         const allIds = res.data.data.map((s) => s._id);
         setSelectedIds(allIds);
-        setSelectAllMatches(true);
       } catch (err) {
         console.error(err);
       } finally {
@@ -252,7 +264,6 @@ const Suppliers = () => {
       }
     } else {
       setSelectedIds([]);
-      setSelectAllMatches(false);
     }
   }
 
@@ -268,9 +279,7 @@ const Suppliers = () => {
     if (selectedIds.length === 0) return;
     setLoading(true);
     try {
-      await Promise.all(
-        selectedIds.map((id) => updateSupplier(id, { status })),
-      );
+      await Promise.all(selectedIds.map((id) => editSupplier(id, { status })));
       await dialog.success(`Suppliers marked as ${status} successfully.`);
       fetchSuppliers(
         pagination.page,
@@ -280,7 +289,6 @@ const Suppliers = () => {
         location,
       );
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to update suppliers.");
     } finally {
@@ -311,7 +319,6 @@ const Suppliers = () => {
         location,
       );
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to delete suppliers.");
     } finally {
@@ -319,26 +326,187 @@ const Suppliers = () => {
     }
   }
 
+  // Determine modal key based on current state
+  let modalKey = "closed";
+  if (modalOpen && editSupplier) {
+    modalKey = editSupplier._id;
+  } else if (modalOpen && viewSupplier) {
+    modalKey = viewSupplier._id;
+  } else if (modalOpen) {
+    modalKey = "new";
+  }
+
+  // Render table content based on loading and error states
+  function renderTableContent() {
+    if (loading) {
+      return <Loading />;
+    }
+
+    if (error) {
+      return <div className="p-8 text-center text-red-500">{error}</div>;
+    }
+
+    return (
+      <table className="min-w-full text-left text-sm align-middle">
+        <thead className="table-sticky-header">
+          <tr>
+            {(canUpdate || canDelete) && (
+              <th className="w-15">
+                <input
+                  type="checkbox"
+                  name="selectAll"
+                  id="selectAll"
+                  className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
+                  checked={
+                    suppliers.length > 0 &&
+                    selectedIds.length === pagination.totalItems
+                  }
+                  onChange={handleSelectAll}
+                />
+              </th>
+            )}
+            <th className="number">No.</th>
+            <th>Company Name</th>
+            <th>Contact Person</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Products</th>
+            <th>Status</th>
+            {canView || canUpdate || canDelete ? (
+              <th className="text-center action">Actions</th>
+            ) : null}
+          </tr>
+        </thead>
+        <tbody>
+          {suppliers.map((supplier, index) => (
+            <tr key={supplier._id} className="hover:bg-[#f1f5f9]">
+              {(canUpdate || canDelete) && (
+                <td className="w-15">
+                  <input
+                    type="checkbox"
+                    name="select"
+                    id="select"
+                    className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
+                    checked={selectedIds.includes(supplier._id)}
+                    onChange={(e) => handleSelectOne(e, supplier._id)}
+                  />
+                </td>
+              )}
+              <td className="number">
+                {index + 1 + (pagination.page - 1) * pagination.limit}
+              </td>
+              <td>
+                <div className="flex items-center gap-2">
+                  <HiOutlineBuildingOffice2 className="text-lg text-blue-700" />
+                  {supplier.company_name}
+                </div>
+              </td>
+              <td className="flex items-center gap-1">
+                {supplier.contact_person}
+              </td>
+              <td>{supplier.contact_email}</td>
+              <td>{supplier.contact_phone}</td>
+              <td>
+                <span className="flex items-center gap-2">
+                  <HiOutlineCube className="text-sm" />
+                  <span>
+                    {typeof supplier.products_count === "number"
+                      ? supplier.products_count
+                      : 0}
+                  </span>
+                </span>
+              </td>
+              <td>
+                <span
+                  className={`inline-block px-3 py-1 rounded-full text-sm capitalize text-white ${supplier.status === "Active" ? "bg-green-400" : "bg-gray-100"}`}
+                >
+                  {supplier.status}
+                </span>
+              </td>
+              <td className="flex items-center gap-1 justify-center action">
+                {canView && (
+                  <button
+                    className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
+                    title="View"
+                    onClick={() => handleView(supplier)}
+                  >
+                    <HiOutlineEye className="text-xl" />
+                  </button>
+                )}
+                {(canUpdate || canDelete) && (
+                  <Menu as="div" className="relative inline-block text-left">
+                    <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                      <HiDotsVertical className="text-xl" />
+                    </MenuButton>
+                    <MenuItems
+                      anchor="bottom end"
+                      className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
+                    >
+                      {canUpdate && (
+                        <MenuItem>
+                          {() => (
+                            <button
+                              onClick={() => {
+                                setEditSupplier(supplier);
+                                setModalOpen(true);
+                              }}
+                              className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"
+                            >
+                              <HiOutlinePencil
+                                className="mr-2 h-5 w-5"
+                                aria-hidden="true"
+                              />
+                              Update
+                            </button>
+                          )}
+                        </MenuItem>
+                      )}
+                      {canDelete && (
+                        <MenuItem>
+                          {() => (
+                            <button
+                              onClick={() => handleDelete(supplier._id)}
+                              className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
+                            >
+                              <HiOutlineTrash
+                                className="text-red-500 mr-2 h-5 w-5"
+                                aria-hidden="true"
+                              />
+                              Delete
+                            </button>
+                          )}
+                        </MenuItem>
+                      )}
+                    </MenuItems>
+                  </Menu>
+                )}
+              </td>
+            </tr>
+          ))}
+          {suppliers.length === 0 && (
+            <tr>
+              <td colSpan={canCreate || canUpdate || canDelete ? 8 : 7}>
+                <NoDataFound message="No suppliers found." />
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    );
+  }
+
   return (
     <div className="h-content-available">
       <SupplierModal
-        key={
-          modalOpen
-            ? updateSupplier
-              ? updateSupplier._id
-              : viewSupplier
-                ? viewSupplier._id
-                : "new"
-            : "closed"
-        }
+        key={modalKey}
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setUpdateSupplier(null);
+          setEditSupplier(null);
           setViewSupplier(null);
         }}
         onSave={handleSave}
-        data={updateSupplier || viewSupplier}
+        data={editSupplier || viewSupplier}
         viewOnly={!!viewSupplier}
       />
       <div className="flex items-center justify-between mb-8">
@@ -353,7 +521,7 @@ const Suppliers = () => {
             <button
               className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
               onClick={() => {
-                setUpdateSupplier(null);
+                setEditSupplier(null);
                 setModalOpen(true);
               }}
             >
@@ -362,14 +530,14 @@ const Suppliers = () => {
           )}
           {(canUpdate || canDelete) && (
             <Menu as="div" className="relative inline-block text-left ml-2">
-              <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+              <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                 <HiDotsVertical className="text-xl" />
-              </Menu.Button>
-              <Menu.Items
+              </MenuButton>
+              <MenuItems
                 anchor="bottom end"
                 className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
               >
-                <Menu.Item>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkStatus("Active")}
@@ -382,8 +550,8 @@ const Suppliers = () => {
                       Active Suppliers
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkStatus("Inactive")}
@@ -396,8 +564,8 @@ const Suppliers = () => {
                       Archive Suppliers
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={handleBulkDelete}
@@ -410,8 +578,8 @@ const Suppliers = () => {
                       Delete Suppliers
                     </button>
                   )}
-                </Menu.Item>
-              </Menu.Items>
+                </MenuItem>
+              </MenuItems>
             </Menu>
           )}
         </div>
@@ -432,8 +600,14 @@ const Suppliers = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <div>
-            <label className="block text-gray-700 text-sm mb-1">Search</label>
+            <label
+              htmlFor="supplier-search"
+              className="block text-gray-700 text-sm mb-1"
+            >
+              Search
+            </label>
             <input
+              id="supplier-search"
               className="bg-gray-50 border border-gray-100 rounded-lg py-2 px-4 text-gray-700 min-w-0 w-full text-sm"
               placeholder="Search..."
               value={search}
@@ -451,8 +625,14 @@ const Suppliers = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">Location</label>
+            <label
+              htmlFor="supplier-location"
+              className="block text-gray-700 text-sm mb-1"
+            >
+              Location
+            </label>
             <LocationDropdown
+              id="supplier-location"
               value={location}
               onChange={(val) => {
                 setLocation(val);
@@ -462,8 +642,14 @@ const Suppliers = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">Status</label>
+            <label
+              htmlFor="supplier-status"
+              className="block text-gray-700 text-sm mb-1"
+            >
+              Status
+            </label>
             <StatusDropdown
+              id="supplier-status"
               value={status}
               onChange={(val) => {
                 setStatus(val);
@@ -475,162 +661,7 @@ const Suppliers = () => {
         </div>
       </div>
       <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
-        <div className="table-scroll-container">
-          {loading ? (
-            <Loading />
-          ) : error ? (
-            <div className="p-8 text-center text-red-500">{error}</div>
-          ) : (
-            <table className="min-w-full text-left text-sm align-middle">
-              <thead className="table-sticky-header">
-                <tr>
-                  {(canUpdate || canDelete) && (
-                    <th className="w-15">
-                      <input
-                        type="checkbox"
-                        name="selectAll"
-                        id="selectAll"
-                        className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
-                        checked={
-                          suppliers.length > 0 &&
-                          selectedIds.length === pagination.totalItems
-                        }
-                        onChange={handleSelectAll}
-                      />
-                    </th>
-                  )}
-                  <th className="number">No.</th>
-                  <th>Company Name</th>
-                  <th>Contact Person</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th>Products</th>
-                  <th>Status</th>
-                  {canView || canUpdate || canDelete ? (
-                    <th className="text-center action">Actions</th>
-                  ) : null}
-                </tr>
-              </thead>
-              <tbody>
-                {suppliers.map((supplier, index) => (
-                  <tr key={supplier._id} className="hover:bg-[#f1f5f9]">
-                    {(canUpdate || canDelete) && (
-                      <td className="w-15">
-                        <input
-                          type="checkbox"
-                          name="select"
-                          id="select"
-                          className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
-                          checked={selectedIds.includes(supplier._id)}
-                          onChange={(e) => handleSelectOne(e, supplier._id)}
-                        />
-                      </td>
-                    )}
-                    <td className="number">
-                      {index + 1 + (pagination.page - 1) * pagination.limit}
-                    </td>
-                    <td>
-                      <div className="flex items-center gap-2">
-                        <HiOutlineBuildingOffice2 className="text-lg text-blue-700" />
-                        {supplier.company_name}
-                      </div>
-                    </td>
-                    <td className="flex items-center gap-1">
-                      {supplier.contact_person}
-                    </td>
-                    <td>{supplier.contact_email}</td>
-                    <td>{supplier.contact_phone}</td>
-                    <td>
-                      <span className="flex items-center gap-2">
-                        <HiOutlineCube className="text-sm" />
-                        <span>
-                          {typeof supplier.products_count === "number"
-                            ? supplier.products_count
-                            : 0}
-                        </span>
-                      </span>
-                    </td>
-                    <td>
-                      <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm capitalize text-white ${supplier.status === "Active" ? "bg-green-400" : "bg-gray-100"}`}
-                      >
-                        {supplier.status}
-                      </span>
-                    </td>
-                    <td className="flex items-center gap-1 justify-center action">
-                      {canView && (
-                        <button
-                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
-                          title="View"
-                          onClick={() => handleView(supplier)}
-                        >
-                          <HiOutlineEye className="text-xl" />
-                        </button>
-                      )}
-                      {(canUpdate || canDelete) && (
-                        <Menu
-                          as="div"
-                          className="relative inline-block text-left"
-                        >
-                          <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
-                            <HiDotsVertical className="text-xl" />
-                          </Menu.Button>
-                          <Menu.Items
-                            anchor="bottom end"
-                            className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
-                          >
-                            {canUpdate && (
-                              <Menu.Item>
-                                {() => (
-                                  <button
-                                    onClick={() => {
-                                      setUpdateSupplier(supplier);
-                                      setModalOpen(true);
-                                    }}
-                                    className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"
-                                  >
-                                    <HiOutlinePencil
-                                      className="mr-2 h-5 w-5"
-                                      aria-hidden="true"
-                                    />
-                                    Update
-                                  </button>
-                                )}
-                              </Menu.Item>
-                            )}
-                            {canDelete && (
-                              <Menu.Item>
-                                {() => (
-                                  <button
-                                    onClick={() => handleDelete(supplier._id)}
-                                    className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
-                                  >
-                                    <HiOutlineTrash
-                                      className="text-red-500 mr-2 h-5 w-5"
-                                      aria-hidden="true"
-                                    />
-                                    Delete
-                                  </button>
-                                )}
-                              </Menu.Item>
-                            )}
-                          </Menu.Items>
-                        </Menu>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-                {suppliers.length === 0 && (
-                  <tr>
-                    <td colSpan={canCreate || canUpdate || canDelete ? 8 : 7}>
-                      <NoDataFound message="No suppliers found." />
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          )}
-        </div>
+        <div className="table-scroll-container">{renderTableContent()}</div>
       </div>
       {suppliers.length > 0 && (
         <div className="flex justify-end mt-3">

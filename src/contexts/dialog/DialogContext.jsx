@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
+import PropTypes from "prop-types";
 import Dialog from "../../components/Dialog";
 import { DialogContextBase } from "./DialogContextBase";
 
@@ -7,7 +8,7 @@ export function DialogProvider({ children }) {
   // Promise-based ask dialog
   const ask = useCallback((options) => {
     return new Promise((resolve) => {
-      if (typeof window !== "undefined" && window.location.pathname === "/login") {
+      if (globalThis.window?.location.pathname === "/login") {
         // Suppress dialog on login page
         resolve(false);
         return;
@@ -18,9 +19,9 @@ export function DialogProvider({ children }) {
         title: options.title,
         message: options.message,
         showActions:
-          typeof options.showActions !== "undefined"
-            ? options.showActions
-            : ["confirm", "warning"].includes(options.type),
+          options.showActions === "undefined"
+            ? ["confirm", "warning"].includes(options.type)
+            : options.showActions,
         confirmText: options.confirmText || "OK",
         cancelText: options.cancelText || "Cancel",
         onConfirm: () => {
@@ -42,7 +43,7 @@ export function DialogProvider({ children }) {
   // Promise-based prompt dialog
   const prompt = useCallback((options) => {
     return new Promise((resolve) => {
-      if (typeof window !== "undefined" && window.location.pathname === "/login") {
+      if (globalThis.window?.location.pathname === "/login") {
         resolve(null);
         return;
       }
@@ -76,7 +77,7 @@ export function DialogProvider({ children }) {
   // Simple success/info/error dialogs
   const show = useCallback((type, message, title = "", confirmText = "OK") => {
     return new Promise((resolve) => {
-      if (typeof window !== "undefined" && window.location.pathname === "/login") {
+      if (globalThis.window?.location.pathname === "/login") {
         // Suppress dialog on login page
         resolve();
         return;
@@ -100,16 +101,20 @@ export function DialogProvider({ children }) {
     });
   }, []);
 
-  const value = {
-    ask,
-    prompt,
-    success: (msg, title, confirmText) =>
-      show("success", msg, title, confirmText),
-    error: (msg, title, confirmText) => show("error", msg, title, confirmText),
-    info: (msg, title, confirmText) => show("info", msg, title, confirmText),
-    warning: (msg, title, confirmText) =>
-      show("warning", msg, title, confirmText),
-  };
+  const value = useMemo(
+    () => ({
+      ask,
+      prompt,
+      success: (msg, title, confirmText) =>
+        show("success", msg, title, confirmText),
+      error: (msg, title, confirmText) =>
+        show("error", msg, title, confirmText),
+      info: (msg, title, confirmText) => show("info", msg, title, confirmText),
+      warning: (msg, title, confirmText) =>
+        show("warning", msg, title, confirmText),
+    }),
+    [ask, prompt, show],
+  );
 
   return (
     <DialogContextBase.Provider value={value}>
@@ -118,3 +123,7 @@ export function DialogProvider({ children }) {
     </DialogContextBase.Provider>
   );
 }
+
+DialogProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};

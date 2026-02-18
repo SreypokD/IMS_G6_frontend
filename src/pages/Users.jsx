@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import {
   HiSelector,
   HiOutlineFilter,
@@ -35,15 +36,15 @@ function PermissionDropdown({
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>
             {permissions.find((p) => p._id === selected)?.name || "All Roles"}
           </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {permissions.map((option) => (
-            <Listbox.Option
+            <ListboxOption
               key={option._id}
               value={option._id}
               className={({ selected }) =>
@@ -51,28 +52,32 @@ function PermissionDropdown({
               }
             >
               {option.name}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
+
+PermissionDropdown.propTypes = {
+  selected: PropTypes.string.isRequired,
+  setSelected: PropTypes.func.isRequired,
+  permissionOptions: PropTypes.array.isRequired,
+};
 
 function StatusDropdown({ selected, setSelected }) {
   const statuses = ["active", "inactive", "pending"];
   return (
     <Listbox value={selected} onChange={setSelected}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
-          <span className="capitalize">
-            {selected ? selected : "All Status"}
-          </span>
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+          <span className="capitalize">{selected || "All Status"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {statuses.map((s) => (
-            <Listbox.Option
+            <ListboxOption
               key={s}
               value={s}
               className={({ selected }) =>
@@ -80,13 +85,22 @@ function StatusDropdown({ selected, setSelected }) {
               }
             >
               {s}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
+
+StatusDropdown.propTypes = {
+  selected: PropTypes.string.isRequired,
+  setSelected: PropTypes.func.isRequired,
+};
+
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -126,10 +140,10 @@ const Users = () => {
   const [selectedIds, setSelectedIds] = useState([]);
 
   // Permissions
-  const canView = user?.permission?.permissions?.includes("view_user");
-  const canCreate = user?.permission?.permissions?.includes("create_user");
-  const canUpdate = user?.permission?.permissions?.includes("update_user");
-  const canDelete = user?.permission?.permissions?.includes("delete_user");
+  const canView = getPermission(user, "view_user");
+  const canCreate = getPermission(user, "create_user");
+  const canUpdate = getPermission(user, "update_user");
+  const canDelete = getPermission(user, "delete_user");
 
   useEffect(() => {
     getPermissions({ limit: -1 }).then((res) => {
@@ -146,7 +160,7 @@ const Users = () => {
   useEffect(() => {
     if (user) {
       const delayDebounceFn = setTimeout(() => {
-        fetchUsers(1, pagination.limit, search, permission, status);
+        fetchUsers(search, permission, status, 1, pagination.limit);
         setPagination((prev) => ({ ...prev, page: 1 }));
       }, 500);
       return () => clearTimeout(delayDebounceFn);
@@ -195,7 +209,7 @@ const Users = () => {
         selectedIds.map((id) => updateUser(id, { status: newStatus })),
       );
       await dialog.success(`Users marked as ${newStatus} successfully.`);
-      fetchUsers(pagination.page, pagination.limit, search, permission, status);
+      fetchUsers(search, permission, status, pagination.page, pagination.limit);
       setSelectedIds([]);
     } catch {
       await dialog.error("Failed to update users.");
@@ -219,7 +233,7 @@ const Users = () => {
     try {
       await Promise.all(selectedIds.map((id) => deleteUser(id)));
       await dialog.success("Users deleted successfully.");
-      fetchUsers(pagination.page, pagination.limit, search, permission, status);
+      fetchUsers(search, permission, status, pagination.page, pagination.limit);
       setSelectedIds([]);
     } catch {
       await dialog.error("Failed to delete users.");
@@ -230,11 +244,11 @@ const Users = () => {
 
   // Fetch users from API
   async function fetchUsers(
-    page = 1,
-    limit = 10,
     search,
     permission_id,
     status,
+    page = 1,
+    limit = 10,
   ) {
     setLoading(true);
     setError("");
@@ -275,7 +289,7 @@ const Users = () => {
         await createUser(user);
         dialog.success("User created successfully");
       }
-      fetchUsers(1, pagination.limit, search, permission, status);
+      fetchUsers(search, permission, status, 1, pagination.limit);
       setModalOpen(false);
       setEditUser(null);
     } catch {
@@ -338,7 +352,7 @@ const Users = () => {
     setPermission("");
     setStatus("");
     setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchUsers(1, pagination.limit, "", "", "");
+    fetchUsers("", "", "", 1, pagination.limit);
   };
 
   return (
@@ -375,14 +389,14 @@ const Users = () => {
           )}
           {(canUpdate || canDelete) && (
             <Menu as="div" className="relative inline-block text-left ml-2">
-              <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+              <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                 <HiDotsVertical className="text-xl" />
-              </Menu.Button>
-              <Menu.Items
+              </MenuButton>
+              <MenuItems
                 anchor="bottom end"
                 className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
               >
-                <Menu.Item>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkStatus("active")}
@@ -395,8 +409,8 @@ const Users = () => {
                       Activate Users
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkStatus("pending")}
@@ -409,8 +423,8 @@ const Users = () => {
                       Mark as Pending
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkStatus("inactive")}
@@ -423,8 +437,8 @@ const Users = () => {
                       Deactivate Users
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={handleBulkDelete}
@@ -437,8 +451,8 @@ const Users = () => {
                       Delete Users
                     </button>
                   )}
-                </Menu.Item>
-              </Menu.Items>
+                </MenuItem>
+              </MenuItems>
             </Menu>
           )}
         </div>
@@ -571,15 +585,15 @@ const Users = () => {
                           as="div"
                           className="relative inline-block text-left"
                         >
-                          <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                          <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                             <HiDotsVertical className="text-xl" />
-                          </Menu.Button>
-                          <Menu.Items
+                          </MenuButton>
+                          <MenuItems
                             anchor="bottom end"
                             className="bg-white rounded-2xl shadow-lg p-2 w-45 z-50 animate-fade-in-up border border-gray-100"
                           >
                             {canUpdate && (
-                              <Menu.Item>
+                              <MenuItem>
                                 {() => (
                                   <button
                                     onClick={() => {
@@ -596,10 +610,10 @@ const Users = () => {
                                     Update
                                   </button>
                                 )}
-                              </Menu.Item>
+                              </MenuItem>
                             )}
                             {canUpdate && (
-                              <Menu.Item>
+                              <MenuItem>
                                 {() => (
                                   <button
                                     onClick={() => handleResetPassword(u._id)}
@@ -612,10 +626,10 @@ const Users = () => {
                                     Reset Password
                                   </button>
                                 )}
-                              </Menu.Item>
+                              </MenuItem>
                             )}
                             {canDelete && (
-                              <Menu.Item>
+                              <MenuItem>
                                 {() => (
                                   <button
                                     onClick={() => handleDelete(u._id)}
@@ -628,9 +642,9 @@ const Users = () => {
                                     Delete
                                   </button>
                                 )}
-                              </Menu.Item>
+                              </MenuItem>
                             )}
-                          </Menu.Items>
+                          </MenuItems>
                         </Menu>
                       )}
                     </td>
@@ -656,7 +670,7 @@ const Users = () => {
             limit={pagination.limit}
             onChange={({ page, limit }) => {
               setPagination((prev) => ({ ...prev, page, limit }));
-              fetchUsers(page, limit, search, permission, status);
+              fetchUsers(search, permission, status, page, limit);
             }}
           />
         </div>

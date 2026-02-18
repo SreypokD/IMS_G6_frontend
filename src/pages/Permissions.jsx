@@ -24,6 +24,10 @@ import NoDataFound from "../components/NoDataFound";
 import Loading from "../components/Loading";
 import { useDialog } from "../contexts/dialog/useDialog";
 
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
+
 const Permissions = () => {
   const [roles, setRoles] = useState([]);
 
@@ -53,17 +57,11 @@ const Permissions = () => {
   // Filters
   const [search, setSearch] = useState("");
 
-  // Select All
-  const [selectAllMatches, setSelectAllMatches] = useState(false);
-
   // Permissions (Access Control)
-  const canView = user?.permission?.permissions?.includes("view_permission");
-  const canCreate =
-    user?.permission?.permissions?.includes("create_permission");
-  const canUpdate =
-    user?.permission?.permissions?.includes("update_permission");
-  const canDelete =
-    user?.permission?.permissions?.includes("delete_permission");
+  const canView = getPermission(user, "view_permission");
+  const canCreate = getPermission(user, "create_permission");
+  const canUpdate = getPermission(user, "update_permission");
+  const canDelete = getPermission(user, "delete_permission");
 
   useEffect(() => {
     if (user) {
@@ -163,7 +161,6 @@ const Permissions = () => {
       setSelectedIds(roles.map((p) => p._id));
     } else {
       setSelectedIds([]);
-      setSelectAllMatches(false);
     }
   }
 
@@ -185,7 +182,6 @@ const Permissions = () => {
       await dialog.success(`Roles marked as ${status} successfully.`);
       fetchRoles(pagination.page, pagination.limit, search);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to update roles.");
     } finally {
@@ -210,7 +206,6 @@ const Permissions = () => {
       await dialog.success("Roles deleted successfully.");
       fetchRoles(pagination.page, pagination.limit, search);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to delete roles.");
     } finally {
@@ -251,14 +246,14 @@ const Permissions = () => {
           )}
           {(canUpdate || canDelete) && (
             <Menu as="div" className="relative inline-block text-left ml-2">
-              <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+              <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                 <HiDotsVertical className="text-xl" />
-              </Menu.Button>
-              <Menu.Items
+              </MenuButton>
+              <MenuItems
                 anchor="bottom end"
                 className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
               >
-                <Menu.Item>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkStatus("active")}
@@ -271,8 +266,8 @@ const Permissions = () => {
                       Active Roles
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkStatus("inactive")}
@@ -285,8 +280,8 @@ const Permissions = () => {
                       Archive Roles
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={handleBulkDelete}
@@ -299,8 +294,8 @@ const Permissions = () => {
                       Delete Roles
                     </button>
                   )}
-                </Menu.Item>
-              </Menu.Items>
+                </MenuItem>
+              </MenuItems>
             </Menu>
           )}
         </div>
@@ -407,15 +402,15 @@ const Permissions = () => {
                           as="div"
                           className="relative inline-block text-left"
                         >
-                          <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                          <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                             <HiDotsVertical className="text-xl" />
-                          </Menu.Button>
-                          <Menu.Items
+                          </MenuButton>
+                          <MenuItems
                             anchor="bottom end"
                             className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
                           >
                             {canUpdate && (
-                              <Menu.Item>
+                              <MenuItem>
                                 {() => (
                                   <button
                                     onClick={() => {
@@ -432,10 +427,10 @@ const Permissions = () => {
                                     Update
                                   </button>
                                 )}
-                              </Menu.Item>
+                              </MenuItem>
                             )}
                             {canDelete && (
-                              <Menu.Item>
+                              <MenuItem>
                                 {() => (
                                   <button
                                     onClick={() => handleDelete(role._id)}
@@ -448,9 +443,9 @@ const Permissions = () => {
                                     Delete
                                   </button>
                                 )}
-                              </Menu.Item>
+                              </MenuItem>
                             )}
-                          </Menu.Items>
+                          </MenuItems>
                         </Menu>
                       )}
                     </td>

@@ -24,6 +24,10 @@ import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 import Loading from "../components/Loading";
 
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
+
 const Categories = () => {
   const [categories, setCategories] = useState([]);
 
@@ -55,10 +59,10 @@ const Categories = () => {
   const [selectedIds, setSelectedIds] = useState([]);
 
   // Permissions
-  const canView = user?.permission?.permissions?.includes("view_category");
-  const canCreate = user?.permission?.permissions?.includes("create_category");
-  const canUpdate = user?.permission?.permissions?.includes("update_category");
-  const canDelete = user?.permission?.permissions?.includes("delete_category");
+  const canView = getPermission(user, "view_category");
+  const canCreate = getPermission(user, "create_category");
+  const canUpdate = getPermission(user, "update_category");
+  const canDelete = getPermission(user, "delete_category");
 
   useEffect(() => {
     if (user) {
@@ -151,7 +155,6 @@ const Categories = () => {
         const res = await getCategories({ limit: -1, search });
         const allIds = res.data.data.map((c) => c._id);
         setSelectedIds(allIds);
-        setSelectAllMatches(true);
       } catch (err) {
         console.error(err);
       } finally {
@@ -159,7 +162,6 @@ const Categories = () => {
       }
     } else {
       setSelectedIds([]);
-      setSelectAllMatches(false);
     }
   }
 
@@ -181,7 +183,6 @@ const Categories = () => {
       await dialog.success(`Categories marked as ${status} successfully.`);
       fetchCategories(pagination.page, pagination.limit, search);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to update categories.");
     } finally {
@@ -206,7 +207,6 @@ const Categories = () => {
       await dialog.success("Categories deleted successfully.");
       fetchCategories(pagination.page, pagination.limit, search);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to delete categories.");
     } finally {
@@ -248,14 +248,14 @@ const Categories = () => {
           )}
           {(canUpdate || canDelete) && (
             <Menu as="div" className="relative inline-block text-left">
-              <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+              <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                 <HiDotsVertical className="text-xl" />
-              </Menu.Button>
-              <Menu.Items
+              </MenuButton>
+              <MenuItems
                 anchor="bottom end"
                 className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
               >
-                <Menu.Item>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkStatus("active")}
@@ -268,8 +268,8 @@ const Categories = () => {
                       Active Categories
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkStatus("inactive")}
@@ -282,8 +282,8 @@ const Categories = () => {
                       Archive Categories
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={handleBulkDelete}
@@ -296,8 +296,8 @@ const Categories = () => {
                       Delete Categories
                     </button>
                   )}
-                </Menu.Item>
-              </Menu.Items>
+                </MenuItem>
+              </MenuItems>
             </Menu>
           )}
         </div>
@@ -404,15 +404,15 @@ const Categories = () => {
                           as="div"
                           className="relative inline-block text-left"
                         >
-                          <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                          <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                             <HiDotsVertical className="text-xl" />
-                          </Menu.Button>
-                          <Menu.Items
+                          </MenuButton>
+                          <MenuItems
                             anchor="bottom end"
                             className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
                           >
                             {canUpdate && (
-                              <Menu.Item>
+                              <MenuItem>
                                 {() => (
                                   <button
                                     onClick={() => {
@@ -429,10 +429,10 @@ const Categories = () => {
                                     Update
                                   </button>
                                 )}
-                              </Menu.Item>
+                              </MenuItem>
                             )}
                             {canDelete && (
-                              <Menu.Item>
+                              <MenuItem>
                                 {() => (
                                   <button
                                     onClick={() => handleDelete(category._id)}
@@ -445,9 +445,9 @@ const Categories = () => {
                                     Delete
                                   </button>
                                 )}
-                              </Menu.Item>
+                              </MenuItem>
                             )}
-                          </Menu.Items>
+                          </MenuItems>
                         </Menu>
                       )}
                     </td>

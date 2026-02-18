@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import {
   HiCheckCircle,
   HiExclamationCircle,
@@ -142,4 +143,19 @@ const Dialog = ({
   );
 };
 
+Dialog.propTypes = {
+  open: PropTypes.bool,
+  type: PropTypes.oneOf(["success", "confirm", "error", "warning", "info"]),
+  title: PropTypes.string,
+  message: PropTypes.string,
+  onClose: PropTypes.func,
+  onConfirm: PropTypes.func,
+  confirmText: PropTypes.string,
+  cancelText: PropTypes.string,
+  showActions: PropTypes.bool,
+  showInput: PropTypes.bool,
+  inputType: PropTypes.string,
+  placeholder: PropTypes.string,
+  children: PropTypes.node,
+};
 export default Dialog;

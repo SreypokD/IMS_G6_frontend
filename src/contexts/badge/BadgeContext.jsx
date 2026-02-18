@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
+import PropTypes from "prop-types";
 import { getPendingOrderRequestCount } from "../../api";
 import { BadgeContextBase } from "./BadgeContextBase";
 import { useAuth } from "../auth/useAuth";
@@ -44,4 +45,8 @@ export const BadgeProvider = ({ children }) => {
       {children}
     </BadgeContextBase.Provider>
   );
+};
+
+BadgeProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };

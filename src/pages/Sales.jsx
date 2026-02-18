@@ -7,6 +7,7 @@ import {
   updateSale,
   getSalesSummary,
 } from "../api";
+import PropTypes from "prop-types";
 import Pagination from "../components/Pagination";
 import SaleModal from "../components/SaleModal";
 import { useAuth } from "../contexts/auth/useAuth";
@@ -21,9 +22,6 @@ import {
   HiOutlineFilter,
   HiOutlineRefresh,
   HiSelector,
-} from "react-icons/hi";
-import { BsCurrencyDollar } from "react-icons/bs";
-import {
   HiOutlinePencil,
   HiOutlineTrash,
   HiOutlineEye,
@@ -31,6 +29,7 @@ import {
   HiOutlineArchive,
   HiOutlineCheckCircle,
 } from "react-icons/hi";
+import { BsCurrencyDollar } from "react-icons/bs";
 import { useDialog } from "../contexts/dialog/useDialog";
 import { Listbox, Menu } from "@headlessui/react";
 import { formatDate } from "../utils/dateFormat";
@@ -43,17 +42,17 @@ function UserDropdown({ value, onChange, userOptions = [] }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>
             {userOptions.find((u) => u._id === value)
               ? `${userOptions.find((u) => u._id === value).first_name} ${userOptions.find((u) => u._id === value).last_name}`
               : "All Users"}
           </span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {userOptions.map((user) => (
-            <Listbox.Option
+            <ListboxOption
               key={user._id}
               value={user._id}
               className={({ selected }) =>
@@ -61,25 +60,31 @@ function UserDropdown({ value, onChange, userOptions = [] }) {
               }
             >
               {user.first_name} {user.last_name}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
 
+UserDropdown.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  userOptions: PropTypes.array.isRequired,
+};
+
 function StatusDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
       <div className="relative">
-        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+        <ListboxButton className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
           <span>{value || "All Status"}</span>
           <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-        </Listbox.Button>
-        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+        </ListboxButton>
+        <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
           {statusOptions.map((status) => (
-            <Listbox.Option
+            <ListboxOption
               key={status}
               value={status}
               className={({ selected }) =>
@@ -87,13 +92,28 @@ function StatusDropdown({ value, onChange }) {
               }
             >
               {status}
-            </Listbox.Option>
+            </ListboxOption>
           ))}
-        </Listbox.Options>
+        </ListboxOptions>
       </div>
     </Listbox>
   );
 }
+
+StatusDropdown.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+const getInitialDate = (offsetDays = -7) => {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  return date.toISOString().split("T")[0];
+};
+
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
 
 const Sales = () => {
   const [sales, setSales] = useState([]);
@@ -130,36 +150,28 @@ const Sales = () => {
   // Dialog
   const { user } = useAuth();
   const dialog = useDialog();
-  const [updateSale, setUpdateSale] = useState(null);
+  const [editSale, setEditSale] = useState(null);
   const notification = useNotification();
 
   // Filters
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [customer, setCustomer] = useState("");
-  const [startDate, setStartDate] = useState(
-    new Date(new Date().setDate(new Date().getDate() - 7))
-      .toISOString()
-      .split("T")[0],
-  );
-  const [endDate, setEndDate] = useState(
-    new Date().toISOString().split("T")[0],
-  );
+  const [startDate, setStartDate] = useState(getInitialDate(-7));
+  const [endDate, setEndDate] = useState(getInitialDate(0));
   const [status, setStatus] = useState("");
 
   // Permissions
-  const canView = user?.permission?.permissions?.includes("view_sale");
-  const canCreate = user?.permission?.permissions?.includes("create_sale");
-  const canUpdate = user?.permission?.permissions?.includes("update_sale");
-  const canDelete = user?.permission?.permissions?.includes("delete_sale");
-  const canViewUsers = user?.permission?.permissions?.includes("view_user");
+  const canView = getPermission(user, "view_sale");
+  const canCreate = getPermission(user, "create_sale");
+  const canUpdate = getPermission(user, "update_sale");
+  const canDelete = getPermission(user, "delete_sale");
+  const canViewUsers = getPermission(user, "view_user");
 
   async function fetchSummary() {
     try {
       const res = await getSalesSummary();
-      if (res && res.data) {
-        setSummary(res.data);
-      }
+      setSummary(res?.data || {});
     } catch (err) {
       console.error("Failed to fetch sales summary:", err);
     }
@@ -170,9 +182,7 @@ const Sales = () => {
       if (canViewUsers) {
         getUsers({ limit: -1 })
           .then((res) => {
-            if (res && res.data) {
-              setUsers(res.data.data || []);
-            }
+            setUsers(res?.data?.data || []);
           })
           .catch((err) => console.error("Failed to load users", err));
       }
@@ -214,7 +224,7 @@ const Sales = () => {
   }
 
   function handleView(sale) {
-    setUpdateSale(null);
+    setEditSale(null);
     setViewSale(sale);
     setModalOpen(true);
   }
@@ -224,11 +234,11 @@ const Sales = () => {
     setLoading(true);
     setError("");
     try {
-      if (updateSale) {
-        await updateSale(updateSale._id, saleData);
+      if (editSale) {
+        await updateSale(editSale._id, saleData);
         dialog.success("Sale updated successfully");
         // Show notification if status changed to Completed
-        if (saleData.status && saleData.status.toLowerCase() === "completed") {
+        if (saleData.status?.toLowerCase?.() === "completed") {
           notification?.show?.({
             type: "success",
             message: "Sale marked as completed!",
@@ -240,7 +250,7 @@ const Sales = () => {
       }
       fetchSales(1, pagination.limit);
       setModalOpen(false);
-      setUpdateSale(null);
+      setEditSale(null);
       fetchSummary();
     } catch (err) {
       const msg =
@@ -264,7 +274,6 @@ const Sales = () => {
       setLoading(true);
       try {
         await deleteSale(id);
-        await dialog.success("Sale deleted successfully");
         await dialog.success("Sale deleted successfully");
         fetchSales(pagination.page, pagination.limit);
         fetchSummary();
@@ -294,35 +303,8 @@ const Sales = () => {
       const newIds = sales.map((s) => s._id);
       setSelectedIds((prev) => [...new Set([...prev, ...newIds])]);
     } else {
-      const pageIds = sales.map((s) => s._id);
-      setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
-      setSelectAllMatches(false);
-    }
-  }
-
-  const [selectAllMatches, setSelectAllMatches] = useState(false);
-
-  async function handleSelectAllGlobal() {
-    setLoading(true);
-    try {
-      const params = {
-        limit: -1,
-        search,
-        startDate,
-        endDate,
-      };
-      if (customer !== "All Customers") params.customer = customer;
-      if (status !== "All Status") params.status = status;
-
-      const res = await getSales(params);
-      const allIds = res.data.data.map((s) => s._id);
-      setSelectedIds(allIds);
-      setSelectAllMatches(true);
-    } catch (err) {
-      console.error(err);
-      dialog.error("Failed to select all sales.");
-    } finally {
-      setLoading(false);
+      const pageIds = new Set(sales.map((s) => s._id));
+      setSelectedIds((prev) => prev.filter((id) => !pageIds.has(id)));
     }
   }
 
@@ -334,11 +316,8 @@ const Sales = () => {
     }
   }
 
-  const [actionId, setActionId] = useState(null);
-
   async function handleBulkActive(isActive) {
     if (selectedIds.length === 0) return;
-    setActionId("bulk");
     try {
       // Assuming updateSale works for partial updates
       await Promise.all(
@@ -349,12 +328,9 @@ const Sales = () => {
       );
       fetchSales(pagination.page, pagination.limit);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch (err) {
       console.error(err);
       dialog.error("Failed to update sales.");
-    } finally {
-      setActionId(null);
     }
   }
 
@@ -369,33 +345,35 @@ const Sales = () => {
     });
     if (!confirmed) return;
 
-    setActionId("bulk");
     try {
       await Promise.all(selectedIds.map((id) => deleteSale(id)));
       dialog.success("Sales deleted successfully.");
       fetchSales(pagination.page, pagination.limit);
       fetchSummary();
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       dialog.error("Failed to delete sales.");
-    } finally {
-      setActionId(null);
     }
   }
+
+  const getSaleModalKey = () => {
+    if (!modalOpen) return "closed";
+    if (editSale) return editSale._id;
+    return "new";
+  };
 
   return (
     <div className="h-content-available">
       <SaleModal
-        key={modalOpen ? (updateSale ? updateSale._id : "new") : "closed"}
+        key={getSaleModalKey()}
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setUpdateSale(null);
+          setEditSale(null);
           setViewSale(null);
         }}
         onSave={handleSave}
-        data={updateSale || viewSale}
+        data={editSale || viewSale}
         viewOnly={!!viewSale}
       />
       <div className="flex items-center justify-between mb-8">
@@ -411,7 +389,7 @@ const Sales = () => {
               className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
               onClick={() => {
                 setViewSale(null);
-                setUpdateSale(null);
+                setEditSale(null);
                 setModalOpen(true);
               }}
             >
@@ -420,14 +398,14 @@ const Sales = () => {
           )}
           {(canUpdate || canDelete) && (
             <Menu as="div" className="relative inline-block text-left">
-              <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+              <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                 <HiDotsVertical className="text-xl" />
-              </Menu.Button>
-              <Menu.Items
+              </MenuButton>
+              <MenuItems
                 anchor="bottom end"
                 className="bg-white rounded-2xl shadow-lg p-2 w-50 z-50 animate-fade-in-up border border-gray-100"
               >
-                <Menu.Item>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkActive(true)}
@@ -440,8 +418,8 @@ const Sales = () => {
                       Active Sales
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={() => handleBulkActive(false)}
@@ -454,8 +432,8 @@ const Sales = () => {
                       Archive Sales
                     </button>
                   )}
-                </Menu.Item>
-                <Menu.Item>
+                </MenuItem>
+                <MenuItem>
                   {() => (
                     <button
                       onClick={handleBulkDelete}
@@ -468,8 +446,8 @@ const Sales = () => {
                       Delete Sales
                     </button>
                   )}
-                </Menu.Item>
-              </Menu.Items>
+                </MenuItem>
+              </MenuItems>
             </Menu>
           )}
         </div>
@@ -575,8 +553,14 @@ const Sales = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           <div>
-            <label className="block text-gray-700 text-sm mb-1">Search</label>
+            <label
+              htmlFor="search"
+              className="block text-gray-700 text-sm mb-1"
+            >
+              Search
+            </label>
             <input
+              id="search"
               type="text"
               className="w-full bg-gray-50 border border-gray-100 rounded-lg py-2 px-3 text-gray-700 text-sm"
               placeholder="Search..."
@@ -585,10 +569,14 @@ const Sales = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
+            <label
+              htmlFor="startDate"
+              className="block text-gray-700 text-sm mb-1"
+            >
               Start Date
             </label>
             <DatePicker
+              id="startDate"
               selected={startDate}
               onChange={(date) =>
                 setStartDate(date ? date.toISOString().split("T")[0] : "")
@@ -597,8 +585,14 @@ const Sales = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm mb-1">End Date</label>
+            <label
+              htmlFor="endDate"
+              className="block text-gray-700 text-sm mb-1"
+            >
+              End Date
+            </label>
             <DatePicker
+              id="endDate"
               selected={endDate}
               onChange={(date) =>
                 setEndDate(date ? date.toISOString().split("T")[0] : "")
@@ -608,19 +602,31 @@ const Sales = () => {
           </div>
           {canViewUsers && (
             <div>
-              <label className="block text-gray-700 text-sm mb-1">
+              <label
+                htmlFor="customer"
+                className="block text-gray-700 text-sm mb-1"
+              >
                 Customer
               </label>
-              <UserDropdown
-                value={customer}
-                onChange={setCustomer}
-                userOptions={users}
-              />
+              <div id="customer">
+                <UserDropdown
+                  value={customer}
+                  onChange={setCustomer}
+                  userOptions={users}
+                />
+              </div>
             </div>
           )}
           <div>
-            <label className="block text-gray-700 text-sm mb-1">Status</label>
-            <StatusDropdown value={status} onChange={setStatus} />
+            <label
+              htmlFor="status"
+              className="block text-gray-700 text-sm mb-1"
+            >
+              Status
+            </label>
+            <div id="status">
+              <StatusDropdown value={status} onChange={setStatus} />
+            </div>
           </div>
         </div>
       </div>
@@ -734,16 +740,16 @@ const Sales = () => {
                                 as="div"
                                 className="relative inline-block text-left"
                               >
-                                <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                                <MenuButton className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
                                   <HiDotsVertical className="text-xl" />
-                                </Menu.Button>
-                                <Menu.Items
+                                </MenuButton>
+                                <MenuItems
                                   anchor="bottom end"
                                   className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
                                 >
                                   {canUpdate && (
                                     <>
-                                      <Menu.Item>
+                                      <MenuItem>
                                         {() => (
                                           <button
                                             onClick={() =>
@@ -770,13 +776,13 @@ const Sales = () => {
                                             )}
                                           </button>
                                         )}
-                                      </Menu.Item>
-                                      <Menu.Item>
+                                      </MenuItem>
+                                      <MenuItem>
                                         {() => (
                                           <button
                                             onClick={() => {
                                               setViewSale(null);
-                                              setUpdateSale(sale);
+                                              setEditSale(sale);
                                               setModalOpen(true);
                                             }}
                                             className="w-full flex items-center px-2 py-3 text-blue-600 hover:bg-blue-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
@@ -788,11 +794,11 @@ const Sales = () => {
                                             Update
                                           </button>
                                         )}
-                                      </Menu.Item>
+                                      </MenuItem>
                                     </>
                                   )}
                                   {canDelete && (
-                                    <Menu.Item>
+                                    <MenuItem>
                                       {() => (
                                         <button
                                           onClick={() => handleDelete(sale._id)}
@@ -805,9 +811,9 @@ const Sales = () => {
                                           Delete
                                         </button>
                                       )}
-                                    </Menu.Item>
+                                    </MenuItem>
                                   )}
-                                </Menu.Items>
+                                </MenuItems>
                               </Menu>
                             )}
                           </div>

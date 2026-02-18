@@ -28,11 +28,14 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell,
   Legend,
 } from "recharts";
 
 const COLORS = ["#FFBB28", "#00a63e", "#fb2c36", "#FF8042"];
+
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
 
 const Dashboard = () => {
   const [summary, setSummary] = useState(null);
@@ -45,15 +48,15 @@ const Dashboard = () => {
 
   // Permissions
   const isAllowed = !!(
-    user?.permission?.permissions?.includes("view_user") ||
-    user?.permission?.permissions?.includes("view_permission") ||
-    user?.permission?.permissions?.includes("view_stock") ||
-    user?.permission?.permissions?.includes("view_sale") ||
-    user?.permission?.permissions?.includes("view_report") ||
-    user?.permission?.permissions?.includes("view_approve_request") ||
-    user?.permission?.permissions?.includes("view_confirm_delivery") ||
-    user?.permission?.permissions?.includes("view_activity_log") ||
-    user?.permission?.permissions?.includes("view_expense")
+    getPermission(user, "view_user") ||
+    getPermission(user, "view_permission") ||
+    getPermission(user, "view_stock") ||
+    getPermission(user, "view_sale") ||
+    getPermission(user, "view_report") ||
+    getPermission(user, "view_approve_request") ||
+    getPermission(user, "view_confirm_delivery") ||
+    getPermission(user, "view_activity_log") ||
+    getPermission(user, "view_expense")
   );
 
   // Date Range
@@ -68,6 +71,7 @@ const Dashboard = () => {
     if (user) {
       fetchData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, dateRange]);
 
   async function fetchData() {
@@ -117,20 +121,26 @@ const Dashboard = () => {
           <h1 className="text-xl font-semibold">
             Welcome, {user?.first_name || user?.username || "User"}!
           </h1>
-          <span className="text-gray-500 text-sm">
-            {user?.role === "admin"
-              ? "You have full access to all inventory features."
-              : user?.role === "staff"
-                ? "You have staff access to manage inventory."
-                : "You have limited access. Contact admin for more features."}
-          </span>
+          {(() => {
+            let roleMessage =
+              "You have limited access. Contact admin for more features.";
+            if (user?.role === "admin") {
+              roleMessage = "You have full access to all inventory features.";
+            } else if (user?.role === "staff") {
+              roleMessage = "You have staff access to manage inventory.";
+            }
+            return <span className="text-gray-500 text-sm">{roleMessage}</span>;
+          })()}
         </div>
         <div className="flex flex-wrap items-center gap-3">
           {/* Date Filter */}
           <div className="flex items-center gap-3">
-            <label className="text-sm text-gray-700">Start Date</label>
+            <label htmlFor="startDate" className="text-sm text-gray-700">
+              Start Date
+            </label>
             <div className=" w-[281.6px]">
               <DatePicker
+                id="startDate"
                 selected={dateRange.startDate}
                 onChange={(date) =>
                   setDateRange({
@@ -142,9 +152,12 @@ const Dashboard = () => {
                 className="bg-white rounded-xl border border-gray-100"
               />
             </div>
-            <label className="text-sm text-gray-700">End Date</label>
+            <label htmlFor="endDate" className="text-sm text-gray-700">
+              End Date
+            </label>
             <div className=" w-[281.6px]">
               <DatePicker
+                id="endDate"
                 selected={dateRange.endDate}
                 onChange={(date) =>
                   setDateRange({
@@ -361,10 +374,10 @@ const Dashboard = () => {
                       paddingAngle={5}
                       dataKey="value"
                     >
-                      {pieData.map((entry, index) => (
+                      {pieData.map((entry) => (
                         <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
+                          key={entry.name}
+                          fill={COLORS[pieData.indexOf(entry) % COLORS.length]}
                         />
                       ))}
                     </Pie>
@@ -433,22 +446,30 @@ const Dashboard = () => {
                 </thead>
                 <tbody>
                   {recentOrders.length > 0 ? (
-                    recentOrders.map((order, index) => (
-                      <tr key={order._id} className="hover:bg-[#f1f5f9]">
-                        <td className="number">{index + 1}</td>
-                        <td>#{order._id.slice(-6).toUpperCase()}</td>
-                        <td>
-                          {new Date(order.createdAt).toLocaleDateString()}
-                        </td>
-                        <td>
-                          <span
-                            className={`px-3 py-1.5 rounded-full text-sm capitalize text-white ${ order.status === "approved" ? "bg-green-400" : order.status === "rejected" ? "bg-red-400" : "bg-yellow-400"}`}
-                          >
-                            {order.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
+                    recentOrders.map((order, index) => {
+                      const statusColor =
+                        order.status === "approved"
+                          ? "bg-green-400"
+                          : order.status === "rejected"
+                            ? "bg-red-400"
+                            : "bg-yellow-400";
+                      return (
+                        <tr key={order._id} className="hover:bg-[#f1f5f9]">
+                          <td className="number">{index + 1}</td>
+                          <td>#{order._id.slice(-6).toUpperCase()}</td>
+                          <td>
+                            {new Date(order.createdAt).toLocaleDateString()}
+                          </td>
+                          <td>
+                            <span
+                              className={`px-3 py-1.5 rounded-full text-sm capitalize text-white ${statusColor}`}
+                            >
+                              {order.status}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })
                   ) : (
                     <tr>
                       <td
@@ -497,10 +518,10 @@ const Dashboard = () => {
                         <p className="text-sm font-medium text-gray-900 truncate">
                           {log.action
                             ? log.action
-                                .replace(/_/g, " ")
+                                .replaceAll("_", " ")
                                 .charAt(0)
                                 .toUpperCase() +
-                              log.action.replace(/_/g, " ").slice(1)
+                              log.action.replaceAll("_", " ").slice(1)
                             : "-"}
                         </p>
                         <p className="text-xs text-gray-500 mt-0.5">
