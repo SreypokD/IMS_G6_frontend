@@ -132,7 +132,7 @@ export default function Pagination({
                 key={opt}
                 value={opt}
                 className={({ selected }) =>
-                  `px-3 py-2 cursor-pointer text-black text-sm hover:text-white hover:bg-[#1e3a5f] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
+                  `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
                 }
               >
                 {opt}
