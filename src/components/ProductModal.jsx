@@ -5,6 +5,7 @@ import {
   HiOutlineDocumentText,
   HiOutlineCamera,
   HiOutlineUpload,
+  HiSelector,
 } from "react-icons/hi";
 
 const initialProduct = {
@@ -21,7 +22,6 @@ const initialProduct = {
 
 import { getCategories, getSuppliers, uploadFile } from "../api";
 import { Listbox } from "@headlessui/react";
-import { HiSelector } from "react-icons/hi";
 
 const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   const [product, setProduct] = useState(data || initialProduct);
@@ -89,10 +89,14 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="product_code"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Product Code
                 </label>
                 <input
+                  id="product_code"
                   name="code"
                   value={product.code}
                   disabled
@@ -104,11 +108,15 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="product_name"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Name
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="product_name"
                   name="name"
                   value={product.name}
                   onChange={(e) =>
@@ -121,7 +129,10 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="product_category"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Category
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
@@ -143,6 +154,7 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="product_category"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!product.category && !data && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                       disabled={viewOnly}
                     >
@@ -176,7 +188,10 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="product_supplier"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Supplier
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
@@ -198,6 +213,7 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="product_supplier"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!product.supplier && !data && (touched.supplier || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                       disabled={viewOnly}
                     >
@@ -231,11 +247,15 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="product_price"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Price
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="product_price"
                   name="price"
                   value={product.price}
                   onChange={(e) =>
@@ -251,13 +271,17 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="product_stock"
+                  className="text-sm font-medium text-gray-700"
+                >
                   {product._id ? "Current Stock" : "Initial Stock"}
                   {!viewOnly && !product._id && (
                     <sup className="text-red-500">*</sup>
                   )}
                 </label>
                 <input
+                  id="product_stock"
                   name="stock"
                   value={product.stock}
                   onChange={(e) =>
@@ -288,7 +312,10 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 <span>Image</span>
               </h3>
               <div className="mb-3">
-                <label className="block text-gray-700 text-sm mb-1">
+                <label
+                  htmlFor="product_image"
+                  className="block text-gray-700 text-sm mb-1"
+                >
                   Product Image
                 </label>
                 {viewOnly ? (
@@ -300,7 +327,10 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     />
                   </div>
                 ) : (
-                  <label className="cursor-pointer relative group h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-lg p-6 hover:bg-gray-50 transition w-full">
+                  <label
+                    htmlFor="product_image"
+                    className="cursor-pointer relative group h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-lg p-6 hover:bg-gray-50 transition w-full"
+                  >
                     {product.image ? (
                       <div className="relative w-40 h-40">
                         <img

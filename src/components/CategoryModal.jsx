@@ -54,23 +54,39 @@ const CategoryModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
     handleClose();
   }
 
+  let modalTitle = "";
+  if (viewOnly) {
+    modalTitle = "Category Details";
+  } else if (data) {
+    modalTitle = "Update Category";
+  } else {
+    modalTitle = "Add Category";
+  }
+
+  let buttonLabel = "";
+  if (viewOnly) {
+    buttonLabel = "Category Details";
+  } else if (category._id) {
+    buttonLabel = "Update Category";
+  } else {
+    buttonLabel = "Add Category";
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[30%] max-h-[80vh] shadow-xl relative">
-        <h2 className="text-xl font-bold mb-6 text-center">
-          {viewOnly
-            ? "Category Details"
-            : data
-              ? "Update Category"
-              : "Add Category"}
-        </h2>
+        <h2 className="text-xl font-bold mb-6 text-center">{modalTitle}</h2>
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
           <div>
-            <label className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="category-name"
+              className="text-sm font-medium text-gray-700"
+            >
               Name
               {!viewOnly && <sup className="text-red-500">*</sup>}
             </label>
             <input
+              id="category-name"
               name="name"
               value={category.name}
               onChange={handleChange}
@@ -82,10 +98,14 @@ const CategoryModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             />
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="category-description"
+              className="text-sm font-medium text-gray-700"
+            >
               Description
             </label>
             <textarea
+              id="category-description"
               name="description"
               value={category.description}
               onChange={handleChange}
@@ -113,11 +133,7 @@ const CategoryModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               onClick={handleSubmit}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />
-              {viewOnly
-                ? "Category Details"
-                : category._id
-                  ? "Update Category"
-                  : "Add Category"}
+              {buttonLabel}
             </button>
           )}
         </div>

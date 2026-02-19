@@ -96,20 +96,26 @@ const Dialog = ({
         </p>
         {showInput && (
           <div className="relative w-full">
-            <input
-              type={
-                inputType === "password" && !showPassword
-                  ? "password"
-                  : inputType === "password"
-                    ? "text"
-                    : inputType
+            {(() => {
+              let resolvedInputType;
+              if (inputType === "password" && !showPassword) {
+                resolvedInputType = "password";
+              } else if (inputType === "password") {
+                resolvedInputType = "text";
+              } else {
+                resolvedInputType = inputType;
               }
-              className="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-2 text-sm mb-6"
-              placeholder={placeholder}
-              value={promptValue}
-              onChange={(e) => setPromptValue(e.target.value)}
-              minLength={8}
-            />
+              return (
+                <input
+                  type={resolvedInputType}
+                  className="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-2 text-sm mb-6"
+                  placeholder={placeholder}
+                  value={promptValue}
+                  onChange={(e) => setPromptValue(e.target.value)}
+                  minLength={8}
+                />
+              );
+            })()}
             <button
               type="button"
               className="absolute inset-y-0 -top-5 right-0 pr-3 flex items-center text-gray-400 cursor-pointer"

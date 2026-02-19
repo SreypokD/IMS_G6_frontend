@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Listbox } from "@headlessui/react";
-import { HiSelector } from "react-icons/hi";
 import { getPermissions, uploadFile } from "../api/index";
 import {
   HiXCircle,
@@ -14,6 +13,7 @@ import {
   HiEyeOff,
   HiOutlineBriefcase,
   HiOutlineIdentification,
+  HiSelector,
 } from "react-icons/hi";
 import { locations } from "../data/locations";
 
@@ -55,6 +55,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
     }
     return data || initial;
   }, [data]);
+
   const [user, setUser] = useState(() => computedInitialUser);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
@@ -170,16 +171,20 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
     );
   };
 
+  // Extract modal title logic
+  let modalTitle = "Add User";
+  if (viewOnly) {
+    modalTitle = "User Details";
+  } else if (data?._id) {
+    modalTitle = "Update User";
+  }
+
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[50vw] max-h-[90vh] shadow-xl relative flex flex-col">
         <h2 className="text-xl font-bold mb-4 text-center shrink-0">
-          {viewOnly
-            ? "User Details"
-            : data && data._id
-              ? "Update User"
-              : "Add User"}
+          {modalTitle}
         </h2>
         <form
           key={data ? data._id : "new"}
@@ -193,11 +198,15 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label
+                  htmlFor="first-name"
+                  className="text-sm font-medium text-gray-700 block mb-1"
+                >
                   First Name
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="first-name"
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.first_name && (touched.first_name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   value={user.first_name}
                   onChange={(e) =>
@@ -211,10 +220,14 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label
+                  htmlFor="last-name"
+                  className="text-sm font-medium text-gray-700 block mb-1"
+                >
                   Last Name {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="last-name"
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.last_name && (touched.last_name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   value={user.last_name}
                   onChange={(e) =>
@@ -228,10 +241,14 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label
+                  htmlFor="email"
+                  className="text-sm font-medium text-gray-700 block mb-1"
+                >
                   Email {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="email"
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.email && (touched.email || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   type="email"
                   value={user.email}
@@ -245,12 +262,16 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               </div>
               {!data && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                  <label
+                    htmlFor="password"
+                    className="text-sm font-medium text-gray-700 block mb-1"
+                  >
                     Password
                     {!viewOnly && <sup className="text-red-500">*</sup>}
                   </label>
                   <div className="relative">
                     <input
+                      id="password"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.password && !data && (touched.password || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                       type={showPassword ? "text" : "password"}
                       value={user.password || ""}
@@ -289,7 +310,10 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label
+                  htmlFor="role"
+                  className="text-sm font-medium text-gray-700 block mb-1"
+                >
                   Role {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <Listbox
@@ -305,6 +329,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="role"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span>
@@ -332,10 +357,14 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label
+                  htmlFor="phone"
+                  className="text-sm font-medium text-gray-700 block mb-1"
+                >
                   Phone {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="phone"
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!user.phone && (touched.phone || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   value={user.phone}
                   onChange={(e) => setUser({ ...user, phone: e.target.value })}
@@ -346,7 +375,10 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label
+                  htmlFor="status"
+                  className="text-sm font-medium text-gray-700 block mb-1"
+                >
                   Status {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <Listbox
@@ -356,6 +388,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="status"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span className="capitalize">{user.status}</span>
@@ -390,7 +423,10 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label
+                  htmlFor="province"
+                  className="text-sm font-medium text-gray-700 block mb-1"
+                >
                   City/Province
                 </label>
                 <Listbox
@@ -400,6 +436,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="province"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span>{user.address.province}</span>
@@ -424,7 +461,10 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label
+                  htmlFor="district"
+                  className="text-sm font-medium text-gray-700 block mb-1"
+                >
                   District
                 </label>
                 <Listbox
@@ -434,6 +474,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="district"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span>{user.address.district}</span>
@@ -460,7 +501,10 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label
+                  htmlFor="commune"
+                  className="text-sm font-medium text-gray-700 block mb-1"
+                >
                   Commune
                 </label>
                 <Listbox
@@ -470,6 +514,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="commune"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span>{user.address.commune}</span>
@@ -499,7 +544,10 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label
+                  htmlFor="village"
+                  className="text-sm font-medium text-gray-700 block mb-1"
+                >
                   Village
                 </label>
                 <Listbox
@@ -509,6 +557,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="village"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span>{user.address.village}</span>
@@ -539,10 +588,14 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label
+                  htmlFor="house"
+                  className="text-sm font-medium text-gray-700 block mb-1"
+                >
                   House
                 </label>
                 <input
+                  id="house"
                   type="text"
                   className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800"
                   value={user.address.house}
@@ -556,10 +609,14 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label
+                  htmlFor="street"
+                  className="text-sm font-medium text-gray-700 block mb-1"
+                >
                   Street
                 </label>
                 <input
+                  id="street"
                   className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800"
                   value={user.address.street}
                   onChange={(e) =>
@@ -583,10 +640,14 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               </h3>
               <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                  <label
+                    htmlFor="customerType"
+                    className="text-sm font-medium text-gray-700 block mb-1"
+                  >
                     Customer Type
                   </label>
                   <input
+                    id="customerType"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.customer_type || ""}
                     readOnly
@@ -594,10 +655,14 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                  <label
+                    htmlFor="companyName"
+                    className="text-sm font-medium text-gray-700 block mb-1"
+                  >
                     Company Name
                   </label>
                   <input
+                    id="companyName"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.company_name || ""}
                     readOnly
@@ -605,10 +670,14 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                  <label
+                    htmlFor="regNo"
+                    className="text-sm font-medium text-gray-700 block mb-1"
+                  >
                     Reg No.
                   </label>
                   <input
+                    id="regNo"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.company_registration_no || ""}
                     readOnly
@@ -616,10 +685,14 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                  <label
+                    htmlFor="requestPurpose"
+                    className="text-sm font-medium text-gray-700 block mb-1"
+                  >
                     Request Purpose
                   </label>
                   <input
+                    id="requestPurpose"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.request_purpose || ""}
                     readOnly
@@ -627,10 +700,14 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                  <label
+                    htmlFor="expectedVolume"
+                    className="text-sm font-medium text-gray-700 block mb-1"
+                  >
                     Expected Volume
                   </label>
                   <input
+                    id="expectedVolume"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.expected_order_volume || ""}
                     readOnly
@@ -638,10 +715,14 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                  <label
+                    htmlFor="orderFrequency"
+                    className="text-sm font-medium text-gray-700 block mb-1"
+                  >
                     Order Frequency
                   </label>
                   <input
+                    id="orderFrequency"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.order_frequency || ""}
                     readOnly
@@ -649,14 +730,17 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">
+                  <label
+                    htmlFor="productCategories"
+                    className="text-sm font-medium text-gray-700 block mb-1"
+                  >
                     Product Categories
                   </label>
                   <div className="w-full flex flex-wrap">
                     {Array.isArray(user.product_categories) &&
                     user.product_categories.length > 0 ? (
-                      user.product_categories.map((cat, idx) => (
-                        <span key={idx} className="mr-2 text-sm p-2">
+                      user.product_categories.map((cat) => (
+                        <span key={cat.name} className="mr-2 text-sm p-2">
                           {renderBadge(cat)}
                         </span>
                       ))
@@ -667,10 +751,16 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label
+                  htmlFor="customerNote"
+                  className="text-sm font-medium text-gray-700 block mb-1"
+                >
                   Customer Note
                 </label>
-                <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-200">
+                <p
+                  id="customerNote"
+                  className="text-sm text-gray-600 bg-gray-50 p-2 rounded border border-gray-200"
+                >
                   {user.note_from_customer || "-"}
                 </p>
               </div>
@@ -717,7 +807,10 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     />
                   </div>
                 ) : (
-                  <label className="cursor-pointer relative group h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-lg p-6 hover:bg-gray-50 transition w-full">
+                  <label
+                    htmlFor="profile"
+                    className="cursor-pointer relative group h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-lg p-6 hover:bg-gray-50 transition w-full"
+                  >
                     {user.profile ? (
                       <div className="relative w-40 h-40">
                         <img
@@ -735,7 +828,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       <div className="flex flex-col items-center">
                         <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
                         <span className="text-gray-600">
-                          Drag and drop your image here, or
+                          Drag and drop your image here, or{" "}
                           <span className="text-blue-600 underline ml-1">
                             browse files
                           </span>
@@ -747,6 +840,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     )}
                     <input
                       type="file"
+                      id="profile"
                       accept="image/jpeg,image/png,image/gif"
                       className="hidden"
                       onChange={handleImageChange}
@@ -767,37 +861,44 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             <HiXCircle className="inline-block text-xl" />
             {viewOnly ? "Close" : "Cancel"}
           </button>
-          {!viewOnly && (
-            <button
-              type="button"
-              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm font-medium"
-              onClick={() => {
-                setValidateOnSave(true);
-                setTouched({
-                  first_name: true,
-                  last_name: true,
-                  email: true,
-                  password: true,
-                  role: true,
-                  phone: true,
-                  village: true,
-                  commune: true,
-                  district: true,
-                  province: true,
-                });
-                onSave(user);
-              }}
-            >
-              <HiOutlineDocumentText className="inline-block text-xl" />
-              {data && data._id
-                ? "Update User"
-                : user.isCustomerCreate
-                  ? "Add Customer"
-                  : user.isStaffCreate
-                    ? "Add Staff"
-                    : "Add User"}
-            </button>
-          )}
+          {!viewOnly &&
+            (() => {
+              let saveButtonLabel;
+              if (data && data._id) {
+                saveButtonLabel = "Update User";
+              } else if (user.isCustomerCreate) {
+                saveButtonLabel = "Add Customer";
+              } else if (user.isStaffCreate) {
+                saveButtonLabel = "Add Staff";
+              } else {
+                saveButtonLabel = "Add User";
+              }
+              return (
+                <button
+                  type="button"
+                  className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm font-medium"
+                  onClick={() => {
+                    setValidateOnSave(true);
+                    setTouched({
+                      first_name: true,
+                      last_name: true,
+                      email: true,
+                      password: true,
+                      role: true,
+                      phone: true,
+                      village: true,
+                      commune: true,
+                      district: true,
+                      province: true,
+                    });
+                    onSave(user);
+                  }}
+                >
+                  <HiOutlineDocumentText className="inline-block text-xl" />
+                  {saveButtonLabel}
+                </button>
+              );
+            })()}
         </div>
       </div>
     </div>

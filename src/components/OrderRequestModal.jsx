@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Listbox } from "@headlessui/react";
-import { HiSelector } from "react-icons/hi";
 import {
   HiXCircle,
   HiOutlineDocumentText,
   HiCube,
   HiOutlinePlus,
   HiOutlineTrash,
+  HiSelector,
 } from "react-icons/hi";
 import {
   getProducts,
@@ -58,7 +58,7 @@ const OrderRequestModal = ({
           let deliveryDateValue = data.delivery_date || "";
           if (deliveryDateValue) {
             const d = new Date(deliveryDateValue);
-            if (!isNaN(d)) {
+            if (!Number.isNaN(d)) {
               deliveryDateValue = d.toISOString().slice(0, 10);
             }
           }
@@ -236,17 +236,20 @@ const OrderRequestModal = ({
     onClose();
   }
 
+  let modalTitle;
+  if (viewOnly) {
+    modalTitle = "Order Request Details";
+  } else if (data?._id) {
+    modalTitle = "Update Order Request";
+  } else {
+    modalTitle = "New Order Request";
+  }
+
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[65%] max-h-[80vh] shadow-xl relative">
-        <h2 className="text-xl font-bold mb-6 text-center">
-          {viewOnly
-            ? "Order Request Details"
-            : data?._id
-              ? "Update Order Request"
-              : "New Order Request"}
-        </h2>
+        <h2 className="text-xl font-bold mb-6 text-center">{modalTitle}</h2>
         <form className="space-y-5 overflow-auto max-h-[60vh] px-1">
           <div className="col-span-2 mb-2">
             <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
@@ -255,7 +258,10 @@ const OrderRequestModal = ({
             </h3>
             <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="supplier"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Supplier
                   {!viewOnly ? <sup className="text-red-500">*</sup> : null}
                 </label>
@@ -291,6 +297,7 @@ const OrderRequestModal = ({
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="supplier"
                       className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${!order.supplier_id && (touched.supplier_id || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     >
                       <span>
@@ -324,11 +331,15 @@ const OrderRequestModal = ({
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="delivery_date"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Delivery Date
                   {!viewOnly ? <sup className="text-red-500">*</sup> : null}
                 </label>
                 <DatePicker
+                  id="delivery_date"
                   selected={order.delivery_date}
                   onChange={(date) =>
                     setOrder((prev) => ({
@@ -353,98 +364,113 @@ const OrderRequestModal = ({
               <div key={idx} className="w-full flex items-center">
                 <div className="w-full mb-3 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-3">
                   <div>
-                    <label className="text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor={`product_${idx}`}
+                      className="text-sm font-medium text-gray-700"
+                    >
                       Product
                       {!viewOnly ? <sup className="text-red-500">*</sup> : null}
                     </label>
-                    <Listbox
-                      value={
-                        products.find((p) => p._id === item.product_id) || null
+                    {(() => {
+                      const selectedProduct = products.find(
+                        (p) => p._id === item.product_id,
+                      );
+                      let productPlaceholder = "";
+                      if (selectedProduct?.name) {
+                        productPlaceholder = selectedProduct.name;
+                      } else if (order.supplier_id) {
+                        productPlaceholder = "Select product";
+                      } else {
+                        productPlaceholder = "Select supplier first";
                       }
-                      onChange={(product) => {
-                        if (viewOnly) return;
-                        handleOrderItemChange(
-                          idx,
-                          "product_id",
-                          product ? product._id : "",
-                        );
-                      }}
-                      disabled={viewOnly || !order.supplier_id}
-                    >
-                      <div className="relative">
-                        <Listbox.Button
-                          className={`${viewOnly || !order.supplier_id ? "cursor-default" : "cursor-pointer"} bg-gray-50 w-full border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${!item.product_id && validateOnSave ? "border-red-500" : "border-gray-100"}`}
+                      return (
+                        <Listbox
+                          value={selectedProduct || null}
+                          onChange={(product) => {
+                            if (viewOnly) return;
+                            handleOrderItemChange(
+                              idx,
+                              "product_id",
+                              product ? product._id : "",
+                            );
+                          }}
+                          disabled={viewOnly || !order.supplier_id}
                         >
-                          <span>
-                            {products.find((p) => p._id === item.product_id)
-                              ?.name
-                              ? products.find((p) => p._id === item.product_id)
-                                  ?.name
-                              : order.supplier_id
-                                ? "Select product"
-                                : "Select supplier first"}
-                          </span>
-                          {!viewOnly && (
-                            <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-                          )}
-                        </Listbox.Button>
-                        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
-                          {(() => {
-                            const filteredProducts = order.supplier_id
-                              ? products.filter(
-                                  (p) =>
-                                    p.supplier_id === order.supplier_id ||
-                                    p.supplier?._id === order.supplier_id,
-                                )
-                              : [];
+                          <div className="relative">
+                            <Listbox.Button
+                              id={`product_${idx}`}
+                              className={`${viewOnly || !order.supplier_id ? "cursor-default" : "cursor-pointer"} bg-gray-50 w-full border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${!item.product_id && validateOnSave ? "border-red-500" : "border-gray-100"}`}
+                            >
+                              <span>{productPlaceholder}</span>
+                              {!viewOnly && (
+                                <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                              )}
+                            </Listbox.Button>
+                            <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                              {(() => {
+                                const filteredProducts = order.supplier_id
+                                  ? products.filter(
+                                      (p) =>
+                                        p.supplier_id === order.supplier_id ||
+                                        p.supplier?._id === order.supplier_id,
+                                    )
+                                  : [];
 
-                            if (filteredProducts.length === 0) {
-                              return (
-                                <div className="px-4 py-2 text-gray-400">
-                                  {order.supplier_id
-                                    ? "No products for this supplier"
-                                    : "Select a supplier first"}
-                                </div>
-                              );
-                            }
+                                if (filteredProducts.length === 0) {
+                                  return (
+                                    <div className="px-4 py-2 text-gray-400">
+                                      {order.supplier_id
+                                        ? "No products for this supplier"
+                                        : "Select a supplier first"}
+                                    </div>
+                                  );
+                                }
 
-                            return filteredProducts.map((product) => {
-                              const isSelected = order.orderItems.some(
-                                (orderItem, orderIdx) =>
-                                  orderItem.product_id === product._id &&
-                                  orderIdx !== idx,
-                              );
-                              const isDisabled =
-                                product.stock <= 0 || isSelected;
-                              return (
-                                <Listbox.Option
-                                  key={product._id}
-                                  value={product}
-                                  className={({ selected }) =>
-                                    `px-3 py-2 text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""} ${isDisabled ? "opacity-50 cursor-default bg-gray-50 text-gray-400" : "cursor-pointer"}`
-                                  }
-                                  disabled={isDisabled}
-                                >
-                                  {product.name} (Stock:
-                                  {product.stock -
-                                    (product.reserved_stock || 0)}
-                                  ){isSelected ? " - Already added" : ""}
-                                  {product.stock <= 0 ? " - Out of stock" : ""}
-                                </Listbox.Option>
-                              );
-                            });
-                          })()}
-                        </Listbox.Options>
-                      </div>
-                    </Listbox>
+                                return filteredProducts.map((product) => {
+                                  const isSelected = order.orderItems.some(
+                                    (orderItem, orderIdx) =>
+                                      orderItem.product_id === product._id &&
+                                      orderIdx !== idx,
+                                  );
+                                  const isDisabled =
+                                    product.stock <= 0 || isSelected;
+                                  return (
+                                    <Listbox.Option
+                                      key={product._id}
+                                      value={product}
+                                      className={({ selected }) =>
+                                        `px-3 py-2 text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""} ${isDisabled ? "opacity-50 cursor-default bg-gray-50 text-gray-400" : "cursor-pointer"}`
+                                      }
+                                      disabled={isDisabled}
+                                    >
+                                      {product.name} (Stock:
+                                      {product.stock -
+                                        (product.reserved_stock || 0)}
+                                      ){isSelected ? " - Already added" : ""}
+                                      {product.stock <= 0
+                                        ? " - Out of stock"
+                                        : ""}
+                                    </Listbox.Option>
+                                  );
+                                });
+                              })()}
+                            </Listbox.Options>
+                          </div>
+                        </Listbox>
+                      );
+                    })()}
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor={`quantity_${idx}`}
+                      className="text-sm font-medium text-gray-700"
+                    >
                       Quantity
                       {!viewOnly ? <sup className="text-red-500">*</sup> : null}
                     </label>
                     <input
                       type={viewOnly ? "text" : "number"}
+                      id={`quantity_${idx}`}
                       min={1}
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                       value={item.quantity}
@@ -456,11 +482,15 @@ const OrderRequestModal = ({
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor={`unit_price_${idx}`}
+                      className="text-sm font-medium text-gray-700"
+                    >
                       Unit Price
                     </label>
                     <input
                       type={viewOnly ? "text" : "number"}
+                      id={`unit_price_${idx}`}
                       min={0}
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                       placeholder="Unit Price"
@@ -469,10 +499,14 @@ const OrderRequestModal = ({
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor={`line_total_${idx}`}
+                      className="text-sm font-medium text-gray-700"
+                    >
                       Line Total
                     </label>
                     <input
+                      id={`line_total_${idx}`}
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                       value={
                         (item.unit_price ?? 0) && (item.quantity ?? 0)
@@ -530,10 +564,14 @@ const OrderRequestModal = ({
             </h3>
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="notes"
+              className="text-sm font-medium text-gray-700"
+            >
               Notes / Remarks
             </label>
             <textarea
+              id="notes"
               name="notes"
               value={order.notes || ""}
               onChange={(e) => {

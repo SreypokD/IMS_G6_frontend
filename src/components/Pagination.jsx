@@ -1,11 +1,6 @@
 import React, { useMemo } from "react";
 import PropTypes from "prop-types";
-import {
-  Listbox,
-  ListboxButton,
-  ListboxOptions,
-  ListboxOption,
-} from "@headlessui/react";
+import { Listbox } from "@headlessui/react";
 import {
   MdChevronLeft,
   MdChevronRight,
@@ -128,13 +123,13 @@ export default function Pagination({
         }}
       >
         <div className="relative w-20">
-          <ListboxButton className="cursor-pointer w-full bg-white border border-gray-200 rounded-lg h-9 px-2 text-left text-black flex items-center justify-between">
+          <Listbox.Button className="cursor-pointer w-full bg-white border border-gray-200 rounded-lg h-9 px-2 text-left text-black flex items-center justify-between">
             <span>{limit}</span>
             <HiOutlineSelector className="w-5 h-5 text-gray-400 ml-2" />
-          </ListboxButton>
-          <ListboxOptions className="absolute z-10 bottom-full mb-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-65 overflow-auto focus:outline-none">
+          </Listbox.Button>
+          <Listbox.Options className="absolute z-10 bottom-full mb-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-65 overflow-auto focus:outline-none">
             {pageOptions.map((opt) => (
-              <ListboxOption
+              <Listbox.Option
                 key={opt}
                 value={opt}
                 className={({ selected }) =>
@@ -142,9 +137,9 @@ export default function Pagination({
                 }
               >
                 {opt}
-              </ListboxOption>
+              </Listbox.Option>
             ))}
-          </ListboxOptions>
+          </Listbox.Options>
         </div>
       </Listbox>
     </div>

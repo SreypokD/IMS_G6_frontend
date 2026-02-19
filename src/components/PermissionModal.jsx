@@ -189,12 +189,16 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
-                <label className="block text-gray-600 mb-1 text-sm font-medium">
+                <label
+                  htmlFor="role_name"
+                  className="block text-gray-600 mb-1 text-sm font-medium"
+                >
                   Name
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
                   type="text"
+                  id="role_name"
                   name="name"
                   value={role.name}
                   onChange={handleRoleChange}
@@ -205,11 +209,15 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="block text-gray-600 mb-1 text-sm font-medium">
+                <label
+                  htmlFor="role_description"
+                  className="block text-gray-600 mb-1 text-sm font-medium"
+                >
                   Description
                 </label>
                 <input
                   type="text"
+                  id="role_description"
                   name="description"
                   value={role.description}
                   onChange={handleRoleChange}

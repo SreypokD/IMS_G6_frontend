@@ -189,10 +189,14 @@ const Register = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="first_name"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       First Name <sup className="text-red-500">*</sup>
                     </label>
                     <input
+                      id="first_name"
                       name="first_name"
                       value={formData.first_name}
                       onChange={handleChange}
@@ -201,10 +205,14 @@ const Register = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="last_name"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       Last Name <sup className="text-red-500">*</sup>
                     </label>
                     <input
+                      id="last_name"
                       name="last_name"
                       value={formData.last_name}
                       onChange={handleChange}
@@ -214,10 +222,14 @@ const Register = () => {
                   </div>
 
                   <div>
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="email"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       Email <sup className="text-red-500">*</sup>
                     </label>
                     <input
+                      id="email"
                       name="email"
                       type="email"
                       value={formData.email}
@@ -227,10 +239,14 @@ const Register = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="phone"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       Phone <sup className="text-red-500">*</sup>
                     </label>
                     <input
+                      id="phone"
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
@@ -239,10 +255,14 @@ const Register = () => {
                     />
                   </div>
                   <div className="relative">
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="password"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       Password <sup className="text-red-500">*</sup>
                     </label>
                     <input
+                      id="password"
                       name="password"
                       type={showPassword ? "text" : "password"}
                       value={formData.password}
@@ -259,10 +279,14 @@ const Register = () => {
                     </button>
                   </div>
                   <div className="relative">
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="confirmPassword"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       Confirm Password <sup className="text-red-500">*</sup>
                     </label>
                     <input
+                      id="confirmPassword"
                       name="confirmPassword"
                       type="password"
                       value={formData.confirmPassword}
@@ -281,10 +305,14 @@ const Register = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="company_name"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       Company Name <sup className="text-red-500">*</sup>
                     </label>
                     <input
+                      id="company_name"
                       name="company_name"
                       value={formData.company_name}
                       onChange={handleChange}
@@ -294,10 +322,14 @@ const Register = () => {
                   </div>
 
                   <div>
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="company_registration_no"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       Company Registration No.
                     </label>
                     <input
+                      id="company_registration_no"
                       name="company_registration_no"
                       value={formData.company_registration_no}
                       onChange={handleChange}
@@ -314,7 +346,10 @@ const Register = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="z-40">
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="province"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       Province/City <sup className="text-red-500">*</sup>
                     </label>
                     <Listbox
@@ -327,13 +362,16 @@ const Register = () => {
                       }}
                     >
                       <div className="relative">
-                        <ListboxButton className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer">
+                        <Listbox.Button
+                          id="province"
+                          className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer"
+                        >
                           <span>{formData.address.province}</span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
-                        </ListboxButton>
-                        <ListboxOptions className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        </Listbox.Button>
+                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {provinces.map((p) => (
-                            <ListboxOption
+                            <Listbox.Option
                               key={p.name}
                               value={p.name}
                               className={({ active }) =>
@@ -343,14 +381,17 @@ const Register = () => {
                               }
                             >
                               {p.name}
-                            </ListboxOption>
+                            </Listbox.Option>
                           ))}
-                        </ListboxOptions>
+                        </Listbox.Options>
                       </div>
                     </Listbox>
                   </div>
                   <div className="z-30">
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="district"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       District <sup className="text-red-500">*</sup>
                     </label>
                     <Listbox
@@ -363,7 +404,8 @@ const Register = () => {
                       disabled={!formData.address.province}
                     >
                       <div className="relative">
-                        <ListboxButton
+                        <Listbox.Button
+                          id="district"
                           className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between bg-gray-50 ${
                             !formData.address.province
                               ? "cursor-default"
@@ -372,10 +414,10 @@ const Register = () => {
                         >
                           <span>{formData.address.district}</span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
-                        </ListboxButton>
-                        <ListboxOptions className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        </Listbox.Button>
+                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {districts.map((d) => (
-                            <ListboxOption
+                            <Listbox.Option
                               key={d.name}
                               value={d.name}
                               className={({ active }) =>
@@ -385,14 +427,17 @@ const Register = () => {
                               }
                             >
                               {d.name}
-                            </ListboxOption>
+                            </Listbox.Option>
                           ))}
-                        </ListboxOptions>
+                        </Listbox.Options>
                       </div>
                     </Listbox>
                   </div>
                   <div className="z-20">
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="commune"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       Commune <sup className="text-red-500">*</sup>
                     </label>
                     <Listbox
@@ -404,7 +449,8 @@ const Register = () => {
                       disabled={!formData.address.district}
                     >
                       <div className="relative">
-                        <ListboxButton
+                        <Listbox.Button
+                          id="commune"
                           className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between bg-gray-50 ${
                             !formData.address.district
                               ? "cursor-default"
@@ -413,10 +459,10 @@ const Register = () => {
                         >
                           <span>{formData.address.commune}</span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
-                        </ListboxButton>
-                        <ListboxOptions className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        </Listbox.Button>
+                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {communes.map((c) => (
-                            <ListboxOption
+                            <Listbox.Option
                               key={c.name}
                               value={c.name}
                               className={({ active }) =>
@@ -426,14 +472,17 @@ const Register = () => {
                               }
                             >
                               {c.name}
-                            </ListboxOption>
+                            </Listbox.Option>
                           ))}
-                        </ListboxOptions>
+                        </Listbox.Options>
                       </div>
                     </Listbox>
                   </div>
                   <div>
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="village"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       Village <sup className="text-red-500">*</sup>
                     </label>
                     <Listbox
@@ -442,7 +491,8 @@ const Register = () => {
                       disabled={!formData.address.commune}
                     >
                       <div className="relative">
-                        <ListboxButton
+                        <Listbox.Button
+                          id="village"
                           className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between bg-gray-50 ${
                             !formData.address.commune
                               ? "cursor-default"
@@ -451,10 +501,10 @@ const Register = () => {
                         >
                           <span>{formData.address.village}</span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
-                        </ListboxButton>
-                        <ListboxOptions className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        </Listbox.Button>
+                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {villages.map((v) => (
-                            <ListboxOption
+                            <Listbox.Option
                               key={v}
                               value={v}
                               className={({ active }) =>
@@ -464,17 +514,21 @@ const Register = () => {
                               }
                             >
                               {v}
-                            </ListboxOption>
+                            </Listbox.Option>
                           ))}
-                        </ListboxOptions>
+                        </Listbox.Options>
                       </div>
                     </Listbox>
                   </div>
                   <div>
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="house"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       House No.
                     </label>
                     <input
+                      id="house"
                       value={formData.address.house}
                       onChange={(e) =>
                         handleAddressChange("house", e.target.value)
@@ -483,10 +537,14 @@ const Register = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="street"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       Street
                     </label>
                     <input
+                      id="street"
                       value={formData.address.street}
                       onChange={(e) =>
                         handleAddressChange("street", e.target.value)
@@ -504,10 +562,14 @@ const Register = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="request_purpose"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       Request Purpose
                     </label>
                     <input
+                      id="request_purpose"
                       name="request_purpose"
                       value={formData.request_purpose}
                       onChange={handleChange}
@@ -516,7 +578,10 @@ const Register = () => {
                     />
                   </div>
                   <div className="z-30">
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="expected_order_volume"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       Expected Volume
                     </label>
                     <Listbox
@@ -529,15 +594,18 @@ const Register = () => {
                       }
                     >
                       <div className="relative">
-                        <ListboxButton className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between">
+                        <Listbox.Button
+                          id="expected_order_volume"
+                          className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between"
+                        >
                           <span className="capitalize">
                             {formData.expected_order_volume}
                           </span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
-                        </ListboxButton>
-                        <ListboxOptions className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        </Listbox.Button>
+                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {["small", "medium", "large"].map((vol) => (
-                            <ListboxOption
+                            <Listbox.Option
                               key={vol}
                               value={vol}
                               className={({ active }) =>
@@ -547,14 +615,17 @@ const Register = () => {
                               }
                             >
                               {vol}
-                            </ListboxOption>
+                            </Listbox.Option>
                           ))}
-                        </ListboxOptions>
+                        </Listbox.Options>
                       </div>
                     </Listbox>
                   </div>
                   <div className="z-20">
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
+                    <label
+                      htmlFor="order_frequency"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
                       Order Frequency
                     </label>
                     <Listbox
@@ -567,15 +638,18 @@ const Register = () => {
                       }
                     >
                       <div className="relative">
-                        <ListboxButton className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between">
+                        <Listbox.Button
+                          id="order_frequency"
+                          className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between"
+                        >
                           <span className="capitalize">
                             {formData.order_frequency}
                           </span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
-                        </ListboxButton>
-                        <ListboxOptions className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        </Listbox.Button>
+                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {["daily", "weekly", "monthly"].map((freq) => (
-                            <ListboxOption
+                            <Listbox.Option
                               key={freq}
                               value={freq}
                               className={({ active }) =>
@@ -585,15 +659,18 @@ const Register = () => {
                               }
                             >
                               {freq}
-                            </ListboxOption>
+                            </Listbox.Option>
                           ))}
-                        </ListboxOptions>
+                        </Listbox.Options>
                       </div>
                     </Listbox>
                   </div>
                   <div>
-                    <label className="block text-gray-700 text-sm font-medium mb-1">
-                      Product Categories
+                    <label
+                      htmlFor="product_categories"
+                      className="block text-gray-700 text-sm font-medium mb-1"
+                    >
+                      Product Categories{" "}
                       <span className="text-gray-400 font-normal ml-2 text-xs">
                         (Select all that apply)
                       </span>
@@ -609,22 +686,25 @@ const Register = () => {
                       multiple
                     >
                       <div className="relative mt-1">
-                        <ListboxButton className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between">
+                        <Listbox.Button
+                          id="product_categories"
+                          className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between"
+                        >
                           <span className="block truncate">
                             {formData.product_categories.length > 0
                               ? formData.product_categories.join(", ")
                               : ""}
                           </span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
-                        </ListboxButton>
-                        <ListboxOptions className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        </Listbox.Button>
+                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {categoriesList.length === 0 ? (
                             <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
                               No categories found.
                             </div>
                           ) : (
                             categoriesList.map((cat) => (
-                              <ListboxOption
+                              <Listbox.Option
                                 key={cat._id}
                                 value={cat.name}
                                 className={({ active }) =>
@@ -634,10 +714,10 @@ const Register = () => {
                                 }
                               >
                                 {cat.name}
-                              </ListboxOption>
+                              </Listbox.Option>
                             ))
                           )}
-                        </ListboxOptions>
+                        </Listbox.Options>
                       </div>
                     </Listbox>
                   </div>
@@ -651,7 +731,10 @@ const Register = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="border border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50 transition">
-                    <label className="cursor-pointer relative group h-full flex flex-col items-center justify-center">
+                    <label
+                      htmlFor="id_card_or_business_license"
+                      className="cursor-pointer relative group h-full flex flex-col items-center justify-center"
+                    >
                       <span className="block text-sm font-medium text-gray-700 mb-2">
                         ID Card / License <sup className="text-red-500">*</sup>
                       </span>
@@ -680,6 +763,7 @@ const Register = () => {
                       )}
                       <input
                         type="file"
+                        id="id_card_or_business_license"
                         className="hidden"
                         onChange={(e) =>
                           handleFileUpload(e, "id_card_or_business_license")
@@ -690,7 +774,10 @@ const Register = () => {
                     </label>
                   </div>
                   <div className="border border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50 transition">
-                    <label className="cursor-pointer relative group h-full flex flex-col items-center justify-center">
+                    <label
+                      htmlFor="shop_photo"
+                      className="cursor-pointer relative group h-full flex flex-col items-center justify-center"
+                    >
                       <span className="block text-sm font-medium text-gray-700 mb-2">
                         Shop Photo (Opt)
                       </span>
@@ -719,6 +806,7 @@ const Register = () => {
                       )}
                       <input
                         type="file"
+                        id="shop_photo"
                         className="hidden"
                         onChange={(e) => handleFileUpload(e, "shop_photo")}
                         accept="image/*"
@@ -726,7 +814,10 @@ const Register = () => {
                     </label>
                   </div>
                   <div className="border border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50 transition">
-                    <label className="cursor-pointer relative group h-full flex flex-col items-center justify-center">
+                    <label
+                      htmlFor="location_photo"
+                      className="cursor-pointer relative group h-full flex flex-col items-center justify-center"
+                    >
                       <span className="block text-sm font-medium text-gray-700 mb-2">
                         Location Photo (Opt)
                       </span>
@@ -755,6 +846,7 @@ const Register = () => {
                       )}
                       <input
                         type="file"
+                        id="location_photo"
                         className="hidden"
                         onChange={(e) => handleFileUpload(e, "location_photo")}
                         accept="image/*"
@@ -767,10 +859,14 @@ const Register = () => {
               {/* 6. Agreement & Notes */}
               <section>
                 <div className="mb-4">
-                  <label className="block text-gray-700 text-sm font-medium mb-1">
+                  <label
+                    htmlFor="note_from_customer"
+                    className="block text-gray-700 text-sm font-medium mb-1"
+                  >
                     Note to Admin
                   </label>
                   <textarea
+                    id="note_from_customer"
                     name="note_from_customer"
                     value={formData.note_from_customer}
                     onChange={handleChange}
@@ -783,20 +879,20 @@ const Register = () => {
                   <input
                     type="checkbox"
                     name="agree_terms"
+                    id="agree_terms"
                     checked={formData.agree_terms}
                     onChange={handleChange}
-                    id="agree"
                     className="w-4 h-4 accent-[#1e3a5f] mt-0.5 cursor-pointer"
                     required
                   />
                   <label
-                    htmlFor="agree"
+                    htmlFor="agree_terms"
                     className="text-sm text-gray-600 cursor-pointer"
                   >
-                    I agree to the
+                    I agree to the{" "}
                     <span className="text-[#1e3a5f] font-medium">
                       Terms and Conditions
-                    </span>
+                    </span>{" "}
                     and confirm that the information provided is accurate.
                   </label>
                 </div>

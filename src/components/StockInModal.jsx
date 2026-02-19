@@ -122,12 +122,16 @@ const StockInModal = ({ open, onClose, products, data }) => {
         </div>
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
           <div>
-            <label className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="product-listbox"
+              className="text-sm font-medium text-gray-700"
+            >
               Product <sup className="text-red-500">*</sup>
             </label>
             <Listbox value={productId} onChange={setProductId}>
               <div className="relative">
                 <Listbox.Button
+                  id="product-listbox"
                   className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${!productId && (touched.productId || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                 >
                   <span className="truncate">
@@ -164,10 +168,14 @@ const StockInModal = ({ open, onClose, products, data }) => {
           </div>
           <div className="flex gap-3">
             <div className="flex-1">
-              <label className="text-sm font-medium text-gray-700">
+              <label
+                htmlFor="quantity"
+                className="text-sm font-medium text-gray-700"
+              >
                 Quantity <sup className="text-red-500">*</sup>
               </label>
               <input
+                id="quantity"
                 type="number"
                 className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!quantity && (touched.quantity || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                 value={quantity}
@@ -179,11 +187,15 @@ const StockInModal = ({ open, onClose, products, data }) => {
               />
             </div>
             <div className="flex-1">
-              <label className="text-sm font-medium text-gray-700">
+              <label
+                htmlFor="unitPrice"
+                className="text-sm font-medium text-gray-700"
+              >
                 Cost Price
                 {reason === "Purchase" && <sup className="text-red-500">*</sup>}
               </label>
               <input
+                id="unitPrice"
                 type="number"
                 className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100 ${reason === "Purchase" && !unitPrice && (touched.unitPrice || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                 value={unitPrice}
@@ -195,10 +207,14 @@ const StockInModal = ({ open, onClose, products, data }) => {
               />
             </div>
             <div className="flex-1">
-              <label className="text-sm font-medium text-gray-700">
+              <label
+                htmlFor="batchNumber"
+                className="text-sm font-medium text-gray-700"
+              >
                 Batch Number
               </label>
               <input
+                id="batchNumber"
                 type="text"
                 className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                 value={batchNumber}
@@ -207,12 +223,16 @@ const StockInModal = ({ open, onClose, products, data }) => {
             </div>
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="reason"
+              className="text-sm font-medium text-gray-700"
+            >
               Reason <sup className="text-red-500">*</sup>
             </label>
             <Listbox value={reason} onChange={setReason}>
               <div className="relative">
                 <Listbox.Button
+                  id="reason"
                   className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${!reason && (touched.reason || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                 >
                   <span>{reason || "Select transaction reason"}</span>
@@ -237,12 +257,16 @@ const StockInModal = ({ open, onClose, products, data }) => {
             </Listbox>
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="warehouse"
+              className="text-sm font-medium text-gray-700"
+            >
               Warehouse <sup className="text-red-500">*</sup>
             </label>
             <Listbox value={warehouse} onChange={setWarehouse}>
               <div className="relative">
                 <Listbox.Button
+                  id="warehouse"
                   className={`cursor-pointer w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${!warehouse && (touched.warehouse || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                 >
                   <span className="truncate">
@@ -267,10 +291,14 @@ const StockInModal = ({ open, onClose, products, data }) => {
             </Listbox>
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="notes"
+              className="text-sm font-medium text-gray-700"
+            >
               Notes (Optional)
             </label>
             <textarea
+              id="notes"
               className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

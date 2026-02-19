@@ -5,10 +5,10 @@ import {
   HiOutlineDocumentText,
   HiOutlineCamera,
   HiOutlineUpload,
+  HiSelector,
 } from "react-icons/hi";
 import { uploadFile } from "../api";
 import { Listbox } from "@headlessui/react";
-import { HiSelector } from "react-icons/hi";
 import DatePicker from "../components/DatePicker";
 
 const initialExpense = {
@@ -52,12 +52,12 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   }, [open, data]);
 
   async function handleImageChange(e) {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
+    const file = e.target.files?.[0];
+    if (file) {
       setSelectedImage(file);
       try {
         const res = await uploadFile(file);
-        if (res.data && res.data.url) {
+        if (res.data?.url) {
           setExpense((prev) => ({ ...prev, receipt_image: res.data.url }));
         }
       } catch (err) {
@@ -66,18 +66,21 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
     }
   }
 
+  let modalTitle;
+  if (viewOnly) {
+    modalTitle = "Expense Details";
+  } else if (expense._id) {
+    modalTitle = "Update Expense";
+  } else {
+    modalTitle = "Add Expense";
+  }
+
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
       <div className="bg-white rounded-2xl p-5 w-full max-w-[40%] max-h-[80vh] shadow-xl relative">
-        <h2 className="text-xl font-bold mb-6 text-center">
-          {viewOnly
-            ? "Expense Details"
-            : expense._id
-              ? "Update Expense"
-              : "Add Expense"}
-        </h2>
+        <h2 className="text-xl font-bold mb-6 text-center">{modalTitle}</h2>
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
           <div className="col-span-2 mb-2">
             <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
@@ -86,11 +89,15 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             <div className="mb-3 grid grid-cols-1 gap-3">
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="description"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Description
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="description"
                   name="description"
                   value={expense.description}
                   onChange={(e) =>
@@ -105,7 +112,10 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="amount"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     Amount
                     {!viewOnly && <sup className="text-red-500">*</sup>}
                   </label>
@@ -114,6 +124,7 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       <span className="text-gray-500 sm:text-sm">$</span>
                     </div>
                     <input
+                      id="amount"
                       name="amount"
                       value={expense.amount}
                       onChange={(e) =>
@@ -125,13 +136,16 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       type={viewOnly ? "text" : "number"}
                       step="0.01"
                       placeholder="0.00"
-                      className={`w-full bg-gray-50 border rounded-lg pl-7 pr-3 py-2 text-sm text-gray-800 ${(!expense.amount || isNaN(expense.amount)) && !data && (touched.amount || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                      className={`w-full bg-gray-50 border rounded-lg pl-7 pr-3 py-2 text-sm text-gray-800 ${(!expense.amount || Number.isNaN(Number(expense.amount))) && !data && (touched.amount || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                       disabled={viewOnly}
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="category"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     Category
                   </label>
                   <Listbox
@@ -152,6 +166,7 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   >
                     <div className="relative">
                       <Listbox.Button
+                        id="category"
                         className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!expense.category && !data && (touched.category || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                         disabled={viewOnly}
                       >
@@ -191,10 +206,14 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="date"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Date
                 </label>
                 <DatePicker
+                  id="date"
                   selected={expense.date}
                   onChange={(date) =>
                     setExpense((prev) => ({

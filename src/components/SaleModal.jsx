@@ -30,7 +30,9 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   useEffect(() => {
     let t;
     if (open) {
-      getProducts({ limit: -1 }).then((res) => setProducts(res.data.data || []));
+      getProducts({ limit: -1 }).then((res) =>
+        setProducts(res.data.data || []),
+      );
       getUsers({ limit: -1 }).then((res) => setUsers(res.data.data || []));
       if (data) {
         t = setTimeout(() => {
@@ -41,7 +43,10 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               data.items && data.items.length > 0
                 ? data.items.map((item) => ({
                     ...item,
-                    product: typeof item.product === "object" ? item.product._id : item.product,
+                    product:
+                      typeof item.product === "object"
+                        ? item.product._id
+                        : item.product,
                   }))
                 : [
                     {
@@ -96,7 +101,7 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
 
   const calcTotal = () => {
     return sale.items
-      .reduce((sum, item) => sum + parseFloat(calcLineTotal(item)), 0)
+      .reduce((sum, item) => sum + Number.parseFloat(calcLineTotal(item)), 0)
       .toFixed(2);
   };
 
@@ -159,7 +164,10 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             <div className="mb-3 grid grid-cols-1 gap-3">
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="customer"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Customer
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
@@ -173,6 +181,7 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="customer"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-100 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span className={sale.customer ? "" : "text-gray-400"}>
@@ -216,10 +225,13 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             {sale.items.map((item, idx) => {
               return (
-                <div key={idx} className="w-full flex items-center">
+                <div key={item.name} className="w-full flex items-center">
                   <div className="w-full mb-3 grid lg:grid-cols-5 md:grid-cols-2 grid-cols-1 gap-3">
                     <div>
-                      <label className="text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor={`product-${idx}`}
+                        className="text-sm font-medium text-gray-700"
+                      >
                         Product
                         {!viewOnly && <sup className="text-red-500">*</sup>}
                       </label>
@@ -233,6 +245,7 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       >
                         <div className="relative">
                           <Listbox.Button
+                            id={`product-${idx}`}
                             className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-100 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                           >
                             <span
@@ -280,12 +293,16 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       </Listbox>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor={`quantity-${idx}`}
+                        className="text-sm font-medium text-gray-700"
+                      >
                         Quantity
                         {!viewOnly && <sup className="text-red-500">*</sup>}
                       </label>
                       <div className="relative">
                         <input
+                          id={`quantity-${idx}`}
                           type={viewOnly ? "text" : "number"}
                           className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                           value={item.quantity}
@@ -306,11 +323,15 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       </div>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor={`price-${idx}`}
+                        className="text-sm font-medium text-gray-700"
+                      >
                         Price
                         {!viewOnly && <sup className="text-red-500">*</sup>}
                       </label>
                       <input
+                        id={`price-${idx}`}
                         type={viewOnly ? "text" : "number"}
                         min="0"
                         className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
@@ -323,10 +344,14 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor={`discount-${idx}`}
+                        className="text-sm font-medium text-gray-700"
+                      >
                         Discount (%)
                       </label>
                       <input
+                        id={`discount-${idx}`}
                         type={viewOnly ? "text" : "number"}
                         min="0"
                         max="100"
@@ -339,10 +364,14 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-700">
+                      <label
+                        htmlFor={`line-total-${idx}`}
+                        className="text-sm font-medium text-gray-700"
+                      >
                         Line Total
                       </label>
                       <input
+                        id={`line-total-${idx}`}
                         className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                         value={calcLineTotal(item)}
                         disabled
@@ -384,7 +413,10 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="payment-method"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Payment Method
                   {!viewOnly && <span className="text-red-500">*</span>}
                 </label>
@@ -398,6 +430,7 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="payment-method"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-100 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
                     >
                       <span>{sale.payment_method}</span>
@@ -422,10 +455,14 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="total-amount"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Total Amount
                 </label>
                 <input
+                  id="total-amount"
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100`}
                   value={calcTotal()}
                   disabled
@@ -434,10 +471,14 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </div>
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="notes"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Notes (Optional)
             </label>
             <textarea
+              id="notes"
               className="w-full border border-gray-100 rounded-lg px-3 py-2 bg-gray-50 text-gray-800"
               rows={3}
               value={sale.notes}

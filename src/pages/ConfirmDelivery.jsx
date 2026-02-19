@@ -247,8 +247,8 @@ const DeliveryConfirmation = () => {
       const newIds = confirmDeliveries.map((o) => o._id);
       setSelectedIds((prev) => [...new Set([...prev, ...newIds])]);
     } else {
-      const pageIds = confirmDeliveries.map((o) => o._id);
-      setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
+      const pageIds = new Set(confirmDeliveries.map((o) => o._id));
+      setSelectedIds((prev) => prev.filter((id) => !pageIds.has(id)));
     }
   }
 

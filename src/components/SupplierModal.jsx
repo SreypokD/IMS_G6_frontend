@@ -132,11 +132,15 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="company_name"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Company Name
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="company_name"
                   name="company_name"
                   value={supplier.company_name}
                   onChange={(e) =>
@@ -150,11 +154,15 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="location"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Location
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="location"
                   name="location"
                   value={supplier.location}
                   onChange={(e) =>
@@ -176,11 +184,15 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="contact_person"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Contact Person
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="contact_person"
                   name="contact_person"
                   value={supplier.contact_person}
                   onChange={(e) =>
@@ -200,11 +212,15 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="contact_position"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Role/Position
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="contact_position"
                   name="contact_position"
                   value={supplier.contact_position}
                   onChange={(e) =>
@@ -224,11 +240,15 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="contact_email"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Email Address
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="contact_email"
                   name="contact_email"
                   value={supplier.contact_email}
                   onChange={(e) =>
@@ -248,11 +268,15 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="contact_phone"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Phone Number
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
+                  id="contact_phone"
                   name="contact_phone"
                   value={supplier.contact_phone}
                   onChange={(e) =>
@@ -280,7 +304,10 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="province"
+                  className="text-sm font-medium text-gray-700"
+                >
                   City/Province
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
@@ -291,6 +318,7 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="province"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.address.province && !data && (touched.province || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     >
                       <span>{supplier.address.province}</span>
@@ -315,7 +343,10 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="district"
+                  className="text-sm font-medium text-gray-700"
+                >
                   District
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
@@ -326,6 +357,7 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="district"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.address.district && !data && (touched.district || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     >
                       <span>{supplier.address.district}</span>
@@ -352,7 +384,10 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="commune"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Commune
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
@@ -363,6 +398,7 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="commune"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.address.commune && !data && (touched.commune || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     >
                       <span>{supplier.address.commune}</span>
@@ -392,7 +428,10 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="village"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Village
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
@@ -403,6 +442,7 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="village"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.address.village && !data && (touched.village || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     >
                       <span>{supplier.address.village}</span>
@@ -435,10 +475,14 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="house"
+                  className="text-sm font-medium text-gray-700"
+                >
                   House
                 </label>
                 <input
+                  id="house"
                   type="text"
                   className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                   value={supplier.address.house}
@@ -455,10 +499,14 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="street"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Street
                 </label>
                 <input
+                  id="street"
                   className="w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 border-gray-100"
                   value={supplier.address.street}
                   onChange={(e) =>
@@ -482,7 +530,10 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="paymentTerms"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Payment Terms
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
@@ -505,6 +556,7 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="paymentTerms"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.payment_term && !data && (touched.payment_term || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                       disabled={viewOnly}
                     >
@@ -539,7 +591,10 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </Listbox>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="supplierStatus"
+                  className="text-sm font-medium text-gray-700"
+                >
                   Supplier Status
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
@@ -560,6 +615,7 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 >
                   <div className="relative">
                     <Listbox.Button
+                      id="supplierStatus"
                       className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.status && !data && (touched.status || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                       disabled={viewOnly}
                     >
