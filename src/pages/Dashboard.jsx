@@ -120,7 +120,7 @@ const Dashboard = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold">
-            Welcome, {user?.first_name || user?.username || "User"}!
+            Welcome, {user?.first_name || "User"}!
           </h1>
           {(() => {
             let roleMessage =
@@ -435,7 +435,7 @@ const Dashboard = () => {
                 View all
               </Link>
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto px-1">
               <table className="min-w-full text-left text-sm align-middle">
                 <thead>
                   <tr>
@@ -510,9 +510,7 @@ const Dashboard = () => {
                     >
                       <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
                         <span className="font-bold text-blue-600 text-sm">
-                          {log.user?.first_name?.[0] ||
-                            log.user?.username?.[0] ||
-                            "U"}
+                          {log.user?.first_name?.[0] || "U"}
                         </span>
                       </div>
                       <div className="flex-1 min-w-0">
@@ -528,9 +526,7 @@ const Dashboard = () => {
                         <p className="text-xs text-gray-500 mt-0.5">
                           <span className="mr-1">by</span>
                           <span className="font-medium text-gray-700">
-                            {log.user?.first_name ||
-                              log.user?.username ||
-                              "Unknown"}
+                            {log.user?.first_name || "Unknown"}
                           </span>
                           {" • "}
                           {new Date(log.createdAt).toLocaleString()}

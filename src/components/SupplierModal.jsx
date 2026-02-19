@@ -11,6 +11,7 @@ import {
   HiOutlineNewspaper,
 } from "react-icons/hi";
 import { locations } from "../data/locations";
+import { useAuth } from "../contexts/auth/useAuth";
 
 const paymentTerms = [
   { _id: 1, name: "Net 30 Days" },
@@ -45,10 +46,16 @@ const initialSupplier = {
   status: statuses[0].name,
 };
 
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
+
 const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   const [supplier, setSupplier] = useState(data || initialSupplier);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
+  const { user } = useAuth();
+  const canUpdate = getPermission(user, "update_supplier");
 
   // Reset form when modal opens or closes
   React.useEffect(() => {
@@ -177,126 +184,128 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               </div>
             </div>
           </div>
-          <div className="col-span-2 mb-2">
-            <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
-              <HiOutlineUser className="inline-block text-xl text-black" />
-              <span>Primary Contact Details</span>
-            </h3>
-            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
-              <div>
-                <label
-                  htmlFor="contact_person"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Contact Person
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
-                </label>
-                <input
-                  id="contact_person"
-                  name="contact_person"
-                  value={supplier.contact_person}
-                  onChange={(e) =>
-                    setSupplier({
-                      ...supplier,
-                      contact_person: e.target.value,
-                    })
-                  }
-                  onBlur={() =>
-                    setTouched((prev) => ({
-                      ...prev,
-                      contact_person: true,
-                    }))
-                  }
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_person && !data && (touched.contact_person || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                  disabled={viewOnly}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="contact_position"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Role/Position
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
-                </label>
-                <input
-                  id="contact_position"
-                  name="contact_position"
-                  value={supplier.contact_position}
-                  onChange={(e) =>
-                    setSupplier({
-                      ...supplier,
-                      contact_position: e.target.value,
-                    })
-                  }
-                  onBlur={() =>
-                    setTouched((prev) => ({
-                      ...prev,
-                      contact_position: true,
-                    }))
-                  }
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_position && !data && (touched.contact_position || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                  disabled={viewOnly}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="contact_email"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Email Address
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
-                </label>
-                <input
-                  id="contact_email"
-                  name="contact_email"
-                  value={supplier.contact_email}
-                  onChange={(e) =>
-                    setSupplier({
-                      ...supplier,
-                      contact_email: e.target.value,
-                    })
-                  }
-                  onBlur={() =>
-                    setTouched((prev) => ({
-                      ...prev,
-                      contact_email: true,
-                    }))
-                  }
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_email && !data && (touched.contact_email || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                  disabled={viewOnly}
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="contact_phone"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Phone Number
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
-                </label>
-                <input
-                  id="contact_phone"
-                  name="contact_phone"
-                  value={supplier.contact_phone}
-                  onChange={(e) =>
-                    setSupplier({
-                      ...supplier,
-                      contact_phone: e.target.value,
-                    })
-                  }
-                  onBlur={() =>
-                    setTouched((prev) => ({
-                      ...prev,
-                      contact_phone: true,
-                    }))
-                  }
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_phone && !data && (touched.contact_phone || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                  disabled={viewOnly}
-                />
+          {canUpdate && (
+            <div className="col-span-2 mb-2">
+              <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+                <HiOutlineUser className="inline-block text-xl text-black" />
+                <span>Primary Contact Details</span>
+              </h3>
+              <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
+                <div>
+                  <label
+                    htmlFor="contact_person"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Contact Person
+                    {!viewOnly && <sup className="text-red-500">*</sup>}
+                  </label>
+                  <input
+                    id="contact_person"
+                    name="contact_person"
+                    value={supplier.contact_person}
+                    onChange={(e) =>
+                      setSupplier({
+                        ...supplier,
+                        contact_person: e.target.value,
+                      })
+                    }
+                    onBlur={() =>
+                      setTouched((prev) => ({
+                        ...prev,
+                        contact_person: true,
+                      }))
+                    }
+                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_person && !data && (touched.contact_person || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                    disabled={viewOnly}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="contact_position"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Role/Position
+                    {!viewOnly && <sup className="text-red-500">*</sup>}
+                  </label>
+                  <input
+                    id="contact_position"
+                    name="contact_position"
+                    value={supplier.contact_position}
+                    onChange={(e) =>
+                      setSupplier({
+                        ...supplier,
+                        contact_position: e.target.value,
+                      })
+                    }
+                    onBlur={() =>
+                      setTouched((prev) => ({
+                        ...prev,
+                        contact_position: true,
+                      }))
+                    }
+                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_position && !data && (touched.contact_position || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                    disabled={viewOnly}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="contact_email"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Email Address
+                    {!viewOnly && <sup className="text-red-500">*</sup>}
+                  </label>
+                  <input
+                    id="contact_email"
+                    name="contact_email"
+                    value={supplier.contact_email}
+                    onChange={(e) =>
+                      setSupplier({
+                        ...supplier,
+                        contact_email: e.target.value,
+                      })
+                    }
+                    onBlur={() =>
+                      setTouched((prev) => ({
+                        ...prev,
+                        contact_email: true,
+                      }))
+                    }
+                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_email && !data && (touched.contact_email || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                    disabled={viewOnly}
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="contact_phone"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Phone Number
+                    {!viewOnly && <sup className="text-red-500">*</sup>}
+                  </label>
+                  <input
+                    id="contact_phone"
+                    name="contact_phone"
+                    value={supplier.contact_phone}
+                    onChange={(e) =>
+                      setSupplier({
+                        ...supplier,
+                        contact_phone: e.target.value,
+                      })
+                    }
+                    onBlur={() =>
+                      setTouched((prev) => ({
+                        ...prev,
+                        contact_phone: true,
+                      }))
+                    }
+                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!supplier.contact_phone && !data && (touched.contact_phone || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                    disabled={viewOnly}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
           <div className="col-span-2 mb-2">
             <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
               <HiOutlineLocationMarker className="inline-block text-xl text-black" />
@@ -523,133 +532,135 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               </div>
             </div>
           </div>
-          <div className="col-span-2 mb-2">
-            <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
-              <HiOutlineNewspaper className="inline-block text-xl text-black" />
-              <span>Business Terms</span>
-            </h3>
-            <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
-              <div>
-                <label
-                  htmlFor="paymentTerms"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Payment Terms
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
-                </label>
-                <Listbox
-                  value={
-                    paymentTerms.find(
-                      (pt) => pt.name === supplier.payment_term,
-                    ) || null
-                  }
-                  onChange={
-                    viewOnly
-                      ? () => {}
-                      : (pt) =>
-                          setSupplier({
-                            ...supplier,
-                            payment_term: pt ? pt.name : "",
-                          })
-                  }
-                  disabled={viewOnly}
-                >
-                  <div className="relative">
-                    <Listbox.Button
-                      id="paymentTerms"
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.payment_term && !data && (touched.payment_term || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                      disabled={viewOnly}
-                    >
-                      <span>
-                        {paymentTerms.find(
-                          (pt) => pt.name === supplier.payment_term,
-                        )?.name || "Select Payment Term"}
-                      </span>
-                      {!viewOnly && (
-                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-                      )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
-                      {paymentTerms.length === 0 && (
-                        <div className="px-4 py-2 text-gray-400">
-                          No payment terms
-                        </div>
-                      )}
-                      {paymentTerms.map((pt) => (
-                        <Listbox.Option
-                          key={pt._id}
-                          value={pt}
-                          className={({ selected }) =>
-                            `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
-                          }
-                        >
-                          {pt.name}
-                        </Listbox.Option>
-                      ))}
-                    </Listbox.Options>
-                  </div>
-                </Listbox>
-              </div>
-              <div>
-                <label
-                  htmlFor="supplierStatus"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Supplier Status
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
-                </label>
-                <Listbox
-                  value={
-                    statuses.find((st) => st.name === supplier.status) || null
-                  }
-                  onChange={
-                    viewOnly
-                      ? () => {}
-                      : (st) =>
-                          setSupplier({
-                            ...supplier,
-                            status: st ? st.name : "",
-                          })
-                  }
-                  disabled={viewOnly}
-                >
-                  <div className="relative">
-                    <Listbox.Button
-                      id="supplierStatus"
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.status && !data && (touched.status || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                      disabled={viewOnly}
-                    >
-                      <span>
-                        {statuses.find((st) => st.name === supplier.status)
-                          ?.name || "Select status"}
-                      </span>
-                      {!viewOnly && (
-                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
-                      )}
-                    </Listbox.Button>
-                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
-                      {statuses.length === 0 && (
-                        <div className="px-4 py-2 text-gray-400">
-                          No statuses
-                        </div>
-                      )}
-                      {statuses.map((st) => (
-                        <Listbox.Option
-                          key={st._id}
-                          value={st}
-                          className={({ selected }) =>
-                            `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
-                          }
-                        >
-                          {st.name}
-                        </Listbox.Option>
-                      ))}
-                    </Listbox.Options>
-                  </div>
-                </Listbox>
+          {canUpdate && (
+            <div className="col-span-2 mb-2">
+              <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+                <HiOutlineNewspaper className="inline-block text-xl text-black" />
+                <span>Business Terms</span>
+              </h3>
+              <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
+                <div>
+                  <label
+                    htmlFor="paymentTerms"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Payment Terms
+                    {!viewOnly && <sup className="text-red-500">*</sup>}
+                  </label>
+                  <Listbox
+                    value={
+                      paymentTerms.find(
+                        (pt) => pt.name === supplier.payment_term,
+                      ) || null
+                    }
+                    onChange={
+                      viewOnly
+                        ? () => {}
+                        : (pt) =>
+                            setSupplier({
+                              ...supplier,
+                              payment_term: pt ? pt.name : "",
+                            })
+                    }
+                    disabled={viewOnly}
+                  >
+                    <div className="relative">
+                      <Listbox.Button
+                        id="paymentTerms"
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.payment_term && !data && (touched.payment_term || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                        disabled={viewOnly}
+                      >
+                        <span>
+                          {paymentTerms.find(
+                            (pt) => pt.name === supplier.payment_term,
+                          )?.name || "Select Payment Term"}
+                        </span>
+                        {!viewOnly && (
+                          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                        )}
+                      </Listbox.Button>
+                      <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        {paymentTerms.length === 0 && (
+                          <div className="px-4 py-2 text-gray-400">
+                            No payment terms
+                          </div>
+                        )}
+                        {paymentTerms.map((pt) => (
+                          <Listbox.Option
+                            key={pt._id}
+                            value={pt}
+                            className={({ selected }) =>
+                              `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
+                            }
+                          >
+                            {pt.name}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </div>
+                  </Listbox>
+                </div>
+                <div>
+                  <label
+                    htmlFor="supplierStatus"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Supplier Status
+                    {!viewOnly && <sup className="text-red-500">*</sup>}
+                  </label>
+                  <Listbox
+                    value={
+                      statuses.find((st) => st.name === supplier.status) || null
+                    }
+                    onChange={
+                      viewOnly
+                        ? () => {}
+                        : (st) =>
+                            setSupplier({
+                              ...supplier,
+                              status: st ? st.name : "",
+                            })
+                    }
+                    disabled={viewOnly}
+                  >
+                    <div className="relative">
+                      <Listbox.Button
+                        id="supplierStatus"
+                        className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${viewOnly ? "cursor-default" : "cursor-pointer"} ${!supplier.status && !data && (touched.status || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                        disabled={viewOnly}
+                      >
+                        <span>
+                          {statuses.find((st) => st.name === supplier.status)
+                            ?.name || "Select status"}
+                        </span>
+                        {!viewOnly && (
+                          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                        )}
+                      </Listbox.Button>
+                      <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        {statuses.length === 0 && (
+                          <div className="px-4 py-2 text-gray-400">
+                            No statuses
+                          </div>
+                        )}
+                        {statuses.map((st) => (
+                          <Listbox.Option
+                            key={st._id}
+                            value={st}
+                            className={({ selected }) =>
+                              `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
+                            }
+                          >
+                            {st.name}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </div>
+                  </Listbox>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </form>
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button

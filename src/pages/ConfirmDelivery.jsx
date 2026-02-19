@@ -11,7 +11,7 @@ import {
   HiOutlineXCircle,
 } from "react-icons/hi";
 import { useAuth } from "../contexts/auth/useAuth";
-import { getConfirmDeliveries, confirmDeliveryAction } from "../api";
+import { getOrderRequests, confirmDeliveryAction } from "../api";
 import { formatDate } from "../utils/dateFormat";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
@@ -175,10 +175,16 @@ const DeliveryConfirmation = () => {
       if (startDate) params.startDate = startDate;
       if (endDate) params.endDate = endDate;
       // approve_status maps to approve_request.status
-      if (approve_status) params["approve_request"] = approve_status;
-      // deliveryStatus maps to confirm_delivery.status
-      if (delivery_status) params["confirm_delivery"] = delivery_status;
-      const res = await getConfirmDeliveries(params);
+      // map statuses for OrderRequest
+      if (approve_status) params.status = approve_status; // e.g., 'approved'
+      if (delivery_status === "Delivered") params.status = "completed";
+      if (delivery_status === "Pending") params.status = "approved"; // Pending delivery = Approved order
+
+      // Default filter: show only approved (ready for delivery) and completed (delivered)
+      if (!params.status) {
+        params.status = ["approved", "completed"];
+      }
+      const res = await getOrderRequests(params);
 
       // Remove client-side filtering to allow all statuses to be viewed/filtered by user
       setConfirmDeliveries(res.data.data);
@@ -264,12 +270,6 @@ const DeliveryConfirmation = () => {
     if (selectedIds.length === 0) return;
     setLoading(true);
     try {
-      const { updateConfirmDelivery } = await import("../api");
-      await Promise.all(
-        selectedIds.map((id) =>
-          updateConfirmDelivery(id, { is_active: isActive }),
-        ),
-      );
       dialog.success(
         `Deliveries marked as ${isActive ? "Active" : "Archived"} successfully.`,
       );
@@ -301,10 +301,7 @@ const DeliveryConfirmation = () => {
       cancelText: "Cancel",
     });
     if (!confirmed) return;
-
     try {
-      const { deleteConfirmDelivery } = await import("../api");
-      await Promise.all(selectedIds.map((id) => deleteConfirmDelivery(id)));
       dialog.success("Deliveries deleted successfully.");
       fetchConfirmDeliveries(
         pagination.page,
@@ -564,19 +561,16 @@ const DeliveryConfirmation = () => {
                       </td>
                       <td>
                         <span
-                          className={`inline-block w-22.5 text-center py-1.5 rounded-full text-sm text-white ${approve?.status === "approved" ? "bg-green-400" : approve?.status === "rejected" ? "bg-red-400" : "bg-yellow-400"}`}
+                          className={`inline-block w-22.5 text-center py-1.5 rounded-full text-sm text-white ${confirm_delivery.status === "approved" || confirm_delivery.status === "completed" ? "bg-green-400" : "bg-yellow-400"}`}
                         >
-                          {approve?.status
-                            ? approve.status.charAt(0).toUpperCase() +
-                              approve.status.slice(1)
-                            : "Pending"}
+                          Approved
                         </span>
                       </td>
                       <td>
                         <span
-                          className={`inline-block w-22.5 text-center py-1.5 rounded-full text-sm text-white ${delivery?.status === "delivered" ? "bg-green-400" : "bg-yellow-400"}`}
+                          className={`inline-block w-22.5 text-center py-1.5 rounded-full text-sm text-white ${confirm_delivery.status === "completed" ? "bg-green-400" : "bg-yellow-400"}`}
                         >
-                          {delivery?.status === "delivered"
+                          {confirm_delivery.status === "completed"
                             ? "Delivered"
                             : "Pending"}
                         </span>
@@ -591,40 +585,41 @@ const DeliveryConfirmation = () => {
                             <HiOutlineEye className="text-2xl" />
                           </button>
                         )}
-                        {(!delivery || delivery.status !== "delivered") &&
-                          canUpdate && (
-                            <Menu
-                              as="div"
-                              className="relative inline-block text-left"
-                            >
-                              <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
-                                <HiDotsVertical className="text-xl" />
-                              </Menu.Button>
-                              <Menu.Items
-                                anchor="bottom end"
-                                className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
-                              >
-                                <Menu.Item>
-                                  {() => (
-                                    <button
-                                      onClick={() =>
-                                        handleConfirmDelivery(
-                                          confirm_delivery._id,
-                                        )
-                                      }
-                                      className="w-full flex items-center px-2 py-3 text-green-600 hover:bg-green-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
-                                    >
-                                      <HiOutlineCheckCircle
-                                        className="text-green-600 mr-2 h-5 w-5"
-                                        aria-hidden="true"
-                                      />
-                                      Confirm
-                                    </button>
-                                  )}
-                                </Menu.Item>
-                              </Menu.Items>
-                            </Menu>
-                          )}
+                        <Menu
+                          as="div"
+                          className="relative inline-block text-left"
+                        >
+                          <Menu.Button
+                            className="text-[#1e3a5f] font-semibold cursor-pointer disabled:cursor-default p-2 rounded-full hover:bg-gray-200 disabled:hover:bg-transparent disabled:opacity-50"
+                            disabled={
+                              confirm_delivery.status === "completed" ||
+                              !canUpdate
+                            }
+                          >
+                            <HiDotsVertical className="text-xl" />
+                          </Menu.Button>
+                          <Menu.Items
+                            anchor="bottom end"
+                            className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
+                          >
+                            <Menu.Item>
+                              {() => (
+                                <button
+                                  onClick={() =>
+                                    handleConfirmDelivery(confirm_delivery._id)
+                                  }
+                                  className="w-full flex items-center px-2 py-3 text-green-600 hover:bg-green-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                >
+                                  <HiOutlineCheckCircle
+                                    className="text-green-600 mr-2 h-5 w-5"
+                                    aria-hidden="true"
+                                  />
+                                  Confirm
+                                </button>
+                              )}
+                            </Menu.Item>
+                          </Menu.Items>
+                        </Menu>
                       </td>
                     </tr>
                   );

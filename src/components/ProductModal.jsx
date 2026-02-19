@@ -328,7 +328,7 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   </div>
                 ) : (
                   <label
-                    htmlFor="product_image"
+                    htmlFor="image"
                     className="cursor-pointer relative group h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-lg p-6 hover:bg-gray-50 transition w-full"
                   >
                     {product.image ? (
@@ -348,7 +348,7 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                       <div className="flex flex-col items-center">
                         <HiOutlineUpload className="text-4xl text-gray-400 mb-2" />
                         <span className="text-gray-600">
-                          Drag and drop your image here, or
+                          Drag and drop your image here, or{" "}
                           <span className="text-blue-600 underline ml-1">
                             browse files
                           </span>
@@ -360,6 +360,7 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     )}
                     <input
                       type="file"
+                      id="image"
                       accept="image/jpeg,image/png,image/gif"
                       className="hidden"
                       onChange={handleImageChange}

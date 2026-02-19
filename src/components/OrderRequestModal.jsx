@@ -253,8 +253,19 @@ const OrderRequestModal = ({
         <form className="space-y-5 overflow-auto max-h-[60vh] px-1">
           <div className="col-span-2 mb-2">
             <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
-              <HiOutlineDocumentText className="inline-block text-xl text-black" />
-              <span>Basic Information</span>
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-2">
+                  <HiOutlineDocumentText className="inline-block text-xl text-black" />
+                  <span>Basic Information</span>
+                </div>
+                {viewOnly && data?.status && (
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs text-white ${data.status === "pending" ? "bg-yellow-400" : data.status === "approved" ? "bg-blue-400" : data.status === "rejected" ? "bg-red-400" : data.status === "completed" ? "bg-green-400" : data.status === "cancelled" ? "bg-gray-400" : "bg-gray-400"}`}
+                  >
+                    {data.status.toUpperCase()}
+                  </span>
+                )}
+              </div>
             </h3>
             <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
@@ -584,6 +595,43 @@ const OrderRequestModal = ({
               rows={3}
             />
           </div>
+
+          {viewOnly && (data?.approved_at || data?.confirmed_at || data?.rejection_reason) && (
+             <div className="col-span-2 mb-2 mt-4 bg-gray-50 rounded-xl p-4 border border-gray-100">
+               <h3 className="text-sm font-semibold text-[#1e3a5f] mb-3">Workflow History</h3>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                 {data?.approved_at && (
+                   <div>
+                     <span className="text-gray-500 block">Approved By</span>
+                     <span className="font-medium">
+                       {data.approver ? `${data.approver.first_name} ${data.approver.last_name}` : "Admin"}
+                     </span>
+                     <span className="text-gray-400 text-xs block">
+                       {new Date(data.approved_at).toLocaleString()}
+                     </span>
+                     {data.admin_remark && <div className="mt-1 text-gray-600 italic">"{data.admin_remark}"</div>}
+                   </div>
+                 )}
+                 {data?.confirmed_at && (
+                   <div>
+                     <span className="text-gray-500 block">Confirmed By</span>
+                     <span className="font-medium">
+                       {data.confirmer ? `${data.confirmer.first_name} ${data.confirmer.last_name}` : "Staff"}
+                     </span>
+                     <span className="text-gray-400 text-xs block">
+                       {new Date(data.confirmed_at).toLocaleString()}
+                     </span>
+                   </div>
+                 )}
+                 {data?.rejection_reason && (
+                   <div className="col-span-2 text-red-500">
+                     <span className="block font-semibold">Rejection Reason:</span>
+                     {data.rejection_reason}
+                   </div>
+                 )}
+               </div>
+             </div>
+          )}
         </form>
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button

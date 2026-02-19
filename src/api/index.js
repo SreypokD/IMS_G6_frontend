@@ -137,15 +137,10 @@ export const updateApproveRequests = (id, data) =>
 export const deleteApproveRequest = (id) =>
   api.delete(`${orderRequests}/${id}`);
 
-// Confirm delivery
-export const getConfirmDeliveries = (params) =>
-  api.get(confirmDeliveries, { params });
-export const updateConfirmDelivery = (id, data) =>
-  api.patch(`${confirmDeliveries}/${id}`, data);
+// Confirm delivery (via Order Requests)
+// getConfirmDeliveries is replaced by getOrderRequests with status filtering in the component
 export const confirmDeliveryAction = (id) =>
-  api.post(`${confirmDeliveries}/${id}/confirm`);
-export const deleteConfirmDelivery = (id) =>
-  api.delete(`${confirmDeliveries}/${id}`);
+  api.post(`${orderRequests}/${id}/confirm`);
 
 // Sales
 export const getSales = (params = {}) => api.get(sales, { params });

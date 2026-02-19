@@ -12,6 +12,8 @@ import {
   HiDotsVertical,
   HiOutlineCheckCircle,
   HiOutlineArchive,
+  HiViewGrid,
+  HiViewList,
 } from "react-icons/hi";
 import ProductModal from "../components/ProductModal.jsx";
 import {
@@ -27,6 +29,7 @@ import { useAuth } from "../contexts/auth/useAuth.js";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 import Loading from "../components/Loading";
+import ProductCardSkeleton from "../components/ProductCardSkeleton";
 
 const statusOptions = [
   { value: "in_stock", label: "In Stock" },
@@ -153,6 +156,7 @@ const getPermission = (user, permission) => {
 
 const Products = () => {
   const [products, setProducts] = useState([]);
+  const [viewMode, setViewMode] = useState("table");
 
   // Pagination
   const [pagination, setPagination] = useState({
@@ -571,121 +575,66 @@ const Products = () => {
           </div>
         </div>
       </div>
-      <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
-        <div className="table-scroll-container">
+      {/* View Toggle */}
+      <div className="flex justify-end items-center mb-3">
+        <div className="flex bg-gray-100 p-1 rounded-lg">
+          <button
+            className={`px-3 py-2 rounded-xl text-sm font-medium transition-all flex items-center cursor-pointer ${viewMode === "table" ? "bg-white text-[#1e3a5f]" : "text-gray-500 hover:text-gray-900"}`}
+            onClick={() => setViewMode("table")}
+          >
+            <HiViewList className="mr-1 text-lg" /> Table
+          </button>
+          <button
+            className={`px-3 py-2 rounded-xl text-sm font-medium transition-all flex items-center cursor-pointer ${viewMode === "card" ? "bg-white text-[#1e3a5f]" : "text-gray-500 hover:text-gray-900"}`}
+            onClick={() => setViewMode("card")}
+          >
+            <HiViewGrid className="mr-1 text-lg" /> Cards
+          </button>
+        </div>
+      </div>
+      {viewMode === "card" ? (
+        <div className="flex-1 overflow-y-auto min-h-0">
           {loading ? (
-            <Loading />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-4">
+              {[...Array(8)].map((_, i) => (
+                <ProductCardSkeleton key={i} />
+              ))}
+            </div>
           ) : error ? (
             <div className="p-8 text-center text-red-500">{error}</div>
           ) : (
-            <table className="min-w-full text-left text-sm align-middle">
-              <thead className="table-sticky-header">
-                <tr>
-                  {(canUpdate || canDelete) && (
-                    <th className="w-15">
-                      <input
-                        type="checkbox"
-                        name="selectAll"
-                        id="selectAll"
-                        className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
-                        checked={
-                          products.length > 0 &&
-                          selectedIds.length === pagination.totalItems
-                        }
-                        onChange={handleSelectAll}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-4">
+              {products.map((product) => (
+                <div
+                  key={product._id}
+                  className="bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col transition-all duration-300 hover:scale-101"
+                >
+                  <div className="relative h-48 bg-gray-50 flex items-center justify-center overflow-hidden">
+                    {product.image ? (
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src =
+                            "https://placehold.co/400x300?text=No+Image";
+                        }}
                       />
-                    </th>
-                  )}
-                  <th className="number">No.</th>
-                  <th>Product Code</th>
-                  <th>Product Name</th>
-                  <th>Category</th>
-                  <th>Supplier</th>
-                  <th>Status</th>
-                  <th className="text-right">Stock</th>
-                  {canCreate || canUpdate || canDelete ? (
-                    <th className="text-right">Cost</th>
-                  ) : null}
-                  <th className="text-right">Price</th>
-                  {canView || canUpdate || canDelete ? (
-                    <th className="text-center action">Actions</th>
-                  ) : null}
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product, index) => (
-                  <tr key={product._id} className="hover:bg-[#f1f5f9]">
-                    {(canUpdate || canDelete) && (
-                      <td className="w-15">
-                        <input
-                          type="checkbox"
-                          name="select"
-                          id="select"
-                          className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
-                          checked={selectedIds.includes(product._id)}
-                          onChange={(e) => handleSelectOne(e, product._id)}
-                        />
-                      </td>
+                    ) : (
+                      <div className="text-gray-300 flex flex-col items-center">
+                        <HiOutlineArchive className="text-4xl mb-2" />
+                        <span className="text-sm">No Image</span>
+                      </div>
                     )}
-                    <td className="number">
-                      {index + 1 + (pagination.page - 1) * pagination.limit}
-                    </td>
-                    <td>#{product.code}</td>
-                    <td>{product.name}</td>
-                    <td>
-                      <span className="text-blue-500/80">
-                        {product.category?.name || product.category}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="text-blue-500/80">
-                        {typeof product.supplier === "object"
-                          ? product.supplier?.company_name ||
-                            product.supplier?.name
-                          : product.supplier}
-                      </span>
-                    </td>
-                    <td>
-                      <span
-                        className={`inline-block px-3 py-1 rounded-full text-sm capitalize text-white ${product.status === "active" ? "bg-green-400" : "bg-gray-100"}`}
-                      >
-                        {product.status}
-                      </span>
-                    </td>
-                    <td className="text-right">
-                      <span
-                        className={`text-sm ${product.stock === 0 ? "text-red-600" : product.stock < 10 ? "text-orange-600" : "text-green-600"}`}
-                      >
-                        {product.stock} {product.stock > 1 ? "units" : "unit"}
-                      </span>
-                    </td>
-                    {canCreate || canUpdate || canDelete ? (
-                      <td className="text-right">
-                        <span className="text-gray-500">
-                          ${Number(product.cost_price || 0).toFixed(2)}
-                        </span>
-                      </td>
-                    ) : null}
-                    <td className="text-right">
-                      ${Number(product.price).toFixed(2)}
-                    </td>
-                    <td className="flex items-center gap-1 justify-center action">
-                      {canView && (
-                        <button
-                          className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
-                          title="View"
-                          onClick={() => handleView(product)}
-                        >
-                          <HiOutlineEye className="text-xl" />
-                        </button>
-                      )}
+                    <div className="absolute top-3 right-3">
                       {(canUpdate || canDelete) && (
                         <Menu
                           as="div"
                           className="relative inline-block text-left"
                         >
-                          <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
-                            <HiDotsVertical className="text-xl" />
+                          <Menu.Button className="bg-white/80 backdrop-blur-sm text-[#1e3a5f] p-1.5 rounded-full hover:bg-white shadow-sm cursor-pointer">
+                            <HiDotsVertical className="text-lg" />
                           </Menu.Button>
                           <Menu.Items
                             anchor="bottom end"
@@ -726,21 +675,277 @@ const Products = () => {
                           </Menu.Items>
                         </Menu>
                       )}
-                    </td>
-                  </tr>
-                ))}
-                {products.length === 0 && (
-                  <tr>
-                    <td colSpan={canCreate || canUpdate || canDelete ? 11 : 9}>
-                      <NoDataFound message="No products found." />
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                    </div>
+                    <div className="absolute top-3 left-3">
+                      {(canUpdate || canDelete) && (
+                        <input
+                          type="checkbox"
+                          className="w-5 h-5 accent-[#1e3a5f] cursor-pointer rounded border-gray-300"
+                          checked={selectedIds.includes(product._id)}
+                          onChange={(e) => handleSelectOne(e, product._id)}
+                        />
+                      )}
+                    </div>
+                  </div>
+                  <div className="p-4 flex-1 flex flex-col">
+                    <div className="flex justify-between items-start mb-1">
+                      <div>
+                        <h3
+                          className="text-base font-semibold text-gray-900 line-clamp-1"
+                          title={product.name}
+                        >
+                          {product.name}
+                        </h3>
+                        <p className="text-sm text-gray-500">#{product.code}</p>
+                      </div>
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium capitalize text-white ${
+                          product.status === "active"
+                            ? "bg-green-500"
+                            : "bg-gray-500"
+                        }`}
+                      >
+                        {product.status}
+                      </span>
+                    </div>
+                    <div className="mt-2 text-sm text-gray-600 space-y-1">
+                      <div className="flex justify-between">
+                        <span>Category:</span>
+                        <span className="font-medium text-gray-900">
+                          {product.category?.name || product.category || "-"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Supplier:</span>
+                        <span
+                          className="font-medium text-gray-900 truncate max-w-[120px]"
+                          title={
+                            typeof product.supplier === "object"
+                              ? product.supplier?.company_name
+                              : product.supplier
+                          }
+                        >
+                          {typeof product.supplier === "object"
+                            ? product.supplier?.company_name
+                            : product.supplier || "-"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between items-end">
+                      <div>
+                        <p className="text-sm text-gray-500">Price</p>
+                        <p className="text-lg font-bold text-[#1e3a5f]">
+                          ${Number(product.price).toFixed(2)}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm text-gray-500">Stock</p>
+                        <p
+                          className={`font-semibold ${
+                            product.stock === 0
+                              ? "text-red-600"
+                              : product.stock < 10
+                                ? "text-orange-600"
+                                : "text-green-600"
+                          }`}
+                        >
+                          {product.stock}
+                        </p>
+                      </div>
+                    </div>
+                    {canView && (
+                      <button
+                        onClick={() => handleView(product)}
+                        className="mt-3 w-full py-2 flex items-center justify-center text-sm font-medium text-[#1e3a5f] bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors cursor-pointer"
+                      >
+                        <HiOutlineEye className="mr-1.5 text-lg" /> View Details
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {products.length === 0 && (
+                <div className="col-span-full">
+                  <NoDataFound message="No products found." />
+                </div>
+              )}
+            </div>
           )}
         </div>
-      </div>
+      ) : (
+        <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">
+          <div className="table-scroll-container">
+            {loading ? (
+              <Loading />
+            ) : error ? (
+              <div className="p-8 text-center text-red-500">{error}</div>
+            ) : (
+              <table className="min-w-full text-left text-sm align-middle">
+                <thead className="table-sticky-header">
+                  <tr>
+                    {(canUpdate || canDelete) && (
+                      <th className="w-15">
+                        <input
+                          type="checkbox"
+                          name="selectAll"
+                          id="selectAll"
+                          className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
+                          checked={
+                            products.length > 0 &&
+                            selectedIds.length === pagination.totalItems
+                          }
+                          onChange={handleSelectAll}
+                        />
+                      </th>
+                    )}
+                    <th className="number">No.</th>
+                    <th>Product Code</th>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th>Supplier</th>
+                    <th>Status</th>
+                    <th className="text-right">Stock</th>
+                    {canCreate || canUpdate || canDelete ? (
+                      <th className="text-right">Cost</th>
+                    ) : null}
+                    <th className="text-right">Price</th>
+                    {canView || canUpdate || canDelete ? (
+                      <th className="text-center action">Actions</th>
+                    ) : null}
+                  </tr>
+                </thead>
+                <tbody>
+                  {products.map((product, index) => (
+                    <tr key={product._id} className="hover:bg-[#f1f5f9]">
+                      {(canUpdate || canDelete) && (
+                        <td className="w-15">
+                          <input
+                            type="checkbox"
+                            name="select"
+                            id="select"
+                            className="w-4 h-4 accent-[#1e3a5f] cursor-pointer"
+                            checked={selectedIds.includes(product._id)}
+                            onChange={(e) => handleSelectOne(e, product._id)}
+                          />
+                        </td>
+                      )}
+                      <td className="number">
+                        {index + 1 + (pagination.page - 1) * pagination.limit}
+                      </td>
+                      <td>#{product.code}</td>
+                      <td>{product.name}</td>
+                      <td>
+                        <span className="text-blue-500/80">
+                          {product.category?.name || product.category}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="text-blue-500/80">
+                          {typeof product.supplier === "object"
+                            ? product.supplier?.company_name ||
+                              product.supplier?.name
+                            : product.supplier}
+                        </span>
+                      </td>
+                      <td>
+                        <span
+                          className={`inline-block px-3 py-1 rounded-full text-sm capitalize text-white ${product.status === "active" ? "bg-green-400" : "bg-gray-100"}`}
+                        >
+                          {product.status}
+                        </span>
+                      </td>
+                      <td className="text-right">
+                        <span
+                          className={`text-sm ${product.stock === 0 ? "text-red-600" : product.stock < 10 ? "text-orange-600" : "text-green-600"}`}
+                        >
+                          {product.stock} {product.stock > 1 ? "units" : "unit"}
+                        </span>
+                      </td>
+                      {canCreate || canUpdate || canDelete ? (
+                        <td className="text-right">
+                          <span className="text-gray-500">
+                            ${Number(product.cost_price || 0).toFixed(2)}
+                          </span>
+                        </td>
+                      ) : null}
+                      <td className="text-right">
+                        ${Number(product.price).toFixed(2)}
+                      </td>
+                      <td className="flex items-center gap-1 justify-center action">
+                        {canView && (
+                          <button
+                            className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
+                            title="View"
+                            onClick={() => handleView(product)}
+                          >
+                            <HiOutlineEye className="text-xl" />
+                          </button>
+                        )}
+                        {(canUpdate || canDelete) && (
+                          <Menu
+                            as="div"
+                            className="relative inline-block text-left"
+                          >
+                            <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                              <HiDotsVertical className="text-xl" />
+                            </Menu.Button>
+                            <Menu.Items
+                              anchor="bottom end"
+                              className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
+                            >
+                              {canUpdate && (
+                                <Menu.Item>
+                                  {() => (
+                                    <button
+                                      onClick={() => handleUpdate(product)}
+                                      className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                    >
+                                      <HiOutlinePencil
+                                        className="mr-2 h-5 w-5"
+                                        aria-hidden="true"
+                                      />
+                                      Update
+                                    </button>
+                                  )}
+                                </Menu.Item>
+                              )}
+                              {canDelete && (
+                                <Menu.Item>
+                                  {() => (
+                                    <button
+                                      onClick={() => handleDelete(product._id)}
+                                      className="w-full flex items-center px-2 py-3 text-red-500 hover:bg-red-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                    >
+                                      <HiOutlineTrash
+                                        className="text-red-500 mr-2 h-5 w-5"
+                                        aria-hidden="true"
+                                      />
+                                      Delete
+                                    </button>
+                                  )}
+                                </Menu.Item>
+                              )}
+                            </Menu.Items>
+                          </Menu>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  {products.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={canCreate || canUpdate || canDelete ? 11 : 9}
+                      >
+                        <NoDataFound message="No products found." />
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      )}
       {products.length > 0 && (
         <div className="flex justify-end mt-3">
           <Pagination

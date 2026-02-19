@@ -572,7 +572,7 @@ const OrderRequests = () => {
                             className="relative inline-block text-left"
                           >
                             <Menu.Button
-                              className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200 disabled:opacity-50"
+                              className="text-[#1e3a5f] font-semibold cursor-pointer disabled:cursor-default p-2 rounded-full hover:bg-gray-200 disabled:hover:bg-transparent disabled:opacity-50"
                               disabled={
                                 String(request.requester_id) !==
                                   String(user?._id) ||
