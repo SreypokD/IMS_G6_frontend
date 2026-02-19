@@ -251,7 +251,7 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   htmlFor="product_price"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Price
+                  Selling Price
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
@@ -267,6 +267,30 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   type={viewOnly ? "text" : "number"}
                   step="0.01"
                   className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.price || isNaN(product.price)) && !data && (touched.price || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  disabled={viewOnly}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="product_cost_price"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Cost Price
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
+                </label>
+                <input
+                  id="product_cost_price"
+                  name="cost_price"
+                  value={product.cost_price}
+                  onChange={(e) =>
+                    setProduct({ ...product, cost_price: e.target.value })
+                  }
+                  onBlur={() =>
+                    setTouched((prev) => ({ ...prev, cost_price: true }))
+                  }
+                  type={viewOnly ? "text" : "number"}
+                  step="0.01"
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.cost_price || isNaN(product.cost_price)) && !data && (touched.cost_price || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   disabled={viewOnly}
                 />
               </div>
@@ -393,6 +417,7 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   category: true,
                   supplier: true,
                   price: true,
+                  cost_price: true,
                   stock: true,
                   image: true,
                 });

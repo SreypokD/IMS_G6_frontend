@@ -334,7 +334,11 @@ const OrderRequestModal = ({
                             `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
                           }
                         >
-                          {supplier.company_name}
+                          {supplier.company_name} ({supplier.products_count}
+                          {supplier.products_count > 1
+                            ? " Products"
+                            : " Product"}
+                          )
                         </Listbox.Option>
                       ))}
                     </Listbox.Options>
@@ -596,42 +600,57 @@ const OrderRequestModal = ({
             />
           </div>
 
-          {viewOnly && (data?.approved_at || data?.confirmed_at || data?.rejection_reason) && (
-             <div className="col-span-2 mb-2 mt-4 bg-gray-50 rounded-xl p-4 border border-gray-100">
-               <h3 className="text-sm font-semibold text-[#1e3a5f] mb-3">Workflow History</h3>
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                 {data?.approved_at && (
-                   <div>
-                     <span className="text-gray-500 block">Approved By</span>
-                     <span className="font-medium">
-                       {data.approver ? `${data.approver.first_name} ${data.approver.last_name}` : "Admin"}
-                     </span>
-                     <span className="text-gray-400 text-xs block">
-                       {new Date(data.approved_at).toLocaleString()}
-                     </span>
-                     {data.admin_remark && <div className="mt-1 text-gray-600 italic">"{data.admin_remark}"</div>}
-                   </div>
-                 )}
-                 {data?.confirmed_at && (
-                   <div>
-                     <span className="text-gray-500 block">Confirmed By</span>
-                     <span className="font-medium">
-                       {data.confirmer ? `${data.confirmer.first_name} ${data.confirmer.last_name}` : "Staff"}
-                     </span>
-                     <span className="text-gray-400 text-xs block">
-                       {new Date(data.confirmed_at).toLocaleString()}
-                     </span>
-                   </div>
-                 )}
-                 {data?.rejection_reason && (
-                   <div className="col-span-2 text-red-500">
-                     <span className="block font-semibold">Rejection Reason:</span>
-                     {data.rejection_reason}
-                   </div>
-                 )}
-               </div>
-             </div>
-          )}
+          {viewOnly &&
+            (data?.approved_at ||
+              data?.confirmed_at ||
+              data?.rejection_reason) && (
+              <div className="col-span-2 mb-2 mt-4 bg-gray-50 rounded-xl p-4 border border-gray-100">
+                <h3 className="text-sm font-semibold text-[#1e3a5f] mb-3">
+                  Workflow History
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  {data?.approved_at && (
+                    <div>
+                      <span className="text-gray-500 block">Approved By</span>
+                      <span className="font-medium">
+                        {data.approver
+                          ? `${data.approver.first_name} ${data.approver.last_name}`
+                          : "Admin"}
+                      </span>
+                      <span className="text-gray-400 text-xs block">
+                        {new Date(data.approved_at).toLocaleString()}
+                      </span>
+                      {data.admin_remark && (
+                        <div className="mt-1 text-gray-600 italic">
+                          "{data.admin_remark}"
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {data?.confirmed_at && (
+                    <div>
+                      <span className="text-gray-500 block">Confirmed By</span>
+                      <span className="font-medium">
+                        {data.confirmer
+                          ? `${data.confirmer.first_name} ${data.confirmer.last_name}`
+                          : "Staff"}
+                      </span>
+                      <span className="text-gray-400 text-xs block">
+                        {new Date(data.confirmed_at).toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                  {data?.rejection_reason && (
+                    <div className="col-span-2 text-red-500">
+                      <span className="block font-semibold">
+                        Rejection Reason:
+                      </span>
+                      {data.rejection_reason}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
         </form>
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
