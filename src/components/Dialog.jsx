@@ -34,6 +34,15 @@ const Dialog = ({
     }
   }, [open]);
 
+  useEffect(() => {
+    if (open && type === "success") {
+      const timer = setTimeout(() => {
+        if (onClose) onClose();
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [open, type, onClose]);
+
   if (!open) return null;
 
   let icon, iconBg, iconColor, defaultTitle;
