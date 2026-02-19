@@ -327,13 +327,13 @@ const Register = () => {
                       }}
                     >
                       <div className="relative">
-                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer">
+                        <ListboxButton className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-gray-800 flex items-center justify-between cursor-pointer">
                           <span>{formData.address.province}</span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
-                        </Listbox.Button>
-                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        </ListboxButton>
+                        <ListboxOptions className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {provinces.map((p) => (
-                            <Listbox.Option
+                            <ListboxOption
                               key={p.name}
                               value={p.name}
                               className={({ active }) =>
@@ -343,9 +343,9 @@ const Register = () => {
                               }
                             >
                               {p.name}
-                            </Listbox.Option>
+                            </ListboxOption>
                           ))}
-                        </Listbox.Options>
+                        </ListboxOptions>
                       </div>
                     </Listbox>
                   </div>
@@ -363,7 +363,7 @@ const Register = () => {
                       disabled={!formData.address.province}
                     >
                       <div className="relative">
-                        <Listbox.Button
+                        <ListboxButton
                           className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between bg-gray-50 ${
                             !formData.address.province
                               ? "cursor-default"
@@ -372,10 +372,10 @@ const Register = () => {
                         >
                           <span>{formData.address.district}</span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
-                        </Listbox.Button>
-                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        </ListboxButton>
+                        <ListboxOptions className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {districts.map((d) => (
-                            <Listbox.Option
+                            <ListboxOption
                               key={d.name}
                               value={d.name}
                               className={({ active }) =>
@@ -385,9 +385,9 @@ const Register = () => {
                               }
                             >
                               {d.name}
-                            </Listbox.Option>
+                            </ListboxOption>
                           ))}
-                        </Listbox.Options>
+                        </ListboxOptions>
                       </div>
                     </Listbox>
                   </div>
@@ -404,7 +404,7 @@ const Register = () => {
                       disabled={!formData.address.district}
                     >
                       <div className="relative">
-                        <Listbox.Button
+                        <ListboxButton
                           className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between bg-gray-50 ${
                             !formData.address.district
                               ? "cursor-default"
@@ -413,10 +413,10 @@ const Register = () => {
                         >
                           <span>{formData.address.commune}</span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
-                        </Listbox.Button>
-                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        </ListboxButton>
+                        <ListboxOptions className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {communes.map((c) => (
-                            <Listbox.Option
+                            <ListboxOption
                               key={c.name}
                               value={c.name}
                               className={({ active }) =>
@@ -426,9 +426,9 @@ const Register = () => {
                               }
                             >
                               {c.name}
-                            </Listbox.Option>
+                            </ListboxOption>
                           ))}
-                        </Listbox.Options>
+                        </ListboxOptions>
                       </div>
                     </Listbox>
                   </div>
@@ -442,7 +442,7 @@ const Register = () => {
                       disabled={!formData.address.commune}
                     >
                       <div className="relative">
-                        <Listbox.Button
+                        <ListboxButton
                           className={`w-full border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between bg-gray-50 ${
                             !formData.address.commune
                               ? "cursor-default"
@@ -451,10 +451,10 @@ const Register = () => {
                         >
                           <span>{formData.address.village}</span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
-                        </Listbox.Button>
-                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        </ListboxButton>
+                        <ListboxOptions className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {villages.map((v) => (
-                            <Listbox.Option
+                            <ListboxOption
                               key={v}
                               value={v}
                               className={({ active }) =>
@@ -464,9 +464,9 @@ const Register = () => {
                               }
                             >
                               {v}
-                            </Listbox.Option>
+                            </ListboxOption>
                           ))}
-                        </Listbox.Options>
+                        </ListboxOptions>
                       </div>
                     </Listbox>
                   </div>
@@ -529,15 +529,15 @@ const Register = () => {
                       }
                     >
                       <div className="relative">
-                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between">
+                        <ListboxButton className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between">
                           <span className="capitalize">
                             {formData.expected_order_volume}
                           </span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
-                        </Listbox.Button>
-                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        </ListboxButton>
+                        <ListboxOptions className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {["small", "medium", "large"].map((vol) => (
-                            <Listbox.Option
+                            <ListboxOption
                               key={vol}
                               value={vol}
                               className={({ active }) =>
@@ -547,9 +547,9 @@ const Register = () => {
                               }
                             >
                               {vol}
-                            </Listbox.Option>
+                            </ListboxOption>
                           ))}
-                        </Listbox.Options>
+                        </ListboxOptions>
                       </div>
                     </Listbox>
                   </div>
@@ -567,15 +567,15 @@ const Register = () => {
                       }
                     >
                       <div className="relative">
-                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between">
+                        <ListboxButton className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between">
                           <span className="capitalize">
                             {formData.order_frequency}
                           </span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
-                        </Listbox.Button>
-                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        </ListboxButton>
+                        <ListboxOptions className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {["daily", "weekly", "monthly"].map((freq) => (
-                            <Listbox.Option
+                            <ListboxOption
                               key={freq}
                               value={freq}
                               className={({ active }) =>
@@ -585,9 +585,9 @@ const Register = () => {
                               }
                             >
                               {freq}
-                            </Listbox.Option>
+                            </ListboxOption>
                           ))}
-                        </Listbox.Options>
+                        </ListboxOptions>
                       </div>
                     </Listbox>
                   </div>
@@ -609,22 +609,22 @@ const Register = () => {
                       multiple
                     >
                       <div className="relative mt-1">
-                        <Listbox.Button className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between">
+                        <ListboxButton className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between">
                           <span className="block truncate">
                             {formData.product_categories.length > 0
                               ? formData.product_categories.join(", ")
                               : ""}
                           </span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
-                        </Listbox.Button>
-                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        </ListboxButton>
+                        <ListboxOptions className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
                           {categoriesList.length === 0 ? (
                             <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
                               No categories found.
                             </div>
                           ) : (
                             categoriesList.map((cat) => (
-                              <Listbox.Option
+                              <ListboxOption
                                 key={cat._id}
                                 value={cat.name}
                                 className={({ active }) =>
@@ -634,10 +634,10 @@ const Register = () => {
                                 }
                               >
                                 {cat.name}
-                              </Listbox.Option>
+                              </ListboxOption>
                             ))
                           )}
-                        </Listbox.Options>
+                        </ListboxOptions>
                       </div>
                     </Listbox>
                   </div>
@@ -651,7 +651,7 @@ const Register = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="border border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50 transition">
-                    <label className="cursor-pointer block relative group h-full flex flex-col items-center justify-center">
+                    <label className="cursor-pointer relative group h-full flex flex-col items-center justify-center">
                       <span className="block text-sm font-medium text-gray-700 mb-2">
                         ID Card / License <sup className="text-red-500">*</sup>
                       </span>
@@ -690,7 +690,7 @@ const Register = () => {
                     </label>
                   </div>
                   <div className="border border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50 transition">
-                    <label className="cursor-pointer block relative group h-full flex flex-col items-center justify-center">
+                    <label className="cursor-pointer relative group h-full flex flex-col items-center justify-center">
                       <span className="block text-sm font-medium text-gray-700 mb-2">
                         Shop Photo (Opt)
                       </span>
@@ -726,7 +726,7 @@ const Register = () => {
                     </label>
                   </div>
                   <div className="border border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50 transition">
-                    <label className="cursor-pointer block relative group h-full flex flex-col items-center justify-center">
+                    <label className="cursor-pointer relative group h-full flex flex-col items-center justify-center">
                       <span className="block text-sm font-medium text-gray-700 mb-2">
                         Location Photo (Opt)
                       </span>

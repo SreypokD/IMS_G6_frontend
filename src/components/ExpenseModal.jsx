@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import {
   HiXCircle,
   HiOutlineDocumentText,
@@ -38,13 +39,16 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   const [validateOnSave, setValidateOnSave] = useState(false);
 
   useEffect(() => {
+    let t;
     if (open) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setExpense(data || initialExpense);
-      setSelectedImage(null);
-      setTouched({});
-      setValidateOnSave(false);
+      t = setTimeout(() => {
+        setExpense(data || initialExpense);
+        setSelectedImage(null);
+        setTouched({});
+        setValidateOnSave(false);
+      }, 0);
     }
+    return () => clearTimeout(t);
   }, [open, data]);
 
   async function handleImageChange(e) {
@@ -275,6 +279,14 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       </div>
     </div>
   );
+};
+
+ExpenseModal.propTypes = {
+  open: PropTypes.bool,
+  onClose: PropTypes.func,
+  onSave: PropTypes.func,
+  data: PropTypes.object,
+  viewOnly: PropTypes.bool,
 };
 
 export default ExpenseModal;

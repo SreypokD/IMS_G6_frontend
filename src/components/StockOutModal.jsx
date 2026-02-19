@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { useAuth } from "../contexts/auth/useAuth";
 import { Listbox } from "@headlessui/react";
 import {
@@ -25,27 +26,33 @@ const StockOutModal = ({ open, onClose, products, data }) => {
   const [validateOnSave, setValidateOnSave] = useState(false);
   const dialog = useDialog();
   useEffect(() => {
+    let t;
     if (open) {
       if (data) {
-        setProductId(data.product_id || data.product?._id || "");
-        setQuantity(data.quantity || "");
-        setBatchNumber(data.batch_number || "");
-        setReason(data.reason || "");
-        setWarehouse(data.location || "Main Warehouse");
-        setNotes(data.note || "");
-        setTouched({});
-        setValidateOnSave(false);
+        t = setTimeout(() => {
+          setProductId(data.product_id || data.product?._id || "");
+          setQuantity(data.quantity || "");
+          setBatchNumber(data.batch_number || "");
+          setReason(data.reason || "");
+          setWarehouse(data.location || "Main Warehouse");
+          setNotes(data.note || "");
+          setTouched({});
+          setValidateOnSave(false);
+        }, 0);
       } else {
-        setProductId("");
-        setQuantity("");
-        setBatchNumber("");
-        setReason("");
-        setWarehouse("Main Warehouse");
-        setNotes("");
-        setTouched({});
-        setValidateOnSave(false);
+        t = setTimeout(() => {
+          setProductId("");
+          setQuantity("");
+          setBatchNumber("");
+          setReason("");
+          setWarehouse("Main Warehouse");
+          setNotes("");
+          setTouched({});
+          setValidateOnSave(false);
+        }, 0);
       }
     }
+    return () => clearTimeout(t);
   }, [open, data]);
 
   const handleSubmit = async (e) => {
@@ -302,6 +309,13 @@ const StockOutModal = ({ open, onClose, products, data }) => {
       </div>
     </div>
   );
+};
+
+StockOutModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  products: PropTypes.array.isRequired,
+  data: PropTypes.object,
 };
 
 export default StockOutModal;

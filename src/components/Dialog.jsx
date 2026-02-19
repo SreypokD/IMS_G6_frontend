@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import {
   HiCheckCircle,
   HiExclamationCircle,
@@ -27,7 +28,10 @@ const Dialog = ({
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    if (open) setPromptValue("");
+    if (open) {
+      const t = setTimeout(() => setPromptValue(""), 0);
+      return () => clearTimeout(t);
+    }
   }, [open]);
 
   if (!open) return null;
@@ -93,7 +97,13 @@ const Dialog = ({
         {showInput && (
           <div className="relative w-full">
             <input
-              type={showPassword ? "text" : "password"}
+              type={
+                inputType === "password" && !showPassword
+                  ? "password"
+                  : inputType === "password"
+                    ? "text"
+                    : inputType
+              }
               className="w-full bg-gray-50 border border-gray-100 rounded-lg px-4 py-2 text-sm mb-6"
               placeholder={placeholder}
               value={promptValue}
@@ -142,4 +152,19 @@ const Dialog = ({
   );
 };
 
+Dialog.propTypes = {
+  open: PropTypes.bool,
+  type: PropTypes.oneOf(["success", "confirm", "error", "warning", "info"]),
+  title: PropTypes.string,
+  message: PropTypes.string,
+  onClose: PropTypes.func,
+  onConfirm: PropTypes.func,
+  confirmText: PropTypes.string,
+  cancelText: PropTypes.string,
+  showActions: PropTypes.bool,
+  showInput: PropTypes.bool,
+  inputType: PropTypes.string,
+  placeholder: PropTypes.string,
+  children: PropTypes.node,
+};
 export default Dialog;

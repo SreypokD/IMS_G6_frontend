@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { useAuth } from "../contexts/auth/useAuth";
 import { getOrderRequests } from "../api";
 import Pagination from "../components/Pagination";
@@ -43,6 +44,11 @@ function StatusDropdown({ value, onChange }) {
     </Listbox>
   );
 }
+
+StatusDropdown.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
@@ -250,7 +256,7 @@ const OrderHistory = () => {
                     <td>{formatDate(order.delivery_date) || "-"}</td>
                     <td>
                       <span
-                        className={`inline-block w-[90px] text-center py-1.5 rounded-full text-sm text-white ${order.status === "approved" ? "bg-green-400" : order.status === "rejected" ? "bg-red-400" : order.status === "completed" ? "bg-blue-400" : "bg-yellow-400"}`}
+                        className={`inline-block w-22.5 text-center py-1.5 rounded-full text-sm text-white ${order.status === "approved" ? "bg-green-400" : order.status === "rejected" ? "bg-red-400" : order.status === "completed" ? "bg-blue-400" : "bg-yellow-400"}`}
                       >
                         {order.status
                           ? order.status.charAt(0).toUpperCase() +

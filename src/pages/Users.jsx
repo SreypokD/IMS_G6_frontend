@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import {
   HiSelector,
   HiOutlineFilter,
@@ -59,6 +60,12 @@ function PermissionDropdown({
   );
 }
 
+PermissionDropdown.propTypes = {
+  selected: PropTypes.string.isRequired,
+  setSelected: PropTypes.func.isRequired,
+  permissionOptions: PropTypes.array.isRequired,
+};
+
 function StatusDropdown({ selected, setSelected }) {
   const statuses = ["active", "inactive", "pending"];
   return (
@@ -87,6 +94,15 @@ function StatusDropdown({ selected, setSelected }) {
     </Listbox>
   );
 }
+
+StatusDropdown.propTypes = {
+  selected: PropTypes.string.isRequired,
+  setSelected: PropTypes.func.isRequired,
+};
+
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -126,10 +142,10 @@ const Users = () => {
   const [selectedIds, setSelectedIds] = useState([]);
 
   // Permissions
-  const canView = user?.permission?.permissions?.includes("view_user");
-  const canCreate = user?.permission?.permissions?.includes("create_user");
-  const canUpdate = user?.permission?.permissions?.includes("update_user");
-  const canDelete = user?.permission?.permissions?.includes("delete_user");
+  const canView = getPermission(user, "view_user");
+  const canCreate = getPermission(user, "create_user");
+  const canUpdate = getPermission(user, "update_user");
+  const canDelete = getPermission(user, "delete_user");
 
   useEffect(() => {
     getPermissions({ limit: -1 }).then((res) => {

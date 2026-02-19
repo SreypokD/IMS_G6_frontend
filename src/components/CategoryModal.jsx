@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { HiXCircle, HiOutlineDocumentText } from "react-icons/hi";
 
 const initialCategory = {
@@ -7,13 +8,7 @@ const initialCategory = {
   status: "active",
 };
 
-const CategoryModal = ({
-  open,
-  onClose,
-  onSave,
-  data,
-  viewOnly = false,
-}) => {
+const CategoryModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   const [category, setCategory] = useState(data || initialCategory);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
@@ -101,7 +96,6 @@ const CategoryModal = ({
               disabled={viewOnly}
             />
           </div>
-
         </form>
         <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
@@ -119,13 +113,25 @@ const CategoryModal = ({
               onClick={handleSubmit}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />
-           {viewOnly ? "Category Details" : category._id ? "Update Category" : "Add Category"}
+              {viewOnly
+                ? "Category Details"
+                : category._id
+                  ? "Update Category"
+                  : "Add Category"}
             </button>
           )}
         </div>
       </div>
     </div>
   );
+};
+
+CategoryModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  data: PropTypes.object,
+  viewOnly: PropTypes.bool,
 };
 
 export default CategoryModal;

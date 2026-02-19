@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { Listbox } from "@headlessui/react";
 import { HiSelector } from "react-icons/hi";
 import {
@@ -51,15 +52,21 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
 
   // Reset form when modal opens or closes
   React.useEffect(() => {
+    let t;
     if (open && !data) {
-      setSupplier(initialSupplier);
-      setTouched({});
-      setValidateOnSave(false);
+      t = setTimeout(() => {
+        setSupplier(initialSupplier);
+        setTouched({});
+        setValidateOnSave(false);
+      }, 0);
     } else if (open && data) {
-      setSupplier(data);
-      setTouched({});
-      setValidateOnSave(false);
+      t = setTimeout(() => {
+        setSupplier(data);
+        setTouched({});
+        setValidateOnSave(false);
+      }, 0);
     }
+    return () => clearTimeout(t);
   }, [open, data]);
 
   const handleProvinceChange = (provinceName) => {
@@ -622,6 +629,14 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       </div>
     </div>
   );
+};
+
+SupplierModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  data: PropTypes.object,
+  viewOnly: PropTypes.bool,
 };
 
 export default SupplierModal;

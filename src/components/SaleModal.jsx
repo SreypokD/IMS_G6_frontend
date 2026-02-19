@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { getProducts, getUsers } from "../api";
 import {
   HiXCircle,
@@ -20,54 +21,45 @@ const defaultSale = {
 
 const paymentMethods = ["Cash", "Card", "Bank Transfer", "Other"];
 
-export default function SaleModal({
-  open,
-  onClose,
-  onSave,
-  data,
-  viewOnly = false,
-}) {
+const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   const [sale, setSale] = useState(defaultSale);
   const [products, setProducts] = useState([]);
   const [users, setUsers] = useState([]);
   const dialog = useDialog();
 
   useEffect(() => {
+    let t;
     if (open) {
-      getProducts({ limit: -1 }).then((res) =>
-        setProducts(res.data.data || []),
-      );
+      getProducts({ limit: -1 }).then((res) => setProducts(res.data.data || []));
       getUsers({ limit: -1 }).then((res) => setUsers(res.data.data || []));
-
       if (data) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setSale({
-          _id: data._id, // Ensure we keep the ID if updating
-          customer: data.customer?._id || data.customer_id || "",
-          items:
-            data.items && data.items.length > 0
-              ? data.items.map((item) => ({
-                  ...item,
-                  product:
-                    typeof item.product === "object"
-                      ? item.product._id
-                      : item.product,
-                }))
-              : [
-                  {
-                    product: data.product?._id || data.product_id || "",
-                    quantity: data.quantity || 1,
-                    price: data.price || 0,
-                    discount: data.discount || 0,
-                  },
-                ],
-          payment_method: data.payment_method || "Cash",
-          notes: data.notes || "",
-        });
+        t = setTimeout(() => {
+          setSale({
+            _id: data._id,
+            customer: data.customer?._id || data.customer_id || "",
+            items:
+              data.items && data.items.length > 0
+                ? data.items.map((item) => ({
+                    ...item,
+                    product: typeof item.product === "object" ? item.product._id : item.product,
+                  }))
+                : [
+                    {
+                      product: data.product?._id || data.product_id || "",
+                      quantity: data.quantity || 1,
+                      price: data.price || 0,
+                      discount: data.discount || 0,
+                    },
+                  ],
+            payment_method: data.payment_method || "Cash",
+            notes: data.notes || "",
+          });
+        }, 0);
       } else {
-        setSale(defaultSale);
+        t = setTimeout(() => setSale(defaultSale), 0);
       }
     }
+    return () => clearTimeout(t);
   }, [open, data]);
 
   const handleItemChange = (idx, field, value) => {
@@ -480,4 +472,14 @@ export default function SaleModal({
       </div>
     </div>
   );
-}
+};
+
+SaleModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  data: PropTypes.object,
+  viewOnly: PropTypes.bool,
+};
+
+export default SaleModal;

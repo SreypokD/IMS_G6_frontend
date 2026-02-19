@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Listbox } from "@headlessui/react";
+import PropTypes from "prop-types";
 import {
   HiOutlinePlus,
   HiOutlinePencil,
@@ -10,7 +11,6 @@ import {
 } from "react-icons/hi2";
 import {
   HiOutlineCheckCircle,
-  HiOutlineXCircle,
   HiOutlineArchive,
   HiSelector,
   HiOutlineFilter,
@@ -62,6 +62,11 @@ function StatusDropdown({ value, onChange }) {
   );
 }
 
+StatusDropdown.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
 function LocationDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
@@ -88,6 +93,15 @@ function LocationDropdown({ value, onChange }) {
   );
 }
 
+LocationDropdown.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
+
 const Suppliers = () => {
   const [suppliers, setSuppliers] = useState([]);
 
@@ -104,7 +118,7 @@ const Suppliers = () => {
 
   // Modal
   const [modalOpen, setModalOpen] = useState(false);
-  const [updateSupplier, setUpdateSupplier] = useState(null);
+  const [editSupplier, setEditSupplier] = useState(null);
 
   // Loading and Error
   const [loading, setLoading] = useState(false);
@@ -118,10 +132,10 @@ const Suppliers = () => {
   // Permissions
   const dialog = useDialog();
   const { user } = useAuth();
-  const canView = user?.permission?.permissions?.includes("view_supplier");
-  const canCreate = user?.permission?.permissions?.includes("create_supplier");
-  const canUpdate = user?.permission?.permissions?.includes("update_supplier");
-  const canDelete = user?.permission?.permissions?.includes("delete_supplier");
+  const canView = getPermission(user, "view_supplier");
+  const canCreate = getPermission(user, "create_supplier");
+  const canUpdate = getPermission(user, "update_supplier");
+  const canDelete = getPermission(user, "delete_supplier");
 
   useEffect(() => {
     if (user) {
@@ -168,7 +182,7 @@ const Suppliers = () => {
 
   function handleView(supplier) {
     // Always open in view mode (viewOnly) for view action
-    setUpdateSupplier(null);
+    setEditSupplier(null);
     setViewSupplier(supplier);
     setModalOpen(true);
   }
@@ -178,8 +192,8 @@ const Suppliers = () => {
     setLoading(true);
     setError("");
     try {
-      if (updateSupplier) {
-        await updateSupplier(updateSupplier._id, supplier);
+      if (editSupplier) {
+        await updateSupplier(editSupplier._id, supplier);
         dialog.success("Supplier updated successfully");
       } else {
         await createSupplier(supplier);
@@ -187,7 +201,7 @@ const Suppliers = () => {
       }
       fetchSuppliers(pagination.page, pagination.limit);
       setModalOpen(false);
-      setUpdateSupplier(null);
+      setEditSupplier(null);
     } catch {
       setError("Failed to save supplier");
       dialog.error("Failed to save supplier");
@@ -244,7 +258,6 @@ const Suppliers = () => {
         const res = await getSuppliers(params);
         const allIds = res.data.data.map((s) => s._id);
         setSelectedIds(allIds);
-        setSelectAllMatches(true);
       } catch (err) {
         console.error(err);
       } finally {
@@ -252,7 +265,6 @@ const Suppliers = () => {
       }
     } else {
       setSelectedIds([]);
-      setSelectAllMatches(false);
     }
   }
 
@@ -268,9 +280,7 @@ const Suppliers = () => {
     if (selectedIds.length === 0) return;
     setLoading(true);
     try {
-      await Promise.all(
-        selectedIds.map((id) => updateSupplier(id, { status })),
-      );
+      await Promise.all(selectedIds.map((id) => editSupplier(id, { status })));
       await dialog.success(`Suppliers marked as ${status} successfully.`);
       fetchSuppliers(
         pagination.page,
@@ -280,7 +290,6 @@ const Suppliers = () => {
         location,
       );
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to update suppliers.");
     } finally {
@@ -311,7 +320,6 @@ const Suppliers = () => {
         location,
       );
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to delete suppliers.");
     } finally {
@@ -324,8 +332,8 @@ const Suppliers = () => {
       <SupplierModal
         key={
           modalOpen
-            ? updateSupplier
-              ? updateSupplier._id
+            ? editSupplier
+              ? editSupplier._id
               : viewSupplier
                 ? viewSupplier._id
                 : "new"
@@ -334,11 +342,11 @@ const Suppliers = () => {
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setUpdateSupplier(null);
+          setEditSupplier(null);
           setViewSupplier(null);
         }}
         onSave={handleSave}
-        data={updateSupplier || viewSupplier}
+        data={editSupplier || viewSupplier}
         viewOnly={!!viewSupplier}
       />
       <div className="flex items-center justify-between mb-8">
@@ -353,7 +361,7 @@ const Suppliers = () => {
             <button
               className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
               onClick={() => {
-                setUpdateSupplier(null);
+                setEditSupplier(null);
                 setModalOpen(true);
               }}
             >
@@ -584,7 +592,7 @@ const Suppliers = () => {
                                 {() => (
                                   <button
                                     onClick={() => {
-                                      setUpdateSupplier(supplier);
+                                      setEditSupplier(supplier);
                                       setModalOpen(true);
                                     }}
                                     className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"

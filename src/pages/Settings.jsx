@@ -167,7 +167,7 @@ export default function Settings() {
       if (res.data && res.data.url) {
         setProfileData((prev) => ({ ...prev, profile: res.data.url }));
       }
-    } catch (err) {
+    } catch {
       error("Failed to upload image", "Upload Error");
     } finally {
       setUploading(false);
@@ -409,9 +409,9 @@ export default function Settings() {
                               <Listbox.Option
                                 key={province.name}
                                 value={province.name}
-                                  className={({ selected }) =>
-                                    `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] ${selected ? "bg-[#1e3a5f] text-white" : ""}`
-                                  }
+                                className={({ selected }) =>
+                                  `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] ${selected ? "bg-[#1e3a5f] text-white" : ""}`
+                                }
                               >
                                 {province.name}
                               </Listbox.Option>

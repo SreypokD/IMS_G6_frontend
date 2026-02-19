@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { Listbox } from "@headlessui/react";
-import { locations } from "../data/locations";
-import { getStocks, getProducts, getStockSummary, getUsers } from "../api";
+import {
+  getStocks,
+  updateStock,
+  getProducts,
+  getStockSummary,
+  getUsers,
+} from "../api";
 import {
   HiSelector,
   HiOutlineFilter,
@@ -13,7 +19,6 @@ import {
   HiTrendingDown,
   HiOutlineExclamation,
   HiOutlineCheckCircle,
-  HiOutlineXCircle,
   HiOutlineArchive,
 } from "react-icons/hi";
 import Pagination from "../components/Pagination";
@@ -70,6 +75,18 @@ function UserDropdown({ value, onChange, userOptions = [] }) {
   );
 }
 
+UserDropdown.propTypes = {
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  userOptions: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      first_name: PropTypes.string.isRequired,
+      last_name: PropTypes.string.isRequired,
+    }),
+  ),
+};
+
 function TransactionDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
@@ -99,6 +116,11 @@ function TransactionDropdown({ value, onChange }) {
   );
 }
 
+TransactionDropdown.propTypes = {
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+};
+
 function LocationDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
@@ -124,6 +146,15 @@ function LocationDropdown({ value, onChange }) {
     </Listbox>
   );
 }
+
+LocationDropdown.propTypes = {
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+};
+
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
 
 const Stocks = () => {
   const [stocks, setStocks] = useState([]);
@@ -173,11 +204,11 @@ const Stocks = () => {
   });
 
   // Permissions
-  const canView = user?.permission?.permissions?.includes("view_stock");
-  const canCreate = user?.permission?.permissions?.includes("create_stock");
-  const canUpdate = user?.permission?.permissions?.includes("update_stock");
-  const canDelete = user?.permission?.permissions?.includes("delete_stock");
-  const canViewUsers = user?.permission?.permissions?.includes("view_user");
+  const canView = getPermission(user, "view_stock");
+  const canCreate = getPermission(user, "create_stock");
+  const canUpdate = getPermission(user, "update_stock");
+  const canDelete = getPermission(user, "delete_stock");
+  const canViewUsers = getPermission(user, "view_user");
 
   useEffect(() => {
     if (user) {
@@ -345,7 +376,6 @@ const Stocks = () => {
       dialog.success(`Stocks marked as ${status} successfully.`);
       fetchStocks(pagination.page, pagination.limit);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch (err) {
       console.error(err);
       dialog.error("Failed to update stocks.");
@@ -371,16 +401,12 @@ const Stocks = () => {
       dialog.success("Stocks deleted successfully.");
       fetchStocks(pagination.page, pagination.limit);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       dialog.error("Failed to delete stocks.");
     } finally {
       setLoading(false);
     }
   }
-
-  // "Select All" Logic
-  const [selectAllMatches, setSelectAllMatches] = useState(false);
 
   async function handleSelectAll(e) {
     if (e.target.checked) {
@@ -396,7 +422,6 @@ const Stocks = () => {
         const res = await getStocks(params);
         const allIds = res.data.data.map((s) => s._id);
         setSelectedIds(allIds);
-        setSelectAllMatches(true);
       } catch (err) {
         console.error(err);
         setSelectedIds([]);
@@ -405,13 +430,11 @@ const Stocks = () => {
       }
     } else {
       setSelectedIds([]);
-      setSelectAllMatches(false);
     }
   }
 
   function handleReset() {
     setSearch("");
-    setFilters({});
     fetchStocks(1, pagination.limit);
   }
 

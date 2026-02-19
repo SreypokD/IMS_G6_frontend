@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { Listbox } from "@headlessui/react";
 import { HiSelector } from "react-icons/hi";
 import { getPermissions, uploadFile } from "../api/index";
@@ -55,7 +56,6 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
     return data || initial;
   }, [data]);
   const [user, setUser] = useState(() => computedInitialUser);
-  const [selectedImage, setSelectedImage] = useState(null);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
   const [roles, setRoles] = useState([]);
@@ -81,16 +81,17 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   // Update local state when data changes (e.g. when opening "View" for a different user)
   useEffect(() => {
     if (data && !data._id) {
-      setUser({ ...initial, ...data });
+      const t = setTimeout(() => setUser({ ...initial, ...data }), 0);
+      return () => clearTimeout(t);
     } else {
-      setUser(data || initial);
+      const t = setTimeout(() => setUser(data || initial), 0);
+      return () => clearTimeout(t);
     }
   }, [data]);
 
   async function handleImageChange(e) {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setSelectedImage(file);
       try {
         const res = await uploadFile(file);
         const url = res.data?.url || res.data?.file?.url;
@@ -102,21 +103,6 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       }
     }
   }
-
-  const handleFileUpload = async (e, field) => {
-    const file = e.target.files[0];
-    if (file) {
-      try {
-        const res = await uploadFile(file);
-        const url = res.data?.url || res.data?.file?.url;
-        if (url) {
-          setUser((prev) => ({ ...prev, [field]: url }));
-        }
-      } catch (error) {
-        console.error("File upload failed", error);
-      }
-    }
-  };
 
   const handleProvinceChange = (provinceName) => {
     setUser((prev) => ({
@@ -731,7 +717,7 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     />
                   </div>
                 ) : (
-                  <label className="cursor-pointer block relative group h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-lg p-6 hover:bg-gray-50 transition w-full">
+                  <label className="cursor-pointer relative group h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-lg p-6 hover:bg-gray-50 transition w-full">
                     {user.profile ? (
                       <div className="relative w-40 h-40">
                         <img
@@ -816,6 +802,14 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       </div>
     </div>
   );
+};
+
+UserModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  data: PropTypes.object,
+  viewOnly: PropTypes.bool,
 };
 
 export default UserModal;

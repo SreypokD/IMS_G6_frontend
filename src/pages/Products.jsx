@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { Listbox, Menu } from "@headlessui/react";
 import {
   HiSelector,
@@ -66,6 +67,12 @@ function CategoryDropdown({
   );
 }
 
+CategoryDropdown.propTypes = {
+  selected: PropTypes.string.isRequired,
+  setSelected: PropTypes.func.isRequired,
+  categoryOptions: PropTypes.array.isRequired,
+};
+
 function SupplierDropdown({
   selected,
   setSelected,
@@ -99,6 +106,12 @@ function SupplierDropdown({
   );
 }
 
+SupplierDropdown.propTypes = {
+  selected: PropTypes.string.isRequired,
+  setSelected: PropTypes.func.isRequired,
+  supplierOptions: PropTypes.array.isRequired,
+};
+
 function StatusDropdown({ selected, setSelected, statusOptions }) {
   return (
     <Listbox value={selected} onChange={setSelected}>
@@ -127,6 +140,16 @@ function StatusDropdown({ selected, setSelected, statusOptions }) {
     </Listbox>
   );
 }
+
+StatusDropdown.propTypes = {
+  selected: PropTypes.string.isRequired,
+  setSelected: PropTypes.func.isRequired,
+  statusOptions: PropTypes.array.isRequired,
+};
+
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -160,11 +183,14 @@ const Products = () => {
   const dialog = useDialog();
   const { user } = useAuth();
 
+  // Selection
+  const [selectedIds, setSelectedIds] = useState([]);
+
   // Permissions
-  const canView = user?.permission?.permissions?.includes("view_product");
-  const canCreate = user?.permission?.permissions?.includes("create_product");
-  const canUpdate = user?.permission?.permissions?.includes("update_product");
-  const canDelete = user?.permission?.permissions?.includes("delete_product");
+  const canView = getPermission(user, "view_product");
+  const canCreate = getPermission(user, "create_product");
+  const canUpdate = getPermission(user, "update_product");
+  const canDelete = getPermission(user, "delete_product");
 
   useEffect(() => {
     getCategories({ limit: -1 }).then((res) =>
@@ -327,9 +353,6 @@ const Products = () => {
     fetchProducts(1, pagination.limit, "", "", "", "");
   };
 
-  // Selection
-  const [selectedIds, setSelectedIds] = useState([]);
-
   async function handleSelectAll(e) {
     if (e.target.checked) {
       setLoading(true);
@@ -344,7 +367,6 @@ const Products = () => {
         const res = await getProducts(params);
         const allIds = res.data.data.map((p) => p._id);
         setSelectedIds(allIds);
-        setSelectAllMatches(true);
       } catch (err) {
         console.error(err);
       } finally {
@@ -352,7 +374,6 @@ const Products = () => {
       }
     } else {
       setSelectedIds([]);
-      setSelectAllMatches(false);
     }
   }
 
@@ -372,7 +393,6 @@ const Products = () => {
       await dialog.success(`Products marked as ${status} successfully.`);
       fetchProducts(pagination.page, pagination.limit);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to update products.");
     } finally {
@@ -397,7 +417,6 @@ const Products = () => {
       await dialog.success("Products deleted successfully.");
       fetchProducts(pagination.page, pagination.limit);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to delete products.");
     } finally {

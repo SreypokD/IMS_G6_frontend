@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { Listbox } from "@headlessui/react";
 import { HiSelector } from "react-icons/hi";
 import {
@@ -43,6 +44,7 @@ const OrderRequestModal = ({
   const dialog = useDialog();
 
   useEffect(() => {
+    let t;
     if (open) {
       getProducts({ limit: -1 }).then((res) =>
         setProducts(res.data.data || []),
@@ -51,51 +53,58 @@ const OrderRequestModal = ({
         setSuppliers(res.data.data || []),
       );
       if (data) {
-        // Convert delivery_date to yyyy-MM-dd for input value
-        let deliveryDateValue = data.delivery_date || "";
-        if (deliveryDateValue) {
-          const d = new Date(deliveryDateValue);
-          if (!isNaN(d)) {
-            deliveryDateValue = d.toISOString().slice(0, 10);
+        t = setTimeout(() => {
+          // Convert delivery_date to yyyy-MM-dd for input value
+          let deliveryDateValue = data.delivery_date || "";
+          if (deliveryDateValue) {
+            const d = new Date(deliveryDateValue);
+            if (!isNaN(d)) {
+              deliveryDateValue = d.toISOString().slice(0, 10);
+            }
           }
-        }
-        setOrder({
-          _id: data._id, // Keep ID
-          supplier_id:
-            data.supplier_id ||
-            (typeof data.supplier === "object"
-              ? data.supplier?._id
-              : data.supplier) ||
-            "",
-          delivery_date: deliveryDateValue,
-          notes: data.notes || "",
-          orderItems:
-            data.orderItems &&
-            Array.isArray(data.orderItems) &&
-            data.orderItems.length > 0
-              ? data.orderItems
-              : data.items && Array.isArray(data.items)
-                ? data.items.map((item) => ({
-                    product_id: item.product_id,
-                    quantity: item.quantity,
-                    unit_price: item.unit_price,
-                    subtotal: item.subtotal,
-                  }))
-                : [
-                    {
-                      product_id: "",
-                      quantity: 1,
-                      unit_price: null,
-                      subtotal: null,
-                    },
-                  ],
-        });
+          setOrder({
+            _id: data._id,
+            supplier_id:
+              data.supplier_id ||
+              (typeof data.supplier === "object"
+                ? data.supplier?._id
+                : data.supplier) ||
+              "",
+            delivery_date: deliveryDateValue,
+            notes: data.notes || "",
+            orderItems:
+              data.orderItems &&
+              Array.isArray(data.orderItems) &&
+              data.orderItems.length > 0
+                ? data.orderItems
+                : data.items && Array.isArray(data.items)
+                  ? data.items.map((item) => ({
+                      product_id: item.product_id,
+                      quantity: item.quantity,
+                      unit_price: item.unit_price,
+                      subtotal: item.subtotal,
+                    }))
+                  : [
+                      {
+                        product_id: "",
+                        quantity: 1,
+                        unit_price: null,
+                        subtotal: null,
+                      },
+                    ],
+          });
+          setTouched({});
+          setValidateOnSave(false);
+        }, 0);
       } else {
-        setOrder(initialOrderRequest);
+        t = setTimeout(() => {
+          setOrder(initialOrderRequest);
+          setTouched({});
+          setValidateOnSave(false);
+        }, 0);
       }
-      setTouched({});
-      setValidateOnSave(false);
     }
+    return () => clearTimeout(t);
   }, [open, data]);
 
   function handleChange(e) {
@@ -561,6 +570,15 @@ const OrderRequestModal = ({
       </div>
     </div>
   );
+};
+
+OrderRequestModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func,
+  suppliers: PropTypes.array,
+  data: PropTypes.object,
+  viewOnly: PropTypes.bool,
 };
 
 export default OrderRequestModal;

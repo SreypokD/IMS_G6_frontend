@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import DatePicker from "react-datepicker";
 import { HiOutlineCalendar } from "react-icons/hi";
 import "react-datepicker/dist/react-datepicker.css";
@@ -30,6 +31,14 @@ const CustomDatePicker = ({
       )}
     </div>
   );
+};
+
+CustomDatePicker.propTypes = {
+  selected: PropTypes.any,
+  onChange: PropTypes.func,
+  placeholder: PropTypes.string,
+  className: PropTypes.string,
+  viewOnly: PropTypes.bool,
 };
 
 export default CustomDatePicker;

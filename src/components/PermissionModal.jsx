@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { HiXCircle, HiOutlineDocumentText, HiOutlineKey } from "react-icons/hi";
 
 const permissionTable = [
@@ -114,8 +115,26 @@ const initialRole = {
   status: "active",
 };
 
+// Always deep clone the initial role to avoid reference issues
+function cloneRole(obj) {
+  if (obj) {
+    if (typeof obj.permissions === "string") {
+      try {
+        obj.permissions = JSON.parse(obj.permissions);
+      } catch {
+        obj.permissions = [];
+      }
+    }
+    const cloned = JSON.parse(JSON.stringify(obj));
+    if (!Array.isArray(cloned.permissions)) {
+      cloned.permissions = [];
+    }
+    return cloned;
+  }
+  return initialRole;
+}
+
 const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
-  
   const [role, setUpdateRole] = useState(cloneRole(data));
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
@@ -131,25 +150,6 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       setValidateOnSave(false);
     }
   }, [open, data]);
-
-  // Always deep clone the initial role to avoid reference issues
-  function cloneRole(obj) {
-    if (obj) {
-      if (typeof obj.permissions === "string") {
-        try {
-          obj.permissions = JSON.parse(obj.permissions);
-        } catch {
-          obj.permissions = [];
-        }
-      }
-      const cloned = JSON.parse(JSON.stringify(obj));
-      if (!Array.isArray(cloned.permissions)) {
-        cloned.permissions = [];
-      }
-      return cloned;
-    }
-    return initialRole;
-  }
 
   function updatePermissionsState(updater) {
     setUpdateRole((prev) => {
@@ -245,7 +245,7 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     {permissionTable.map((row) => (
                       <tr
                         key={row.label}
-                        className="border-t border-gray-100 hover:bg-[#f1f5f9] !transform-none !transition-none"
+                        className="border-t border-gray-100 hover:bg-[#f1f5f9] transform-none! transition-none!"
                       >
                         <td className="text-left">{row.label}</td>
                         <td>
@@ -341,6 +341,14 @@ const PermissionModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       </div>
     </div>
   );
+};
+
+PermissionModal.propTypes = {
+  open: PropTypes.bool,
+  onClose: PropTypes.func,
+  onSave: PropTypes.func,
+  data: PropTypes.object,
+  viewOnly: PropTypes.bool,
 };
 
 export default PermissionModal;

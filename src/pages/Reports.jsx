@@ -41,12 +41,12 @@ function exportCSV(data, filename) {
     ...data.map((row) => Object.values(row).join(",")),
   ];
   const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
-  const url = window.URL.createObjectURL(blob);
+  const url = globalThis.window.URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;
   a.click();
-  window.URL.revokeObjectURL(url);
+  globalThis.window.URL.revokeObjectURL(url);
 }
 
 const Reports = () => {

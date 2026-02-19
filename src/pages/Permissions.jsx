@@ -24,6 +24,10 @@ import NoDataFound from "../components/NoDataFound";
 import Loading from "../components/Loading";
 import { useDialog } from "../contexts/dialog/useDialog";
 
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
+
 const Permissions = () => {
   const [roles, setRoles] = useState([]);
 
@@ -53,17 +57,14 @@ const Permissions = () => {
   // Filters
   const [search, setSearch] = useState("");
 
-  // Select All
-  const [selectAllMatches, setSelectAllMatches] = useState(false);
+  // Selection
+  const [selectedIds, setSelectedIds] = useState([]);
 
   // Permissions (Access Control)
-  const canView = user?.permission?.permissions?.includes("view_permission");
-  const canCreate =
-    user?.permission?.permissions?.includes("create_permission");
-  const canUpdate =
-    user?.permission?.permissions?.includes("update_permission");
-  const canDelete =
-    user?.permission?.permissions?.includes("delete_permission");
+  const canView = getPermission(user, "view_permission");
+  const canCreate = getPermission(user, "create_permission");
+  const canUpdate = getPermission(user, "update_permission");
+  const canDelete = getPermission(user, "delete_permission");
 
   useEffect(() => {
     if (user) {
@@ -155,15 +156,11 @@ const Permissions = () => {
     fetchRoles(1, pagination.limit, "");
   };
 
-  // Selection
-  const [selectedIds, setSelectedIds] = useState([]);
-
   function handleSelectAll(e) {
     if (e.target.checked) {
       setSelectedIds(roles.map((p) => p._id));
     } else {
       setSelectedIds([]);
-      setSelectAllMatches(false);
     }
   }
 
@@ -185,7 +182,6 @@ const Permissions = () => {
       await dialog.success(`Roles marked as ${status} successfully.`);
       fetchRoles(pagination.page, pagination.limit, search);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to update roles.");
     } finally {
@@ -210,7 +206,6 @@ const Permissions = () => {
       await dialog.success("Roles deleted successfully.");
       fetchRoles(pagination.page, pagination.limit, search);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to delete roles.");
     } finally {

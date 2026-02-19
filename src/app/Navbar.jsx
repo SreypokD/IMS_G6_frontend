@@ -13,6 +13,10 @@ import { useState, useRef, useEffect } from "react";
 import { formatDate } from "../utils/dateFormat";
 import { useNavigate } from "react-router-dom";
 
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
+
 const Header = ({ onBellClick }) => {
   const { user, logout } = useAuth();
   const { notifications, unreadCount, markAsRead } = useNotification();
@@ -55,18 +59,18 @@ const Header = ({ onBellClick }) => {
   // Notification click handler with navigation
   const handleNotificationClick = async (n) => {
     await markAsRead(n._id);
-    
+
     // Redirect based on notification type
     if (n.type === "register_request") {
       navigate("/users");
     } else if (n.type === "new_order_request") {
-      if (user?.permission?.permissions?.includes("view_approve_request")) {
+      if (getPermission(user, "view_approve_request")) {
         navigate("/approve-requests");
       } else {
         navigate("/order-requests");
       }
     } else if (n.type === "pending_delivery") {
-      if (user?.permission?.permissions?.includes("view_confirm_delivery")) {
+      if (getPermission(user, "view_confirm_delivery")) {
         navigate("/confirm-delivery");
       } else {
         navigate("/order-requests");
@@ -123,7 +127,7 @@ const Header = ({ onBellClick }) => {
                   No notifications
                 </div>
               ) : (
-                <ul className="max-h-[300px] overflow-y-auto">
+                <ul className="max-h-75 overflow-y-auto">
                   {notifications.map((n) => (
                     <li
                       key={n._id}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import {
   getSales,
   deleteSale,
@@ -69,6 +70,12 @@ function UserDropdown({ value, onChange, userOptions = [] }) {
   );
 }
 
+UserDropdown.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  userOptions: PropTypes.array.isRequired,
+};
+
 function StatusDropdown({ value, onChange }) {
   return (
     <Listbox value={value} onChange={onChange}>
@@ -94,6 +101,15 @@ function StatusDropdown({ value, onChange }) {
     </Listbox>
   );
 }
+
+StatusDropdown.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
 
 const Sales = () => {
   const [sales, setSales] = useState([]);
@@ -130,7 +146,7 @@ const Sales = () => {
   // Dialog
   const { user } = useAuth();
   const dialog = useDialog();
-  const [updateSale, setUpdateSale] = useState(null);
+  const [editSale, setEditSale] = useState(null);
   const notification = useNotification();
 
   // Filters
@@ -147,12 +163,15 @@ const Sales = () => {
   );
   const [status, setStatus] = useState("");
 
+  // Selection
+  const [selectedIds, setSelectedIds] = useState([]);
+
   // Permissions
-  const canView = user?.permission?.permissions?.includes("view_sale");
-  const canCreate = user?.permission?.permissions?.includes("create_sale");
-  const canUpdate = user?.permission?.permissions?.includes("update_sale");
-  const canDelete = user?.permission?.permissions?.includes("delete_sale");
-  const canViewUsers = user?.permission?.permissions?.includes("view_user");
+  const canView = getPermission(user, "view_sale");
+  const canCreate = getPermission(user, "create_sale");
+  const canUpdate = getPermission(user, "update_sale");
+  const canDelete = getPermission(user, "delete_sale");
+  const canViewUsers = getPermission(user, "view_user");
 
   async function fetchSummary() {
     try {
@@ -214,7 +233,7 @@ const Sales = () => {
   }
 
   function handleView(sale) {
-    setUpdateSale(null);
+    setEditSale(null);
     setViewSale(sale);
     setModalOpen(true);
   }
@@ -224,8 +243,8 @@ const Sales = () => {
     setLoading(true);
     setError("");
     try {
-      if (updateSale) {
-        await updateSale(updateSale._id, saleData);
+      if (editSale) {
+        await updateSale(editSale._id, saleData);
         dialog.success("Sale updated successfully");
         // Show notification if status changed to Completed
         if (saleData.status && saleData.status.toLowerCase() === "completed") {
@@ -240,7 +259,7 @@ const Sales = () => {
       }
       fetchSales(1, pagination.limit);
       setModalOpen(false);
-      setUpdateSale(null);
+      setEditSale(null);
       fetchSummary();
     } catch (err) {
       const msg =
@@ -286,9 +305,6 @@ const Sales = () => {
     fetchSales(1, pagination.limit);
   };
 
-  // Selection
-  const [selectedIds, setSelectedIds] = useState([]);
-
   function handleSelectAll(e) {
     if (e.target.checked) {
       const newIds = sales.map((s) => s._id);
@@ -296,33 +312,6 @@ const Sales = () => {
     } else {
       const pageIds = sales.map((s) => s._id);
       setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
-      setSelectAllMatches(false);
-    }
-  }
-
-  const [selectAllMatches, setSelectAllMatches] = useState(false);
-
-  async function handleSelectAllGlobal() {
-    setLoading(true);
-    try {
-      const params = {
-        limit: -1,
-        search,
-        startDate,
-        endDate,
-      };
-      if (customer !== "All Customers") params.customer = customer;
-      if (status !== "All Status") params.status = status;
-
-      const res = await getSales(params);
-      const allIds = res.data.data.map((s) => s._id);
-      setSelectedIds(allIds);
-      setSelectAllMatches(true);
-    } catch (err) {
-      console.error(err);
-      dialog.error("Failed to select all sales.");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -334,27 +323,24 @@ const Sales = () => {
     }
   }
 
-  const [actionId, setActionId] = useState(null);
-
   async function handleBulkActive(isActive) {
     if (selectedIds.length === 0) return;
-    setActionId("bulk");
+    setLoading(true);
     try {
       // Assuming updateSale works for partial updates
       await Promise.all(
-        selectedIds.map((id) => updateSale(id, { is_active: isActive })),
+        selectedIds.map((id) => editSale(id, { is_active: isActive })),
       );
       dialog.success(
         `Sales marked as ${isActive ? "Active" : "Archived"} successfully.`,
       );
       fetchSales(pagination.page, pagination.limit);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch (err) {
       console.error(err);
       dialog.error("Failed to update sales.");
     } finally {
-      setActionId(null);
+      setLoading(false);
     }
   }
 
@@ -368,34 +354,32 @@ const Sales = () => {
       cancelText: "Cancel",
     });
     if (!confirmed) return;
-
-    setActionId("bulk");
+    setLoading(true);
     try {
       await Promise.all(selectedIds.map((id) => deleteSale(id)));
       dialog.success("Sales deleted successfully.");
       fetchSales(pagination.page, pagination.limit);
       fetchSummary();
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       dialog.error("Failed to delete sales.");
     } finally {
-      setActionId(null);
+      setLoading(false);
     }
   }
 
   return (
     <div className="h-content-available">
       <SaleModal
-        key={modalOpen ? (updateSale ? updateSale._id : "new") : "closed"}
+        key={modalOpen ? (editSale ? editSale._id : "new") : "closed"}
         open={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          setUpdateSale(null);
+          setEditSale(null);
           setViewSale(null);
         }}
         onSave={handleSave}
-        data={updateSale || viewSale}
+        data={editSale || viewSale}
         viewOnly={!!viewSale}
       />
       <div className="flex items-center justify-between mb-8">
@@ -411,7 +395,7 @@ const Sales = () => {
               className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
               onClick={() => {
                 setViewSale(null);
-                setUpdateSale(null);
+                setEditSale(null);
                 setModalOpen(true);
               }}
             >
@@ -776,7 +760,7 @@ const Sales = () => {
                                           <button
                                             onClick={() => {
                                               setViewSale(null);
-                                              setUpdateSale(sale);
+                                              setEditSale(sale);
                                               setModalOpen(true);
                                             }}
                                             className="w-full flex items-center px-2 py-3 text-blue-600 hover:bg-blue-50 transition text-sm space-x-2 rounded-xl cursor-pointer"

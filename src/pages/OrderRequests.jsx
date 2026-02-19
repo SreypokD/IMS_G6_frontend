@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import {
   HiSelector,
   HiOutlinePlus,
@@ -58,6 +59,15 @@ function StatusDropdown({ value, onChange }) {
   );
 }
 
+StatusDropdown.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
+
 const OrderRequests = () => {
   const [requests, setRequests] = useState([]);
 
@@ -94,22 +104,12 @@ const OrderRequests = () => {
   const [status, setStatus] = useState("");
 
   // Permissions
-  const canView = user?.permission?.permissions?.includes("view_order_request");
-  const canCreate = user?.permission?.permissions?.includes(
-    "create_order_request",
-  );
-  const canUpdate = user?.permission?.permissions?.includes(
-    "update_order_request",
-  );
-  const canDelete = user?.permission?.permissions?.includes(
-    "delete_order_request",
-  );
-  const canViewApprove = user?.permission?.permissions?.includes(
-    "view_approve_request",
-  );
-  const canUpdateApprove = user?.permission?.permissions?.includes(
-    "update_approve_request",
-  );
+  const canView = getPermission(user, "view_order_request");
+  const canCreate = getPermission(user, "create_order_request");
+  const canUpdate = getPermission(user, "update_order_request");
+  const canDelete = getPermission(user, "delete_order_request");
+  const canViewApprove = getPermission(user, "view_approve_request");
+  const canUpdateApprove = getPermission(user, "update_approve_request");
 
   useEffect(() => {
     if (user) {
@@ -213,7 +213,6 @@ const OrderRequests = () => {
         });
         const allIds = res.data.data.map((r) => r._id);
         setSelectedIds(allIds);
-        setSelectAllMatches(true);
       } catch (err) {
         console.error(err);
       } finally {
@@ -221,7 +220,6 @@ const OrderRequests = () => {
       }
     } else {
       setSelectedIds([]);
-      setSelectAllMatches(false);
     }
   }
 
@@ -257,7 +255,6 @@ const OrderRequests = () => {
         status,
       );
       setSelectedIds([]);
-      setSelectAllMatches(false);
       fetchBadge();
     } catch (err) {
       console.error(err);
@@ -294,7 +291,6 @@ const OrderRequests = () => {
         status,
       );
       setSelectedIds([]);
-      setSelectAllMatches(false);
       fetchBadge();
     } catch {
       dialog.error("Failed to delete order requests.");
@@ -550,7 +546,7 @@ const OrderRequests = () => {
                       <td>{formatDate(request.delivery_date) || "-"}</td>
                       <td>
                         <span
-                          className={`inline-block w-[90px] text-center py-1.5 rounded-full text-sm text-white ${request.status === "pending" ? "bg-yellow-400" : request.status === "approved" ? "bg-green-400" : request.status === "rejected" ? "bg-red-400" : request.status === "completed" ? "bg-blue-400" : request.status === "cancelled" ? "bg-red-400" : request.status === "on_hold" ? "bg-orange-400" : "bg-gray-400"}`}
+                          className={`inline-block w-22.5 text-center py-1.5 rounded-full text-sm text-white ${request.status === "pending" ? "bg-yellow-400" : request.status === "approved" ? "bg-green-400" : request.status === "rejected" ? "bg-red-400" : request.status === "completed" ? "bg-blue-400" : request.status === "cancelled" ? "bg-red-400" : request.status === "on_hold" ? "bg-orange-400" : "bg-gray-400"}`}
                         >
                           {request.status.charAt(0).toUpperCase() +
                             request.status.slice(1)}
@@ -558,21 +554,19 @@ const OrderRequests = () => {
                       </td>
                       <td className="flex items-center gap-1 justify-center action">
                         <div className="flex items-center gap-1">
-                          {(user?.permission?.permissions?.includes(
-                            "view_order_request",
-                          ) ||
-                            String(request.requester_id) ===
-                              String(user?._id)) && (
-                            <button
-                              className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
-                              title="View"
-                              onClick={() => {
-                                handleView(request);
-                              }}
-                            >
-                              <HiOutlineEye className="text-xl" />
-                            </button>
-                          )}
+                          {canView ||
+                            (String(request.requester_id) ===
+                              String(user?._id) && (
+                              <button
+                                className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
+                                title="View"
+                                onClick={() => {
+                                  handleView(request);
+                                }}
+                              >
+                                <HiOutlineEye className="text-xl" />
+                              </button>
+                            ))}
                           <Menu
                             as="div"
                             className="relative inline-block text-left"

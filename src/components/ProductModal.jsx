@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import {
   HiXCircle,
   HiOutlineDocumentText,
@@ -24,7 +25,6 @@ import { HiSelector } from "react-icons/hi";
 
 const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   const [product, setProduct] = useState(data || initialProduct);
-  const [selectedImage, setSelectedImage] = useState(null);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -33,13 +33,17 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   useEffect(() => {
     if (open) {
       if (!data) {
-        setProduct(initialProduct);
-        setTouched({});
-        setValidateOnSave(false);
+        setTimeout(() => {
+          setProduct(initialProduct);
+          setTouched({});
+          setValidateOnSave(false);
+        }, 0);
       } else {
-        setProduct(data);
-        setTouched({});
-        setValidateOnSave(false);
+        setTimeout(() => {
+          setProduct(data);
+          setTouched({});
+          setValidateOnSave(false);
+        }, 0);
       }
       getCategories({ limit: -1 }).then((res) => {
         setCategories(res.data.data || []);
@@ -48,12 +52,12 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
         setSuppliers(res.data.data || []);
       });
     }
+    return undefined;
   }, [open, data]);
 
   async function handleImageChange(e) {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setSelectedImage(file);
       try {
         const res = await uploadFile(file);
         const url = res.data?.url || res.data?.file?.url;
@@ -296,7 +300,7 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                     />
                   </div>
                 ) : (
-                  <label className="cursor-pointer block relative group h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-lg p-6 hover:bg-gray-50 transition w-full">
+                  <label className="cursor-pointer relative group h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-lg p-6 hover:bg-gray-50 transition w-full">
                     {product.image ? (
                       <div className="relative w-40 h-40">
                         <img
@@ -372,6 +376,14 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       </div>
     </div>
   );
+};
+
+ProductModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  data: PropTypes.object,
+  viewOnly: PropTypes.bool,
 };
 
 export default ProductModal;

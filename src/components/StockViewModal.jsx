@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import {
   HiXCircle,
   HiOutlineCube,
@@ -225,6 +226,12 @@ const StockViewModal = ({ open, onClose, stock }) => {
       </div>
     </div>
   );
+};
+
+StockViewModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  stock: PropTypes.object,
 };
 
 export default StockViewModal;

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import {
   getExpenses,
   deleteExpense,
@@ -76,6 +77,15 @@ function CategoryDropdown({ value, onChange }) {
   );
 }
 
+CategoryDropdown.propTypes = {
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
+
 const Expenses = () => {
   const [expenses, setExpenses] = useState([]);
 
@@ -105,10 +115,10 @@ const Expenses = () => {
   const { user } = useAuth();
 
   // Permissions
-  const canView = user?.permission?.permissions?.includes("view_expense");
-  const canCreate = user?.permission?.permissions?.includes("create_expense");
-  const canUpdate = user?.permission?.permissions?.includes("update_expense");
-  const canDelete = user?.permission?.permissions?.includes("delete_expense");
+  const canView = getPermission(user, "view_expense");
+  const canCreate = getPermission(user, "create_expense");
+  const canUpdate = getPermission(user, "update_expense");
+  const canDelete = getPermission(user, "delete_expense");
 
   // Filters
   const [category, setCategory] = useState("All Categories");
@@ -232,7 +242,6 @@ const Expenses = () => {
         const res = await getExpenses(params);
         const allIds = res.data.data.map((ex) => ex._id);
         setSelectedIds(allIds);
-        setSelectAllMatches(true);
       } catch (err) {
         console.error(err);
       } finally {
@@ -240,7 +249,6 @@ const Expenses = () => {
       }
     } else {
       setSelectedIds([]);
-      setSelectAllMatches(false);
     }
   }
 
@@ -260,7 +268,6 @@ const Expenses = () => {
       await dialog.success(`Expenses marked as ${status} successfully.`);
       fetchExpenses(pagination.page, pagination.limit);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to update expenses.");
     } finally {
@@ -285,7 +292,6 @@ const Expenses = () => {
       await dialog.success("Expenses deleted successfully.");
       fetchExpenses(pagination.page, pagination.limit);
       setSelectedIds([]);
-      setSelectAllMatches(false);
     } catch {
       await dialog.error("Failed to delete expenses.");
     } finally {

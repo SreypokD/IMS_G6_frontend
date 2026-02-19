@@ -21,6 +21,10 @@ import { Menu } from "@headlessui/react";
 
 import { useBadge } from "../contexts/badge/BadgeContext";
 
+const getPermission = (user, permission) => {
+  return user?.permission?.permissions?.includes(permission);
+};
+
 const OrderRequestApproval = () => {
   const [orders, setOrders] = useState([]);
 
@@ -64,12 +68,8 @@ const OrderRequestApproval = () => {
   );
 
   // Permissions
-  const canView = user?.permission?.permissions?.includes(
-    "view_approve_request",
-  );
-  const canUpdate = user?.permission?.permissions?.includes(
-    "update_approve_request",
-  );
+  const canView = getPermission(user, "view_approve_request");
+  const canUpdate = getPermission(user, "update_approve_request");
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -198,7 +198,6 @@ const OrderRequestApproval = () => {
         });
         const allIds = res.data.data.map((o) => o._id);
         setSelectedIds(allIds);
-        setSelectAllMatches(true);
       } catch (err) {
         console.error(err);
       } finally {
@@ -206,7 +205,6 @@ const OrderRequestApproval = () => {
       }
     } else {
       setSelectedIds([]);
-      setSelectAllMatches(false);
     }
   }
 
@@ -240,7 +238,6 @@ const OrderRequestApproval = () => {
         status,
       );
       setSelectedIds([]);
-      setSelectAllMatches(false);
       fetchBadge();
     } catch (err) {
       console.error(err);
@@ -275,7 +272,6 @@ const OrderRequestApproval = () => {
         status,
       );
       setSelectedIds([]);
-      setSelectAllMatches(false);
       fetchBadge();
     } catch {
       dialog.error("Failed to delete requests.");
