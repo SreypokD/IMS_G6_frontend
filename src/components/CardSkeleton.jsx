@@ -1,6 +1,6 @@
 import React from "react";
 
-const ProductCardSkeleton = () => {
+const CardSkeleton = () => {
   return (
     <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm flex flex-col animate-pulse">
       {/* Image Skeleton */}
@@ -48,4 +48,4 @@ const ProductCardSkeleton = () => {
   );
 };
 
-export default ProductCardSkeleton;
+export default CardSkeleton;

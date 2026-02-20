@@ -29,7 +29,7 @@ import { useAuth } from "../contexts/auth/useAuth.js";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 import Loading from "../components/Loading";
-import ProductCardSkeleton from "../components/ProductCardSkeleton";
+import CardSkeleton from "../components/CardSkeleton";
 
 const statusOptions = [
   { value: "in_stock", label: "In Stock" },
@@ -619,7 +619,7 @@ const Products = () => {
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 pb-4">
               {[...Array(8)].map((_, i) => (
-                <ProductCardSkeleton key={i} />
+                <CardSkeleton key={i} />
               ))}
             </div>
           ) : error ? (
