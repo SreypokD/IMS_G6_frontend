@@ -8,6 +8,7 @@ import {
   HiOutlineUpload,
   HiCheckCircle,
   HiSelector,
+  HiCheck,
 } from "react-icons/hi";
 import { Listbox } from "@headlessui/react";
 import { register as registerApi } from "../api/auth-services";
@@ -698,16 +699,16 @@ const Register = () => {
                       <div className="relative mt-1">
                         <Listbox.Button
                           id="product_categories"
-                          className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between"
+                          className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between min-h-[42px]"
                         >
                           <span className="block truncate">
                             {formData.product_categories.length > 0
                               ? formData.product_categories.join(", ")
-                              : ""}
+                              : "Select Categories"}
                           </span>
                           <HiSelector className="w-5 h-5 text-gray-400" />
                         </Listbox.Button>
-                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                        <Listbox.Options className="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm p-1">
                           {categoriesList.length === 0 ? (
                             <div className="relative cursor-default select-none py-2 px-4 text-gray-700">
                               No categories found.
@@ -717,13 +718,34 @@ const Register = () => {
                               <Listbox.Option
                                 key={cat._id}
                                 value={cat.name}
-                                className={({ active }) =>
-                                  `px-3 py-2 cursor-pointer text-black text-sm capitalize hover:text-white hover:bg-[#1e3a5f] rounded-lg ${
-                                    active ? "bg-[#1e3a5f] text-white" : ""
+                                className={({ active, selected }) =>
+                                  `px-3 py-2 cursor-pointer text-sm capitalize rounded-lg flex items-center justify-between ${
+                                    active
+                                      ? "bg-[#1e3a5f] text-white"
+                                      : selected
+                                      ? "bg-blue-50 text-[#1e3a5f]"
+                                      : "text-gray-900"
                                   }`
                                 }
                               >
-                                {cat.name}
+                                {({ selected, active }) => (
+                                  <>
+                                    <span
+                                      className={`block truncate ${
+                                        selected ? "font-medium" : "font-normal"
+                                      }`}
+                                    >
+                                      {cat.name}
+                                    </span>
+                                    {selected && (
+                                      <HiCheck
+                                        className={`w-5 h-5 ${
+                                          active ? "text-white" : "text-[#1e3a5f]"
+                                        }`}
+                                      />
+                                    )}
+                                  </>
+                                )}
                               </Listbox.Option>
                             ))
                           )}
