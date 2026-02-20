@@ -34,9 +34,7 @@ const categoryStyles = {
   Salary: "bg-emerald-100 text-emerald-700",
   Inventory: "bg-blue-100 text-blue-700",
   Marketing: "bg-purple-100 text-purple-700",
-  Miscellaneous: "bg-pink-100 text-pink-700",
   Transport: "bg-amber-100 text-amber-700",
-  Maintenance: "bg-teal-100 text-teal-700",
   Other: "bg-gray-100 text-gray-700",
 };
 
@@ -47,9 +45,7 @@ function CategoryDropdown({ value, onChange }) {
     "Salary",
     "Inventory",
     "Marketing",
-    "Miscellaneous",
     "Transport",
-    "Maintenance",
     "Other",
   ];
   return (

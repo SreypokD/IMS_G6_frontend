@@ -29,13 +29,18 @@ const categories = [
   "Salary",
   "Inventory",
   "Marketing",
-  "Miscellaneous",
   "Transport",
-  "Maintenance",
   "Other",
 ];
 
-const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false, onEdit }) => {
+const ExpenseModal = ({
+  open,
+  onClose,
+  onSave,
+  data,
+  viewOnly = false,
+  onEdit,
+}) => {
   const [expense, setExpense] = useState(data || initialExpense);
   const [selectedImage, setSelectedImage] = useState(null);
   const [touched, setTouched] = useState({});
