@@ -11,6 +11,7 @@ import Breadcrumb from "../components/Breadcrumb.jsx";
 
 import Login from "../pages/Login.jsx";
 import ForgotPassword from "../pages/ForgotPassword.jsx";
+import ResetPassword from "../pages/ResetPassword.jsx";
 import Register from "../pages/Register.jsx";
 import Reports from "../pages/Reports.jsx";
 import Products from "../pages/Products.jsx";
@@ -68,6 +69,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route
                 path="*"
                 element={
