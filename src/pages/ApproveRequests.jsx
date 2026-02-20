@@ -296,6 +296,18 @@ const OrderRequestApproval = () => {
         data={viewDialog.order}
         viewOnly={true}
         onClose={() => setViewDialog({ open: false, order: null })}
+        onApprove={() => {
+          setViewDialog({ open: false, order: null });
+          handleApprove(viewDialog.order._id);
+        }}
+        onReject={() => {
+          setViewDialog({ open: false, order: null });
+          setRejectDialog({
+            open: true,
+            id: viewDialog.order._id,
+          });
+          setRejectionReason("");
+        }}
       />
       <Dialog
         open={rejectDialog.open}

@@ -247,7 +247,7 @@ const Sales = () => {
         await updateSale(editSale._id, saleData);
         dialog.success("Sale updated successfully");
         // Show notification if status changed to Completed
-        if (saleData.status && saleData.status.toLowerCase() === "completed") {
+        if (saleData.status && saleData.status.toLowerCase() === "Completed") {
           notification?.show?.({
             type: "success",
             message: "Sale marked as completed!",
@@ -381,6 +381,10 @@ const Sales = () => {
         onSave={handleSave}
         data={editSale || viewSale}
         viewOnly={!!viewSale}
+        onEdit={() => {
+          setEditSale(viewSale);
+          setViewSale(null);
+        }}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
@@ -638,7 +642,6 @@ const Sales = () => {
                   <th>Total</th>
                   <th>Payment Method</th>
                   <th>Date</th>
-                  <th>Status</th>
                   {canView || canUpdate || canDelete ? (
                     <th className="text-center action">Actions</th>
                   ) : null}
@@ -694,13 +697,6 @@ const Sales = () => {
                       <td>${totalAmount}</td>
                       <td>{sale.payment_method}</td>
                       <td>{formatDate(sale.completed_at, true) || "-"}</td>
-                      <td>
-                        <span
-                          className={`inline-block px-3 py-1 rounded-full text-sm capitalize text-white ${sale.status === "processing" ? "bg-yellow-400" : sale.status === "completed" ? "bg-blue-400" : sale.status === "cancelled" ? "bg-red-400" : "bg-gray-400"}`}
-                        >
-                          {sale.status}
-                        </span>
-                      </td>
                       <td className="flex items-center gap-1 justify-center action">
                         {(canView || canUpdate || canDelete) && (
                           <div className="flex items-center gap-1 justify-center">
@@ -726,54 +722,24 @@ const Sales = () => {
                                   className="bg-white rounded-2xl shadow-lg p-2 w-40 z-50 animate-fade-in-up border border-gray-100"
                                 >
                                   {canUpdate && (
-                                    <>
-                                      <Menu.Item>
-                                        {() => (
-                                          <button
-                                            onClick={() =>
-                                              handleBulkActive(!sale.is_active)
-                                            }
-                                            className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"
-                                          >
-                                            {sale.is_active === false ? (
-                                              <>
-                                                <HiOutlineCheckCircle
-                                                  className="mr-2 h-5 w-5"
-                                                  aria-hidden="true"
-                                                />
-                                                Activate
-                                              </>
-                                            ) : (
-                                              <>
-                                                <HiOutlineArchive
-                                                  className="mr-2 h-5 w-5"
-                                                  aria-hidden="true"
-                                                />
-                                                Archive
-                                              </>
-                                            )}
-                                          </button>
-                                        )}
-                                      </Menu.Item>
-                                      <Menu.Item>
-                                        {() => (
-                                          <button
-                                            onClick={() => {
-                                              setViewSale(null);
-                                              setEditSale(sale);
-                                              setModalOpen(true);
-                                            }}
-                                            className="w-full flex items-center px-2 py-3 text-blue-600 hover:bg-blue-50 transition text-sm space-x-2 rounded-xl cursor-pointer"
-                                          >
-                                            <HiOutlinePencil
-                                              className="text-blue-600 mr-2 h-5 w-5"
-                                              aria-hidden="true"
-                                            />
-                                            Update
-                                          </button>
-                                        )}
-                                      </Menu.Item>
-                                    </>
+                                    <Menu.Item>
+                                      {() => (
+                                        <button
+                                          onClick={() => {
+                                            setViewSale(null);
+                                            setEditSale(sale);
+                                            setModalOpen(true);
+                                          }}
+                                          className="w-full flex items-center px-2 py-3 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 rounded-xl cursor-pointer"
+                                        >
+                                          <HiOutlinePencil
+                                            className="mr-2 h-5 w-5"
+                                            aria-hidden="true"
+                                          />
+                                          Update
+                                        </button>
+                                      )}
+                                    </Menu.Item>
                                   )}
                                   {canDelete && (
                                     <Menu.Item>
@@ -802,7 +768,7 @@ const Sales = () => {
                 })}
                 {sales.length === 0 && (
                   <tr>
-                    <td colSpan={canCreate || canUpdate || canDelete ? 8 : 7}>
+                    <td colSpan={canCreate || canUpdate || canDelete ? 7 : 6}>
                       <NoDataFound message="No sales found." />
                     </td>
                   </tr>

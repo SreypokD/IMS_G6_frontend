@@ -66,6 +66,40 @@ PermissionDropdown.propTypes = {
   permissionOptions: PropTypes.array.isRequired,
 };
 
+function TypesDropdown({ selected, setSelected }) {
+  const types = ["internal", "external"];
+  return (
+    <Listbox value={selected} onChange={setSelected}>
+      <div className="relative">
+        <Listbox.Button className="cursor-pointer w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-left text-black text-sm flex items-center justify-between">
+          <span className="capitalize">
+            {selected ? selected : "All Types"}
+          </span>
+          <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+        </Listbox.Button>
+        <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+          {types.map((s) => (
+            <Listbox.Option
+              key={s}
+              value={s}
+              className={({ selected }) =>
+                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg capitalize ${selected ? "bg-[#1e3a5f] text-white" : ""}`
+              }
+            >
+              {s}
+            </Listbox.Option>
+          ))}
+        </Listbox.Options>
+      </div>
+    </Listbox>
+  );
+}
+
+TypesDropdown.propTypes = {
+  selected: PropTypes.string.isRequired,
+  setSelected: PropTypes.func.isRequired,
+};
+
 function StatusDropdown({ selected, setSelected }) {
   const statuses = ["active", "inactive", "pending"];
   return (
@@ -137,6 +171,7 @@ const Users = () => {
   const [search, setSearch] = useState("");
   const [permission, setPermission] = useState("");
   const [status, setStatus] = useState("");
+  const [user_type, setUserType] = useState("");
 
   // Select All
   const [selectedIds, setSelectedIds] = useState([]);
@@ -162,13 +197,13 @@ const Users = () => {
   useEffect(() => {
     if (user) {
       const delayDebounceFn = setTimeout(() => {
-        fetchUsers(1, pagination.limit, search, permission, status);
+        fetchUsers(1, pagination.limit, search, permission, user_type, status);
         setPagination((prev) => ({ ...prev, page: 1 }));
       }, 500);
       return () => clearTimeout(delayDebounceFn);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, search, permission, status]);
+  }, [user, search, permission, user_type, status]);
 
   async function handleSelectAll(e) {
     if (e.target.checked) {
@@ -179,6 +214,7 @@ const Users = () => {
           search,
         };
         if (permission) params.permission_id = permission;
+        if (user_type) params.user_type = user_type;
         if (status) params.status = status;
 
         const res = await getUsers(params);
@@ -211,7 +247,14 @@ const Users = () => {
         selectedIds.map((id) => updateUser(id, { status: newStatus })),
       );
       await dialog.success(`Users marked as ${newStatus} successfully.`);
-      fetchUsers(pagination.page, pagination.limit, search, permission, status);
+      fetchUsers(
+        pagination.page,
+        pagination.limit,
+        search,
+        permission,
+        user_type,
+        status,
+      );
       setSelectedIds([]);
     } catch {
       await dialog.error("Failed to update users.");
@@ -235,7 +278,14 @@ const Users = () => {
     try {
       await Promise.all(selectedIds.map((id) => deleteUser(id)));
       await dialog.success("Users deleted successfully.");
-      fetchUsers(pagination.page, pagination.limit, search, permission, status);
+      fetchUsers(
+        pagination.page,
+        pagination.limit,
+        search,
+        permission,
+        user_type,
+        status,
+      );
       setSelectedIds([]);
     } catch {
       await dialog.error("Failed to delete users.");
@@ -250,6 +300,7 @@ const Users = () => {
     limit = 10,
     search,
     permission_id,
+    user_type,
     status,
   ) {
     setLoading(true);
@@ -257,6 +308,7 @@ const Users = () => {
     try {
       const params = { page, limit, search };
       if (permission_id) params.permission_id = permission_id;
+      if (user_type) params.user_type = user_type;
       if (status) params.status = status;
       const res = await getUsers(params);
       setUsers(res.data.data);
@@ -291,7 +343,7 @@ const Users = () => {
         await createUser(user);
         dialog.success("User created successfully");
       }
-      fetchUsers(1, pagination.limit, search, permission, status);
+      fetchUsers(1, pagination.limit, search, permission, user_type, status);
       setModalOpen(false);
       setEditUser(null);
     } catch {
@@ -352,6 +404,7 @@ const Users = () => {
   const handleReset = () => {
     setSearch("");
     setPermission("");
+    setUserType("");
     setStatus("");
     setPagination((prev) => ({ ...prev, page: 1 }));
     fetchUsers(1, pagination.limit, "", "", "");
@@ -370,6 +423,10 @@ const Users = () => {
         onSave={handleSave}
         data={editUser || viewUser}
         viewOnly={!!viewUser}
+        onEdit={() => {
+          setEditUser(viewUser);
+          setViewUser(null);
+        }}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">
@@ -492,6 +549,10 @@ const Users = () => {
             />
           </div>
           <div>
+            <label className="block text-gray-700 text-sm mb-1">Type</label>
+            <TypesDropdown selected={user_type} setSelected={setUserType} />
+          </div>
+          <div>
             <label className="block text-gray-700 text-sm mb-1">Status</label>
             <StatusDropdown selected={status} setSelected={setStatus} />
           </div>
@@ -527,6 +588,7 @@ const Users = () => {
                   <th>Email</th>
                   <th>Phone</th>
                   <th>Role</th>
+                  <th>Type</th>
                   <th>Status</th>
                   {canView || canUpdate || canDelete ? (
                     <th className="text-center action">Actions</th>
@@ -557,6 +619,7 @@ const Users = () => {
                     <td>{u.email}</td>
                     <td>{u.phone || "-"}</td>
                     <td className="capitalize">{u.role}</td>
+                    <td className="capitalize">{u.user_type}</td>
                     <td>
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-sm text-white ${

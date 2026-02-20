@@ -6,10 +6,13 @@ import {
   HiOutlineCamera,
   HiOutlineUpload,
   HiSelector,
+  HiOutlinePencil,
 } from "react-icons/hi";
 import { uploadFile } from "../api";
 import { Listbox } from "@headlessui/react";
 import DatePicker from "../components/DatePicker";
+
+import { useAuth } from "../contexts/auth/useAuth";
 
 const initialExpense = {
   description: "",
@@ -32,11 +35,13 @@ const categories = [
   "Other",
 ];
 
-const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
+const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false, onEdit }) => {
   const [expense, setExpense] = useState(data || initialExpense);
   const [selectedImage, setSelectedImage] = useState(null);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
+  const { user } = useAuth();
+  const canUpdate = user?.permission?.permissions?.includes("update_expense");
 
   useEffect(() => {
     let t;
@@ -294,6 +299,16 @@ const ExpenseModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               {expense._id ? "Update Expense" : "Add Expense"}
             </button>
           )}
+          {viewOnly && onEdit && canUpdate && (
+            <button
+              type="button"
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+              onClick={onEdit}
+            >
+              <HiOutlinePencil className="inline-block text-xl" />
+              Update
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -306,6 +321,7 @@ ExpenseModal.propTypes = {
   onSave: PropTypes.func,
   data: PropTypes.object,
   viewOnly: PropTypes.bool,
+  onEdit: PropTypes.func,
 };
 
 export default ExpenseModal;

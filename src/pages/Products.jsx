@@ -449,6 +449,28 @@ const Products = () => {
         onSave={handleSave}
         data={editProduct || viewProduct}
         viewOnly={!!viewProduct}
+        onEdit={() => {
+          // Prepare product for editing (similar logic to handleUpdate)
+          let category = "";
+          let supplier = "";
+          if (viewProduct.category && typeof viewProduct.category === "object") {
+            category = viewProduct.category._id || "";
+          } else if (typeof viewProduct.category === "string") {
+            category = viewProduct.category;
+          }
+          if (viewProduct.supplier && typeof viewProduct.supplier === "object") {
+            supplier = viewProduct.supplier._id || "";
+          } else if (typeof viewProduct.supplier === "string") {
+            supplier = viewProduct.supplier;
+          }
+
+          setEditProduct({
+            ...viewProduct,
+            category: category,
+            supplier: supplier,
+          });
+          setViewProduct(null);
+        }}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">

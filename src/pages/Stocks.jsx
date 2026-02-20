@@ -435,6 +435,9 @@ const Stocks = () => {
 
   function handleReset() {
     setSearch("");
+    setFilterType("");
+    setFilterUser("");
+    setFilterLocation("");
     fetchStocks(1, pagination.limit);
   }
 
@@ -625,7 +628,6 @@ const Stocks = () => {
           <div className="flex items-center justify-between">
             <HiOutlineExclamation className="text-2xl text-yellow-600" />
             <div className="flex items-center gap-2 text-gray-400 text-sm">
-              {/* Low Stock Trend omitted for performance */}
               <span>-</span>
             </div>
           </div>

@@ -327,6 +327,11 @@ const DeliveryConfirmation = () => {
         data={viewDialog.order}
         viewOnly={true}
         onClose={() => setViewDialog({ open: false, order: null })}
+        onConfirm={() => {
+          setViewDialog({ open: false, order: null });
+          handleConfirmDelivery(viewDialog.order._id);
+        }}
+        onEdit={() => {}}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">

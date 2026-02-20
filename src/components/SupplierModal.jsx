@@ -9,6 +9,7 @@ import {
   HiOutlineUser,
   HiOutlineLocationMarker,
   HiOutlineNewspaper,
+  HiOutlinePencil,
 } from "react-icons/hi";
 import { locations } from "../data/locations";
 import { useAuth } from "../contexts/auth/useAuth";
@@ -50,7 +51,7 @@ const getPermission = (user, permission) => {
   return user?.permission?.permissions?.includes(permission);
 };
 
-const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
+const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false, onEdit }) => {
   const [supplier, setSupplier] = useState(data || initialSupplier);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
@@ -692,6 +693,16 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               {data ? "Update Supplier" : "Add Supplier"}
             </button>
           )}
+          {viewOnly && onEdit && canUpdate && (
+            <button
+              type="button"
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+              onClick={onEdit}
+            >
+              <HiOutlinePencil className="inline-block text-xl" />
+              Update
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -704,6 +715,7 @@ SupplierModal.propTypes = {
   onSave: PropTypes.func.isRequired,
   data: PropTypes.object,
   viewOnly: PropTypes.bool,
+  onEdit: PropTypes.func,
 };
 
 export default SupplierModal;

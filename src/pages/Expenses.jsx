@@ -312,6 +312,10 @@ const Expenses = () => {
         onSave={handleSave}
         data={editExpense || viewExpense}
         viewOnly={!!viewExpense}
+        onEdit={() => {
+          setEditExpense(viewExpense);
+          setViewExpense(null);
+        }}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">

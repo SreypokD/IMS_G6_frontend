@@ -6,6 +6,7 @@ import {
   HiOutlineCamera,
   HiOutlineUpload,
   HiSelector,
+  HiOutlinePencil,
 } from "react-icons/hi";
 
 const initialProduct = {
@@ -22,13 +23,17 @@ const initialProduct = {
 
 import { getCategories, getSuppliers, uploadFile } from "../api";
 import { Listbox } from "@headlessui/react";
+import { useAuth } from "../contexts/auth/useAuth";
 
-const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
+const ProductModal = ({ open, onClose, onSave, data, viewOnly = false, onEdit }) => {
   const [product, setProduct] = useState(data || initialProduct);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
   const [categories, setCategories] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
+  const { user } = useAuth();
+  const isInternalUser = user.user_type == "internal";
+  const canUpdate = user?.permission?.permissions?.includes("update_product");
 
   useEffect(() => {
     if (open) {
@@ -251,7 +256,7 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   htmlFor="product_price"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Selling Price
+                  {isInternalUser ? "Selling Price" : "Price"}
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
@@ -270,30 +275,32 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   disabled={viewOnly}
                 />
               </div>
-              <div>
-                <label
-                  htmlFor="product_cost_price"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Cost Price
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
-                </label>
-                <input
-                  id="product_cost_price"
-                  name="cost_price"
-                  value={product.cost_price}
-                  onChange={(e) =>
-                    setProduct({ ...product, cost_price: e.target.value })
-                  }
-                  onBlur={() =>
-                    setTouched((prev) => ({ ...prev, cost_price: true }))
-                  }
-                  type={viewOnly ? "text" : "number"}
-                  step="0.01"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.cost_price || isNaN(product.cost_price)) && !data && (touched.cost_price || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                  disabled={viewOnly}
-                />
-              </div>
+              {isInternalUser && (
+                <div>
+                  <label
+                    htmlFor="product_cost_price"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Cost Price
+                    {!viewOnly && <sup className="text-red-500">*</sup>}
+                  </label>
+                  <input
+                    id="product_cost_price"
+                    name="cost_price"
+                    value={product.cost_price}
+                    onChange={(e) =>
+                      setProduct({ ...product, cost_price: e.target.value })
+                    }
+                    onBlur={() =>
+                      setTouched((prev) => ({ ...prev, cost_price: true }))
+                    }
+                    type={viewOnly ? "text" : "number"}
+                    step="0.01"
+                    className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.cost_price || isNaN(product.cost_price)) && !data && (touched.cost_price || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                    disabled={viewOnly}
+                  />
+                </div>
+              )}
               <div>
                 <label
                   htmlFor="product_stock"
@@ -428,6 +435,16 @@ const ProductModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               {product._id ? "Update Product" : "Add Product"}
             </button>
           )}
+          {viewOnly && onEdit && canUpdate && (
+            <button
+              type="button"
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+              onClick={onEdit}
+            >
+              <HiOutlinePencil className="inline-block text-xl" />
+              Update
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -440,6 +457,7 @@ ProductModal.propTypes = {
   onSave: PropTypes.func.isRequired,
   data: PropTypes.object,
   viewOnly: PropTypes.bool,
+  onEdit: PropTypes.func,
 };
 
 export default ProductModal;

@@ -14,8 +14,13 @@ import {
   HiOutlineBriefcase,
   HiOutlineIdentification,
   HiSelector,
+  HiOutlineUser,
+  HiOutlinePencil,
 } from "react-icons/hi";
 import { locations } from "../data/locations";
+import LocationPicker from "./LocationPicker";
+
+import { useAuth } from "../contexts/auth/useAuth";
 
 const initial = {
   first_name: "",
@@ -34,7 +39,7 @@ const initial = {
     province: "",
   },
   profile: "",
-  customer_type: "business",
+  user_type: "internal",
   company_name: "",
   position: "",
   company_registration_no: "",
@@ -44,11 +49,19 @@ const initial = {
   product_categories: [],
   id_card_or_business_license: "",
   shop_photo: "",
-  location_photo: "",
+  location_lat: null,
+  location_lng: null,
   note_from_customer: "",
 };
 
-const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
+const UserModal = ({
+  open,
+  onClose,
+  onSave,
+  data,
+  viewOnly = false,
+  onEdit,
+}) => {
   const computedInitialUser = React.useMemo(() => {
     if (data && !data._id) {
       return { ...initial, ...data };
@@ -61,8 +74,11 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
   const [validateOnSave, setValidateOnSave] = useState(false);
   const [roles, setRoles] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
+  const { user: currentUser } = useAuth();
+  const canUpdate =
+    currentUser?.permission?.permissions?.includes("update_user");
 
-  const isPartner = user.agree_terms == true;
+  const isPartner = user.user_type == "external";
 
   // Fetch roles when modal opens
   useEffect(() => {
@@ -309,6 +325,44 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               <span>Contact & Role</span>
             </h3>
             <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
+              <div>
+                <label
+                  htmlFor="userType"
+                  className="text-sm font-medium text-gray-700 block mb-1"
+                >
+                  User Type {!viewOnly && <sup className="text-red-500">*</sup>}
+                </label>
+                <Listbox
+                  value={user.user_type}
+                  onChange={(val) => setUser({ ...user, user_type: val })}
+                  disabled={viewOnly}
+                >
+                  <div className="relative">
+                    <Listbox.Button
+                      id="userType"
+                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
+                    >
+                      <span className="capitalize">{user.user_type}</span>
+                      {!viewOnly && (
+                        <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
+                      )}
+                    </Listbox.Button>
+                    <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                      {["internal", "external"].map((type) => (
+                        <Listbox.Option
+                          key={type}
+                          value={type}
+                          className={({ selected }) =>
+                            `px-3 py-2 cursor-pointer text-[#64748b] text-sm capitalize hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
+                          }
+                        >
+                          {type}
+                        </Listbox.Option>
+                      ))}
+                    </Listbox.Options>
+                  </div>
+                </Listbox>
+              </div>
               <div>
                 <label
                   htmlFor="role"
@@ -641,21 +695,6 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               <div className="grid lg:grid-cols-2 md:grid-cols-1 gap-4">
                 <div>
                   <label
-                    htmlFor="customerType"
-                    className="text-sm font-medium text-gray-700 block mb-1"
-                  >
-                    Customer Type
-                  </label>
-                  <input
-                    id="customerType"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
-                    value={user.customer_type || ""}
-                    readOnly
-                    disabled
-                  />
-                </div>
-                <div>
-                  <label
                     htmlFor="companyName"
                     className="text-sm font-medium text-gray-700 block mb-1"
                   >
@@ -739,8 +778,8 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                   <div className="w-full flex flex-wrap">
                     {Array.isArray(user.product_categories) &&
                     user.product_categories.length > 0 ? (
-                      user.product_categories.map((cat) => (
-                        <span key={cat.name} className="mr-2 text-sm p-2">
+                      user.product_categories.map((cat, index) => (
+                        <span key={index} className="mr-2 text-sm p-2">
                           {renderBadge(cat)}
                         </span>
                       ))
@@ -771,23 +810,43 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
           {isPartner &&
             (user.id_card_or_business_license ||
               user.shop_photo ||
-              user.location_photo) && (
-              <div className="col-span-2">
-                <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
-                  <HiOutlineIdentification className="inline-block text-xl" />
-                  <span>Verification Documents</span>
-                </h3>
-                {viewOnly && (
+              (user.location_lat && user.location_lng)) && (
+              <>
+                <div className="col-span-2">
+                  <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+                    <HiOutlineIdentification className="inline-block text-xl" />
+                    <span>Verification Documents</span>
+                  </h3>
                   <div className="flex flex-wrap gap-6">
                     {renderImagePreview(
                       user.id_card_or_business_license,
                       "ID/License",
                     )}
                     {renderImagePreview(user.shop_photo, "Shop Photo")}
-                    {renderImagePreview(user.location_photo, "Location Photo")}
                   </div>
-                )}
-              </div>
+                </div>
+                <div className="col-span-2">
+                  <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+                    <HiOutlineLocationMarker className="inline-block text-xl" />
+                    <span>Location</span>
+                  </h3>
+                  {user.location_lat && user.location_lng && (
+                    <div className="flex flex-col w-full mt-4">
+                      <LocationPicker
+                        initialPosition={{
+                          lat: user.location_lat,
+                          lng: user.location_lng,
+                        }}
+                        readOnly={true}
+                        onLocationSelect={() => {}}
+                      />
+                      <div className="mt-2 text-sm text-gray-500">
+                        Coordinates: {user.location_lat}, {user.location_lng}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
 
           {/* Profile Image (Existing) */}
@@ -899,6 +958,16 @@ const UserModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                 </button>
               );
             })()}
+          {viewOnly && onEdit && (
+            <button
+              type="button"
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+              onClick={onEdit}
+            >
+              <HiOutlinePencil className="inline-block text-xl" />
+              Update
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -911,6 +980,7 @@ UserModal.propTypes = {
   onSave: PropTypes.func.isRequired,
   data: PropTypes.object,
   viewOnly: PropTypes.bool,
+  onEdit: PropTypes.func,
 };
 
 export default UserModal;

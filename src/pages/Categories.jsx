@@ -226,6 +226,10 @@ const Categories = () => {
         onSave={handleSave}
         data={editCategory || viewCategory}
         viewOnly={!!viewCategory}
+        onEdit={() => {
+          setEditCategory(viewCategory);
+          setViewCategory(null);
+        }}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">

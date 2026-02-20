@@ -8,9 +8,11 @@ import {
   HiCube,
   HiOutlineTrash,
   HiOutlinePlus,
+  HiOutlinePencil,
 } from "react-icons/hi";
 import { Listbox } from "@headlessui/react";
 import { useDialog } from "../contexts/dialog/useDialog";
+import { useAuth } from "../contexts/auth/useAuth";
 
 const defaultSale = {
   customer: "",
@@ -21,11 +23,20 @@ const defaultSale = {
 
 const paymentMethods = ["Cash", "Card", "Bank Transfer", "Other"];
 
-const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
+const SaleModal = ({
+  open,
+  onClose,
+  onSave,
+  data,
+  viewOnly = false,
+  onEdit,
+}) => {
   const [sale, setSale] = useState(defaultSale);
   const [products, setProducts] = useState([]);
   const [users, setUsers] = useState([]);
   const dialog = useDialog();
+  const { user } = useAuth();
+  const canUpdate = user?.permission?.permissions?.includes("update_sale");
 
   useEffect(() => {
     let t;
@@ -33,7 +44,9 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
       getProducts({ limit: -1 }).then((res) =>
         setProducts(res.data.data || []),
       );
-      getUsers({ limit: -1 }).then((res) => setUsers(res.data.data || []));
+      getUsers({ limit: -1 }).then((res) => {
+        setUsers(res.data.data.filter((u) => u.user_type === "external") || []);
+      });
       if (data) {
         t = setTimeout(() => {
           setSale({
@@ -152,7 +165,7 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl p-5 w-full max-w-[70%] max-h-[80vh] shadow-xl relative">
+      <div className="bg-white rounded-2xl p-5 w-full max-w-[78%] max-h-[80vh] shadow-xl relative">
         <h2 className="text-xl font-bold mb-6 text-center">
           {viewOnly ? "Sale Details" : sale._id ? "Update Sale" : "New Sale"}
         </h2>
@@ -225,7 +238,7 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
             </h3>
             {sale.items.map((item, idx) => {
               return (
-                <div key={item.name} className="w-full flex items-center">
+                <div key={idx} className="w-full flex items-center">
                   <div className="w-full mb-3 grid lg:grid-cols-5 md:grid-cols-2 grid-cols-1 gap-3">
                     <div>
                       <label
@@ -284,7 +297,6 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
                                   {p.name} (Stock:
                                   {p.stock - (p.reserved_stock || 0)})
                                   {isSelected ? " - Already added" : ""}
-                                  {p.stock <= 0 ? " - Out of stock" : ""}
                                 </Listbox.Option>
                               );
                             })}
@@ -509,6 +521,16 @@ const SaleModal = ({ open, onClose, onSave, data, viewOnly = false }) => {
               {sale._id ? "Update Sale" : "Complete Sale"}
             </button>
           )}
+          {viewOnly && onEdit && canUpdate && (
+            <button
+              type="button"
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+              onClick={onEdit}
+            >
+              <HiOutlinePencil className="inline-block text-xl" />
+              Update
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -521,6 +543,7 @@ SaleModal.propTypes = {
   onSave: PropTypes.func.isRequired,
   data: PropTypes.object,
   viewOnly: PropTypes.bool,
+  onEdit: PropTypes.func,
 };
 
 export default SaleModal;

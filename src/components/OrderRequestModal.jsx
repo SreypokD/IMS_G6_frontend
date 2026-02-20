@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import { useAuth } from "../contexts/auth/useAuth";
 import { Listbox } from "@headlessui/react";
 import {
   HiXCircle,
@@ -8,6 +9,9 @@ import {
   HiOutlinePlus,
   HiOutlineTrash,
   HiSelector,
+  HiOutlineCheckCircle,
+  HiOutlineXCircle,
+  HiOutlinePencil,
 } from "react-icons/hi";
 import {
   getProducts,
@@ -34,6 +38,11 @@ const OrderRequestModal = ({
   onSave,
   data,
   viewOnly = false,
+  onApprove,
+  onReject,
+  onConfirm,
+  onEdit,
+  onCancelRequest,
 }) => {
   const [products, setProducts] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
@@ -42,6 +51,16 @@ const OrderRequestModal = ({
   const [validateOnSave, setValidateOnSave] = useState(false);
   const [loading, setLoading] = useState(false);
   const dialog = useDialog();
+  const { user } = useAuth();
+  const canApprove = user?.permission?.permissions?.includes(
+    "update_approve_request",
+  );
+  const canConfirm = user?.permission?.permissions?.includes(
+    "update_confirm_delivery",
+  );
+  const canUpdate = user?.permission?.permissions?.includes(
+    "update_order_request",
+  );
 
   useEffect(() => {
     let t;
@@ -260,9 +279,9 @@ const OrderRequestModal = ({
                 </div>
                 {viewOnly && data?.status && (
                   <span
-                    className={`px-3 py-1 rounded-full text-xs text-white ${data.status === "pending" ? "bg-yellow-400" : data.status === "approved" ? "bg-blue-400" : data.status === "rejected" ? "bg-red-400" : data.status === "completed" ? "bg-green-400" : data.status === "cancelled" ? "bg-gray-400" : "bg-gray-400"}`}
+                    className={`px-3 py-1 rounded-full text-xs text-white capitalize ${data.status === "pending" ? "bg-yellow-400" : data.status === "approved" ? "bg-green-400" : data.status === "rejected" ? "bg-red-400" : data.status === "completed" ? "bg-blue-400" : data.status === "cancelled" ? "bg-red-400" : data.status === "on_hold" ? "bg-orange-400" : "bg-gray-400"}`}
                   >
-                    {data.status.toUpperCase()}
+                    {data.status}
                   </span>
                 )}
               </div>
@@ -331,8 +350,9 @@ const OrderRequestModal = ({
                           key={supplier._id}
                           value={supplier}
                           className={({ selected }) =>
-                            `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
+                            `px-3 py-2 text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""} ${supplier.products_count <= 0 ? "opacity-50 cursor-default bg-gray-50 text-gray-400" : "cursor-pointer"}`
                           }
+                          disabled={supplier.products_count <= 0}
                         >
                           {supplier.company_name} ({supplier.products_count}
                           {supplier.products_count > 1
@@ -652,7 +672,14 @@ const OrderRequestModal = ({
               </div>
             )}
         </form>
-        <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
+        <div
+          className={`col-span-2 w-full flex items-center gap-3 ${
+            viewOnly &&
+            (onApprove || onReject || onConfirm || onEdit || onCancelRequest)
+              ? "justify-between"
+              : "justify-end"
+          } mt-4`}
+        >
           <button
             type="button"
             className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-100 flex items-center gap-2 cursor-pointer text-sm"
@@ -661,16 +688,75 @@ const OrderRequestModal = ({
             <HiXCircle className="inline-block text-xl" />
             {viewOnly ? "Close" : "Cancel"}
           </button>
-          {!viewOnly && (
-            <button
-              type="button"
-              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
-              onClick={handleSubmit}
-            >
-              <HiOutlineDocumentText className="inline-block text-xl" />
-              {loading ? "Submitting..." : data ? "Update" : "Submit"}
-            </button>
-          )}
+          <div className="flex items-center gap-3">
+            {viewOnly && onConfirm && canConfirm && (
+              <button
+                type="button"
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+                onClick={onConfirm}
+              >
+                <HiOutlineCheckCircle className="inline-block text-xl" />
+                Confirm
+              </button>
+            )}
+            {viewOnly && onApprove && canApprove && (
+              <button
+                type="button"
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+                onClick={onApprove}
+              >
+                <HiOutlineCheckCircle className="inline-block text-xl" />
+                Approve
+              </button>
+            )}
+            {viewOnly && onReject && canApprove && (
+              <button
+                type="button"
+                className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+                onClick={onReject}
+              >
+                <HiOutlineXCircle className="inline-block text-xl" />
+                Reject
+              </button>
+            )}
+            {!viewOnly && (
+              <button
+                type="button"
+                className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+                onClick={handleSubmit}
+              >
+                <HiOutlineDocumentText className="inline-block text-xl" />
+                {loading ? "Submitting..." : data ? "Update" : "Submit"}
+              </button>
+            )}
+            {viewOnly &&
+              onEdit &&
+              canUpdate &&
+              String(data.requester_id) === String(user?._id) &&
+              data.status === "pending" && (
+                <button
+                  type="button"
+                  className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+                  onClick={onEdit}
+                >
+                  <HiOutlinePencil className="inline-block text-xl" />
+                  Update
+                </button>
+              )}
+            {viewOnly &&
+              onCancelRequest &&
+              String(data.requester_id) === String(user?._id) &&
+              data.status === "pending" && (
+                <button
+                  type="button"
+                  className="text-red-500 bg-red-50 hover:bg-red-100 px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+                  onClick={onCancelRequest}
+                >
+                  <HiOutlineXCircle className="inline-block text-xl" />
+                  Cancel
+                </button>
+              )}
+          </div>
         </div>
       </div>
     </div>
@@ -684,6 +770,11 @@ OrderRequestModal.propTypes = {
   suppliers: PropTypes.array,
   data: PropTypes.object,
   viewOnly: PropTypes.bool,
+  onApprove: PropTypes.func,
+  onReject: PropTypes.func,
+  onConfirm: PropTypes.func,
+  onEdit: PropTypes.func,
+  onCancelRequest: PropTypes.func,
 };
 
 export default OrderRequestModal;

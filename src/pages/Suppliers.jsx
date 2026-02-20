@@ -348,6 +348,10 @@ const Suppliers = () => {
         onSave={handleSave}
         data={editSupplier || viewSupplier}
         viewOnly={!!viewSupplier}
+        onEdit={() => {
+          setEditSupplier(viewSupplier);
+          setViewSupplier(null);
+        }}
       />
       <div className="flex items-center justify-between mb-8">
         <div className="flex flex-col">

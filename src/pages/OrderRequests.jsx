@@ -110,6 +110,7 @@ const OrderRequests = () => {
   const canDelete = getPermission(user, "delete_order_request");
   const canViewApprove = getPermission(user, "view_approve_request");
   const canUpdateApprove = getPermission(user, "update_approve_request");
+  const isInternalUser = user.user_type == "internal";
 
   useEffect(() => {
     if (user) {
@@ -316,6 +317,34 @@ const OrderRequests = () => {
           setViewOrderRequest(null);
           fetchOrderRequests(pagination.page, pagination.limit, search, status);
           fetchBadge();
+        }}
+        onEdit={() => {
+          setUpdateOrderRequest(viewOrderRequest);
+          setViewOrderRequest(null);
+        }}
+        onCancelRequest={async () => {
+           const confirmed = await dialog.ask({
+            type: "confirm",
+            title: "Cancel Order Request",
+            message: "Are you sure you want to cancel this order request?",
+            confirmText: "Yes",
+            cancelText: "No",
+          });
+          if (!confirmed) return;
+          setLoading(true);
+          try {
+            await cancelOrderRequest(viewOrderRequest._id);
+            await dialog.success("Order request cancelled successfully.");
+            setModalOpen(false);
+            setViewOrderRequest(null);
+            fetchOrderRequests(pagination.page, pagination.limit, search, status);
+            fetchBadge(); // Update badge
+          } catch {
+            setError("Failed to cancel order request");
+            dialog.error("Failed to cancel order request");
+          } finally {
+            setLoading(false);
+          }
         }}
       />
       <div className="flex items-center justify-between mb-8">
@@ -554,19 +583,20 @@ const OrderRequests = () => {
                       </td>
                       <td className="flex items-center gap-1 justify-center action">
                         <div className="flex items-center gap-1">
-                          {canView ||
-                            (String(request.requester_id) ===
-                              String(user?._id) && (
-                              <button
-                                className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
-                                title="View"
-                                onClick={() => {
-                                  handleView(request);
-                                }}
-                              >
-                                <HiOutlineEye className="text-xl" />
-                              </button>
-                            ))}
+                          {(isInternalUser ||
+                            canView ||
+                            String(request.requester_id) ===
+                              String(user?._id)) && (
+                            <button
+                              className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200"
+                              title="View"
+                              onClick={() => {
+                                handleView(request);
+                              }}
+                            >
+                              <HiOutlineEye className="text-xl" />
+                            </button>
+                          )}
                           <Menu
                             as="div"
                             className="relative inline-block text-left"

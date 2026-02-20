@@ -490,7 +490,7 @@ const Reports = () => {
                 </div>
                 <div className="overflow-x-auto">
                   {lowStockProducts.length > 0 ? (
-                    <table className="min-w-full text-left text-sm align-middle">
+                    <table className="min-w-full text-left text-sm align-middle px-1">
                       <thead>
                         <tr>
                           <th>Product</th>

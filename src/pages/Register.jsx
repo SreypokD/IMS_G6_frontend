@@ -14,6 +14,7 @@ import { register as registerApi } from "../api/auth-services";
 import { uploadFile, getCategories } from "../api";
 import { useNavigate } from "react-router-dom";
 import { locations } from "../data/locations";
+import LocationPicker from "../components/LocationPicker";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const Register = () => {
     phone: "",
     password: "",
     confirmPassword: "",
-    customer_type: "business", // always business
+    user_type: "external",
     first_name: "",
     last_name: "",
     company_name: "",
@@ -46,7 +47,8 @@ const Register = () => {
     product_categories: [], // Array of strings
     id_card_or_business_license: "", // URL
     shop_photo: "", // URL
-    location_photo: "", // URL
+    location_lat: null,
+    location_lng: null,
     agree_terms: false,
     note_from_customer: "",
   });
@@ -83,6 +85,14 @@ const Register = () => {
     setFormData((prev) => ({
       ...prev,
       address: { ...prev.address, [field]: value },
+    }));
+  };
+
+  const handleLocationSelect = (latlng) => {
+    setFormData((prev) => ({
+      ...prev,
+      location_lat: latlng.lat,
+      location_lng: latlng.lng,
     }));
   };
 
@@ -813,46 +823,25 @@ const Register = () => {
                       />
                     </label>
                   </div>
-                  <div className="border border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50 transition">
-                    <label
-                      htmlFor="location_photo"
-                      className="cursor-pointer relative group h-full flex flex-col items-center justify-center"
-                    >
-                      <span className="block text-sm font-medium text-gray-700 mb-2">
-                        Location Photo (Opt)
-                      </span>
-                      {formData.location_photo ? (
-                        <div className="relative w-full h-32">
-                          <img
-                            src={formData.location_photo}
-                            alt="Location"
-                            className="w-full h-full object-cover rounded-md"
-                          />
-                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
-                            <span className="text-xs font-medium">
-                              Click to Change
-                            </span>
-                          </div>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="w-12 h-12 text-gray-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                            <HiOutlineUpload />
-                          </div>
-                          <span className="text-xs text-gray-500">
-                            Upload File
-                          </span>
-                        </>
-                      )}
-                      <input
-                        type="file"
-                        id="location_photo"
-                        className="hidden"
-                        onChange={(e) => handleFileUpload(e, "location_photo")}
-                        accept="image/*"
-                      />
-                    </label>
-                  </div>
+                </div>
+              </section>
+
+              {/* 6. Location */}
+              <section>
+                <h3 className="text-lg font-semibold text-[#1e3a5f] border-b border-gray-100 pb-2 mb-4">
+                  6. Location
+                </h3>
+                <div className="mb-4">
+                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                    Pin your location <sup className="text-red-500">*</sup>
+                  </label>
+                  <LocationPicker onLocationSelect={handleLocationSelect} />
+                  {formData.location_lat && (
+                    <p className="mt-2 text-sm text-gray-500">
+                      Coordinates: {formData.location_lat.toFixed(6)},{" "}
+                      {formData.location_lng.toFixed(6)}
+                    </p>
+                  )}
                 </div>
               </section>
 
