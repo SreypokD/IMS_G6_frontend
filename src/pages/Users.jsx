@@ -12,6 +12,7 @@ import {
   HiDotsVertical,
   HiOutlineArchive,
 } from "react-icons/hi";
+import { MdOutlineSmsFailed } from "react-icons/md";
 import {
   getUsers,
   createUser,
@@ -563,7 +564,10 @@ const Users = () => {
           {loading ? (
             <Loading />
           ) : error ? (
-            <div className="p-8 text-center text-red-500">{error}</div>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <MdOutlineSmsFailed className="text-6xl text-red-500" />
+              <div className="p-8 text-center text-red-500">{error}</div>
+            </div>
           ) : (
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">

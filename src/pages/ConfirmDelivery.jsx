@@ -10,6 +10,7 @@ import {
   HiOutlineArchive,
   HiOutlineXCircle,
 } from "react-icons/hi";
+import { MdOutlineSmsFailed } from "react-icons/md";
 import { useAuth } from "../contexts/auth/useAuth";
 import { getOrderRequests, confirmDeliveryAction } from "../api";
 import { formatDate } from "../utils/dateFormat";
@@ -195,8 +196,8 @@ const DeliveryConfirmation = () => {
         page,
         limit,
       }));
-    } catch {
-      setError("Failed to load confirm deliveries");
+    } catch (err) {
+      setError(err.response.data.error || "Failed to load confirm deliveries");
     } finally {
       setLoading(false);
     }
@@ -224,12 +225,7 @@ const DeliveryConfirmation = () => {
         delivery_status,
       );
     } catch (err) {
-      const msg =
-        err?.response?.data?.error ||
-        err?.message ||
-        "Failed to confirm delivery";
-      await dialog.error(msg);
-      setError(msg);
+      dialog.error(err.response.data.error || "Failed to confirm delivery");
     }
   }
 
@@ -484,7 +480,10 @@ const DeliveryConfirmation = () => {
           {loading ? (
             <Loading />
           ) : error ? (
-            <div className="p-8 text-center text-red-500">{error}</div>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <MdOutlineSmsFailed className="text-6xl text-red-500" />
+              <div className="p-8 text-center text-red-500">{error}</div>
+            </div>
           ) : (
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">

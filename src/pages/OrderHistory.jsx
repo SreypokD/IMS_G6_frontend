@@ -9,6 +9,7 @@ import { formatDate } from "../utils/dateFormat";
 import { HiSelector, HiOutlineFilter, HiOutlineRefresh } from "react-icons/hi";
 import { Listbox } from "@headlessui/react";
 import DatePicker from "../components/DatePicker";
+import { MdOutlineSmsFailed } from "react-icons/md";
 
 const statusOptions = [
   { value: "pending", label: "Pending" },
@@ -116,8 +117,8 @@ const OrderHistory = () => {
         page,
         limit,
       }));
-    } catch {
-      setError("Failed to load order history");
+    } catch (err) {
+      setError(err.response.data.error || "Failed to load order history");
     } finally {
       setLoading(false);
     }
@@ -210,7 +211,10 @@ const OrderHistory = () => {
           {loading ? (
             <Loading />
           ) : error ? (
-            <div className="p-8 text-center text-red-500">{error}</div>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <MdOutlineSmsFailed className="text-6xl text-red-500" />
+              <div className="p-8 text-center text-red-500">{error}</div>
+            </div>
           ) : (
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">

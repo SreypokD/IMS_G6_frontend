@@ -11,6 +11,7 @@ import {
   HiOutlineEye,
   HiDotsVertical,
 } from "react-icons/hi";
+import { MdOutlineSmsFailed } from "react-icons/md";
 import { Menu } from "@headlessui/react";
 import {
   getPermissions,
@@ -90,8 +91,8 @@ const Permissions = () => {
         page,
         limit,
       }));
-    } catch {
-      setError("Failed to load roles");
+    } catch (err) {
+      setError(err.response.data.error || "Failed to load roles");
     } finally {
       setLoading(false);
     }
@@ -118,9 +119,8 @@ const Permissions = () => {
       fetchRoles(1, pagination.limit, search);
       setModalOpen(false);
       setEditRole(null);
-    } catch {
-      setError("Failed to save role");
-      dialog.error("Failed to save role");
+    } catch (err) {
+      dialog.error(err.response.data.error || "Failed to save role");
     } finally {
       setLoading(false);
     }
@@ -141,9 +141,8 @@ const Permissions = () => {
         await deletePermission(id);
         dialog.success("Role deleted successfully");
         fetchRoles(pagination.page, pagination.limit, search);
-      } catch {
-        setError("Failed to delete role");
-        dialog.error("Failed to delete role");
+      } catch (err) {
+        dialog.error(err.response.data.error || "Failed to delete role");
       } finally {
         setLoading(false);
       }
@@ -335,7 +334,10 @@ const Permissions = () => {
           {loading ? (
             <Loading />
           ) : error ? (
-            <div className="p-8 text-center text-red-500">{error}</div>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <MdOutlineSmsFailed className="text-6xl text-red-500" />
+              <div className="p-8 text-center text-red-500">{error}</div>
+            </div>
           ) : (
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">

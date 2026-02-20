@@ -23,6 +23,7 @@ import {
   HiSelector,
   HiDotsVertical,
 } from "react-icons/hi";
+import { MdOutlineSmsFailed } from "react-icons/md";
 import { useDialog } from "../contexts/dialog/useDialog";
 import { Listbox, Menu } from "@headlessui/react";
 import { formatDate } from "../utils/dateFormat";
@@ -151,8 +152,8 @@ const Expenses = () => {
         page,
         limit,
       }));
-    } catch {
-      setError("Failed to load expenses");
+    } catch (err) {
+      setError(err.response.data.error || "Failed to load expenses");
     } finally {
       setLoading(false);
     }
@@ -179,10 +180,7 @@ const Expenses = () => {
       setModalOpen(false);
       setEditExpense(null);
     } catch (err) {
-      const msg =
-        err?.response?.data?.error || err?.message || "Failed to save expense";
-      setError(msg);
-      dialog.error(msg);
+      dialog.error(err.response.data.error || "Failed to save expense");
     } finally {
       setLoading(false);
     }
@@ -447,7 +445,10 @@ const Expenses = () => {
           {loading ? (
             <Loading />
           ) : error ? (
-            <div className="p-8 text-center text-red-500">{error}</div>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <MdOutlineSmsFailed className="text-6xl text-red-500" />
+              <div className="p-8 text-center text-red-500">{error}</div>
+            </div>
           ) : (
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">

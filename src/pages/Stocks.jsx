@@ -21,6 +21,7 @@ import {
   HiOutlineCheckCircle,
   HiOutlineArchive,
 } from "react-icons/hi";
+import { MdOutlineSmsFailed } from "react-icons/md";
 import Pagination from "../components/Pagination";
 import { useAuth } from "../contexts/auth/useAuth";
 import NoDataFound from "../components/NoDataFound";
@@ -299,8 +300,8 @@ const Stocks = () => {
         page,
         limit,
       }));
-    } catch {
-      setError("Failed to load stocks");
+    } catch (err) {
+      setError(err.response.data.error || "Failed to load stocks");
     } finally {
       setLoading(false);
     }
@@ -343,9 +344,8 @@ const Stocks = () => {
           filterUser,
           filterLocation,
         );
-      } catch {
-        setError("Failed to delete stock");
-        dialog.error("Failed to delete stock");
+      } catch (err) {
+        dialog.error(err.response.data.error || "Failed to delete stock");
       } finally {
         setLoading(false);
       }
@@ -738,7 +738,10 @@ const Stocks = () => {
           {loading ? (
             <Loading />
           ) : error ? (
-            <div className="p-8 text-center text-red-500">{error}</div>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <MdOutlineSmsFailed className="text-6xl text-red-500" />
+              <div className="p-8 text-center text-red-500">{error}</div>
+            </div>
           ) : (
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">

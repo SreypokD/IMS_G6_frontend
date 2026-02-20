@@ -15,6 +15,7 @@ import {
   HiViewGrid,
   HiViewList,
 } from "react-icons/hi";
+import { MdOutlineSmsFailed } from "react-icons/md";
 import ProductModal from "../components/ProductModal.jsx";
 import {
   getProducts,
@@ -240,8 +241,8 @@ const Products = () => {
         page,
         limit,
       }));
-    } catch {
-      setError("Failed to load products");
+    } catch (err) {
+      setError(err.response.data.error || "Failed to load products");
     } finally {
       setLoading(false);
     }
@@ -309,9 +310,8 @@ const Products = () => {
       );
       fetchProducts(pagination.page, pagination.limit);
       setModalOpen(false);
-    } catch {
-      setError("Failed to save product");
-      dialog.error("Failed to save product");
+    } catch (err) {
+      dialog.error(err.response.data.error || "Failed to save product");
     } finally {
       setLoading(false);
     }
@@ -339,9 +339,8 @@ const Products = () => {
         await deleteProduct(id);
         dialog.success("Product deleted successfully");
         fetchProducts(pagination.page, pagination.limit);
-      } catch {
-        setError("Failed to delete product");
-        dialog.error("Failed to delete product");
+      } catch (err) {
+        dialog.error(err.response.data.error || "Failed to delete product");
       } finally {
         setLoading(false);
       }
@@ -453,12 +452,18 @@ const Products = () => {
           // Prepare product for editing (similar logic to handleUpdate)
           let category = "";
           let supplier = "";
-          if (viewProduct.category && typeof viewProduct.category === "object") {
+          if (
+            viewProduct.category &&
+            typeof viewProduct.category === "object"
+          ) {
             category = viewProduct.category._id || "";
           } else if (typeof viewProduct.category === "string") {
             category = viewProduct.category;
           }
-          if (viewProduct.supplier && typeof viewProduct.supplier === "object") {
+          if (
+            viewProduct.supplier &&
+            typeof viewProduct.supplier === "object"
+          ) {
             supplier = viewProduct.supplier._id || "";
           } else if (typeof viewProduct.supplier === "string") {
             supplier = viewProduct.supplier;
@@ -601,13 +606,13 @@ const Products = () => {
       <div className="flex justify-end items-center mb-3">
         <div className="flex bg-gray-100 p-1 rounded-lg">
           <button
-            className={`px-3 py-2 rounded-xl text-sm font-medium transition-all flex items-center cursor-pointer ${viewMode === "table" ? "bg-white text-[#1e3a5f]" : "text-gray-500 hover:text-gray-900"}`}
+            className={`px-6 py-2 rounded-xl text-sm font-medium transition-all flex items-center cursor-pointer ${viewMode === "table" ? "bg-white text-[#1e3a5f]" : "text-gray-500 hover:text-gray-900"}`}
             onClick={() => setViewMode("table")}
           >
             <HiViewList className="mr-1 text-lg" /> Table
           </button>
           <button
-            className={`px-3 py-2 rounded-xl text-sm font-medium transition-all flex items-center cursor-pointer ${viewMode === "card" ? "bg-white text-[#1e3a5f]" : "text-gray-500 hover:text-gray-900"}`}
+            className={`px-6 py-2 rounded-xl text-sm font-medium transition-all flex items-center cursor-pointer ${viewMode === "card" ? "bg-white text-[#1e3a5f]" : "text-gray-500 hover:text-gray-900"}`}
             onClick={() => setViewMode("card")}
           >
             <HiViewGrid className="mr-1 text-lg" /> Cards
@@ -623,7 +628,10 @@ const Products = () => {
               ))}
             </div>
           ) : error ? (
-            <div className="p-8 text-center text-red-500">{error}</div>
+            <>
+              <MdOutlineSmsFailed className="text-6xl text-red-500" />
+              <div className="p-8 text-center text-red-500">{error}</div>
+            </>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 pb-4">
               {products.map((product) => (
@@ -800,7 +808,10 @@ const Products = () => {
             {loading ? (
               <Loading />
             ) : error ? (
-              <div className="p-8 text-center text-red-500">{error}</div>
+              <div className="w-full h-full flex flex-col items-center justify-center">
+                <MdOutlineSmsFailed className="text-6xl text-red-500" />
+                <div className="p-8 text-center text-red-500">{error}</div>
+              </div>
             ) : (
               <table className="min-w-full text-left text-sm align-middle">
                 <thead className="table-sticky-header">

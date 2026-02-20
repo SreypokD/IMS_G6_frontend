@@ -12,6 +12,7 @@ import {
   HiOutlineCheckCircle,
   HiOutlineArchive,
 } from "react-icons/hi";
+import { MdOutlineSmsFailed } from "react-icons/md";
 import { useAuth } from "../contexts/auth/useAuth.js";
 import { useDialog } from "../contexts/dialog/useDialog.js";
 import OrderRequestModal from "../components/OrderRequestModal.jsx";
@@ -153,8 +154,8 @@ const OrderRequests = () => {
         page,
         limit,
       }));
-    } catch {
-      setError("Failed to load order requests");
+    } catch (err) {
+      setError(err.response.data.error || "Failed to load order requests");
     } finally {
       setLoading(false);
     }
@@ -181,9 +182,8 @@ const OrderRequests = () => {
       await dialog.success("Order request cancelled successfully.");
       fetchOrderRequests(pagination.page, pagination.limit, search, status);
       fetchBadge(); // Update badge
-    } catch {
-      setError("Failed to cancel order request");
-      dialog.error("Failed to cancel order request");
+    } catch (err) {
+      dialog.error(err.response.data.error || "Failed to cancel order request");
     } finally {
       setLoading(false);
     }
@@ -323,7 +323,7 @@ const OrderRequests = () => {
           setViewOrderRequest(null);
         }}
         onCancelRequest={async () => {
-           const confirmed = await dialog.ask({
+          const confirmed = await dialog.ask({
             type: "confirm",
             title: "Cancel Order Request",
             message: "Are you sure you want to cancel this order request?",
@@ -337,11 +337,17 @@ const OrderRequests = () => {
             await dialog.success("Order request cancelled successfully.");
             setModalOpen(false);
             setViewOrderRequest(null);
-            fetchOrderRequests(pagination.page, pagination.limit, search, status);
+            fetchOrderRequests(
+              pagination.page,
+              pagination.limit,
+              search,
+              status,
+            );
             fetchBadge(); // Update badge
-          } catch {
-            setError("Failed to cancel order request");
-            dialog.error("Failed to cancel order request");
+          } catch (err) {
+            dialog.error(
+              err.response.data.error || "Failed to cancel order request",
+            );
           } finally {
             setLoading(false);
           }
@@ -483,7 +489,10 @@ const OrderRequests = () => {
           {loading ? (
             <Loading />
           ) : error ? (
-            <div className="p-8 text-center text-red-500">{error}</div>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <MdOutlineSmsFailed className="text-6xl text-red-500" />
+              <div className="p-8 text-center text-red-500">{error}</div>
+            </div>
           ) : (
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">

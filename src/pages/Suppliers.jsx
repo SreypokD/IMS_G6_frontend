@@ -17,6 +17,7 @@ import {
   HiOutlineRefresh,
   HiDotsVertical,
 } from "react-icons/hi";
+import { MdOutlineSmsFailed } from "react-icons/md";
 import { Menu } from "@headlessui/react";
 import {
   getSuppliers,
@@ -173,8 +174,8 @@ const Suppliers = () => {
         page,
         limit,
       }));
-    } catch {
-      setError("Failed to load suppliers");
+    } catch (err) {
+      setError(err.response.data.error || "Failed to load suppliers");
     } finally {
       setLoading(false);
     }
@@ -202,9 +203,8 @@ const Suppliers = () => {
       fetchSuppliers(pagination.page, pagination.limit);
       setModalOpen(false);
       setEditSupplier(null);
-    } catch {
-      setError("Failed to save supplier");
-      dialog.error("Failed to save supplier");
+    } catch (err) {
+      dialog.error(err.response.data.error || "Failed to save supplier");
     } finally {
       setLoading(false);
     }
@@ -225,9 +225,8 @@ const Suppliers = () => {
         await deleteSupplier(id);
         dialog.success("Supplier deleted successfully");
         fetchSuppliers(pagination.page, pagination.limit);
-      } catch {
-        setError("Failed to delete supplier");
-        dialog.error("Failed to delete supplier");
+      } catch (err) {
+        dialog.error(err.response.data.error || "Failed to delete supplier");
       } finally {
         setLoading(false);
       }
@@ -491,7 +490,10 @@ const Suppliers = () => {
           {loading ? (
             <Loading />
           ) : error ? (
-            <div className="p-8 text-center text-red-500">{error}</div>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <MdOutlineSmsFailed className="text-6xl text-red-500" />
+              <div className="p-8 text-center text-red-500">{error}</div>
+            </div>
           ) : (
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">

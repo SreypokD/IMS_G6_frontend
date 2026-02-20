@@ -180,7 +180,7 @@ const UserModal = ({
           <img
             src={url}
             alt={label}
-            className="h-40 w-40 object-cover rounded border border-gray-200 hover:border-blue-500 transition"
+            className="h-40 w-40 object-cover rounded transition-all duration-300 hover:scale-101"
           />
         </a>
       </div>
@@ -859,11 +859,17 @@ const UserModal = ({
               <div className="mb-3">
                 {viewOnly ? (
                   <div className="mt-2 flex items-center justify-center border border-gray-200 rounded-lg p-4 bg-gray-50">
-                    <img
-                      src={user.profile}
-                      alt="Profile"
-                      className="h-40 w-40 object-cover rounded"
-                    />
+                    <a
+                      href={user.profile}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img
+                        src={user.profile}
+                        alt="Profile"
+                        className="h-40 w-40 object-cover rounded transition-all duration-300 hover:scale-101"
+                      />
+                    </a>
                   </div>
                 ) : (
                   <label
@@ -872,11 +878,17 @@ const UserModal = ({
                   >
                     {user.profile ? (
                       <div className="relative w-40 h-40">
-                        <img
-                          src={user.profile}
-                          alt="Profile"
-                          className="w-full h-full object-cover rounded-md"
-                        />
+                        <a
+                          href={user.profile}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src={user.profile}
+                            alt="Profile"
+                            className="w-full h-full object-cover rounded-md transition-all duration-300 hover:scale-101"
+                          />
+                        </a>
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
                           <span className="text-xs font-medium">
                             Click to Change

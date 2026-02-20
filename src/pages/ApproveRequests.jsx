@@ -10,6 +10,7 @@ import {
   HiDotsVertical,
   HiOutlineArchive,
 } from "react-icons/hi";
+import { MdOutlineSmsFailed } from "react-icons/md";
 import { getApproveRequests, updateApproveRequests } from "../api";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
@@ -115,8 +116,8 @@ const OrderRequestApproval = () => {
         page,
         limit,
       }));
-    } catch {
-      setError("Failed to load approve requests");
+    } catch (err) {
+      setError(err.response.data.error || "Failed to load approve requests");
     } finally {
       setLoading(false);
     }
@@ -142,10 +143,7 @@ const OrderRequestApproval = () => {
       fetchApproveRequests(1, pagination.limit, search, startDate, endDate);
       fetchBadge(); // Update badge
     } catch (err) {
-      const msg =
-        err?.response?.data?.error || err?.message || "Failed to approve order";
-      await dialog.error(msg);
-      setError(msg);
+      dialog.error(err.response.data.error || "Failed to approve order");
     } finally {
       setActionId(null);
     }
@@ -167,10 +165,7 @@ const OrderRequestApproval = () => {
       fetchApproveRequests(1, pagination.limit, search, startDate, endDate);
       fetchBadge();
     } catch (err) {
-      const msg =
-        err?.response?.data?.error || err?.message || "Failed to approve order";
-      await dialog.error(msg);
-      setError(msg);
+      dialog.error(err.response.data.error || "Failed to approve order");
     } finally {
       setActionId(null);
     }
@@ -478,7 +473,10 @@ const OrderRequestApproval = () => {
           {loading ? (
             <Loading />
           ) : error ? (
-            <div className="p-8 text-center text-red-500">{error}</div>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <MdOutlineSmsFailed className="text-6xl text-red-500" />
+              <div className="p-8 text-center text-red-500">{error}</div>
+            </div>
           ) : (
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">

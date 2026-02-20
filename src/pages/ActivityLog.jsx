@@ -7,6 +7,7 @@ import Loading from "../components/Loading";
 import { HiOutlineFilter, HiOutlineRefresh } from "react-icons/hi";
 import DatePicker from "../components/DatePicker";
 import { formatDate } from "../utils/dateFormat";
+import { MdOutlineSmsFailed } from "react-icons/md";
 
 const ActivityLog = () => {
   const [logs, setLogs] = useState([]);
@@ -68,8 +69,8 @@ const ActivityLog = () => {
         page,
         limit,
       }));
-    } catch {
-      setError("Failed to load activity logs");
+    } catch (err) {
+      setError(err.response.data.error || "Failed to load activity logs");
     } finally {
       setLoading(false);
     }
@@ -146,7 +147,10 @@ const ActivityLog = () => {
           {loading ? (
             <Loading />
           ) : error ? (
-            <div className="p-8 text-center text-red-500">{error}</div>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <MdOutlineSmsFailed className="text-6xl text-red-500" />
+              <div className="p-8 text-center text-red-500">{error}</div>
+            </div>
           ) : (
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">

@@ -22,7 +22,7 @@ import {
   HiOutlineFilter,
   HiOutlineRefresh,
   HiSelector,
-} from "react-icons/hi";
+} from "react-icons/hi";import { MdOutlineSmsFailed } from "react-icons/md";
 import { BsCurrencyDollar } from "react-icons/bs";
 import {
   HiOutlinePencil,
@@ -225,8 +225,8 @@ const Sales = () => {
         page,
         limit,
       }));
-    } catch {
-      setError("Failed to load sales");
+    } catch (err) {
+      setError(err.response.data.error || "Failed to load sales");
     } finally {
       setLoading(false);
     }
@@ -617,7 +617,10 @@ const Sales = () => {
           {loading ? (
             <Loading />
           ) : error ? (
-            <div className="p-8 text-center text-red-500">{error}</div>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <MdOutlineSmsFailed className="text-6xl text-red-500" />
+              <div className="p-8 text-center text-red-500">{error}</div>
+            </div>
           ) : (
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">

@@ -10,6 +10,7 @@ import {
   HiOutlineCheckCircle,
   HiOutlineArchive,
 } from "react-icons/hi";
+import { MdOutlineSmsFailed } from "react-icons/md";
 import { Menu } from "@headlessui/react";
 import CategoryModal from "../components/CategoryModal";
 import {
@@ -87,8 +88,8 @@ const Categories = () => {
         page,
         limit,
       }));
-    } catch {
-      setError("Failed to load categories");
+    } catch (err) {
+      setError(err.response.data.error || "Failed to load categories");
     } finally {
       setLoading(false);
     }
@@ -114,8 +115,8 @@ const Categories = () => {
       fetchCategories();
       setModalOpen(false);
       setEditCategory(null);
-    } catch {
-      await dialog.error("Failed to save category.");
+    } catch (err) {
+      dialog.error(err.response.data.error || "Failed to save category.");
     } finally {
       setLoading(false);
     }
@@ -135,8 +136,8 @@ const Categories = () => {
       await deleteCategory(id);
       await dialog.success("Category deleted successfully.");
       fetchCategories();
-    } catch {
-      await dialog.error("Failed to delete category.");
+    } catch (err) {
+      dialog.error(err.response.data.error || "Failed to delete category.");
     } finally {
       setLoading(false);
     }
@@ -337,7 +338,10 @@ const Categories = () => {
           {loading ? (
             <Loading />
           ) : error ? (
-            <div className="p-8 text-center text-red-500">{error}</div>
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <MdOutlineSmsFailed className="text-6xl text-red-500" />
+              <div className="p-8 text-center text-red-500">{error}</div>
+            </div>
           ) : (
             <table className="min-w-full text-left text-sm align-middle">
               <thead className="table-sticky-header">
