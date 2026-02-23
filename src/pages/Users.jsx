@@ -721,7 +721,7 @@ const Users = () => {
                 ))}
                 {users.length === 0 && (
                   <tr>
-                    <td colSpan={canCreate || canUpdate || canDelete ? 8 : 7}>
+                    <td colSpan={canCreate || canUpdate || canDelete ? 9 : 8}>
                       <NoDataFound message="No users found." />
                     </td>
                   </tr>
