@@ -22,6 +22,7 @@ import {
 import { BsCurrencyDollar } from "react-icons/bs";
 import { useDialog } from "../contexts/dialog/useDialog";
 import DatePicker from "../components/DatePicker";
+import { formatDate } from "../utils/dateFormat";
 
 const initialOrderRequest = {
   supplier_id: "",
@@ -279,7 +280,7 @@ const OrderRequestModal = ({
                 </div>
                 {viewOnly && data?.status && (
                   <span
-                    className={`px-3 py-1 rounded-full text-xs text-white capitalize ${data.status === "pending" ? "bg-yellow-400" : data.status === "approved" ? "bg-green-400" : data.status === "rejected" ? "bg-red-400" : data.status === "completed" ? "bg-blue-400" : data.status === "cancelled" ? "bg-red-400" : data.status === "on_hold" ? "bg-orange-400" : "bg-gray-400"}`}
+                    className={`px-3 py-2 rounded-full text-sm text-white capitalize ${data.status === "pending" ? "bg-yellow-400" : data.status === "approved" ? "bg-green-400" : data.status === "rejected" ? "bg-red-400" : data.status === "completed" ? "bg-blue-400" : data.status === "cancelled" ? "bg-red-400" : data.status === "on_hold" ? "bg-orange-400" : "bg-gray-400"}`}
                   >
                     {data.status}
                   </span>
@@ -624,62 +625,80 @@ const OrderRequestModal = ({
             (data?.approved_at ||
               data?.confirmed_at ||
               data?.rejection_reason) && (
-              <div className="col-span-2 mb-2 mt-4 bg-gray-50 rounded-xl p-4 border border-gray-100">
-                <h3 className="text-sm font-semibold text-[#1e3a5f] mb-3">
-                  Workflow History
+              <div>
+                <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
+                  <HiOutlineDocumentText className="inline-block text-xl text-black" />
+                  <span>Workflow History</span>
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div className="flex flex-col gap-3 text-sm">
                   {data?.approved_at && (
-                    <div>
-                      <span className="text-gray-500 block">Approved By</span>
-                      <span className="font-medium">
-                        {data.approver
-                          ? `${data.approver.first_name} ${data.approver.last_name}`
-                          : "Admin"}
-                      </span>
-                      <span className="text-gray-400 text-xs block">
-                        {new Date(data.approved_at).toLocaleString()}
-                      </span>
-                      {data.admin_remark && (
-                        <div className="mt-1 text-gray-600 italic">
-                          "{data.admin_remark}"
-                        </div>
-                      )}
+                    <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
+                      <HiOutlineCheckCircle className="text-green-500 text-xl mt-0.5" />
+                      <div>
+                        <span className="block font-semibold text-green-500">
+                          Approved
+                        </span>
+                        <span className="block text-gray-700">
+                          By:{" "}
+                          <span>
+                            {data.approver
+                              ? `${data.approver.first_name} ${data.approver.last_name}`
+                              : "Admin"}
+                          </span>
+                        </span>
+                        <span className="block text-gray-400 text-sm">
+                          {formatDate(data.approved_at, true)}
+                        </span>
+                        {data.admin_remark && (
+                          <div className="mt-1 text-gray-600 italic">
+                            "{data.admin_remark}"
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                   {data?.confirmed_at && (
-                    <div>
-                      <span className="text-gray-500 block">Confirmed By</span>
-                      <span className="font-medium">
-                        {data.confirmer
-                          ? `${data.confirmer.first_name} ${data.confirmer.last_name}`
-                          : "Staff"}
-                      </span>
-                      <span className="text-gray-400 text-xs block">
-                        {new Date(data.confirmed_at).toLocaleString()}
-                      </span>
+                    <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 border border-blue-200">
+                      <HiOutlineCheckCircle className="text-blue-500 text-xl mt-0.5" />
+                      <div>
+                        <span className="block font-semibold text-blue-500">
+                          Confirmed
+                        </span>
+                        <span className="block text-gray-700">
+                          By:{" "}
+                          <span>
+                            {data.confirmer
+                              ? `${data.confirmer.first_name} ${data.confirmer.last_name}`
+                              : "Staff"}
+                          </span>
+                        </span>
+                        <span className="block text-gray-400 text-sm">
+                          {formatDate(data.confirmed_at, true)}
+                        </span>
+                      </div>
                     </div>
                   )}
                   {data?.rejection_reason && (
-                    <div className="col-span-2 text-red-500">
-                      <span className="block font-semibold">
-                        Rejection Reason:
-                      </span>
-                      {data.rejection_reason}
+                    <div className="flex items-start gap-3 p-3 rounded-lg bg-red-50 border border-red-200">
+                      <HiOutlineXCircle className="text-red-500 text-xl mt-0.5" />
+                      <div>
+                        <span className="block font-semibold text-red-500">
+                          Rejected
+                        </span>
+                        <span className="block text-gray-700 font-semibold">
+                          Reason:
+                        </span>
+                        <span className="block text-red-600">
+                          {data.rejection_reason}
+                        </span>
+                      </div>
                     </div>
                   )}
                 </div>
               </div>
             )}
         </form>
-        <div
-          className={`col-span-2 w-full flex items-center gap-3 ${
-            viewOnly &&
-            (onApprove || onReject || onConfirm || onEdit || onCancelRequest)
-              ? "justify-between"
-              : "justify-end"
-          } mt-4`}
-        >
+        <div className="col-span-2 w-full flex items-center justify-end gap-3 mt-4">
           <button
             type="button"
             className="bg-gray-100 hover:bg-gray-200 text-[#1e3a5f] px-6 py-2 rounded-xl focus:outline-none border border-gray-100 flex items-center gap-2 cursor-pointer text-sm"
@@ -688,75 +707,73 @@ const OrderRequestModal = ({
             <HiXCircle className="inline-block text-xl" />
             {viewOnly ? "Close" : "Cancel"}
           </button>
-          <div className="flex items-center gap-3">
-            {viewOnly && onConfirm && canConfirm && (
-              <button
-                type="button"
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
-                onClick={onConfirm}
-              >
-                <HiOutlineCheckCircle className="inline-block text-xl" />
-                Confirm
-              </button>
-            )}
-            {viewOnly && onApprove && canApprove && (
-              <button
-                type="button"
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
-                onClick={onApprove}
-              >
-                <HiOutlineCheckCircle className="inline-block text-xl" />
-                Approve
-              </button>
-            )}
-            {viewOnly && onReject && canApprove && (
-              <button
-                type="button"
-                className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
-                onClick={onReject}
-              >
-                <HiOutlineXCircle className="inline-block text-xl" />
-                Reject
-              </button>
-            )}
-            {!viewOnly && (
+          {viewOnly && onConfirm && canConfirm && !data?.confirmed_at && (
+            <button
+              type="button"
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+              onClick={onConfirm}
+            >
+              <HiOutlineCheckCircle className="inline-block text-xl" />
+              Confirm
+            </button>
+          )}
+          {viewOnly && onApprove && canApprove && (
+            <button
+              type="button"
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+              onClick={onApprove}
+            >
+              <HiOutlineCheckCircle className="inline-block text-xl" />
+              Approve
+            </button>
+          )}
+          {viewOnly && onReject && canApprove && (
+            <button
+              type="button"
+              className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+              onClick={onReject}
+            >
+              <HiOutlineXCircle className="inline-block text-xl" />
+              Reject
+            </button>
+          )}
+          {!viewOnly && (
+            <button
+              type="button"
+              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+              onClick={handleSubmit}
+            >
+              <HiOutlineDocumentText className="inline-block text-xl" />
+              {loading ? "Submitting..." : data ? "Update" : "Submit"}
+            </button>
+          )}
+          {viewOnly &&
+            onEdit &&
+            canUpdate &&
+            String(data.requester_id) === String(user?._id) &&
+            data.status === "pending" && (
               <button
                 type="button"
                 className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
-                onClick={handleSubmit}
+                onClick={onEdit}
               >
-                <HiOutlineDocumentText className="inline-block text-xl" />
-                {loading ? "Submitting..." : data ? "Update" : "Submit"}
+                <HiOutlinePencil className="inline-block text-xl" />
+                Update
               </button>
             )}
-            {viewOnly &&
-              onEdit &&
-              canUpdate &&
-              String(data.requester_id) === String(user?._id) &&
-              data.status === "pending" && (
-                <button
-                  type="button"
-                  className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
-                  onClick={onEdit}
-                >
-                  <HiOutlinePencil className="inline-block text-xl" />
-                  Update
-                </button>
-              )}
-            {viewOnly &&
-              onCancelRequest &&
-              String(data.requester_id) === String(user?._id) &&
-              data.status === "pending" && (
-                <button
-                  type="button"
-                  className="text-red-500 bg-red-50 hover:bg-red-100 px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
-                  onClick={onCancelRequest}
-                >
-                  <HiOutlineXCircle className="inline-block text-xl" />
-                  Cancel
-                </button>
-              )}
-          </div>
+          {viewOnly &&
+            onCancelRequest &&
+            String(data.requester_id) === String(user?._id) &&
+            data.status === "pending" && (
+              <button
+                type="button"
+                className="text-red-500 bg-red-50 hover:bg-red-100 px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+                onClick={onCancelRequest}
+              >
+                <HiOutlineXCircle className="inline-block text-xl" />
+                Cancel
+              </button>
+            )}
         </div>
       </div>
     </div>

@@ -90,6 +90,12 @@ const Register = () => {
   };
 
   const handleLocationSelect = (latlng) => {
+    if (
+      !latlng ||
+      latlng.lat === undefined ||
+      latlng.lng === undefined
+    )
+      return;
     setFormData((prev) => ({
       ...prev,
       location_lat: latlng.lat,
@@ -284,7 +290,7 @@ const Register = () => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-8.5 text-gray-500"
+                      className="absolute right-3 top-8.5 text-gray-500 cursor-pointer"
                     >
                       {showPassword ? <HiEyeOff /> : <HiEye />}
                     </button>
@@ -699,7 +705,7 @@ const Register = () => {
                       <div className="relative mt-1">
                         <Listbox.Button
                           id="product_categories"
-                          className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between min-h-[42px]"
+                          className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between min-h-10.5"
                         >
                           <span className="block truncate">
                             {formData.product_categories.length > 0
@@ -723,8 +729,8 @@ const Register = () => {
                                     active
                                       ? "bg-[#1e3a5f] text-white"
                                       : selected
-                                      ? "bg-blue-50 text-[#1e3a5f]"
-                                      : "text-gray-900"
+                                        ? "bg-blue-50 text-[#1e3a5f]"
+                                        : "text-gray-900"
                                   }`
                                 }
                               >
@@ -740,7 +746,9 @@ const Register = () => {
                                     {selected && (
                                       <HiCheck
                                         className={`w-5 h-5 ${
-                                          active ? "text-white" : "text-[#1e3a5f]"
+                                          active
+                                            ? "text-white"
+                                            : "text-[#1e3a5f]"
                                         }`}
                                       />
                                     )}

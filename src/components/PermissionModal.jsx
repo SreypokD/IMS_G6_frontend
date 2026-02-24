@@ -214,13 +214,13 @@ const PermissionModal = ({
                   {!viewOnly && <sup className="text-red-500">*</sup>}
                 </label>
                 <input
-                  type="text"
                   id="role_name"
-                  name="name"
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!role.name && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-200"}`}
                   value={role.name}
-                  onChange={handleRoleChange}
+                  onChange={(e) =>
+                    setUpdateRole({ ...role, name: e.target.value })
+                  }
                   onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${!role.name && !data && (touched.name || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                   required
                   disabled={viewOnly}
                 />
@@ -351,6 +351,9 @@ const PermissionModal = ({
                 setTouched({
                   name: true,
                 });
+                if (!role.name || role.name.trim() === "") {
+                  return;
+                }
                 onSave(role);
               }}
             >

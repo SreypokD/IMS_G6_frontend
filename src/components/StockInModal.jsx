@@ -337,6 +337,9 @@ const StockInModal = ({ open, onClose, products, data }) => {
                 reason: true,
                 warehouse: true,
               });
+              if (!warehouse || warehouse.trim() === "") {
+                return;
+              }
               handleSubmit();
             }}
           >

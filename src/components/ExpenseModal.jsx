@@ -295,9 +295,15 @@ const ExpenseModal = ({
               onClick={() => {
                 setValidateOnSave(true);
                 setTouched({ description: true, amount: true });
-                if (expense.description && expense.amount) {
-                  onSave(expense);
+                if (
+                  !expense.description ||
+                  expense.description.trim() === "" ||
+                  !expense.amount ||
+                  isNaN(Number(expense.amount))
+                ) {
+                  return;
                 }
+                onSave(expense);
               }}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />

@@ -14,13 +14,10 @@ import {
   HiOutlineBriefcase,
   HiOutlineIdentification,
   HiSelector,
-  HiOutlineUser,
   HiOutlinePencil,
 } from "react-icons/hi";
 import { locations } from "../data/locations";
 import LocationPicker from "./LocationPicker";
-
-import { useAuth } from "../contexts/auth/useAuth";
 
 const initial = {
   first_name: "",
@@ -74,9 +71,6 @@ const UserModal = ({
   const [validateOnSave, setValidateOnSave] = useState(false);
   const [roles, setRoles] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
-  const { user: currentUser } = useAuth();
-  const canUpdate =
-    currentUser?.permission?.permissions?.includes("update_user");
 
   const isPartner = user.user_type == "external";
 
@@ -384,7 +378,7 @@ const UserModal = ({
                   <div className="relative">
                     <Listbox.Button
                       id="role"
-                      className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between border-gray-200 ${viewOnly ? "cursor-default" : "cursor-pointer"}`}
+                      className={`${viewOnly ? "cursor-default" : "cursor-pointer"} w-full bg-gray-50 border rounded-lg px-3 py-2 text-left text-sm text-black flex items-center justify-between ${!user.role && (touched.role || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
                     >
                       <span>
                         {roles.find((role) => role.name === user.role)?.name ||
@@ -962,6 +956,30 @@ const UserModal = ({
                       district: true,
                       province: true,
                     });
+                    if (
+                      !user.first_name ||
+                      user.first_name.trim() === "" ||
+                      !user.last_name ||
+                      user.last_name.trim() === "" ||
+                      !user.email ||
+                      user.email.trim() === "" ||
+                      ((!data || !data._id) && !user.password) ||
+                      user.password.trim() === "" ||
+                      !user.role ||
+                      user.role.trim() === "" ||
+                      !user.phone ||
+                      user.phone.trim() === "" ||
+                      !user.address.province ||
+                      user.address.province.trim() === "" ||
+                      !user.address.district ||
+                      user.address.district.trim() === "" ||
+                      !user.address.commune ||
+                      user.address.commune.trim() === "" ||
+                      !user.address.village ||
+                      user.address.village.trim() === ""
+                    ) {
+                      return;
+                    }
                     onSave(user);
                   }}
                 >

@@ -136,22 +136,22 @@ const StockOutModal = ({ open, onClose, products, data }) => {
                     const isDisabled = p.stock - (p.reserved_stock || 0) <= 0;
                     return (
                       <Listbox.Option
-                      key={p._id}
-                      value={p._id}
-                      className={({ selected }) =>
-                        `px-3 py-2 text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""} ${isDisabled ? "opacity-50 cursor-default bg-gray-50 text-gray-400" : "cursor-pointer"}`
-                      }
-                      disabled={isDisabled}
+                        key={p._id}
+                        value={p._id}
+                        className={({ selected }) =>
+                          `px-3 py-2 text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""} ${isDisabled ? "opacity-50 cursor-default bg-gray-50 text-gray-400" : "cursor-pointer"}`
+                        }
+                        disabled={isDisabled}
                       >
-                      {({ selected }) => (
-                        <span
-                        className={`block truncate ${selected ? "font-medium" : "font-normal"}`}
-                        >
-                        {p.name} (Stock:
-                        {p.stock - (p.reserved_stock || 0)})
-                        {isDisabled ? " - Out of stock" : ""}
-                        </span>
-                      )}
+                        {({ selected }) => (
+                          <span
+                            className={`block truncate ${selected ? "font-medium" : "font-normal"}`}
+                          >
+                            {p.name} (Stock:
+                            {p.stock - (p.reserved_stock || 0)})
+                            {isDisabled ? " - Out of stock" : ""}
+                          </span>
+                        )}
                       </Listbox.Option>
                     );
                   })}
@@ -321,6 +321,9 @@ const StockOutModal = ({ open, onClose, products, data }) => {
                 reason: true,
                 warehouse: true,
               });
+              if (!warehouse || warehouse.trim() === "") {
+                return;
+              }
               handleSubmit();
             }}
           >

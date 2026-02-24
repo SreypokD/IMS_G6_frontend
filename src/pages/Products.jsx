@@ -748,7 +748,7 @@ const Products = () => {
                       <div className="flex justify-between">
                         <span>Supplier:</span>
                         <span
-                          className="font-medium text-gray-900 truncate max-w-[120px]"
+                          className="font-medium text-gray-900 truncate max-w-30"
                           title={
                             typeof product.supplier === "object"
                               ? product.supplier?.company_name

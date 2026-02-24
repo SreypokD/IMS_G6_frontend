@@ -447,6 +447,20 @@ const ProductModal = ({
                   stock: true,
                   image: true,
                 });
+                if (
+                  !product.name ||
+                  product.name.trim() === "" ||
+                  !product.category ||
+                  !product.supplier ||
+                  !product.price ||
+                  isNaN(product.price) ||
+                  (isInternalUser &&
+                    (!product.cost_price || isNaN(product.cost_price))) ||
+                  !product.stock ||
+                  isNaN(product.stock)
+                ) {
+                  return;
+                }
                 onSave(product);
               }}
             >

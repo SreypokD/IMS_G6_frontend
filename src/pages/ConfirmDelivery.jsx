@@ -516,8 +516,6 @@ const DeliveryConfirmation = () => {
               </thead>
               <tbody>
                 {confirmDeliveries.map((confirm_delivery, index) => {
-                  const approve = confirm_delivery.approve_request;
-                  const delivery = confirm_delivery.confirm_delivery;
                   const isArchived = confirm_delivery.is_active === false;
                   return (
                     <tr

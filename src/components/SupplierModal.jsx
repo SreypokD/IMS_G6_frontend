@@ -51,7 +51,14 @@ const getPermission = (user, permission) => {
   return user?.permission?.permissions?.includes(permission);
 };
 
-const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false, onEdit }) => {
+const SupplierModal = ({
+  open,
+  onClose,
+  onSave,
+  data,
+  viewOnly = false,
+  onEdit,
+}) => {
   const [supplier, setSupplier] = useState(data || initialSupplier);
   const [touched, setTouched] = useState({});
   const [validateOnSave, setValidateOnSave] = useState(false);
@@ -686,6 +693,34 @@ const SupplierModal = ({ open, onClose, onSave, data, viewOnly = false, onEdit }
                   stock: true,
                   image: true,
                 });
+                if (
+                  !supplier.name ||
+                  supplier.name.trim() === "" ||
+                  !supplier.location ||
+                  supplier.location.trim() === "" ||
+                  !supplier.contact_person ||
+                  supplier.contact_person.trim() === "" ||
+                  !supplier.contact_position ||
+                  supplier.contact_position.trim() === "" ||
+                  !supplier.contact_email ||
+                  supplier.contact_email.trim() === "" ||
+                  !supplier.contact_phone ||
+                  supplier.contact_phone.trim() === "" ||
+                  !supplier.address.province ||
+                  supplier.address.province.trim() === "" ||
+                  !supplier.address.district ||
+                  supplier.address.district.trim() === "" ||
+                  !supplier.address.commune ||
+                  supplier.address.commune.trim() === "" ||
+                  !supplier.address.village ||
+                  supplier.address.village.trim() === "" ||
+                  !supplier.payment_term ||
+                  supplier.payment_term.trim() === "" ||
+                  !supplier.status ||
+                  supplier.status.trim() === ""
+                ) {
+                  return;
+                }
                 onSave(supplier);
               }}
             >

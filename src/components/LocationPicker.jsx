@@ -18,7 +18,12 @@ L.Marker.prototype.options.icon = DefaultIcon;
 function LocationMarker({ position, setPosition, readOnly }) {
   const map = useMapEvents({
     click(e) {
-      if (!readOnly) {
+      if (
+        !readOnly &&
+        e.latlng &&
+        e.latlng.lat !== undefined &&
+        e.latlng.lng !== undefined
+      ) {
         setPosition(e.latlng);
         map.flyTo(e.latlng, map.getZoom());
       }
@@ -33,13 +38,29 @@ const LocationPicker = ({
   initialPosition,
   readOnly = false,
 }) => {
-  const [position, setPosition] = useState(initialPosition || null);
+  const [position, setPosition] = useState(() => initialPosition || null);
   const [defaultCenter, setDefaultCenter] = useState([11.5564, 104.9282]); // Phnom Penh default
 
   useEffect(() => {
     if (initialPosition) {
-      setPosition(initialPosition);
-      setDefaultCenter([initialPosition.lat, initialPosition.lng]);
+      // Only update if different to avoid cascading renders
+      if (
+        !position ||
+        position.lat !== initialPosition.lat ||
+        position.lng !== initialPosition.lng
+      ) {
+        setPosition(initialPosition);
+      }
+      setDefaultCenter((prev) => {
+        if (
+          !prev ||
+          prev[0] !== initialPosition.lat ||
+          prev[1] !== initialPosition.lng
+        ) {
+          return [initialPosition.lat, initialPosition.lng];
+        }
+        return prev;
+      });
     } else {
       // Try global geolocation
       navigator.geolocation.getCurrentPosition(
@@ -52,6 +73,7 @@ const LocationPicker = ({
         },
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialPosition]);
 
   useEffect(() => {
@@ -61,7 +83,7 @@ const LocationPicker = ({
   }, [position, onLocationSelect]);
 
   return (
-    <div className="h-[250px] w-full rounded-lg overflow-hidden border border-gray-300 z-0 relative">
+    <div className="h-62.5 w-full rounded-lg overflow-hidden border border-gray-300 z-0 relative">
       <MapContainer
         center={defaultCenter}
         zoom={13}
