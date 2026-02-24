@@ -70,10 +70,10 @@ const Reports = () => {
 
   // Date Range
   const [dateRange, setDateRange] = useState({
-    startDate: new Date(new Date().setDate(new Date().getDate() - 30))
+    start_date: new Date(new Date().setDate(new Date().getDate() - 30))
       .toISOString()
       .split("T")[0],
-    endDate: new Date().toISOString().split("T")[0],
+    end_date: new Date().toISOString().split("T")[0],
   });
 
   useEffect(() => {
@@ -88,12 +88,12 @@ const Reports = () => {
       const [summaryRes, statsRes, trendsRes, lowStockRes, financialRes] =
         await Promise.all([
           getInventorySummary(),
-          getOrderStats({ from: dateRange.startDate, to: dateRange.endDate }),
-          getTrends({ from: dateRange.startDate, to: dateRange.endDate }),
+          getOrderStats({ from: dateRange.start_date, to: dateRange.end_date }),
+          getTrends({ from: dateRange.start_date, to: dateRange.end_date }),
           getProducts({ status: "low_stock", limit: 5 }),
           getFinancialSummary({
-            startDate: dateRange.startDate,
-            endDate: dateRange.endDate,
+            start_date: dateRange.start_date,
+            end_date: dateRange.end_date,
           }),
         ]);
       setSummary(summaryRes.data);
@@ -136,11 +136,11 @@ const Reports = () => {
               <label className="text-sm text-gray-700">Start Date</label>
               <div className=" w-[281.6px]">
                 <DatePicker
-                  selected={dateRange.startDate}
+                  selected={dateRange.start_date}
                   onChange={(date) =>
                     setDateRange({
                       ...dateRange,
-                      startDate: date ? date.toISOString().split("T")[0] : "",
+                      start_date: date ? date.toISOString().split("T")[0] : "",
                     })
                   }
                   placeholder="Start Date"
@@ -150,11 +150,11 @@ const Reports = () => {
               <label className="text-sm text-gray-700">End Date</label>
               <div className=" w-[281.6px]">
                 <DatePicker
-                  selected={dateRange.endDate}
+                  selected={dateRange.end_date}
                   onChange={(date) =>
                     setDateRange({
                       ...dateRange,
-                      endDate: date ? date.toISOString().split("T")[0] : "",
+                      end_date: date ? date.toISOString().split("T")[0] : "",
                     })
                   }
                   placeholder="End Date"
@@ -312,8 +312,8 @@ const Reports = () => {
                       Trends (
                       {Math.ceil(
                         Math.abs(
-                          new Date(dateRange.endDate) -
-                            new Date(dateRange.startDate),
+                          new Date(dateRange.end_date) -
+                            new Date(dateRange.start_date),
                         ) /
                           (1000 * 60 * 60 * 24),
                       ) + 1}

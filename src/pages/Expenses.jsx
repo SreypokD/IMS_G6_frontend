@@ -119,12 +119,12 @@ const Expenses = () => {
 
   // Filters
   const [category, setCategory] = useState("All Categories");
-  const [startDate, setStartDate] = useState(
+  const [start_date, setStartDate] = useState(
     new Date(new Date().setDate(new Date().getDate() - 7))
       .toISOString()
       .split("T")[0],
   );
-  const [endDate, setEndDate] = useState(
+  const [end_date, setEndDate] = useState(
     new Date().toISOString().split("T")[0],
   );
   const [search, setSearch] = useState("");
@@ -132,7 +132,7 @@ const Expenses = () => {
   useEffect(() => {
     fetchExpenses(1, 10);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category, startDate, endDate, search]);
+  }, [category, start_date, end_date, search]);
 
   async function fetchExpenses(page = 1, limit = 10) {
     setLoading(true);
@@ -140,8 +140,8 @@ const Expenses = () => {
     try {
       const params = { page, limit };
       if (category !== "All Categories") params.category = category;
-      if (startDate) params.startDate = startDate;
-      if (endDate) params.endDate = endDate;
+      if (start_date) params.start_date = start_date;
+      if (end_date) params.end_date = end_date;
       if (search) params.search = search;
 
       const res = await getExpenses(params);
@@ -210,11 +210,17 @@ const Expenses = () => {
 
   const handleReset = () => {
     setCategory("All Categories");
-    setStartDate("");
-    setEndDate("");
-    setSearch("");
+    setStartDate(new Date().toISOString().split("T")[0]);
+    setEndDate(new Date().toISOString().split("T")[0]);
     setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchExpenses(1, pagination.limit);
+    fetchExpenses(
+      1,
+      pagination.limit,
+      "",
+      new Date().toISOString().split("T")[0],
+      new Date().toISOString().split("T")[0],
+      "All Categories",
+    );
   };
 
   // Selection
@@ -228,8 +234,8 @@ const Expenses = () => {
           limit: -1,
           search,
           category,
-          startDate,
-          endDate,
+          start_date,
+          end_date,
         };
         if (category !== "All Categories") params.category = category;
 
@@ -417,7 +423,7 @@ const Expenses = () => {
               Start Date
             </label>
             <DatePicker
-              selected={startDate}
+              selected={start_date}
               onChange={(date) =>
                 setStartDate(date ? date.toISOString().split("T")[0] : "")
               }
@@ -427,7 +433,7 @@ const Expenses = () => {
           <div>
             <label className="block text-gray-700 text-sm mb-1">End Date</label>
             <DatePicker
-              selected={endDate}
+              selected={end_date}
               onChange={(date) =>
                 setEndDate(date ? date.toISOString().split("T")[0] : "")
               }

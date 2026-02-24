@@ -120,12 +120,12 @@ const DeliveryConfirmation = () => {
 
   // Filters
   const [search, setSearch] = useState("");
-  const [startDate, setStartDate] = useState(
+  const [start_date, setStartDate] = useState(
     new Date(new Date().setDate(new Date().getDate() - 7))
       .toISOString()
       .split("T")[0],
   );
-  const [endDate, setEndDate] = useState(
+  const [end_date, setEndDate] = useState(
     new Date().toISOString().split("T")[0],
   );
   const [approve_status, setApproveStatus] = useState("");
@@ -141,8 +141,8 @@ const DeliveryConfirmation = () => {
         pagination.page,
         pagination.limit,
         search,
-        startDate,
-        endDate,
+        start_date,
+        end_date,
         approve_status,
         delivery_status,
       );
@@ -152,8 +152,8 @@ const DeliveryConfirmation = () => {
     pagination.page,
     pagination.limit,
     search,
-    startDate,
-    endDate,
+    start_date,
+    end_date,
     approve_status,
     delivery_status,
   ]);
@@ -162,8 +162,8 @@ const DeliveryConfirmation = () => {
     page = 1,
     limit = 10,
     search,
-    startDate,
-    endDate,
+    start_date,
+    end_date,
     approve_status,
     delivery_status,
   ) {
@@ -173,8 +173,8 @@ const DeliveryConfirmation = () => {
       // Map frontend filter names to backend query params
       const params = { page, limit };
       if (search) params.search = search;
-      if (startDate) params.startDate = startDate;
-      if (endDate) params.endDate = endDate;
+      if (start_date) params.startDate = start_date;
+      if (end_date) params.endDate = end_date;
       // approve_status maps to approve_request.status
       // map statuses for OrderRequest
       if (approve_status) params.status = approve_status; // e.g., 'approved'
@@ -219,8 +219,8 @@ const DeliveryConfirmation = () => {
         pagination.page,
         pagination.limit,
         search,
-        startDate,
-        endDate,
+        start_date,
+        end_date,
         approve_status,
         delivery_status,
       );
@@ -238,7 +238,15 @@ const DeliveryConfirmation = () => {
     setApproveStatus("");
     setDeliveryStatus("");
     setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchConfirmDeliveries(1, pagination.limit, "", "", "", "", "");
+    fetchConfirmDeliveries(
+      1,
+      pagination.limit,
+      "",
+      new Date().toISOString().split("T")[0],
+      new Date().toISOString().split("T")[0],
+      "",
+      "",
+    );
   };
 
   // Selection
@@ -273,8 +281,8 @@ const DeliveryConfirmation = () => {
         pagination.page,
         pagination.limit,
         search,
-        startDate,
-        endDate,
+        start_date,
+        end_date,
         approve_status,
         delivery_status,
       );
@@ -303,8 +311,8 @@ const DeliveryConfirmation = () => {
         pagination.page,
         pagination.limit,
         search,
-        startDate,
-        endDate,
+        start_date,
+        end_date,
         approve_status,
         delivery_status,
       );
@@ -420,7 +428,7 @@ const DeliveryConfirmation = () => {
               Start Date
             </label>
             <DatePicker
-              selected={startDate}
+              selected={start_date}
               onChange={(date) =>
                 setStartDate(date ? date.toISOString().split("T")[0] : "")
               }
@@ -430,7 +438,7 @@ const DeliveryConfirmation = () => {
           <div>
             <label className="block text-gray-700 text-sm mb-1">End Date</label>
             <DatePicker
-              selected={endDate}
+              selected={end_date}
               onChange={(date) =>
                 setEndDate(date ? date.toISOString().split("T")[0] : "")
               }

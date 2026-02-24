@@ -39,6 +39,7 @@ import {
 } from "react-icons/hi";
 import { useDialog } from "../contexts/dialog/useDialog";
 import { Menu } from "@headlessui/react";
+import DatePicker from "../components/DatePicker";
 
 const transactionOptions = [
   { value: "in", label: "Stock In" },
@@ -189,9 +190,17 @@ const Stocks = () => {
   // Filters
   const [search, setSearch] = useState("");
   const [filterUser, setFilterUser] = useState("");
-  const [filterType, setFilterType] = useState("");
-  const [filterLocation, setFilterLocation] = useState("");
+  const [type, setFilterType] = useState("");
+  const [location, setFilterLocation] = useState("");
   const [userOptions, setUserOptions] = useState([]);
+  const [start_date, setStartDate] = useState(
+    new Date(new Date().setDate(new Date().getDate() - 7))
+      .toISOString()
+      .split("T")[0],
+  );
+  const [end_date, setEndDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
 
   // Summary
   const [summary, setSummary] = useState({
@@ -217,9 +226,11 @@ const Stocks = () => {
         pagination.page,
         pagination.limit,
         search,
-        filterType,
+        type,
+        location,
         filterUser,
-        filterLocation,
+        start_date,
+        end_date,
       );
       fetchProducts();
       if (canViewUsers) {
@@ -233,23 +244,29 @@ const Stocks = () => {
     pagination.page,
     pagination.limit,
     search,
-    filterType,
+    type,
+    location,
     filterUser,
-    filterLocation,
+    start_date,
+    end_date,
   ]);
 
   async function fetchSummary(
-    searchVal = search,
-    typeVal = filterType,
-    userVal = filterUser,
-    locationVal = filterLocation,
+    search,
+    type,
+    location,
+    filterUser,
+    start_date,
+    end_date,
   ) {
     try {
       const params = {};
-      if (searchVal) params.search = searchVal;
-      if (typeVal) params.type = typeVal;
-      if (userVal) params.user = userVal;
-      if (locationVal) params.location = locationVal;
+      if (search) params.search = search;
+      if (type) params.type = type;
+      if (location) params.location = location;
+      if (filterUser) params.user = filterUser;
+      if (start_date) params.start_date = start_date;
+      if (end_date) params.end_date = end_date;
 
       const res = await getStockSummary(params);
       setSummary(res.data);
@@ -270,7 +287,9 @@ const Stocks = () => {
   async function fetchUsersList() {
     try {
       const res = await getUsers({ limit: -1 });
-      setUserOptions(res.data.data || []);
+      setUserOptions(
+        res.data.data.filter((user) => user.user_type === "internal") || [],
+      );
     } catch {
       setUserOptions([]);
     }
@@ -279,19 +298,23 @@ const Stocks = () => {
   async function fetchStocks(
     page = pagination.page,
     limit = pagination.limit,
-    searchVal = search,
-    typeVal = filterType,
-    userVal = filterUser,
-    locationVal = filterLocation,
+    search,
+    type,
+    location,
+    user,
+    start_date,
+    end_date,
   ) {
     setLoading(true);
     setError("");
     try {
       const params = { page, limit };
-      if (searchVal) params.search = searchVal;
-      if (typeVal) params.type = typeVal;
-      if (userVal) params.user = userVal;
-      if (locationVal) params.location = locationVal;
+      if (search) params.search = search;
+      if (type) params.type = type;
+      if (location) params.location = location;
+      if (user) params.user = user;
+      if (start_date) params.start_date = start_date;
+      if (end_date) params.end_date = end_date;
       const res = await getStocks(params);
       setStocks(res.data.data);
       setPagination((prev) => ({
@@ -340,9 +363,11 @@ const Stocks = () => {
           pagination.page,
           pagination.limit,
           search,
-          filterType,
+          type,
+          location,
           filterUser,
-          filterLocation,
+          start_date,
+          end_date,
         );
       } catch (err) {
         dialog.error(err.response.data.error || "Failed to delete stock");
@@ -374,7 +399,16 @@ const Stocks = () => {
       );
 
       dialog.success(`Stocks marked as ${status} successfully.`);
-      fetchStocks(pagination.page, pagination.limit);
+      fetchStocks(
+        pagination.page,
+        pagination.limit,
+        search,
+        type,
+        location,
+        filterUser,
+        start_date,
+        end_date,
+      );
       setSelectedIds([]);
     } catch (err) {
       console.error(err);
@@ -399,7 +433,16 @@ const Stocks = () => {
     try {
       await Promise.all(selectedIds.map((id) => deleteStock(id)));
       dialog.success("Stocks deleted successfully.");
-      fetchStocks(pagination.page, pagination.limit);
+      fetchStocks(
+        pagination.page,
+        pagination.limit,
+        search,
+        type,
+        location,
+        filterUser,
+        start_date,
+        end_date,
+      );
       setSelectedIds([]);
     } catch {
       dialog.error("Failed to delete stocks.");
@@ -415,9 +458,11 @@ const Stocks = () => {
         const params = {
           limit: -1,
           search,
-          type: filterType,
+          type: type,
+          location: location,
           user: filterUser,
-          location: filterLocation,
+          start_date,
+          end_date,
         };
         const res = await getStocks(params);
         const allIds = res.data.data.map((s) => s._id);
@@ -436,9 +481,20 @@ const Stocks = () => {
   function handleReset() {
     setSearch("");
     setFilterType("");
-    setFilterUser("");
     setFilterLocation("");
-    fetchStocks(1, pagination.limit);
+    setFilterUser("");
+    setStartDate(new Date().toISOString().split("T")[0]);
+    setEndDate(new Date().toISOString().split("T")[0]);
+    fetchStocks(
+      1,
+      pagination.limit,
+      "",
+      "",
+      "",
+      "",
+      new Date().toISOString().split("T")[0],
+      new Date().toISOString().split("T")[0],
+    );
   }
 
   return (
@@ -664,9 +720,9 @@ const Stocks = () => {
                   1,
                   pagination.limit,
                   e.target.value,
-                  filterType,
+                  type,
                   filterUser,
-                  filterLocation,
+                  location,
                 );
                 setPagination((prev) => ({ ...prev, page: 1 }));
               }}
@@ -674,10 +730,32 @@ const Stocks = () => {
           </div>
           <div>
             <label className="block text-gray-700 text-sm mb-1">
+              Start Date
+            </label>
+            <DatePicker
+              selected={start_date}
+              onChange={(date) =>
+                setStartDate(date ? date.toISOString().split("T")[0] : "")
+              }
+              placeholder="Start Date"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm mb-1">End Date</label>
+            <DatePicker
+              selected={end_date}
+              onChange={(date) =>
+                setEndDate(date ? date.toISOString().split("T")[0] : "")
+              }
+              placeholder="End Date"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm mb-1">
               Transaction Type
             </label>
             <TransactionDropdown
-              value={filterType}
+              value={type}
               onChange={(val) => {
                 setFilterType(val);
                 fetchStocks(
@@ -686,8 +764,19 @@ const Stocks = () => {
                   search,
                   val,
                   filterUser,
-                  filterLocation,
+                  location,
                 );
+                setPagination((prev) => ({ ...prev, page: 1 }));
+              }}
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 text-sm mb-1">Location</label>
+            <LocationDropdown
+              value={location}
+              onChange={(val) => {
+                setFilterLocation(val);
+                fetchStocks(1, pagination.limit, search, type, filterUser, val);
                 setPagination((prev) => ({ ...prev, page: 1 }));
               }}
             />
@@ -699,38 +788,13 @@ const Stocks = () => {
                 value={filterUser}
                 onChange={(val) => {
                   setFilterUser(val);
-                  fetchStocks(
-                    1,
-                    pagination.limit,
-                    search,
-                    filterType,
-                    val,
-                    filterLocation,
-                  );
+                  fetchStocks(1, pagination.limit, search, type, val, location);
                   setPagination((prev) => ({ ...prev, page: 1 }));
                 }}
                 userOptions={userOptions}
               />
             </div>
           )}
-          <div>
-            <label className="block text-gray-700 text-sm mb-1">Location</label>
-            <LocationDropdown
-              value={filterLocation}
-              onChange={(val) => {
-                setFilterLocation(val);
-                fetchStocks(
-                  1,
-                  pagination.limit,
-                  search,
-                  filterType,
-                  filterUser,
-                  val,
-                );
-                setPagination((prev) => ({ ...prev, page: 1 }));
-              }}
-            />
-          </div>
         </div>
       </div>
       <div className="flex-1 bg-white rounded-xl border border-gray-100 flex flex-col min-h-0">

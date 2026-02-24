@@ -94,12 +94,12 @@ const OrderRequests = () => {
 
   // Filters
   const [search, setSearch] = useState("");
-  const [startDate, setStartDate] = useState(
+  const [start_date, setStartDate] = useState(
     new Date(new Date().setDate(new Date().getDate() - 7))
       .toISOString()
       .split("T")[0],
   );
-  const [endDate, setEndDate] = useState(
+  const [end_date, setEndDate] = useState(
     new Date().toISOString().split("T")[0],
   );
   const [status, setStatus] = useState("");
@@ -119,21 +119,21 @@ const OrderRequests = () => {
         pagination.page,
         pagination.limit,
         search,
-        startDate,
-        endDate,
+        start_date,
+        end_date,
         status,
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, search, status, startDate, endDate]);
+  }, [user, search, status, start_date, end_date]);
 
   // Fetch order requests from API
   async function fetchOrderRequests(
     page = pagination.page,
     limit = pagination.limit,
     search,
-    startDate,
-    endDate,
+    start_date,
+    end_date,
     status,
   ) {
     setLoading(true);
@@ -143,8 +143,8 @@ const OrderRequests = () => {
         page,
         limit,
         search,
-        startDate,
-        endDate,
+        start_date,
+        end_date,
         status,
       });
       setRequests(res.data.data);
@@ -191,11 +191,17 @@ const OrderRequests = () => {
 
   const handleReset = () => {
     setSearch("");
-    setStartDate("");
-    setEndDate("");
-    setStatus("");
+    setStartDate(new Date().toISOString().split("T")[0]);
+    setEndDate(new Date().toISOString().split("T")[0]);
     setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchOrderRequests(1, pagination.limit, "", "", "", "");
+    fetchOrderRequests(
+      1,
+      pagination.limit,
+      "",
+      new Date().toISOString().split("T")[0],
+      new Date().toISOString().split("T")[0],
+      "",
+    );
   };
 
   // Selection
@@ -208,8 +214,8 @@ const OrderRequests = () => {
         const res = await getOrderRequests({
           limit: -1,
           search,
-          startDate,
-          endDate,
+          start_date,
+          end_date,
           status,
         });
         const allIds = res.data.data.map((r) => r._id);
@@ -251,8 +257,8 @@ const OrderRequests = () => {
         pagination.page,
         pagination.limit,
         search,
-        startDate,
-        endDate,
+        start_date,
+        end_date,
         status,
       );
       setSelectedIds([]);
@@ -287,8 +293,8 @@ const OrderRequests = () => {
         pagination.page,
         pagination.limit,
         search,
-        startDate,
-        endDate,
+        start_date,
+        end_date,
         status,
       );
       setSelectedIds([]);
@@ -454,7 +460,7 @@ const OrderRequests = () => {
               Start Date
             </label>
             <DatePicker
-              selected={startDate}
+              selected={start_date}
               onChange={(date) =>
                 setStartDate(date ? date.toISOString().split("T")[0] : "")
               }
@@ -464,7 +470,7 @@ const OrderRequests = () => {
           <div>
             <label className="block text-gray-700 text-sm mb-1">End Date</label>
             <DatePicker
-              selected={endDate}
+              selected={end_date}
               onChange={(date) =>
                 setEndDate(date ? date.toISOString().split("T")[0] : "")
               }

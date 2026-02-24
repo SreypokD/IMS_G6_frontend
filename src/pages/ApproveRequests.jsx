@@ -59,12 +59,12 @@ const OrderRequestApproval = () => {
 
   // Filters
   const [search, setSearch] = useState("");
-  const [startDate, setStartDate] = useState(
+  const [start_date, setStartDate] = useState(
     new Date(new Date().setDate(new Date().getDate() - 7))
       .toISOString()
       .split("T")[0],
   );
-  const [endDate, setEndDate] = useState(
+  const [end_date, setEndDate] = useState(
     new Date().toISOString().split("T")[0],
   );
 
@@ -74,19 +74,19 @@ const OrderRequestApproval = () => {
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      fetchApproveRequests(1, pagination.limit, search, startDate, endDate);
+      fetchApproveRequests(1, pagination.limit, search, start_date, end_date);
       setPagination((prev) => ({ ...prev, page: 1 }));
     }, 500);
     return () => clearTimeout(delayDebounceFn);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, search, startDate, endDate]);
+  }, [user, search, start_date, end_date]);
 
   async function fetchApproveRequests(
     page = 1,
     limit = 10,
     search,
-    startDate,
-    endDate,
+    start_date,
+    end_date,
     statusFilter = status, // Use current status state if not passed
   ) {
     setLoading(true);
@@ -96,8 +96,8 @@ const OrderRequestApproval = () => {
         page,
         limit,
         search,
-        startDate,
-        endDate,
+        start_date,
+        end_date,
         status: statusFilter, // Pass status to API
       });
 
@@ -140,7 +140,7 @@ const OrderRequestApproval = () => {
       setApproveDialog({ open: false, id: null });
       setApproveRemarks("");
       setPagination((prev) => ({ ...prev, page: 1 }));
-      fetchApproveRequests(1, pagination.limit, search, startDate, endDate);
+      fetchApproveRequests(1, pagination.limit, search, start_date, end_date);
       fetchBadge(); // Update badge
     } catch (err) {
       dialog.error(err.response.data.error || "Failed to approve order");
@@ -162,7 +162,7 @@ const OrderRequestApproval = () => {
       setRejectionReason("");
       setRejectDialog({ open: false, id: null });
       setPagination((prev) => ({ ...prev, page: 1 }));
-      fetchApproveRequests(1, pagination.limit, search, startDate, endDate);
+      fetchApproveRequests(1, pagination.limit, search, start_date, end_date);
       fetchBadge();
     } catch (err) {
       dialog.error(err.response.data.error || "Failed to approve order");
@@ -187,8 +187,8 @@ const OrderRequestApproval = () => {
         const res = await getApproveRequests({
           limit: -1,
           search,
-          startDate,
-          endDate,
+          start_date,
+          end_date,
           status: status, // status state from line 179
         });
         const allIds = res.data.data.map((o) => o._id);
@@ -228,8 +228,8 @@ const OrderRequestApproval = () => {
         pagination.page,
         pagination.limit,
         search,
-        startDate,
-        endDate,
+        start_date,
+        end_date,
         status,
       );
       setSelectedIds([]);
@@ -262,8 +262,8 @@ const OrderRequestApproval = () => {
         pagination.page,
         pagination.limit,
         search,
-        startDate,
-        endDate,
+        start_date,
+        end_date,
         status,
       );
       setSelectedIds([]);
@@ -277,11 +277,18 @@ const OrderRequestApproval = () => {
 
   const handleReset = () => {
     setSearch("");
-    setStartDate("");
-    setEndDate("");
-    setStatus("pending"); // Reset to default "pending"
+    setStartDate(new Date().toISOString().split("T")[0]);
+    setEndDate(new Date().toISOString().split("T")[0]);
+    setStatus("pending");
     setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchApproveRequests(1, pagination.limit, "", "", "", "pending");
+    fetchApproveRequests(
+      1,
+      pagination.limit,
+      "",
+      new Date().toISOString().split("T")[0],
+      new Date().toISOString().split("T")[0],
+      "pending",
+    );
   };
 
   return (
@@ -449,7 +456,7 @@ const OrderRequestApproval = () => {
               Start Date
             </label>
             <DatePicker
-              selected={startDate}
+              selected={start_date}
               onChange={(date) =>
                 setStartDate(date ? date.toISOString().split("T")[0] : "")
               }
@@ -459,7 +466,7 @@ const OrderRequestApproval = () => {
           <div>
             <label className="block text-gray-700 text-sm mb-1">End Date</label>
             <DatePicker
-              selected={endDate}
+              selected={end_date}
               onChange={(date) =>
                 setEndDate(date ? date.toISOString().split("T")[0] : "")
               }

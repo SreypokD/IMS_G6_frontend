@@ -62,10 +62,10 @@ const Dashboard = () => {
 
   // Date Range
   const [dateRange, setDateRange] = useState({
-    startDate: new Date(new Date().setDate(new Date().getDate() - 30))
+    start_date: new Date(new Date().setDate(new Date().getDate() - 30))
       .toISOString()
       .split("T")[0],
-    endDate: new Date().toISOString().split("T")[0],
+    end_date: new Date().toISOString().split("T")[0],
   });
 
   useEffect(() => {
@@ -86,8 +86,8 @@ const Dashboard = () => {
         recentActivityRes,
       ] = await Promise.all([
         getInventorySummary(),
-        getOrderStats({ from: dateRange.startDate, to: dateRange.endDate }),
-        getTrends({ from: dateRange.startDate, to: dateRange.endDate }),
+        getOrderStats({ from: dateRange.start_date, to: dateRange.end_date }),
+        getTrends({ from: dateRange.start_date, to: dateRange.end_date }),
         getRecentOrders(),
         getRecentActivity(),
       ]);
@@ -142,11 +142,11 @@ const Dashboard = () => {
             <div className=" w-[281.6px]">
               <DatePicker
                 id="startDate"
-                selected={dateRange.startDate}
+                selected={dateRange.start_date}
                 onChange={(date) =>
                   setDateRange({
                     ...dateRange,
-                    startDate: date ? date.toISOString().split("T")[0] : "",
+                    start_date: date ? date.toISOString().split("T")[0] : "",
                   })
                 }
                 placeholder="Start Date"
@@ -159,11 +159,11 @@ const Dashboard = () => {
             <div className=" w-[281.6px]">
               <DatePicker
                 id="endDate"
-                selected={dateRange.endDate}
+                selected={dateRange.end_date}
                 onChange={(date) =>
                   setDateRange({
                     ...dateRange,
-                    endDate: date ? date.toISOString().split("T")[0] : "",
+                    end_date: date ? date.toISOString().split("T")[0] : "",
                   })
                 }
                 placeholder="End Date"
@@ -271,7 +271,8 @@ const Dashboard = () => {
                 (
                 {Math.ceil(
                   Math.abs(
-                    new Date(dateRange.endDate) - new Date(dateRange.startDate),
+                    new Date(dateRange.end_date) -
+                      new Date(dateRange.start_date),
                   ) /
                     (1000 * 60 * 60 * 24),
                 ) + 1}

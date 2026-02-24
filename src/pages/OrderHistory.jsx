@@ -69,12 +69,12 @@ const OrderHistory = () => {
 
   // Filters
   const [search, setSearch] = useState("");
-  const [startDate, setStartDate] = useState(
+  const [start_date, setStartDate] = useState(
     new Date(new Date().setDate(new Date().getDate() - 7))
       .toISOString()
       .split("T")[0],
   );
-  const [endDate, setEndDate] = useState(
+  const [end_date, setEndDate] = useState(
     new Date().toISOString().split("T")[0],
   );
   const [status, setStatus] = useState("");
@@ -85,20 +85,20 @@ const OrderHistory = () => {
         pagination.page,
         pagination.limit,
         search,
-        startDate,
-        endDate,
+        start_date,
+        end_date,
         status,
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, search, status, startDate, endDate]);
+  }, [user, search, status, start_date, end_date]);
 
   async function fetchOrders(
     page = pagination.page,
     limit = pagination.limit,
     search,
-    startDate,
-    endDate,
+    start_date,
+    end_date,
     status,
   ) {
     setLoading(true);
@@ -106,8 +106,8 @@ const OrderHistory = () => {
     try {
       const params = { page, limit };
       if (status !== "") params.status = status;
-      if (startDate) params.startDate = startDate;
-      if (endDate) params.endDate = endDate;
+      if (start_date) params.start_date = start_date;
+      if (end_date) params.end_date = end_date;
       if (search) params.search = search;
       const res = await getOrderRequests(params);
       setOrders(res.data.data);
@@ -127,14 +127,17 @@ const OrderHistory = () => {
   const handleReset = () => {
     setSearch("");
     setStatus("");
-    const start = new Date(new Date().setDate(new Date().getDate() - 7))
-      .toISOString()
-      .split("T")[0];
-    const end = new Date().toISOString().split("T")[0];
-    setStartDate(start);
-    setEndDate(end);
+    setStartDate(new Date().toISOString().split("T")[0]);
+    setEndDate(new Date().toISOString().split("T")[0]);
     setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchOrders(1, pagination.limit, "", start, end, "");
+    fetchOrders(
+      1,
+      pagination.limit,
+      "",
+      new Date().toISOString().split("T")[0],
+      new Date().toISOString().split("T")[0],
+      "",
+    );
   };
 
   return (
@@ -176,7 +179,7 @@ const OrderHistory = () => {
               Start Date
             </label>
             <DatePicker
-              selected={startDate}
+              selected={start_date}
               onChange={(date) =>
                 setStartDate(date ? date.toISOString().split("T")[0] : "")
               }
@@ -186,7 +189,7 @@ const OrderHistory = () => {
           <div>
             <label className="block text-gray-700 text-sm mb-1">End Date</label>
             <DatePicker
-              selected={endDate}
+              selected={end_date}
               onChange={(date) =>
                 setEndDate(date ? date.toISOString().split("T")[0] : "")
               }

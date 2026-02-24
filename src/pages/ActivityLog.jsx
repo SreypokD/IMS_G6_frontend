@@ -29,28 +29,28 @@ const ActivityLog = () => {
 
   // Filters
   const [search, setSearch] = useState("");
-  const [startDate, setStartDate] = useState(
+  const [start_date, setStartDate] = useState(
     new Date(new Date().setDate(new Date().getDate() - 7))
       .toISOString()
       .split("T")[0],
   );
-  const [endDate, setEndDate] = useState(
+  const [end_date, setEndDate] = useState(
     new Date().toISOString().split("T")[0],
   );
 
   useEffect(() => {
     if (user) {
-      fetchLogs(1, pagination.limit, search, startDate, endDate);
+      fetchLogs(1, pagination.limit, search, start_date, end_date);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, search, startDate, endDate]);
+  }, [user, search, start_date, end_date]);
 
   async function fetchLogs(
     page = pagination.page,
     limit = pagination.limit,
     search = "",
-    startDate,
-    endDate,
+    start_date,
+    end_date,
   ) {
     setLoading(true);
     setError("");
@@ -59,8 +59,8 @@ const ActivityLog = () => {
         page,
         limit,
         search,
-        startDate,
-        endDate,
+        startDate: start_date,
+        endDate: end_date,
       });
       setLogs(res.data.data);
       setPagination((prev) => ({
@@ -77,10 +77,16 @@ const ActivityLog = () => {
   }
 
   const handleReset = () => {
-    setStartDate("");
-    setEndDate("");
+    setStartDate(new Date().toISOString().split("T")[0]);
+    setEndDate(new Date().toISOString().split("T")[0]);
     setSearch("");
-    fetchLogs(1, pagination.limit, "", "", "");
+    fetchLogs(
+      1,
+      pagination.limit,
+      "",
+      new Date().toISOString().split("T")[0],
+      new Date().toISOString().split("T")[0],
+    );
   };
 
   return (
@@ -123,7 +129,7 @@ const ActivityLog = () => {
               Start Date
             </label>
             <DatePicker
-              selected={startDate}
+              selected={start_date}
               onChange={(date) =>
                 setStartDate(date ? date.toISOString().split("T")[0] : "")
               }
@@ -133,7 +139,7 @@ const ActivityLog = () => {
           <div>
             <label className="block text-gray-700 text-sm mb-1">End Date</label>
             <DatePicker
-              selected={endDate}
+              selected={end_date}
               onChange={(date) =>
                 setEndDate(date ? date.toISOString().split("T")[0] : "")
               }

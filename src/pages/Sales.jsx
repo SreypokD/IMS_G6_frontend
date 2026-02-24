@@ -22,7 +22,8 @@ import {
   HiOutlineFilter,
   HiOutlineRefresh,
   HiSelector,
-} from "react-icons/hi";import { MdOutlineSmsFailed } from "react-icons/md";
+} from "react-icons/hi";
+import { MdOutlineSmsFailed } from "react-icons/md";
 import { BsCurrencyDollar } from "react-icons/bs";
 import {
   HiOutlinePencil,
@@ -153,12 +154,12 @@ const Sales = () => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [customer, setCustomer] = useState("");
-  const [startDate, setStartDate] = useState(
+  const [start_date, setStartDate] = useState(
     new Date(new Date().setDate(new Date().getDate() - 7))
       .toISOString()
       .split("T")[0],
   );
-  const [endDate, setEndDate] = useState(
+  const [end_date, setEndDate] = useState(
     new Date().toISOString().split("T")[0],
   );
   const [status, setStatus] = useState("");
@@ -204,7 +205,7 @@ const Sales = () => {
   useEffect(() => {
     fetchSales(1, 10);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search, customer, startDate, endDate, status]);
+  }, [search, customer, start_date, end_date, status]);
 
   async function fetchSales(page = 1, limit = 10) {
     setLoading(true);
@@ -214,8 +215,8 @@ const Sales = () => {
       if (search) params.search = search;
       if (customer !== "All Customers") params.customer = customer;
       if (status !== "All Status") params.status = status;
-      if (startDate) params.startDate = startDate;
-      if (endDate) params.endDate = endDate;
+      if (start_date) params.start_date = start_date;
+      if (end_date) params.end_date = end_date;
 
       const res = await getSales(params);
       setSales(res.data.data);
@@ -298,11 +299,18 @@ const Sales = () => {
 
   const handleReset = () => {
     setCustomer("All Customers");
-    setStartDate("");
-    setEndDate("");
+    setStartDate(new Date().toISOString().split("T")[0]);
+    setEndDate(new Date().toISOString().split("T")[0]);
     setStatus("All Status");
     setPagination((prev) => ({ ...prev, page: 1 }));
-    fetchSales(1, pagination.limit);
+    fetchSales(
+      1,
+      pagination.limit,
+      "",
+      new Date().toISOString().split("T")[0],
+      new Date().toISOString().split("T")[0],
+      "All Status",
+    );
   };
 
   function handleSelectAll(e) {
@@ -577,7 +585,7 @@ const Sales = () => {
               Start Date
             </label>
             <DatePicker
-              selected={startDate}
+              selected={start_date}
               onChange={(date) =>
                 setStartDate(date ? date.toISOString().split("T")[0] : "")
               }
@@ -587,7 +595,7 @@ const Sales = () => {
           <div>
             <label className="block text-gray-700 text-sm mb-1">End Date</label>
             <DatePicker
-              selected={endDate}
+              selected={end_date}
               onChange={(date) =>
                 setEndDate(date ? date.toISOString().split("T")[0] : "")
               }
