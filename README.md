@@ -66,4 +66,4 @@ Authorization: Bearer <access_token>
   ```
 
 ## Backend
-See [IMS-G6-backend](../IMS-G6-backend/README.md) for backend setup and API details.
+See [IMS-G6-backend]("https://github.com/SreypokD/IMS_G6_backend") for backend setup and API details.

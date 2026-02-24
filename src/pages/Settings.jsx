@@ -290,11 +290,17 @@ export default function Settings() {
                     <div className="relative group">
                       <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-gray-100">
                         {profileData.profile ? (
-                          <img
-                            src={profileData.profile}
-                            alt="Profile"
-                            className="w-full h-full object-cover"
-                          />
+                          <a
+                            href={profileData.profile}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <img
+                              src={profileData.profile}
+                              alt="Profile"
+                              className="w-full h-full object-cover"
+                            />
+                          </a>
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-gray-400">
                             <HiUser className="text-6xl" />
