@@ -352,7 +352,7 @@ const Suppliers = () => {
           setViewSupplier(null);
         }}
       />
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold">Supplier Management</h1>
           <span className="text-gray-500 text-sm">
@@ -549,7 +549,7 @@ const Suppliers = () => {
                         {supplier.company_name}
                       </div>
                     </td>
-                    <td className="flex items-center gap-1">
+                    <td>
                       {supplier.contact_person}
                     </td>
                     <td>{supplier.contact_email}</td>

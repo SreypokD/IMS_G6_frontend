@@ -99,10 +99,6 @@ const permissionTable = [
 
   // System Management
   {
-    label: "Users",
-    actions: ["view_user", "create_user", "update_user", "delete_user"],
-  },
-  {
     label: "Roles",
     actions: [
       "view_permission",
@@ -110,6 +106,10 @@ const permissionTable = [
       "update_permission",
       "delete_permission",
     ],
+  },
+  {
+    label: "Users",
+    actions: ["view_user", "create_user", "update_user", "delete_user"],
   },
 ];
 

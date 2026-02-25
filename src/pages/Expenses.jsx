@@ -317,7 +317,7 @@ const Expenses = () => {
           setViewExpense(null);
         }}
       />
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold">Expense Tracking</h1>
           <span className="text-gray-500 text-sm">

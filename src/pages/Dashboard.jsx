@@ -117,7 +117,7 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex flex-col">
           <h1 className="text-xl font-semibold">
             Welcome, {user?.first_name || "User"}!
@@ -454,7 +454,9 @@ const Dashboard = () => {
                           ? "bg-green-400"
                           : order.status === "rejected"
                             ? "bg-red-400"
-                            : "bg-yellow-400";
+                            : order.status === "completed"
+                              ? "bg-blue-400"
+                              : "bg-yellow-400";
                       return (
                         <tr key={order._id} className="hover:bg-[#f1f5f9]">
                           <td className="number">{index + 1}</td>

@@ -77,7 +77,9 @@ function App() {
                     <div className="h-screen flex overflow-hidden bg-[#f5f5f7]">
                       <Sidebar mini={sidebarHidden} />
                       <div className="flex-1 flex flex-col min-w-0 overflow-y-hidden overflow-x-hidden">
-                        <Navbar onBellClick={() => setSidebarHidden((v) => !v)} />
+                        <Navbar
+                          onBellClick={() => setSidebarHidden((v) => !v)}
+                        />
                         <main className="flex-1 p-3 h-[calc(100vh-64px)] relative overflow-hidden flex flex-col">
                           <div className="flex-none">
                             <Breadcrumb />
@@ -96,9 +98,15 @@ function App() {
                                   { path: "/", element: <Dashboard /> },
 
                                   // Master Data
-                                  { path: "/categories", element: <Categories /> },
+                                  {
+                                    path: "/categories",
+                                    element: <Categories />,
+                                  },
                                   { path: "/products", element: <Products /> },
-                                  { path: "/suppliers", element: <Suppliers /> },
+                                  {
+                                    path: "/suppliers",
+                                    element: <Suppliers />,
+                                  },
 
                                   // Purchasing / Procurement
                                   {
@@ -133,12 +141,12 @@ function App() {
                                   },
 
                                   // System / Security
-                                  { path: "/users", element: <Users /> },
+                                  { path: "/settings", element: <Settings /> },
                                   {
                                     path: "/roles",
                                     element: <Permissions />,
                                   },
-                                  { path: "/settings", element: <Settings /> },
+                                  { path: "/users", element: <Users /> },
                                 ].map((route) => (
                                   <Route
                                     key={route.path}

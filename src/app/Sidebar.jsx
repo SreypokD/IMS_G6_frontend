@@ -170,17 +170,6 @@ const navLinks = (permissions = [], activePath = "") =>
       label: "Settings",
       icon: <HiCog className="text-slate-700" />,
       submenus: [
-        permissions.includes("view_user") && {
-          to: "/users",
-          label: "Users",
-          icon: (
-            <HiUserGroup
-              className={
-                activePath === "/users" ? "text-white" : "text-blue-700"
-              }
-            />
-          ),
-        },
         permissions.includes("view_permission") && {
           to: "/roles",
           label: "Roles",
@@ -188,6 +177,17 @@ const navLinks = (permissions = [], activePath = "") =>
             <HiKey
               className={
                 activePath === "/roles" ? "text-white" : "text-yellow-700"
+              }
+            />
+          ),
+        },
+        permissions.includes("view_user") && {
+          to: "/users",
+          label: "Users",
+          icon: (
+            <HiUserGroup
+              className={
+                activePath === "/users" ? "text-white" : "text-blue-700"
               }
             />
           ),
