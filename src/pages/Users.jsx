@@ -337,11 +337,22 @@ const Users = () => {
     setLoading(true);
     setError("");
     try {
+      // Always send permission_id if present (for role/permission patching)
+      const userPayload = { ...user };
+      if (
+        user.permission_id === undefined &&
+        user.role &&
+        Array.isArray(permissions)
+      ) {
+        // Try to find permission_id by role name if not set
+        const found = permissions.find((p) => p.name === user.role);
+        if (found) userPayload.permission_id = found._id;
+      }
       if (editUser && editUser._id) {
-        await updateUser(editUser._id, user);
+        await updateUser(editUser._id, userPayload);
         dialog.success("User updated successfully");
       } else {
-        await createUser(user);
+        await createUser(userPayload);
         dialog.success("User created successfully");
       }
       fetchUsers(1, pagination.limit, search, permission, user_type, status);
