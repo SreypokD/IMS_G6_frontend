@@ -703,7 +703,7 @@ const Sales = () => {
                       <td>
                         {customer
                           ? `${customer.first_name || ""} ${customer.last_name || ""}`
-                          : "N/A"}
+                          : "Walk-in Guest"}
                       </td>
                       <td>${totalAmount}</td>
                       <td>{sale.payment_method || "-"}</td>

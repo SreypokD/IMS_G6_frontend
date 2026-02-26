@@ -465,8 +465,11 @@ const OrderRequestModal = ({
                                       orderItem.product_id === product._id &&
                                       orderIdx !== idx,
                                   );
+                                  const availableStock =
+                                    product.stock -
+                                    (product.reserved_stock || 0);
                                   const isDisabled =
-                                    product.stock <= 0 || isSelected;
+                                    availableStock <= 0 || isSelected;
                                   return (
                                     <Listbox.Option
                                       key={product._id}
@@ -476,12 +479,10 @@ const OrderRequestModal = ({
                                       }
                                       disabled={isDisabled}
                                     >
-                                      {product.name} (Stock:
-                                      {product.stock -
-                                        (product.reserved_stock || 0)}
-                                      ){isSelected ? " - Already added" : ""}
-                                      {product.stock <= 0
-                                        ? " - Out of stock"
+                                      {product.name} (Stock: {availableStock})
+                                      {isSelected ? " - Already added" : ""}
+                                      {availableStock <= 0 && !isSelected
+                                        ? " - Out of stock (or reserved)"
                                         : ""}
                                     </Listbox.Option>
                                   );

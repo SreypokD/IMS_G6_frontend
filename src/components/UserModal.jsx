@@ -72,7 +72,7 @@ const UserModal = ({
   const [roles, setRoles] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
 
-  const isPartner = user.user_type == "external";
+  const isPartner = user.user_type === "external";
 
   // Fetch roles when modal opens
   useEffect(() => {
@@ -159,8 +159,11 @@ const UserModal = ({
     }));
   };
 
-  const renderBadge = (text) => (
-    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-2 mb-1">
+  const renderBadge = (text, key) => (
+    <span
+      key={key}
+      className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#f1f5f9] text-[#1e3a5f] border border-gray-200 shadow-sm transition-all duration-300 hover:bg-[#e2e8f0]"
+    >
       {text}
     </span>
   );
@@ -765,20 +768,20 @@ const UserModal = ({
                 <div>
                   <label
                     htmlFor="productCategories"
-                    className="text-sm font-medium text-gray-700 block mb-1"
+                    className="text-sm font-medium text-gray-700 block mb-2"
                   >
                     Product Categories
                   </label>
-                  <div className="w-full flex flex-wrap">
+                  <div className="w-full flex flex-wrap gap-2">
                     {Array.isArray(user.product_categories) &&
                     user.product_categories.length > 0 ? (
-                      user.product_categories.map((cat, index) => (
-                        <span key={index} className="mr-2 text-sm p-2">
-                          {renderBadge(cat)}
-                        </span>
-                      ))
+                      user.product_categories.map((cat, index) =>
+                        renderBadge(cat, index),
+                      )
                     ) : (
-                      <span className="text-sm text-gray-500">None</span>
+                      <span className="text-sm text-gray-500 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100 w-full text-center italic">
+                        No categories assigned
+                      </span>
                     )}
                   </div>
                 </div>
@@ -836,6 +839,14 @@ const UserModal = ({
                       />
                       <div className="mt-2 text-sm text-gray-500">
                         Coordinates: {user.location_lat}, {user.location_lng}
+                        <a
+                          href={`https://www.google.com/maps?q=${user.location_lat},${user.location_lng}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ml-2 underline text-blue-500 hover:text-blue-600"
+                        >
+                          View on Google Maps
+                        </a>
                       </div>
                     </div>
                   )}

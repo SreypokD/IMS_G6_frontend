@@ -122,10 +122,7 @@ const SaleModal = ({
     e.preventDefault();
 
     // Validation
-    if (!sale.customer) {
-      dialog.error("Please select a customer.");
-      return;
-    }
+    // Customer is now optional for Walk-in sales
     if (sale.items.length === 0) {
       dialog.error("Please add at least one product.");
       return;
@@ -181,8 +178,7 @@ const SaleModal = ({
                   htmlFor="customer"
                   className="text-sm font-medium text-gray-700"
                 >
-                  Customer
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
+                  Customer <span className="text-gray-400 font-normal ml-1">(Optional)</span>
                 </label>
                 <Listbox
                   value={sale.customer}
@@ -205,15 +201,23 @@ const SaleModal = ({
                               );
                               return u
                                 ? `${u.first_name} ${u.last_name || ""} (${u.email})`
-                                : "Select customer";
+                                : "Walk-in Customer (Guest)";
                             })()
-                          : "Select customer"}
+                          : "Walk-in Customer (Guest)"}
                       </span>
                       {!viewOnly && (
                         <HiSelector className="w-5 h-5 text-gray-400 ml-2" />
                       )}
                     </Listbox.Button>
                     <Listbox.Options className="absolute z-10 mt-1 w-full bg-white border border-gray-100 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none text-sm">
+                      <Listbox.Option
+                        value=""
+                        className={({ selected }) =>
+                          `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
+                        }
+                      >
+                        Walk-in Customer (Guest)
+                      </Listbox.Option>
                       {users.map((u) => (
                         <Listbox.Option
                           key={u._id}
@@ -283,7 +287,10 @@ const SaleModal = ({
                                 (saleItem, saleIdx) =>
                                   saleItem.product === p._id && saleIdx !== idx,
                               );
-                              const isDisabled = p.stock <= 0 || isSelected;
+                              const availableStock =
+                                p.stock - (p.reserved_stock || 0);
+                              const isDisabled =
+                                availableStock <= 0 || isSelected;
 
                               return (
                                 <Listbox.Option
@@ -294,9 +301,11 @@ const SaleModal = ({
                                   }
                                   disabled={isDisabled}
                                 >
-                                  {p.name} (Stock:
-                                  {p.stock - (p.reserved_stock || 0)})
+                                  {p.name} (Stock: {availableStock})
                                   {isSelected ? " - Already added" : ""}
+                                  {availableStock <= 0 && !isSelected
+                                    ? " - Out of stock (or reserved)"
+                                    : ""}
                                 </Listbox.Option>
                               );
                             })}
@@ -323,8 +332,11 @@ const SaleModal = ({
                             const p = products.find(
                               (prod) => prod._id === item.product,
                             );
-                            if (p && val > p.stock) {
-                              handleItemChange(idx, "quantity", p.stock);
+                            const maxStock = p
+                              ? p.stock - (p.reserved_stock || 0)
+                              : null;
+                            if (maxStock !== null && val > maxStock) {
+                              handleItemChange(idx, "quantity", maxStock);
                             } else {
                               handleItemChange(idx, "quantity", e.target.value);
                             }
