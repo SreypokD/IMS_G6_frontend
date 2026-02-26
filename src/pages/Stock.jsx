@@ -222,20 +222,7 @@ const Stocks = () => {
 
   useEffect(() => {
     if (user) {
-      fetchStocks(
-        pagination.page,
-        pagination.limit,
-        search,
-        type,
-        location,
-        filterUser,
-        start_date,
-        end_date,
-      );
-      fetchProducts();
-      if (canViewUsers) {
-        fetchUsersList();
-      }
+      fetchStocks(pagination.page, pagination.limit);
       fetchSummary();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -251,14 +238,17 @@ const Stocks = () => {
     end_date,
   ]);
 
-  async function fetchSummary(
-    search,
-    type,
-    location,
-    filterUser,
-    start_date,
-    end_date,
-  ) {
+  useEffect(() => {
+    if (user) {
+      fetchProducts();
+      if (canViewUsers) {
+        fetchUsersList();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, canViewUsers]);
+
+  async function fetchSummary() {
     try {
       const params = {};
       if (search) params.search = search;
@@ -288,23 +278,14 @@ const Stocks = () => {
     try {
       const res = await getUsers({ limit: -1 });
       setUserOptions(
-        res.data.data.filter((user) => user.user_type === "internal") || [],
+        res.data.data.filter((u) => u.user_type === "internal") || [],
       );
     } catch {
       setUserOptions([]);
     }
   }
 
-  async function fetchStocks(
-    page = pagination.page,
-    limit = pagination.limit,
-    search,
-    type,
-    location,
-    user,
-    start_date,
-    end_date,
-  ) {
+  async function fetchStocks(page = pagination.page, limit = pagination.limit) {
     setLoading(true);
     setError("");
     try {
@@ -312,7 +293,7 @@ const Stocks = () => {
       if (search) params.search = search;
       if (type) params.type = type;
       if (location) params.location = location;
-      if (user) params.user = user;
+      if (filterUser) params.user = filterUser;
       if (start_date) params.start_date = start_date;
       if (end_date) params.end_date = end_date;
       const res = await getStocks(params);
@@ -324,7 +305,7 @@ const Stocks = () => {
         limit,
       }));
     } catch (err) {
-      setError(err.response.data.error || "Failed to load stocks");
+      setError(err.response?.data?.error || "Failed to load stocks");
     } finally {
       setLoading(false);
     }
@@ -359,18 +340,9 @@ const Stocks = () => {
       try {
         await deleteStock(id);
         dialog.success("Stock deleted successfully");
-        fetchStocks(
-          pagination.page,
-          pagination.limit,
-          search,
-          type,
-          location,
-          filterUser,
-          start_date,
-          end_date,
-        );
+        fetchStocks(pagination.page, pagination.limit);
       } catch (err) {
-        dialog.error(err.response.data.error || "Failed to delete stock");
+        dialog.error(err.response?.data?.error || "Failed to delete stock");
       } finally {
         setLoading(false);
       }
@@ -399,16 +371,7 @@ const Stocks = () => {
       );
 
       dialog.success(`Stocks marked as ${status} successfully.`);
-      fetchStocks(
-        pagination.page,
-        pagination.limit,
-        search,
-        type,
-        location,
-        filterUser,
-        start_date,
-        end_date,
-      );
+      fetchStocks(pagination.page, pagination.limit);
       setSelectedIds([]);
     } catch (err) {
       console.error(err);
@@ -433,16 +396,7 @@ const Stocks = () => {
     try {
       await Promise.all(selectedIds.map((id) => deleteStock(id)));
       dialog.success("Stocks deleted successfully.");
-      fetchStocks(
-        pagination.page,
-        pagination.limit,
-        search,
-        type,
-        location,
-        filterUser,
-        start_date,
-        end_date,
-      );
+      fetchStocks(pagination.page, pagination.limit);
       setSelectedIds([]);
     } catch {
       dialog.error("Failed to delete stocks.");
@@ -485,16 +439,7 @@ const Stocks = () => {
     setFilterUser("");
     setStartDate(new Date().toISOString().split("T")[0]);
     setEndDate(new Date().toISOString().split("T")[0]);
-    fetchStocks(
-      1,
-      pagination.limit,
-      "",
-      "",
-      "",
-      "",
-      new Date().toISOString().split("T")[0],
-      new Date().toISOString().split("T")[0],
-    );
+    setPagination((prev) => ({ ...prev, page: 1 }));
   }
 
   return (
@@ -716,14 +661,6 @@ const Stocks = () => {
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
-                fetchStocks(
-                  1,
-                  pagination.limit,
-                  e.target.value,
-                  type,
-                  filterUser,
-                  location,
-                );
                 setPagination((prev) => ({ ...prev, page: 1 }));
               }}
             />
@@ -758,14 +695,6 @@ const Stocks = () => {
               value={type}
               onChange={(val) => {
                 setFilterType(val);
-                fetchStocks(
-                  1,
-                  pagination.limit,
-                  search,
-                  val,
-                  filterUser,
-                  location,
-                );
                 setPagination((prev) => ({ ...prev, page: 1 }));
               }}
             />
@@ -776,7 +705,6 @@ const Stocks = () => {
               value={location}
               onChange={(val) => {
                 setFilterLocation(val);
-                fetchStocks(1, pagination.limit, search, type, filterUser, val);
                 setPagination((prev) => ({ ...prev, page: 1 }));
               }}
             />
@@ -788,7 +716,6 @@ const Stocks = () => {
                 value={filterUser}
                 onChange={(val) => {
                   setFilterUser(val);
-                  fetchStocks(1, pagination.limit, search, type, val, location);
                   setPagination((prev) => ({ ...prev, page: 1 }));
                 }}
                 userOptions={userOptions}

@@ -90,12 +90,7 @@ const Register = () => {
   };
 
   const handleLocationSelect = (latlng) => {
-    if (
-      !latlng ||
-      latlng.lat === undefined ||
-      latlng.lng === undefined
-    )
-      return;
+    if (!latlng || latlng.lat === undefined || latlng.lng === undefined) return;
     setFormData((prev) => ({
       ...prev,
       location_lat: latlng.lat,
@@ -391,10 +386,8 @@ const Register = () => {
                             <Listbox.Option
                               key={p.name}
                               value={p.name}
-                              className={({ active }) =>
-                                `px-3 py-2 cursor-pointer text-black text-sm hover:text-white hover:bg-[#1e3a5f] rounded-lg ${
-                                  active ? "bg-[#1e3a5f] text-white" : ""
-                                }`
+                              className={({ selected }) =>
+                                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
                               }
                             >
                               {p.name}
@@ -437,10 +430,8 @@ const Register = () => {
                             <Listbox.Option
                               key={d.name}
                               value={d.name}
-                              className={({ active }) =>
-                                `px-3 py-2 cursor-pointer text-black text-sm hover:text-white hover:bg-[#1e3a5f] rounded-lg ${
-                                  active ? "bg-[#1e3a5f] text-white" : ""
-                                }`
+                              className={({ selected }) =>
+                                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
                               }
                             >
                               {d.name}
@@ -482,10 +473,8 @@ const Register = () => {
                             <Listbox.Option
                               key={c.name}
                               value={c.name}
-                              className={({ active }) =>
-                                `px-3 py-2 cursor-pointer text-black text-sm hover:text-white hover:bg-[#1e3a5f] rounded-lg ${
-                                  active ? "bg-[#1e3a5f] text-white" : ""
-                                }`
+                              className={({ selected }) =>
+                                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
                               }
                             >
                               {c.name}
@@ -524,10 +513,8 @@ const Register = () => {
                             <Listbox.Option
                               key={v}
                               value={v}
-                              className={({ active }) =>
-                                `px-3 py-2 cursor-pointer text-black text-sm hover:text-white hover:bg-[#1e3a5f] rounded-lg ${
-                                  active ? "bg-[#1e3a5f] text-white" : ""
-                                }`
+                              className={({ selected }) =>
+                                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
                               }
                             >
                               {v}
@@ -625,10 +612,8 @@ const Register = () => {
                             <Listbox.Option
                               key={vol}
                               value={vol}
-                              className={({ active }) =>
-                                `px-3 py-2 cursor-pointer text-black text-sm capitalize hover:text-white hover:bg-[#1e3a5f] rounded-lg ${
-                                  active ? "bg-[#1e3a5f] text-white" : ""
-                                }`
+                              className={({ selected }) =>
+                                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
                               }
                             >
                               {vol}
@@ -669,10 +654,8 @@ const Register = () => {
                             <Listbox.Option
                               key={freq}
                               value={freq}
-                              className={({ active }) =>
-                                `px-3 py-2 cursor-pointer text-black text-sm capitalize hover:text-white hover:bg-[#1e3a5f] rounded-lg ${
-                                  active ? "bg-[#1e3a5f] text-white" : ""
-                                }`
+                              className={({ selected }) =>
+                                `px-3 py-2 cursor-pointer text-[#64748b] text-sm hover:text-black hover:bg-[#f1f5f9] rounded-lg ${selected ? "bg-[#1e3a5f] text-white" : ""}`
                               }
                             >
                               {freq}
@@ -725,13 +708,8 @@ const Register = () => {
                                 key={cat._id}
                                 value={cat.name}
                                 className={({ active, selected }) =>
-                                  `px-3 py-2 cursor-pointer text-sm capitalize rounded-lg flex items-center justify-between ${
-                                    active
-                                      ? "bg-[#1e3a5f] text-white"
-                                      : selected
-                                        ? "bg-blue-50 text-[#1e3a5f]"
-                                        : "text-gray-900"
-                                  }`
+                                  `px-3 py-2 cursor-pointer text-[#64748b] text-sm rounded-lg flex items-center justify-between
+                                  ${selected ? "bg-[#1e3a5f] text-white" : active ? "bg-blue-50 text-[#1e3a5f]" : "hover:text-black hover:bg-[#f1f5f9]"}`
                                 }
                               >
                                 {({ selected, active }) => (
@@ -746,9 +724,7 @@ const Register = () => {
                                     {selected && (
                                       <HiCheck
                                         className={`w-5 h-5 ${
-                                          active
-                                            ? "text-white"
-                                            : "text-[#1e3a5f]"
+                                          active ? "text-white" : "text-white"
                                         }`}
                                       />
                                     )}
