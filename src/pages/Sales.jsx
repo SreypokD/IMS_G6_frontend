@@ -706,7 +706,7 @@ const Sales = () => {
                           : "N/A"}
                       </td>
                       <td>${totalAmount}</td>
-                      <td>{sale.payment_method}</td>
+                      <td>{sale.payment_method || "-"}</td>
                       <td>{formatDate(sale.completed_at, true) || "-"}</td>
                       <td className="flex items-center gap-1 justify-center action">
                         {(canView || canUpdate || canDelete) && (

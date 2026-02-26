@@ -369,6 +369,14 @@ const Users = () => {
       try {
         await deleteUser(id);
         dialog.success("User deleted successfully");
+        fetchUsers(
+          pagination.page,
+          pagination.limit,
+          search,
+          permission,
+          user_type,
+          status,
+        );
       } finally {
         setLoading(false);
       }
@@ -431,7 +439,7 @@ const Users = () => {
       />
       <div className="flex items-center justify-between mb-4">
         <div className="flex flex-col">
-          <h1 className="text-xl font-semibold">Users</h1>
+          <h1 className="text-xl font-semibold">User Management</h1>
           <span className="text-gray-500 text-sm">Manage users</span>
         </div>
         <div className="flex items-center gap-2">
@@ -620,10 +628,10 @@ const Users = () => {
                     <td>
                       {u.first_name} {u.last_name}
                     </td>
-                    <td>{u.email}</td>
+                    <td>{u.email || "-"}</td>
                     <td>{u.phone || "-"}</td>
-                    <td className="capitalize">{u.role}</td>
-                    <td className="capitalize">{u.user_type}</td>
+                    <td className="capitalize">{u.role || "-"}</td>
+                    <td className="capitalize">{u.user_type || "-"}</td>
                     <td>
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-sm text-white ${

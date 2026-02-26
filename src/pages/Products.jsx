@@ -479,7 +479,7 @@ const Products = () => {
       />
       <div className="flex items-center justify-between mb-4">
         <div className="flex flex-col">
-          <h1 className="text-xl font-semibold">Products Management</h1>
+          <h1 className="text-xl font-semibold">Product Management</h1>
           <span className="text-gray-500 text-sm">
             Manage your product catalog and inventory
           </span>
@@ -865,18 +865,19 @@ const Products = () => {
                       <td className="number">
                         {index + 1 + (pagination.page - 1) * pagination.limit}
                       </td>
-                      <td>#{product.code}</td>
-                      <td>{product.name}</td>
+                      <td>#{product.code || "-"}</td>
+                      <td>{product.name || "-"}</td>
                       <td>
                         <span className="text-blue-500/80">
-                          {product.category?.name || product.category}
+                          {product.category?.name || product.category || "-"}
                         </span>
                       </td>
                       <td>
                         <span className="text-blue-500/80">
                           {typeof product.supplier === "object"
                             ? product.supplier?.company_name ||
-                              product.supplier?.name
+                              product.supplier?.name || "-"
+
                             : product.supplier}
                         </span>
                       </td>

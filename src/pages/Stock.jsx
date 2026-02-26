@@ -874,8 +874,8 @@ const Stocks = () => {
                         "-"
                       )}
                     </td>
-                    <td>{stock.quantity}</td>
-                    <td>{stock.balance}</td>
+                    <td>{stock.quantity || "-"}</td>
+                    <td>{stock.balance || "-"}</td>
                     <td>
                       {stock.user?.first_name
                         ? `${stock.user.first_name} ${stock.user.last_name}`

@@ -231,7 +231,7 @@ const Permissions = () => {
       />
       <div className="flex items-center justify-between mb-4">
         <div className="flex flex-col">
-          <h1 className="text-xl font-semibold">Roles</h1>
+          <h1 className="text-xl font-semibold">Role Management</h1>
           <span className="text-gray-500 text-sm">Manage roles</span>
         </div>
         <div className="flex items-center gap-2">
@@ -384,8 +384,10 @@ const Permissions = () => {
                     <td className="number">
                       {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>
-                    <td>{role.name}</td>
-                    <td className="whitespace-nowrap">{role.description}</td>
+                    <td>{role.name || "-"}</td>
+                    <td className="whitespace-nowrap">
+                      {role.description || "-"}
+                    </td>
                     <td>
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-sm capitalize text-white ${role.status === "active" ? "bg-green-400" : "bg-gray-100"}`}
@@ -408,7 +410,12 @@ const Permissions = () => {
                           as="div"
                           className="relative inline-block text-left"
                         >
-                          <Menu.Button className="text-[#1e3a5f] font-semibold cursor-pointer p-2 rounded-full hover:bg-gray-200">
+                          <Menu.Button
+                            className="text-[#1e3a5f] font-semibold cursor-pointer disabled:cursor-default p-2 rounded-full hover:bg-gray-200 disabled:hover:bg-transparent disabled:opacity-50"
+                            disabled={
+                              role.name === "admin" || role.name === "Admin"
+                            }
+                          >
                             <HiDotsVertical className="text-xl" />
                           </Menu.Button>
                           <Menu.Items

@@ -59,9 +59,6 @@ const OrderRequestModal = ({
   const canConfirm = user?.permission?.permissions?.includes(
     "update_confirm_delivery",
   );
-  const canUpdate = user?.permission?.permissions?.includes(
-    "update_order_request",
-  );
 
   useEffect(() => {
     let t;
@@ -749,7 +746,6 @@ const OrderRequestModal = ({
           )}
           {viewOnly &&
             onEdit &&
-            canUpdate &&
             String(data.requester_id) === String(user?._id) &&
             data.status === "pending" && (
               <button

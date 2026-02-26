@@ -546,14 +546,12 @@ const Suppliers = () => {
                     <td>
                       <div className="flex items-center gap-2">
                         <HiOutlineBuildingOffice2 className="text-lg text-blue-700" />
-                        {supplier.company_name}
+                        {supplier.company_name || "-"}
                       </div>
                     </td>
-                    <td>
-                      {supplier.contact_person}
-                    </td>
-                    <td>{supplier.contact_email}</td>
-                    <td>{supplier.contact_phone}</td>
+                    <td>{supplier.contact_person || "-"}</td>
+                    <td>{supplier.contact_email || "-"}</td>
+                    <td>{supplier.contact_phone || "-"}</td>
                     <td>
                       <span className="flex items-center gap-2">
                         <HiOutlineCube className="text-sm" />

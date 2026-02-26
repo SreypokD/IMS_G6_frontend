@@ -844,7 +844,7 @@ const UserModal = ({
             )}
 
           {/* Profile Image (Existing) */}
-          {(!viewOnly || user.profile) && (
+          {(!viewOnly || user.profile || user.user_type === "internal") && (
             <div className="col-span-2 mb-2">
               <h3 className="flex items-center gap-2 text-base mb-2 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
                 <HiOutlineCamera className="inline-block text-xl" />

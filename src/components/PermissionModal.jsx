@@ -361,16 +361,20 @@ const PermissionModal = ({
               {viewOnly ? "Role Details" : role._id ? "Update" : "Create"}
             </button>
           )}
-          {viewOnly && onEdit && canUpdate && (
-            <button
-              type="button"
-              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
-              onClick={onEdit}
-            >
-              <HiOutlinePencil className="inline-block text-xl" />
-              Update
-            </button>
-          )}
+          {viewOnly &&
+            onEdit &&
+            canUpdate &&
+            role.name !== "admin" &&
+            role.name !== "Admin" && (
+              <button
+                type="button"
+                className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+                onClick={onEdit}
+              >
+                <HiOutlinePencil className="inline-block text-xl" />
+                Update
+              </button>
+            )}
         </div>
       </div>
     </div>

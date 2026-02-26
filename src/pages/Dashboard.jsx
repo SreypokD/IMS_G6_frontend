@@ -460,9 +460,16 @@ const Dashboard = () => {
                       return (
                         <tr key={order._id} className="hover:bg-[#f1f5f9]">
                           <td className="number">{index + 1}</td>
-                          <td>#{order._id.slice(-6).toUpperCase()}</td>
                           <td>
-                            {new Date(order.createdAt).toLocaleDateString()}
+                            #
+                            {order._id
+                              ? order._id.slice(-6).toUpperCase()
+                              : "-"}
+                          </td>
+                          <td>
+                            {order.createdAt
+                              ? new Date(order.createdAt).toLocaleDateString()
+                              : "-"}
                           </td>
                           <td>
                             <span

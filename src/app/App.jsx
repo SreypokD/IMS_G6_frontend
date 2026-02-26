@@ -18,7 +18,7 @@ import Products from "../pages/Products.jsx";
 import Suppliers from "../pages/Suppliers.jsx";
 import Dashboard from "../pages/Dashboard.jsx";
 import Categories from "../pages/Categories.jsx";
-import Stocks from "../pages/Stocks.jsx";
+import Stock from "../pages/Stock.jsx";
 import OrderRequests from "../pages/OrderRequests.jsx";
 import OrderHistory from "../pages/OrderHistory.jsx";
 import ApproveRequests from "../pages/ApproveRequests.jsx";
@@ -127,7 +127,7 @@ function App() {
                                   },
 
                                   // Inventory / Stock
-                                  { path: "/stocks", element: <Stocks /> },
+                                  { path: "/stock", element: <Stock /> },
 
                                   // Sales
                                   { path: "/sales", element: <Sales /> },

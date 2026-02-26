@@ -67,11 +67,11 @@ const navLinks = (permissions = [], activePath = "") =>
       ),
     },
     permissions.includes("view_stock") && {
-      to: "/stocks",
-      label: "Stocks",
+      to: "/stock",
+      label: "Stock",
       icon: (
         <HiArchive
-          className={activePath === "/stocks" ? "text-white" : "text-cyan-600"}
+          className={activePath === "/stock" ? "text-white" : "text-cyan-600"}
         />
       ),
     },

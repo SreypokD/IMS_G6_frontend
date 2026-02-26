@@ -31,6 +31,7 @@ import {
   Legend,
 } from "recharts";
 import DatePicker from "../components/DatePicker";
+import { MdOutlineSmsFailed } from "react-icons/md";
 
 const COLORS = ["#FFBB28", "#00a63e", "#fb2c36", "#FF8042"];
 
@@ -103,7 +104,7 @@ const Reports = () => {
       setFinancial(financialRes.data?.data || null);
     } catch (err) {
       console.error(err);
-      setError("Failed to load reports");
+      setError(err?.response?.data?.error || "Failed to load reports");
     } finally {
       setLoading(false);
     }
@@ -194,8 +195,9 @@ const Reports = () => {
               </div>
             </div>
           ) : error ? (
-            <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 text-center">
-              {error}
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              <MdOutlineSmsFailed className="text-6xl text-red-500" />
+              <div className="p-8 text-center text-red-500">{error}</div>
             </div>
           ) : (
             <>
@@ -502,10 +504,10 @@ const Reports = () => {
                       <tbody>
                         {lowStockProducts.map((product) => (
                           <tr key={product._id} className="hover:bg-[#f1f5f9]">
-                            <td>{product.name}</td>
+                            <td>{product.name || "-"}</td>
                             <td>{product.category?.name || "N/A"}</td>
-                            <td>{product.stock}</td>
-                            <td>${product.price}</td>
+                            <td>{product.stock || "-"}</td>
+                            <td>${product.price || "-"}</td>
                           </tr>
                         ))}
                       </tbody>

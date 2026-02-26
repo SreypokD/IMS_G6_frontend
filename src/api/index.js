@@ -63,7 +63,6 @@ const suppliers = "/suppliers";
 const stocks = "/stocks";
 const orderRequests = "/order-requests";
 const approveRequests = "/approve-requests";
-const confirmDeliveries = "/confirm-deliveries";
 const sales = "/sales";
 const inventorySummary = "/reports/inventory-summary";
 const orderStats = "/reports/order-stats";

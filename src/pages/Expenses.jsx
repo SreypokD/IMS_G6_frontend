@@ -504,7 +504,7 @@ const Expenses = () => {
                     <td className="number">
                       {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>
-                    <td>{expense.description}</td>
+                    <td>{expense.description || "-"}</td>
                     <td>
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-sm ${categoryStyles[expense?.category] || "bg-gray-100 text-gray-700"}`}
@@ -515,7 +515,7 @@ const Expenses = () => {
                     <td className="font-medium text-red-600">
                       -${Number(expense.amount).toFixed(2)}
                     </td>
-                    <td>{formatDate(expense.date, true)}</td>
+                    <td>{formatDate(expense.date, true) || "-"}</td>
                     <td>
                       {expense.receipt_image ? (
                         <a

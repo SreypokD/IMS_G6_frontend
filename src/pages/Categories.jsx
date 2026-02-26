@@ -234,7 +234,7 @@ const Categories = () => {
       />
       <div className="flex items-center justify-between mb-4">
         <div className="flex flex-col">
-          <h1 className="text-xl font-semibold">Categories Management</h1>
+          <h1 className="text-xl font-semibold">Category Management</h1>
           <span className="text-gray-500 text-sm">
             Organize and manage product categories
           </span>
@@ -388,8 +388,8 @@ const Categories = () => {
                     <td className="number">
                       {index + 1 + (pagination.page - 1) * pagination.limit}
                     </td>
-                    <td>{category.name}</td>
-                    <td>{category.description}</td>
+                    <td>{category.name || "-"}</td>
+                    <td>{category.description || "-"}</td>
                     <td>
                       <span
                         className={`inline-block px-3 py-1 rounded-full text-sm capitalize text-white ${category.status === "active" ? "bg-green-400" : "bg-gray-400"}`}
