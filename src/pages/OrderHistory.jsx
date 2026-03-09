@@ -233,13 +233,15 @@ const OrderHistory = () => {
                 </tr>
               </thead>
               <tbody>
-                {(user?.role === "admin" || user?.role === "staff"
-                  ? orders
-                  : orders.filter(
-                      (order) =>
-                        String(order.requester_id) === String(user?._id),
-                    )
-                ).map((order, index) => (
+                {(() => {
+                  const userRole = user?.role?.toLowerCase();
+                  return userRole === "admin" || userRole === "staff"
+                    ? orders
+                    : orders.filter(
+                        (order) =>
+                          String(order.requester_id) === String(user?._id),
+                      );
+                })().map((order, index) => (
                   <tr key={order._id} className="hover:bg-[#f1f5f9]">
                     <td className="number">
                       {index + 1 + (pagination.page - 1) * pagination.limit}
@@ -278,13 +280,15 @@ const OrderHistory = () => {
                     </td>
                   </tr>
                 ))}
-                {(user?.role === "admin" || user?.role === "staff"
-                  ? orders
-                  : orders.filter(
-                      (order) =>
-                        String(order.requester_id) === String(user?._id),
-                    )
-                ).length === 0 && (
+                {(() => {
+                  const userRole = user?.role?.toLowerCase();
+                  return userRole === "admin" || userRole === "staff"
+                    ? orders
+                    : orders.filter(
+                        (order) =>
+                          String(order.requester_id) === String(user?._id),
+                      );
+                })().length === 0 && (
                   <tr>
                     <td colSpan="8">
                       <NoDataFound message="No orders found." />

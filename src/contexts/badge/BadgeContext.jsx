@@ -15,13 +15,12 @@ export const BadgeProvider = ({ children }) => {
       return;
     }
 
-    // Only fetch if user has permission to see approve requests
-    // (Optimization: prevent unnecessary calls for users who can't see them anyway)
+    const userRole = user.role?.toLowerCase();
     if (
       (user.permission?.permissions?.includes("view_order_request") &&
         user.permission?.permissions?.includes("view_approve_request")) ||
       user.permission?.permissions?.includes("update_approve_request") ||
-      user.role === "admin"
+      userRole === "admin"
     ) {
       getPendingOrderRequestCount()
         .then((res) => {

@@ -534,9 +534,10 @@ const OrderRequests = () => {
               <tbody>
                 {(() => {
                   // Admins and staff see all requests, customers see only their own
+                  const userRole = user?.role?.toLowerCase();
                   const isAdminOrStaff =
-                    user?.role === "admin" ||
-                    user?.role === "staff" ||
+                    userRole === "admin" ||
+                    userRole === "staff" ||
                     canViewApprove ||
                     canUpdateApprove;
                   const filteredRequests = isAdminOrStaff

@@ -125,9 +125,10 @@ const Dashboard = () => {
           {(() => {
             let roleMessage =
               "You have limited access. Contact admin for more features.";
-            if (user?.role === "admin") {
+            const userRole = user?.role?.toLowerCase();
+            if (userRole === "admin") {
               roleMessage = "You have full access to all inventory features.";
-            } else if (user?.role === "staff") {
+            } else if (userRole === "staff") {
               roleMessage = "You have staff access to manage inventory.";
             }
             return <span className="text-gray-500 text-sm">{roleMessage}</span>;
