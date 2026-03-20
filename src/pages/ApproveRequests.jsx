@@ -101,15 +101,7 @@ const OrderRequestApproval = () => {
         status: statusFilter, // Pass status to API
       });
 
-      let data = res.data.data;
-      if (statusFilter && statusFilter !== "") {
-        const hasMixed = data.some((d) => d.status !== statusFilter);
-        if (hasMixed) {
-          data = data.filter((d) => d.status === statusFilter);
-        }
-      }
-
-      setOrders(data);
+      setOrders(res.data.data);
       setPagination((prev) => ({
         ...prev,
         ...res.data.pagination,
@@ -277,16 +269,20 @@ const OrderRequestApproval = () => {
 
   const handleReset = () => {
     setSearch("");
-    setStartDate(new Date().toISOString().split("T")[0]);
-    setEndDate(new Date().toISOString().split("T")[0]);
+    const defaultStartDate = new Date(new Date().setDate(new Date().getDate() - 7))
+      .toISOString()
+      .split("T")[0];
+    const defaultEndDate = new Date().toISOString().split("T")[0];
+    setStartDate(defaultStartDate);
+    setEndDate(defaultEndDate);
     setStatus("pending");
     setPagination((prev) => ({ ...prev, page: 1 }));
     fetchApproveRequests(
       1,
       pagination.limit,
       "",
-      new Date().toISOString().split("T")[0],
-      new Date().toISOString().split("T")[0],
+      defaultStartDate,
+      defaultEndDate,
       "pending",
     );
   };

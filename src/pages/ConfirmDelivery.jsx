@@ -173,8 +173,8 @@ const DeliveryConfirmation = () => {
       // Map frontend filter names to backend query params
       const params = { page, limit };
       if (search) params.search = search;
-      if (start_date) params.startDate = start_date;
-      if (end_date) params.endDate = end_date;
+      if (start_date) params.start_date = start_date;
+      if (end_date) params.end_date = end_date;
       // approve_status maps to approve_request.status
       // map statuses for OrderRequest
       if (approve_status) params.status = approve_status; // e.g., 'approved'
@@ -235,6 +235,12 @@ const DeliveryConfirmation = () => {
 
   const handleReset = () => {
     setSearch("");
+    const defaultStartDate = new Date(new Date().setDate(new Date().getDate() - 7))
+      .toISOString()
+      .split("T")[0];
+    const defaultEndDate = new Date().toISOString().split("T")[0];
+    setStartDate(defaultStartDate);
+    setEndDate(defaultEndDate);
     setApproveStatus("");
     setDeliveryStatus("");
     setPagination((prev) => ({ ...prev, page: 1 }));
@@ -242,8 +248,8 @@ const DeliveryConfirmation = () => {
       1,
       pagination.limit,
       "",
-      new Date().toISOString().split("T")[0],
-      new Date().toISOString().split("T")[0],
+      defaultStartDate,
+      defaultEndDate,
       "",
       "",
     );

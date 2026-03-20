@@ -26,12 +26,12 @@ import DatePicker from "../components/DatePicker";
 import { useBadge } from "../contexts/badge/BadgeContext";
 
 const statusOptions = [
-  { value: "Pending", label: "Pending" },
-  { value: "Approved", label: "Approved" },
-  { value: "Rejected", label: "Rejected" },
-  { value: "Completed", label: "Completed" },
-  { value: "Cancelled", label: "Cancelled" },
-  { value: "On Hold", label: "On Hold" },
+  { value: "pending", label: "Pending" },
+  { value: "approved", label: "Approved" },
+  { value: "rejected", label: "Rejected" },
+  { value: "completed", label: "Completed" },
+  { value: "cancelled", label: "Cancelled" },
+  { value: "on_hold", label: "On Hold" },
 ];
 
 function StatusDropdown({ value, onChange }) {
@@ -191,15 +191,20 @@ const OrderRequests = () => {
 
   const handleReset = () => {
     setSearch("");
-    setStartDate(new Date().toISOString().split("T")[0]);
-    setEndDate(new Date().toISOString().split("T")[0]);
+    const defaultStartDate = new Date(new Date().setDate(new Date().getDate() - 7))
+      .toISOString()
+      .split("T")[0];
+    const defaultEndDate = new Date().toISOString().split("T")[0];
+    setStartDate(defaultStartDate);
+    setEndDate(defaultEndDate);
+    setStatus("");
     setPagination((prev) => ({ ...prev, page: 1 }));
     fetchOrderRequests(
       1,
       pagination.limit,
       "",
-      new Date().toISOString().split("T")[0],
-      new Date().toISOString().split("T")[0],
+      defaultStartDate,
+      defaultEndDate,
       "",
     );
   };
@@ -532,20 +537,7 @@ const OrderRequests = () => {
                 </tr>
               </thead>
               <tbody>
-                {(() => {
-                  // Admins and staff see all requests, customers see only their own
-                  const userRole = user?.role?.toLowerCase();
-                  const isAdminOrStaff =
-                    userRole === "admin" ||
-                    userRole === "staff" ||
-                    canViewApprove ||
-                    canUpdateApprove;
-                  const filteredRequests = isAdminOrStaff
-                    ? requests
-                    : requests.filter(
-                        (req) => String(req.requester_id) === String(user._id),
-                      );
-                  return filteredRequests.map((request, index) => (
+                {requests.map((request, index) => (
                     <tr
                       key={request._id}
                       className="hover:bg-[#f1f5f9] opacity-100"
@@ -663,8 +655,7 @@ const OrderRequests = () => {
                         </div>
                       </td>
                     </tr>
-                  ));
-                })()}
+                  ))}
                 {requests.length === 0 && (
                   <tr>
                     <td colSpan={canCreate || canUpdate || canDelete ? 10 : 9}>

@@ -44,17 +44,6 @@ const navLinks = (permissions = [], activePath = "") =>
         />
       ),
     },
-    permissions.includes("view_product") && {
-      to: "/products",
-      label: "Products",
-      icon: (
-        <HiCube
-          className={
-            activePath === "/products" ? "text-white" : "text-purple-600"
-          }
-        />
-      ),
-    },
     permissions.includes("view_supplier") && {
       to: "/suppliers",
       label: "Suppliers",
@@ -62,6 +51,17 @@ const navLinks = (permissions = [], activePath = "") =>
         <HiUserGroup
           className={
             activePath === "/suppliers" ? "text-white" : "text-pink-600"
+          }
+        />
+      ),
+    },
+    permissions.includes("view_product") && {
+      to: "/products",
+      label: "Products",
+      icon: (
+        <HiCube
+          className={
+            activePath === "/products" ? "text-white" : "text-purple-600"
           }
         />
       ),
