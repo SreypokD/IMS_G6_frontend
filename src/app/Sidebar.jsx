@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/auth/useAuth.js";
-import { useBadge } from "../contexts/badge/BadgeContext";
+import { useBadge } from "../contexts/badge/useBadge";
 import {
   HiClipboardList,
   HiCollection,

@@ -20,7 +20,7 @@ import OrderRequestModal from "../components/OrderRequestModal";
 import DatePicker from "../components/DatePicker";
 import { Menu } from "@headlessui/react";
 
-import { useBadge } from "../contexts/badge/BadgeContext";
+import { useBadge } from "../contexts/badge/useBadge";
 
 const getPermission = (user, permission) => {
   return user?.permission?.permissions?.includes(permission);

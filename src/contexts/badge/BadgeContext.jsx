@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useCallback, useContext } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { getPendingOrderRequestCount } from "../../api";
 import { BadgeContextBase } from "./BadgeContextBase";
 import { useAuth } from "../auth/useAuth";
-
-export const useBadge = () => useContext(BadgeContextBase);
 
 export const BadgeProvider = ({ children }) => {
   const { user } = useAuth();
@@ -33,7 +31,9 @@ export const BadgeProvider = ({ children }) => {
   }, [user]);
 
   useEffect(() => {
-    fetchBadge();
+    (async () => {
+      fetchBadge();
+    })();
     const interval = setInterval(fetchBadge, 15000);
     return () => clearInterval(interval);
   }, [fetchBadge]);

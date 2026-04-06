@@ -23,7 +23,7 @@ import Loading from "../components/Loading";
 import { formatDate } from "../utils/dateFormat";
 import { Listbox, Menu } from "@headlessui/react";
 import DatePicker from "../components/DatePicker";
-import { useBadge } from "../contexts/badge/BadgeContext";
+import { useBadge } from "../contexts/badge/useBadge";
 
 const statusOptions = [
   { value: "pending", label: "Pending" },
@@ -109,8 +109,6 @@ const OrderRequests = () => {
   const canCreate = getPermission(user, "create_order_request");
   const canUpdate = getPermission(user, "update_order_request");
   const canDelete = getPermission(user, "delete_order_request");
-  const canViewApprove = getPermission(user, "view_approve_request");
-  const canUpdateApprove = getPermission(user, "update_approve_request");
   const isInternalUser = user.user_type == "internal";
 
   useEffect(() => {

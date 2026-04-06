@@ -132,7 +132,7 @@ const DeliveryConfirmation = () => {
   const [delivery_status, setDeliveryStatus] = useState("");
 
   // Permissions
-  const canViewOrder = getPermission(user, "view_approve_request");
+  const canViewOrder = getPermission(user, "view_confirm_delivery") || getPermission(user, "view_approve_request");
   const canUpdate = getPermission(user, "update_confirm_delivery");
 
   useEffect(() => {
