@@ -24,6 +24,8 @@ const initialProduct = {
 import { getCategories, getSuppliers, uploadFile } from "../api";
 import { Listbox } from "@headlessui/react";
 import { useAuth } from "../contexts/auth/useAuth";
+import { useCart } from "../contexts/cart/useCart";
+import { HiOutlineShoppingCart } from "react-icons/hi";
 
 const ProductModal = ({
   open,
@@ -41,6 +43,7 @@ const ProductModal = ({
   const { user } = useAuth();
   const isInternalUser = user.user_type == "internal";
   const canUpdate = user?.permission?.permissions?.includes("update_product");
+  const { addToCart } = useCart();
 
   useEffect(() => {
     if (open) {
@@ -476,6 +479,19 @@ const ProductModal = ({
             >
               <HiOutlinePencil className="inline-block text-xl" />
               Update
+            </button>
+          )}
+          {viewOnly && (
+            <button
+              type="button"
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+              onClick={() => {
+                addToCart(product);
+                onClose();
+              }}
+            >
+              <HiOutlineShoppingCart className="inline-block text-xl" />
+              Add to Cart
             </button>
           )}
         </div>
