@@ -17,6 +17,7 @@ import { useAuth } from "../contexts/auth/useAuth.js";
 import { useDialog } from "../contexts/dialog/useDialog.js";
 import OrderRequestModal from "../components/OrderRequestModal.jsx";
 import { getOrderRequests, cancelOrderRequest } from "../api";
+import { useCart } from "../contexts/cart/useCart";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 import Loading from "../components/Loading";
@@ -91,6 +92,7 @@ const OrderRequests = () => {
   const { user } = useAuth();
   const dialog = useDialog();
   const { fetchBadge } = useBadge();
+  const { cartItems, clearCart } = useCart();
 
   // Filters
   const [search, setSearch] = useState("");
@@ -313,7 +315,26 @@ const OrderRequests = () => {
     <div className="h-content-available">
       <OrderRequestModal
         open={modalOpen}
-        data={updateOrderRequest || viewOrderRequest}
+        data={
+          updateOrderRequest ||
+          viewOrderRequest ||
+          (cartItems.length > 0
+            ? {
+                supplier_id: cartItems[0].product.supplier?._id ||
+                  (typeof cartItems[0].product.supplier === "string"
+                    ? cartItems[0].product.supplier
+                    : ""),
+                delivery_date: new Date().toISOString().slice(0, 10),
+                notes: "",
+                orderItems: cartItems.map((item) => ({
+                  product_id: item.product._id,
+                  quantity: item.quantity,
+                  unit_price: item.product.price,
+                  subtotal: item.product.price * item.quantity,
+                })),
+              }
+            : null)
+        }
         viewOnly={!!viewOrderRequest}
         onClose={() => {
           setModalOpen(false);
@@ -324,6 +345,7 @@ const OrderRequests = () => {
           setModalOpen(false);
           setUpdateOrderRequest(null);
           setViewOrderRequest(null);
+          clearCart();
           fetchOrderRequests(pagination.page, pagination.limit, search, status);
           fetchBadge();
         }}
@@ -376,6 +398,11 @@ const OrderRequests = () => {
               onClick={() => setModalOpen(true)}
             >
               <HiOutlinePlus className="text-md" /> Add Request
+              {cartItems.length > 0 && (
+                <span className="bg-white text-[#1e3a5f] text-xs font-bold rounded-full px-1.5 py-0.5">
+                  {cartItems.reduce((s, i) => s + i.quantity, 0)}
+                </span>
+              )}
             </button>
           )}
           {(canUpdate || canDelete) && (

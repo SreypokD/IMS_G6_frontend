@@ -1,5 +1,6 @@
 import { useAuth } from "../contexts/auth/useAuth.js";
 import { useNotification } from "../contexts/notification/useNotification.js";
+import { useCart } from "../contexts/cart/useCart";
 import {
   HiOutlineBell,
   HiOutlineLogout,
@@ -9,6 +10,10 @@ import {
   HiOutlineCog,
   HiOutlineQuestionMarkCircle,
   HiCheckCircle,
+  HiOutlineShoppingCart,
+  HiOutlineTrash,
+  HiOutlinePlus,
+  HiOutlineMinus,
 } from "react-icons/hi";
 import { useState, useRef, useEffect } from "react";
 import { formatDate } from "../utils/dateFormat";
@@ -22,12 +27,17 @@ const Header = ({ onBellClick }) => {
   const { user, logout } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead } =
     useNotification();
+  const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef();
   const notificationRef = useRef();
+  const cartRef = useRef();
   const navigate = useNavigate();
+
+  const cartCount = cartItems.reduce((sum, i) => sum + i.quantity, 0);
 
   // Close dropdowns on click outside
   useEffect(() => {
@@ -42,14 +52,17 @@ const Header = ({ onBellClick }) => {
         setNotificationOpen(false);
         setShowAll(false);
       }
+      if (cartRef.current && !cartRef.current.contains(e.target)) {
+        setCartOpen(false);
+      }
     }
-    if (menuOpen || notificationOpen) {
+    if (menuOpen || notificationOpen || cartOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [menuOpen, notificationOpen]);
+  }, [menuOpen, notificationOpen, cartOpen]);
 
   const handleLogout = async () => {
     try {
@@ -104,8 +117,86 @@ const Header = ({ onBellClick }) => {
         onClick={onBellClick}
         className="text-gray-500 hover:text-[#1e3a5f] text-xl cursor-pointer transition"
       />
-      <div className="flex items-center gap-3">
-        <div className="relative" ref={notificationRef}>
+      <div className="flex items-center gap-3">          {/* Cart Icon */}
+          <div className="relative" ref={cartRef}>
+            <button
+              tabIndex={0}
+              className="relative mt-2 focus:outline-none hover:text-blue-700 transition hover:cursor-pointer"
+              onClick={() => setCartOpen((v) => !v)}
+              title="Cart"
+            >
+              <HiOutlineShoppingCart className="text-gray-500 hover:text-[#1e3a5f] text-xl" />
+              {cartCount > 0 && (
+                <span className="absolute -top-3 -right-3 bg-[#1e3a5f] text-white text-sm rounded-full w-6 h-6 pt-0.5 flex items-center justify-center font-bold border-2 border-white">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+            {cartOpen && (
+              <div className="absolute right-0 top-10 bg-white rounded-2xl shadow-lg p-3 w-96 z-50 animate-fade-in-up border border-gray-100">
+                <div className="flex items-center justify-between px-1 pt-1 mb-2">
+                  <span className="font-bold text-sm">Cart ({cartCount} items)</span>
+                  {cartItems.length > 0 && (
+                    <button
+                      onClick={clearCart}
+                      className="text-xs text-red-500 hover:text-red-700 cursor-pointer"
+                    >
+                      Clear all
+                    </button>
+                  )}
+                </div>
+                <hr className="my-2 border-gray-100" />
+                {cartItems.length === 0 ? (
+                  <div className="text-center text-gray-400 text-sm py-6">Cart is empty</div>
+                ) : (
+                  <>
+                    <ul className="max-h-64 overflow-y-auto divide-y divide-gray-50">
+                      {cartItems.map((item) => (
+                        <li key={item.product._id} className="flex items-center gap-3 py-3">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-800 truncate">{item.product.name}</p>
+                            <p className="text-xs text-gray-400">${Number(item.product.price).toFixed(2)} each</p>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => updateQuantity(item.product._id, item.quantity - 1)}
+                              className="p-1 rounded hover:bg-gray-100 cursor-pointer"
+                            >
+                              <HiOutlineMinus className="text-xs" />
+                            </button>
+                            <span className="text-sm font-semibold w-6 text-center">{item.quantity}</span>
+                            <button
+                              onClick={() => updateQuantity(item.product._id, item.quantity + 1)}
+                              className="p-1 rounded hover:bg-gray-100 cursor-pointer"
+                            >
+                              <HiOutlinePlus className="text-xs" />
+                            </button>
+                          </div>
+                          <button
+                            onClick={() => removeFromCart(item.product._id)}
+                            className="p-1 rounded hover:bg-red-50 cursor-pointer text-red-400 hover:text-red-600"
+                          >
+                            <HiOutlineTrash className="text-base" />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-3 pt-3 border-t border-gray-100">
+                      <button
+                        onClick={() => {
+                          setCartOpen(false);
+                          navigate("/order-requests");
+                        }}
+                        className="w-full bg-[#1e3a5f] hover:bg-[#16375b] text-white text-sm font-medium py-2.5 rounded-xl cursor-pointer transition"
+                      >
+                        Place Order Request
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>        <div className="relative" ref={notificationRef}>
           <button
             tabIndex={0}
             className="relative mt-2 focus:outline-none hover:text-blue-700 transition hover:cursor-pointer"
