@@ -8,6 +8,7 @@ import {
   HiUser,
   HiOutlineCog,
   HiOutlineQuestionMarkCircle,
+  HiCheckCircle,
 } from "react-icons/hi";
 import { useState, useRef, useEffect } from "react";
 import { formatDate } from "../utils/dateFormat";
@@ -19,8 +20,10 @@ const getPermission = (user, permission) => {
 
 const Header = ({ onBellClick }) => {
   const { user, logout } = useAuth();
-  const { notifications, unreadCount, markAsRead } = useNotification();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } =
+    useNotification();
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef();
   const notificationRef = useRef();
@@ -37,6 +40,7 @@ const Header = ({ onBellClick }) => {
         !notificationRef.current.contains(e.target)
       ) {
         setNotificationOpen(false);
+        setShowAll(false);
       }
     }
     if (menuOpen || notificationOpen) {
@@ -116,38 +120,72 @@ const Header = ({ onBellClick }) => {
           </button>
           {notificationOpen && (
             <div className="absolute right-0 top-10 bg-white rounded-2xl shadow-lg p-2 w-120 z-50 animate-fade-in-up border border-gray-100">
-              <div className="px-2 pt-2">
+              <div className="px-2 pt-2 flex items-center justify-between">
                 <div className="font-bold text-sm leading-tight">
                   Notifications
+                  {unreadCount > 0 && (
+                    <span className="ml-2 text-xs font-semibold bg-red-100 text-red-500 px-2 py-0.5 rounded-full">
+                      {unreadCount} unread
+                    </span>
+                  )}
                 </div>
+                {unreadCount > 0 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      markAllAsRead();
+                    }}
+                    className="flex items-center gap-1 text-xs text-[#64748b] hover:text-black font-medium transition cursor-pointer"
+                    title="Mark all as read"
+                  >
+                    <HiCheckCircle className="text-base" />
+                    Mark all as read
+                  </button>
+                )}
               </div>
               <hr className="my-2 border-gray-100" />
               {notifications.length === 0 ? (
-                <div className="w-full p-2 text-[#64748b] text-center text-sm space-x-2 rounded-xl cursor-pointer">
-                  No notifications
+                <div className="w-full p-4 text-[#64748b] text-center text-sm rounded-xl">
+                  No new notifications
                 </div>
               ) : (
-                <ul className="max-h-75 overflow-y-auto">
-                  {notifications.map((n) => (
-                    <li
-                      key={n._id}
-                      className="w-full flex items-center justify-between p-2 text-[#64748b] hover:text-black hover:bg-[#f1f5f9] transition text-sm space-x-2 cursor-pointer"
-                      onClick={() => handleNotificationClick(n)}
-                    >
-                      <div className="flex flex-col text-sm text-gray-900">
-                        <span>{n.message}</span>
-                        {n.entity_type && n.entity_id && (
-                          <span className="text-xs text-gray-400">
-                            {n.entity_type} ID: {n.entity_id}
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-sm text-gray-400 text-right min-w-35">
-                        {formatDate(n.createdAt, true)}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                <>
+                  <ul className="max-h-80 overflow-y-auto divide-y divide-gray-50">
+                    {(showAll ? notifications : notifications.slice(0, 5)).map(
+                      (n) => (
+                        <li
+                          key={n._id}
+                          className="flex items-start justify-between gap-3 px-2 py-3 bg-[#f1f5f9] transition cursor-pointer rounded-xl"
+                          onClick={() => handleNotificationClick(n)}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-gray-800 leading-snug">
+                              {n.message}
+                            </p>
+                          </div>
+                          <div className="text-xs text-gray-400 text-right whitespace-nowrap min-w-28 pt-0.5">
+                            {formatDate(n.createdAt, true)}
+                          </div>
+                        </li>
+                      ),
+                    )}
+                  </ul>
+                  {notifications.length > 5 && (
+                    <div className="mt-1 pt-1 border-t border-gray-100">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowAll((v) => !v);
+                        }}
+                        className="w-full text-center text-sm text-[#64748b] hover:text-black font-medium py-2 hover:bg-blue-50 rounded-xl transition cursor-pointer"
+                      >
+                        {showAll
+                          ? "Show less"
+                          : `View ${notifications.length - 5} more`}
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import {
   getNotifications,
   markNotificationRead,
+  markAllNotificationsRead,
   getUnreadNotificationCount,
 } from "../../api";
 import { useAuth } from "../auth/useAuth";
@@ -53,6 +54,12 @@ export const NotificationProvider = ({ children }) => {
     fetchUnreadCount();
   };
 
+  const markAllAsRead = async () => {
+    await markAllNotificationsRead();
+    fetchNotifications();
+    fetchUnreadCount();
+  };
+
   return (
     <NotificationContextBase.Provider
       value={{
@@ -62,6 +69,7 @@ export const NotificationProvider = ({ children }) => {
         fetchNotifications,
         fetchUnreadCount,
         markAsRead,
+        markAllAsRead,
       }}
     >
       {children}
