@@ -175,7 +175,12 @@ const Reports = () => {
               onClick={() => {
                 if (orderStats) {
                   exportCSV(
-                    [{ ...orderStats, date_range: JSON.stringify(dateRange) }],
+                    [
+                      {
+                        ...orderStats,
+                        date_range: `${dateRange.start_date} to ${dateRange.end_date}`,
+                      },
+                    ],
                     "order_stats_report.csv",
                   );
                 }
