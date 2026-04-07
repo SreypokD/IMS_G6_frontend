@@ -136,7 +136,7 @@ export const getApproveRequests = (params) =>
 export const updateApproveRequests = (id, data) =>
   api.patch(`${approveRequests}/${id}`, data);
 export const deleteApproveRequest = (id) =>
-  api.delete(`${orderRequests}/${id}`);
+  api.delete(`${approveRequests}/${id}`);
 
 // Confirm delivery (via Order Requests)
 // getConfirmDeliveries is replaced by getOrderRequests with status filtering in the component

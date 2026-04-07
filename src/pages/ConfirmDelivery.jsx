@@ -463,7 +463,10 @@ const DeliveryConfirmation = () => {
                   1,
                   pagination.limit,
                   search,
-                  approve_status,
+                  start_date,
+                  end_date,
+                  status,
+                  delivery_status,
                 );
                 setPagination((prev) => ({ ...prev, page: 1 }));
               }}
@@ -481,7 +484,10 @@ const DeliveryConfirmation = () => {
                   1,
                   pagination.limit,
                   search,
-                  delivery_status,
+                  start_date,
+                  end_date,
+                  approve_status,
+                  status,
                 );
                 setPagination((prev) => ({ ...prev, page: 1 }));
               }}
@@ -520,7 +526,6 @@ const DeliveryConfirmation = () => {
                   <th className="number">No.</th>
                   <th>Requested By</th>
                   <th>Product(s)</th>
-                  <th>Quantity(ies)</th>
                   <th>Requested Date</th>
                   <th>Delivery Date</th>
                   <th>Approval Status</th>
@@ -552,22 +557,14 @@ const DeliveryConfirmation = () => {
                         {index + 1 + (pagination.page - 1) * pagination.limit}
                       </td>
                       <td>
-                        {confirm_delivery.requester?.first_name}
+                        {confirm_delivery.requester?.first_name}{" "}
                         {confirm_delivery.requester?.last_name}
                       </td>
                       <td>
                         {Array.isArray(confirm_delivery?.items) &&
                         confirm_delivery?.items.length > 0
                           ? confirm_delivery?.items
-                              .map((item) => item.product?.name)
-                              .join(", ")
-                          : "-"}
-                      </td>
-                      <td>
-                        {Array.isArray(confirm_delivery?.items) &&
-                        confirm_delivery?.items.length > 0
-                          ? confirm_delivery?.items
-                              .map((item) => item.quantity)
+                              .map((item) => `${item.product?.name} (${item.quantity})`)
                               .join(", ")
                           : "-"}
                       </td>
@@ -642,7 +639,7 @@ const DeliveryConfirmation = () => {
                 })}
                 {confirmDeliveries.length === 0 && (
                   <tr>
-                    <td colSpan={canUpdate ? 10 : 9}>
+                    <td colSpan={canUpdate ? 9 : 8}>
                       <NoDataFound message="No deliveries found." />
                     </td>
                   </tr>

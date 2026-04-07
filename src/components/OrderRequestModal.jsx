@@ -193,7 +193,7 @@ const OrderRequestModal = ({
   async function handleSubmit(e) {
     e.preventDefault();
     setValidateOnSave(true);
-    const isUpdate = Boolean(data);
+    const isUpdate = Boolean(data?._id);
     const supplierField = order.supplier_id;
     if (
       !supplierField ||
@@ -742,7 +742,7 @@ const OrderRequestModal = ({
               onClick={handleSubmit}
             >
               <HiOutlineDocumentText className="inline-block text-xl" />
-              {loading ? "Submitting..." : data ? "Update" : "Submit"}
+              {loading ? "Submitting..." : data?._id ? "Update" : "Submit"}
             </button>
           )}
           {viewOnly &&

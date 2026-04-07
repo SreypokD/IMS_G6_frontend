@@ -7,6 +7,7 @@ import Loading from "../components/Loading.jsx";
 import { useAuth } from "../contexts/auth/useAuth.js";
 import { DialogProvider } from "../contexts/dialog/DialogContext.jsx";
 import { BadgeProvider } from "../contexts/badge/BadgeContext.jsx";
+import { CartProvider } from "../contexts/cart/CartContext.jsx";
 import Breadcrumb from "../components/Breadcrumb.jsx";
 
 import Login from "../pages/Login.jsx";
@@ -56,6 +57,7 @@ function App() {
 
   return (
     <DialogProvider>
+      <CartProvider>
       <BadgeProvider>
         <Router>
           <Suspense
@@ -167,6 +169,7 @@ function App() {
           </Suspense>
         </Router>
       </BadgeProvider>
+      </CartProvider>
     </DialogProvider>
   );
 }

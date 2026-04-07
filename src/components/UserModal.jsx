@@ -701,8 +701,8 @@ const UserModal = ({
                     id="companyName"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.company_name || ""}
-                    readOnly
-                    disabled
+                    onChange={(e) => setUser({ ...user, company_name: e.target.value })}
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -716,8 +716,8 @@ const UserModal = ({
                     id="regNo"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.company_registration_no || ""}
-                    readOnly
-                    disabled
+                    onChange={(e) => setUser({ ...user, company_registration_no: e.target.value })}
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -731,8 +731,8 @@ const UserModal = ({
                     id="requestPurpose"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.request_purpose || ""}
-                    readOnly
-                    disabled
+                    onChange={(e) => setUser({ ...user, request_purpose: e.target.value })}
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -746,8 +746,8 @@ const UserModal = ({
                     id="expectedVolume"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.expected_order_volume || ""}
-                    readOnly
-                    disabled
+                    onChange={(e) => setUser({ ...user, expected_order_volume: e.target.value })}
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
@@ -761,8 +761,8 @@ const UserModal = ({
                     id="orderFrequency"
                     className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 outline-none"
                     value={user.order_frequency || ""}
-                    readOnly
-                    disabled
+                    onChange={(e) => setUser({ ...user, order_frequency: e.target.value })}
+                    disabled={viewOnly}
                   />
                 </div>
                 <div>
