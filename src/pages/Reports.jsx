@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Menu } from "@headlessui/react";
 import {
   getInventorySummary,
   getOrderStats,
@@ -15,6 +16,7 @@ import {
   HiCube,
   HiUserGroup,
   HiOutlineExclamation,
+  HiChevronDown,
 } from "react-icons/hi";
 import { MdInventory } from "react-icons/md";
 import {
@@ -170,20 +172,151 @@ const Reports = () => {
             >
               <HiOutlineRefresh className="text-xl" />
             </button>
-            <button
-              className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-colors cursor-pointer text-sm"
-              onClick={() => {
-                if (orderStats) {
-                  exportCSV(
-                    [{ ...orderStats, date_range: JSON.stringify(dateRange) }],
-                    "order_stats_report.csv",
-                  );
-                }
-              }}
-            >
-              <HiOutlineDownload className="text-lg" />
-              <span>Export CSV</span>
-            </button>
+            <Menu as="div" className="relative inline-block text-left">
+              <Menu.Button className="bg-[#1e3a5f] hover:bg-[#16375b] text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-colors cursor-pointer text-sm">
+                <HiOutlineDownload className="text-lg" />
+                <span>Export CSV</span>
+                <HiChevronDown className="text-sm" />
+              </Menu.Button>
+              <Menu.Items className="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-lg p-2 z-50 border border-gray-100 focus:outline-none">
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={() =>
+                        exportCSV(
+                          financial
+                            ? [{
+                                "Date Range": `${dateRange.start_date} to ${dateRange.end_date}`,
+                                "Revenue": Number(financial.revenue).toFixed(2),
+                                "COGS": Number(financial.cogs).toFixed(2),
+                                "Gross Profit": Number(financial.grossProfit).toFixed(2),
+                                "Expenses": Number(financial.expenses).toFixed(2),
+                                "Net Profit": Number(financial.netProfit).toFixed(2),
+                              }]
+                            : [],
+                          "Financial Summary.csv",
+                        )
+                      }
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-[#64748b] hover:text-black hover:bg-[#f1f5f9] rounded-xl cursor-pointer"
+                    >
+                      <HiOutlineDownload className="text-base" />
+                      Financial Summary
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={() =>
+                        exportCSV(
+                          orderStats
+                            ? [{
+                                "Date Range": `${dateRange.start_date} to ${dateRange.end_date}`,
+                                "Total Orders": orderStats.totalOrders,
+                                "Pending": orderStats.pending,
+                                "Approved": orderStats.approved,
+                                "Rejected": orderStats.rejected,
+                              }]
+                            : [],
+                          "Order Statistics.csv",
+                        )
+                      }
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-[#64748b] hover:text-black hover:bg-[#f1f5f9] rounded-xl cursor-pointer"
+                    >
+                      <HiOutlineDownload className="text-base" />
+                      Order Statistics
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={() =>
+                        exportCSV(
+                          trends.map((t) => ({
+                            "Date": t.name,
+                            "Stock In": t.in,
+                            "Stock Out": t.out,
+                          })),
+                          "Inventory Trends.csv",
+                        )
+                      }
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-[#64748b] hover:text-black hover:bg-[#f1f5f9] rounded-xl cursor-pointer"
+                    >
+                      <HiOutlineDownload className="text-base" />
+                      Inventory Trends
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={() =>
+                        exportCSV(
+                          lowStockProducts.map((p) => ({
+                            "Product Name": p.name,
+                            "Category": p.category?.name || "",
+                            "Stock": p.stock,
+                            "Price": p.price,
+                          })),
+                          "Low Stock Products.csv",
+                        )
+                      }
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-[#64748b] hover:text-black hover:bg-[#f1f5f9] rounded-xl cursor-pointer"
+                    >
+                      <HiOutlineDownload className="text-base" />
+                      Low Stock Products
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {() => (
+                    <button
+                      onClick={() => {
+                        const rows = [
+                          ...(financial
+                            ? [{
+                                section: "Financial Summary",
+                                key: "Revenue",
+                                value: Number(financial.revenue).toFixed(2),
+                              },
+                              { section: "Financial Summary", key: "COGS", value: Number(financial.cogs).toFixed(2) },
+                              { section: "Financial Summary", key: "Gross Profit", value: Number(financial.grossProfit).toFixed(2) },
+                              { section: "Financial Summary", key: "Expenses", value: Number(financial.expenses).toFixed(2) },
+                              { section: "Financial Summary", key: "Net Profit", value: Number(financial.netProfit).toFixed(2) }]
+                            : []),
+                          ...(orderStats
+                            ? [{
+                                section: "Order Stats",
+                                key: "Total Orders",
+                                value: orderStats.totalOrders,
+                              },
+                              { section: "Order Stats", key: "Pending", value: orderStats.pending },
+                              { section: "Order Stats", key: "Approved", value: orderStats.approved },
+                              { section: "Order Stats", key: "Rejected", value: orderStats.rejected }]
+                            : []),
+                          ...trends.map((t) => ({
+                            section: "Inventory Trends",
+                            key: t.name,
+                            value: `In: ${t.in}, Out: ${t.out}`,
+                          })),
+                          ...lowStockProducts.map((p) => ({
+                            section: "Low Stock",
+                            key: p.name,
+                            value: `Stock: ${p.stock}, Price: ${p.price}`,
+                          })),
+                        ];
+                        exportCSV(rows, `Full Report ${dateRange.start_date} to ${dateRange.end_date}.csv`);
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-[#1e3a5f] font-semibold hover:bg-[#f1f5f9] rounded-xl cursor-pointer border-t border-gray-100 mt-1 pt-3"
+                    >
+                      <HiOutlineDownload className="text-base" />
+                      Export All
+                    </button>
+                  )}
+                </Menu.Item>
+              </Menu.Items>
+            </Menu>
           </div>
         </div>
         <div className="h-[80vh] overflow-y-auto">

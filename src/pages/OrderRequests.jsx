@@ -180,7 +180,7 @@ const OrderRequests = () => {
     try {
       await cancelOrderRequest(id);
       await dialog.success("Order request cancelled successfully.");
-      fetchOrderRequests(pagination.page, pagination.limit, search, status);
+      fetchOrderRequests(pagination.page, pagination.limit, search, start_date, end_date, status);
       fetchBadge(); // Update badge
     } catch (err) {
       dialog.error(err.response.data.error || "Failed to cancel order request");
@@ -346,7 +346,7 @@ const OrderRequests = () => {
           setUpdateOrderRequest(null);
           setViewOrderRequest(null);
           clearCart();
-          fetchOrderRequests(pagination.page, pagination.limit, search, status);
+          fetchOrderRequests(pagination.page, pagination.limit, search, start_date, end_date, status);
           fetchBadge();
         }}
         onEdit={() => {
@@ -513,7 +513,7 @@ const OrderRequests = () => {
               value={status}
               onChange={(status) => {
                 setStatus(status);
-                fetchOrderRequests(1, pagination.limit, search, status);
+                fetchOrderRequests(1, pagination.limit, search, start_date, end_date, status);
                 setPagination((prev) => ({ ...prev, page: 1 }));
               }}
             />
@@ -551,7 +551,6 @@ const OrderRequests = () => {
                   <th className="number">No.</th>
                   <th>Requested By</th>
                   <th>Product(s)</th>
-                  <th>Quantity(ies)</th>
                   <th>Notes</th>
                   <th>Requested Date</th>
                   <th>Delivery Date</th>
@@ -591,15 +590,7 @@ const OrderRequests = () => {
                         {Array.isArray(request.items) &&
                         request.items.length > 0
                           ? request.items
-                              .map((item) => item.product?.name)
-                              .join(", ")
-                          : "-"}
-                      </td>
-                      <td>
-                        {Array.isArray(request.items) &&
-                        request.items.length > 0
-                          ? request.items
-                              .map((item) => item.quantity)
+                              .map((item) => `${item.product?.name} (${item.quantity})`)
                               .join(", ")
                           : "-"}
                       </td>
@@ -683,7 +674,7 @@ const OrderRequests = () => {
                   ))}
                 {requests.length === 0 && (
                   <tr>
-                    <td colSpan={canCreate || canUpdate || canDelete ? 10 : 9}>
+                    <td colSpan={canCreate || canUpdate || canDelete ? 9 : 8}>
                       <NoDataFound message="No order requests found." />
                     </td>
                   </tr>

@@ -246,7 +246,7 @@ const Header = ({ onBellClick }) => {
                       (n) => (
                         <li
                           key={n._id}
-                          className="flex items-start justify-between gap-3 px-2 py-3 bg-[#f1f5f9] transition cursor-pointer rounded-xl"
+                          className="flex items-start justify-between gap-3 px-2 py-3 bg-[#f1f5f9] transition cursor-pointer hover:bg-[#e2e8f0] rounded-xl"
                           onClick={() => handleNotificationClick(n)}
                         >
                           <div className="flex-1 min-w-0">

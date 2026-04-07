@@ -99,8 +99,25 @@ const ProductModal = ({
         <form className="space-y-5 overflow-auto max-h-[50vh] px-1">
           <div className="col-span-2 mb-2">
             <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold border-b border-gray-100 pb-2">
-              <HiOutlineDocumentText className="inline-block text-xl text-black" />
-              <span>Basic Information</span>
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-2">
+                  <HiOutlineDocumentText className="inline-block text-xl text-black" />
+                  <span>Basic Information</span>
+                </div>
+                {viewOnly && (
+                  <button
+                    type="button"
+                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+                    onClick={() => {
+                      addToCart(product);
+                      onClose();
+                    }}
+                  >
+                    <HiOutlineShoppingCart className="inline-block text-xl" />
+                    Add to Cart
+                  </button>
+                )}
+              </div>
             </h3>
             <div className="mb-3 grid lg:grid-cols-2 md:grid-cols-1 gap-3">
               <div>
@@ -261,30 +278,6 @@ const ProductModal = ({
                   </div>
                 </Listbox>
               </div>
-              <div>
-                <label
-                  htmlFor="product_price"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  {isInternalUser ? "Selling Price" : "Price"}
-                  {!viewOnly && <sup className="text-red-500">*</sup>}
-                </label>
-                <input
-                  id="product_price"
-                  name="price"
-                  value={product.price}
-                  onChange={(e) =>
-                    setProduct({ ...product, price: e.target.value })
-                  }
-                  onBlur={() =>
-                    setTouched((prev) => ({ ...prev, price: true }))
-                  }
-                  type={viewOnly ? "text" : "number"}
-                  step="0.01"
-                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.price || isNaN(product.price)) && !data && (touched.price || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
-                  disabled={viewOnly}
-                />
-              </div>
               {isInternalUser && (
                 <div>
                   <label
@@ -311,6 +304,30 @@ const ProductModal = ({
                   />
                 </div>
               )}
+              <div>
+                <label
+                  htmlFor="product_price"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  {isInternalUser ? "Selling Price" : "Price"}
+                  {!viewOnly && <sup className="text-red-500">*</sup>}
+                </label>
+                <input
+                  id="product_price"
+                  name="price"
+                  value={product.price}
+                  onChange={(e) =>
+                    setProduct({ ...product, price: e.target.value })
+                  }
+                  onBlur={() =>
+                    setTouched((prev) => ({ ...prev, price: true }))
+                  }
+                  type={viewOnly ? "text" : "number"}
+                  step="0.01"
+                  className={`w-full bg-gray-50 border rounded-lg px-3 py-2 text-sm text-gray-800 ${(!product.price || isNaN(product.price)) && !data && (touched.price || validateOnSave) ? "border-red-500" : "border-gray-100"}`}
+                  disabled={viewOnly}
+                />
+              </div>
               <div>
                 <label
                   htmlFor="product_stock"
@@ -479,19 +496,6 @@ const ProductModal = ({
             >
               <HiOutlinePencil className="inline-block text-xl" />
               Update
-            </button>
-          )}
-          {viewOnly && (
-            <button
-              type="button"
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
-              onClick={() => {
-                addToCart(product);
-                onClose();
-              }}
-            >
-              <HiOutlineShoppingCart className="inline-block text-xl" />
-              Add to Cart
             </button>
           )}
         </div>

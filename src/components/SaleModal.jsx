@@ -45,7 +45,11 @@ const SaleModal = ({
         setProducts(res.data.data || []),
       );
       getUsers({ limit: -1 }).then((res) => {
-        setUsers(res.data.data.filter((u) => u.user_type === "external") || []);
+        setUsers(
+          (res.data.data || []).filter(
+            (u) => u.user_type === "external" && u.status === "active",
+          ),
+        );
       });
       if (data) {
         t = setTimeout(() => {

@@ -735,7 +735,7 @@ const Products = () => {
                         </h3>
                         <p className="text-sm text-gray-500">#{product.code}</p>
                       </div>
-                      <span
+                      {/* <span
                         className={`px-3 py-1 rounded-full text-sm font-medium capitalize text-white ${
                           product.status === "active"
                             ? "bg-green-500"
@@ -743,7 +743,7 @@ const Products = () => {
                         }`}
                       >
                         {product.status}
-                      </span>
+                      </span> */}
                     </div>
                     <div className="mt-2 text-sm text-gray-600 space-y-1">
                       <div className="flex justify-between">
@@ -857,7 +857,7 @@ const Products = () => {
                     <th>Product Name</th>
                     <th>Category</th>
                     <th>Supplier</th>
-                    <th>Status</th>
+                    {/* <th>Status</th> */}
                     <th className="text-right">Stock</th>
                     {canCreate || canUpdate || canDelete ? (
                       <th className="text-right">Cost</th>
@@ -905,13 +905,13 @@ const Products = () => {
                             : product.supplier}
                         </span>
                       </td>
-                      <td>
+                      {/* <td>
                         <span
                           className={`inline-block px-3 py-1 rounded-full text-sm capitalize text-white ${product.status === "active" ? "bg-green-400" : "bg-gray-100"}`}
                         >
                           {product.status}
                         </span>
-                      </td>
+                      </td> */}
                       <td className="text-right">
                         <span
                           className={`text-sm ${product.stock === 0 ? "text-red-600" : product.stock < 10 ? "text-orange-600" : "text-green-600"}`}
