@@ -14,6 +14,7 @@ import {
   HiOutlineArchive,
   HiViewGrid,
   HiViewList,
+  HiOutlineShoppingCart,
 } from "react-icons/hi";
 import { MdOutlineSmsFailed } from "react-icons/md";
 import ProductModal from "../components/ProductModal.jsx";
@@ -27,6 +28,7 @@ import {
 } from "../api";
 import { useDialog } from "../contexts/dialog/useDialog";
 import { useAuth } from "../contexts/auth/useAuth.js";
+import { useCart } from "../contexts/cart/useCart";
 import Pagination from "../components/Pagination";
 import NoDataFound from "../components/NoDataFound";
 import Loading from "../components/Loading";
@@ -187,6 +189,11 @@ const Products = () => {
   // Dialog
   const dialog = useDialog();
   const { user } = useAuth();
+  const { addToCart, cartItems } = useCart();
+
+  function handleAddToCart(product) {
+    addToCart(product);
+  }
 
   // Selection
   const [selectedIds, setSelectedIds] = useState([]);
@@ -728,7 +735,7 @@ const Products = () => {
                         </h3>
                         <p className="text-sm text-gray-500">#{product.code}</p>
                       </div>
-                      <span
+                      {/* <span
                         className={`px-3 py-1 rounded-full text-sm font-medium capitalize text-white ${
                           product.status === "active"
                             ? "bg-green-500"
@@ -736,7 +743,7 @@ const Products = () => {
                         }`}
                       >
                         {product.status}
-                      </span>
+                      </span> */}
                     </div>
                     <div className="mt-2 text-sm text-gray-600 space-y-1">
                       <div className="flex justify-between">
@@ -783,14 +790,28 @@ const Products = () => {
                         </p>
                       </div>
                     </div>
-                    {canView && (
-                      <button
-                        onClick={() => handleView(product)}
-                        className="mt-3 w-full py-2 flex items-center justify-center text-sm font-medium text-[#1e3a5f] bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors cursor-pointer"
-                      >
-                        <HiOutlineEye className="mr-1.5 text-lg" /> View Details
-                      </button>
-                    )}
+                    <div className="mt-3 flex gap-2">
+                      {canView && (
+                        <button
+                          onClick={() => handleView(product)}
+                          className="flex-1 py-2 flex items-center justify-center text-sm font-medium text-[#1e3a5f] bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <HiOutlineEye className="mr-1.5 text-lg" /> View
+                        </button>
+                      )}
+                      {product.status === "active" && (
+                        <button
+                          onClick={() => handleAddToCart(product)}
+                          className="flex-1 py-2 flex items-center justify-center text-sm font-medium text-white bg-[#1e3a5f] hover:bg-[#16375b] rounded-lg transition-colors cursor-pointer relative"
+                          title="Add to cart"
+                        >
+                          <HiOutlineShoppingCart className="mr-1.5 text-lg" />
+                          {cartItems.some((i) => i.product._id === product._id)
+                            ? `In Cart (${cartItems.find((i) => i.product._id === product._id)?.quantity})`
+                            : "Add to Cart"}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -836,14 +857,17 @@ const Products = () => {
                     <th>Product Name</th>
                     <th>Category</th>
                     <th>Supplier</th>
-                    <th>Status</th>
+                    {/* <th>Status</th> */}
                     <th className="text-right">Stock</th>
                     {canCreate || canUpdate || canDelete ? (
                       <th className="text-right">Cost</th>
                     ) : null}
                     <th className="text-right">Price</th>
                     {canView || canUpdate || canDelete ? (
-                      <th className="text-center action">Actions</th>
+                      <>
+                        <th className="text-center">Cart</th>
+                        <th className="text-center action">Actions</th>
+                      </>
                     ) : null}
                   </tr>
                 </thead>
@@ -881,13 +905,13 @@ const Products = () => {
                             : product.supplier}
                         </span>
                       </td>
-                      <td>
+                      {/* <td>
                         <span
                           className={`inline-block px-3 py-1 rounded-full text-sm capitalize text-white ${product.status === "active" ? "bg-green-400" : "bg-gray-100"}`}
                         >
                           {product.status}
                         </span>
-                      </td>
+                      </td> */}
                       <td className="text-right">
                         <span
                           className={`text-sm ${product.stock === 0 ? "text-red-600" : product.stock < 10 ? "text-orange-600" : "text-green-600"}`}
@@ -904,6 +928,21 @@ const Products = () => {
                       ) : null}
                       <td className="text-right">
                         ${Number(product.price).toFixed(2)}
+                      </td>
+                      <td className="text-center">
+                        {product.status === "active" && (
+                          <button
+                            className={`cursor-pointer p-2 rounded-full hover:bg-gray-200 ${
+                              cartItems.some((i) => i.product._id === product._id)
+                                ? "text-green-600"
+                                : "text-[#1e3a5f]"
+                            }`}
+                            title={cartItems.some((i) => i.product._id === product._id) ? "Already in cart" : "Add to cart"}
+                            onClick={() => handleAddToCart(product)}
+                          >
+                            <HiOutlineShoppingCart className="text-xl" />
+                          </button>
+                        )}
                       </td>
                       <td className="flex items-center gap-1 justify-center action">
                         {canView && (
@@ -968,7 +1007,7 @@ const Products = () => {
                   {products.length === 0 && (
                     <tr>
                       <td
-                        colSpan={canCreate || canUpdate || canDelete ? 11 : 9}
+                        colSpan={canCreate || canUpdate || canDelete ? 12 : 10}
                       >
                         <NoDataFound message="No products found." />
                       </td>

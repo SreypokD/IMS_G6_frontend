@@ -95,7 +95,7 @@ const CategoryModal = ({
           <div>
             <label
               htmlFor="category-name"
-              className="text-sm font-medium text-gray-700"
+              className="text-sm font-medium text-gray-7 00"
             >
               Name
               {!viewOnly && <sup className="text-red-500">*</sup>}

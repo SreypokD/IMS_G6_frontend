@@ -114,7 +114,7 @@ const getPermission = (user, permission) => {
 
 const Sales = () => {
   const [sales, setSales] = useState([]);
-  const [summary, setSummary] = useState({
+  const [, setSummary] = useState({
     totalRevenue: 0,
     totalSales: 0,
     avgTransaction: 0,
@@ -470,7 +470,7 @@ const Sales = () => {
           )}
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 mb-3">
         <div className="bg-white rounded-2xl p-6 flex flex-col gap-3 border border-gray-100 transition-all duration-300 hover:scale-101">
           <div className="flex items-center justify-between">
             <BsCurrencyDollar className="text-2xl text-green-600" />
@@ -554,7 +554,7 @@ const Sales = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       <div className="bg-white rounded-2xl p-6 mb-3 border border-gray-100">
         <div className="w-full flex items-center justify-between">
           <h3 className="flex items-center gap-2 text-base mb-3 text-[#1e3a5f] font-semibold">

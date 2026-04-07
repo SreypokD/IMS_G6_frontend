@@ -502,7 +502,6 @@ const OrderRequestApproval = () => {
                   <th className="number">No.</th>
                   <th>Requested By</th>
                   <th>Product(s)</th>
-                  <th>Quantity(ies)</th>
                   <th>Requested Date</th>
                   <th>Delivery Date</th>
                   <th>Notes</th>
@@ -541,14 +540,9 @@ const OrderRequestApproval = () => {
                       {Array.isArray(order.items) && order.items.length > 0
                         ? order.items
                             .map(
-                              (item) => item.product?.name || item.product_id,
+                              (item) => `${item.product?.name || item.product_id} (${item.quantity})`,
                             )
                             .join(", ")
-                        : "-"}
-                    </td>
-                    <td>
-                      {Array.isArray(order.items) && order.items.length > 0
-                        ? order.items.map((item) => item.quantity).join(", ")
                         : "-"}
                     </td>
                     <td>
@@ -628,7 +622,7 @@ const OrderRequestApproval = () => {
                 ))}
                 {orders.length === 0 && (
                   <tr>
-                    <td colSpan={canUpdate ? 9 : 8}>
+                    <td colSpan={canUpdate ? 8 : 7}>
                       <NoDataFound message="No approve requests found." />
                     </td>
                   </tr>
