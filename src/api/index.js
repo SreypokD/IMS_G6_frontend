@@ -171,6 +171,7 @@ export const deletePermission = (id) => api.delete(`${permissions}/${id}`);
 
 // User CRUD
 export const getUsers = (params = {}) => api.get(users, { params });
+export const getCustomers = () => api.get(`${users}/customers`);
 export const getUser = (id) => api.get(`${users}/${id}`);
 export const createUser = (data) => api.post(users, data);
 export const updateUser = (id, data) => api.patch(`${users}/${id}`, data);

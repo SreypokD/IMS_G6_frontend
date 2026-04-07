@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { getProducts, getUsers } from "../api";
+import { getProducts, getCustomers } from "../api";
 import {
   HiXCircle,
   HiOutlineDocumentText,
@@ -44,12 +44,8 @@ const SaleModal = ({
       getProducts({ limit: -1 }).then((res) =>
         setProducts(res.data.data || []),
       );
-      getUsers({ limit: -1 }).then((res) => {
-        setUsers(
-          (res.data.data || []).filter(
-            (u) => u.user_type === "external" && u.status === "active",
-          ),
-        );
+      getCustomers().then((res) => {
+        setUsers(res.data.data || []);
       });
       if (data) {
         t = setTimeout(() => {
