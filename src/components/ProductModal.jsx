@@ -107,7 +107,7 @@ const ProductModal = ({
                 {viewOnly && (
                   <button
                     type="button"
-                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
+                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-full focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
                     onClick={() => {
                       addToCart(product);
                       onClose();
@@ -496,19 +496,6 @@ const ProductModal = ({
             >
               <HiOutlinePencil className="inline-block text-xl" />
               Update
-            </button>
-          )}
-          {viewOnly && (
-            <button
-              type="button"
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl focus:outline-none flex items-center gap-2 cursor-pointer text-sm"
-              onClick={() => {
-                addToCart(product);
-                onClose();
-              }}
-            >
-              <HiOutlineShoppingCart className="inline-block text-xl" />
-              Add to Cart
             </button>
           )}
         </div>
