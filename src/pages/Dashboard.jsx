@@ -130,6 +130,8 @@ const Dashboard = () => {
               roleMessage = "You have full access to all inventory features.";
             } else if (userRole === "staff") {
               roleMessage = "You have staff access to manage inventory.";
+            } else if (userRole === "stockkeeper") {
+              roleMessage = "You have stockkeeper access to manage inventory.";
             }
             return <span className="text-gray-500 text-sm">{roleMessage}</span>;
           })()}
