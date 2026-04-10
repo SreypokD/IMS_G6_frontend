@@ -175,7 +175,7 @@ const Suppliers = () => {
         limit,
       }));
     } catch (err) {
-      setError(err.response.data.error || "Failed to load suppliers");
+      setError(err?.response?.data?.error || "Failed to load suppliers");
     } finally {
       setLoading(false);
     }
@@ -204,7 +204,7 @@ const Suppliers = () => {
       setModalOpen(false);
       setEditSupplier(null);
     } catch (err) {
-      dialog.error(err.response.data.error || "Failed to save supplier");
+      dialog.error(err?.response?.data?.error || "Failed to save supplier");
     } finally {
       setLoading(false);
     }
@@ -226,7 +226,7 @@ const Suppliers = () => {
         dialog.success("Supplier deleted successfully");
         fetchSuppliers(pagination.page, pagination.limit);
       } catch (err) {
-        dialog.error(err.response.data.error || "Failed to delete supplier");
+        dialog.error(err?.response?.data?.error || "Failed to delete supplier");
       } finally {
         setLoading(false);
       }

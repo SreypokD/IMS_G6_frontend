@@ -70,7 +70,7 @@ const ActivityLog = () => {
         limit,
       }));
     } catch (err) {
-      setError(err.response.data.error || "Failed to load activity logs");
+      setError(err?.response?.data?.error || "Failed to load activity logs");
     } finally {
       setLoading(false);
     }

@@ -197,7 +197,7 @@ const DeliveryConfirmation = () => {
         limit,
       }));
     } catch (err) {
-      setError(err.response.data.error || "Failed to load confirm deliveries");
+      setError(err?.response?.data?.error || "Failed to load confirm deliveries");
     } finally {
       setLoading(false);
     }
@@ -225,7 +225,7 @@ const DeliveryConfirmation = () => {
         delivery_status,
       );
     } catch (err) {
-      dialog.error(err.response.data.error || "Failed to confirm delivery");
+      dialog.error(err?.response?.data?.error || "Failed to confirm delivery");
     }
   }
 

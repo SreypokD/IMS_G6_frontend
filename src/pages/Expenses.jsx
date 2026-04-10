@@ -153,7 +153,7 @@ const Expenses = () => {
         limit,
       }));
     } catch (err) {
-      setError(err.response.data.error || "Failed to load expenses");
+      setError(err?.response?.data?.error || "Failed to load expenses");
     } finally {
       setLoading(false);
     }
@@ -180,7 +180,7 @@ const Expenses = () => {
       setModalOpen(false);
       setEditExpense(null);
     } catch (err) {
-      dialog.error(err.response.data.error || "Failed to save expense");
+      dialog.error(err?.response?.data?.error || "Failed to save expense");
     } finally {
       setLoading(false);
     }

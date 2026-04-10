@@ -89,7 +89,7 @@ const Categories = () => {
         limit,
       }));
     } catch (err) {
-      setError(err.response.data.error || "Failed to load categories");
+      setError(err?.response?.data?.error || "Failed to load categories");
     } finally {
       setLoading(false);
     }
@@ -116,7 +116,7 @@ const Categories = () => {
       setModalOpen(false);
       setEditCategory(null);
     } catch (err) {
-      dialog.error(err.response.data.error || "Failed to save category.");
+      dialog.error(err?.response?.data?.error || "Failed to save category.");
     } finally {
       setLoading(false);
     }
@@ -137,7 +137,7 @@ const Categories = () => {
       await dialog.success("Category deleted successfully.");
       fetchCategories();
     } catch (err) {
-      dialog.error(err.response.data.error || "Failed to delete category.");
+      dialog.error(err?.response?.data?.error || "Failed to delete category.");
     } finally {
       setLoading(false);
     }

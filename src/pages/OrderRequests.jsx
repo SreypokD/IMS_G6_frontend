@@ -111,7 +111,7 @@ const OrderRequests = () => {
   const canCreate = getPermission(user, "create_order_request");
   const canUpdate = getPermission(user, "update_order_request");
   const canDelete = getPermission(user, "delete_order_request");
-  const isInternalUser = user.user_type == "internal";
+  const isInternalUser = user.user_type === "internal";
 
   useEffect(() => {
     if (user) {
@@ -155,7 +155,7 @@ const OrderRequests = () => {
         limit,
       }));
     } catch (err) {
-      setError(err.response.data.error || "Failed to load order requests");
+      setError(err?.response?.data?.error || "Failed to load order requests");
     } finally {
       setLoading(false);
     }
@@ -183,7 +183,7 @@ const OrderRequests = () => {
       fetchOrderRequests(pagination.page, pagination.limit, search, start_date, end_date, status);
       fetchBadge(); // Update badge
     } catch (err) {
-      dialog.error(err.response.data.error || "Failed to cancel order request");
+      dialog.error(err?.response?.data?.error || "Failed to cancel order request");
     } finally {
       setLoading(false);
     }
@@ -377,7 +377,7 @@ const OrderRequests = () => {
             fetchBadge(); // Update badge
           } catch (err) {
             dialog.error(
-              err.response.data.error || "Failed to cancel order request",
+              err?.response?.data?.error || "Failed to cancel order request",
             );
           } finally {
             setLoading(false);

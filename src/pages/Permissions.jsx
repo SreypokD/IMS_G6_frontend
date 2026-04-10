@@ -92,7 +92,7 @@ const Permissions = () => {
         limit,
       }));
     } catch (err) {
-      setError(err.response.data.error || "Failed to load roles");
+      setError(err?.response?.data?.error || "Failed to load roles");
     } finally {
       setLoading(false);
     }
@@ -120,7 +120,7 @@ const Permissions = () => {
       setModalOpen(false);
       setEditRole(null);
     } catch (err) {
-      dialog.error(err.response.data.error || "Failed to save role");
+      dialog.error(err?.response?.data?.error || "Failed to save role");
     } finally {
       setLoading(false);
     }
@@ -142,7 +142,7 @@ const Permissions = () => {
         dialog.success("Role deleted successfully");
         fetchRoles(pagination.page, pagination.limit, search);
       } catch (err) {
-        dialog.error(err.response.data.error || "Failed to delete role");
+        dialog.error(err?.response?.data?.error || "Failed to delete role");
       } finally {
         setLoading(false);
       }

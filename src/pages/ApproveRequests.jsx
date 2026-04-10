@@ -109,7 +109,7 @@ const OrderRequestApproval = () => {
         limit,
       }));
     } catch (err) {
-      setError(err.response.data.error || "Failed to load approve requests");
+      setError(err?.response?.data?.error || "Failed to load approve requests");
     } finally {
       setLoading(false);
     }
@@ -135,7 +135,7 @@ const OrderRequestApproval = () => {
       fetchApproveRequests(1, pagination.limit, search, start_date, end_date);
       fetchBadge(); // Update badge
     } catch (err) {
-      dialog.error(err.response.data.error || "Failed to approve order");
+      dialog.error(err?.response?.data?.error || "Failed to approve order");
     } finally {
       setActionId(null);
     }
@@ -157,7 +157,7 @@ const OrderRequestApproval = () => {
       fetchApproveRequests(1, pagination.limit, search, start_date, end_date);
       fetchBadge();
     } catch (err) {
-      dialog.error(err.response.data.error || "Failed to approve order");
+      dialog.error(err?.response?.data?.error || "Failed to approve order");
     } finally {
       setActionId(null);
     }

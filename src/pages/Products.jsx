@@ -249,7 +249,7 @@ const Products = () => {
         limit,
       }));
     } catch (err) {
-      setError(err.response.data.error || "Failed to load products");
+      setError(err?.response?.data?.error || "Failed to load products");
     } finally {
       setLoading(false);
     }
@@ -318,7 +318,7 @@ const Products = () => {
       fetchProducts(pagination.page, pagination.limit);
       setModalOpen(false);
     } catch (err) {
-      dialog.error(err.response.data.error || "Failed to save product");
+      dialog.error(err?.response?.data?.error || "Failed to save product");
     } finally {
       setLoading(false);
     }
@@ -347,7 +347,7 @@ const Products = () => {
         dialog.success("Product deleted successfully");
         fetchProducts(pagination.page, pagination.limit);
       } catch (err) {
-        dialog.error(err.response.data.error || "Failed to delete product");
+        dialog.error(err?.response?.data?.error || "Failed to delete product");
       } finally {
         setLoading(false);
       }

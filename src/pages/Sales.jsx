@@ -227,7 +227,7 @@ const Sales = () => {
         limit,
       }));
     } catch (err) {
-      setError(err.response.data.error || "Failed to load sales");
+      setError(err?.response?.data?.error || "Failed to load sales");
     } finally {
       setLoading(false);
     }

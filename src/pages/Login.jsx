@@ -51,7 +51,7 @@ const Login = () => {
       localStorage.setItem("_u", JSON.stringify(user));
       login(user, () => navigate("/")); // Store user in context, then navigate
     } catch (error) {
-      setError(error.response.data.error || "Invalid credentials");
+      setError(error?.response?.data?.error || "Invalid credentials");
     } finally {
       setLoading(false);
     }

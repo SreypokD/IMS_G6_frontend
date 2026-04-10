@@ -7,7 +7,13 @@ export const AuthProvider = ({ children }) => {
   // Initialize user state from localStorage
   const [user, setUser] = useState(() => {
     const stored = localStorage.getItem("_u");
-    return stored ? JSON.parse(stored) : null;
+    if (!stored) return null;
+    try {
+      return JSON.parse(stored);
+    } catch {
+      localStorage.removeItem("_u");
+      return null;
+    }
   });
 
   // Fetch profile from backend and update user state

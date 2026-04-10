@@ -41,7 +41,7 @@ const ProductModal = ({
   const [categories, setCategories] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const { user } = useAuth();
-  const isInternalUser = user.user_type == "internal";
+  const isInternalUser = user.user_type === "internal";
   const canUpdate = user?.permission?.permissions?.includes("update_product");
   const { addToCart } = useCart();
 

@@ -118,7 +118,7 @@ const OrderHistory = () => {
         limit,
       }));
     } catch (err) {
-      setError(err.response.data.error || "Failed to load order history");
+      setError(err?.response?.data?.error || "Failed to load order history");
     } finally {
       setLoading(false);
     }
